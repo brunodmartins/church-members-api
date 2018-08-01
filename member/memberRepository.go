@@ -24,3 +24,12 @@ func (repo *MemberRepository) FindAll() ([]*entity.Membro, error) {
 	}
 	return result, nil
 }
+
+func (repo *MemberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
+	var result *entity.Membro
+	err := repo.col.FindId(bson.ObjectIdHex(id.String())).One(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

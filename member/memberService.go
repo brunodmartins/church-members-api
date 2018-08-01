@@ -15,3 +15,7 @@ func NewMemberService(r Repository) *MemberService {
 func (s *MemberService) FindAll() ([]*entity.Membro, error) {
 	return s.repo.FindAll()
 }
+
+func (s *MemberService) FindByID(id entity.ID) (*entity.Membro, error) {
+	return s.repo.FindByID(id)
+}

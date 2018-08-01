@@ -17,7 +17,10 @@ func NewMongoConnection() *mongoConnection {
 
 func (mongoConn *mongoConnection) Connect() *mgo.Session {
 	log.Println("Connecting to mongo")
-	var mongoURI = os.Getenv("church-members-database-url")
+	var mongoURI = os.Getenv("CHURCH_MEMBERS_DATABASE_URL")
+	if mongoURI == "" {
+		panic("CHURCH_MEMBERS_DATABASE_URL not defined")
+	}
 	dialInfo, err := mgo.ParseURL(mongoURI)
 	if err != nil {
 		panic(err)

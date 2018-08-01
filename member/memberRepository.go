@@ -1,7 +1,7 @@
 package member
 
 import (
-	"github.com/BrunoDM2943/church-members-api/pkg/entity"
+	"github.com/BrunoDM2943/church-members-api/entity"
 	mgo "gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -10,9 +10,9 @@ type MemberRepository struct {
 	col *mgo.Collection
 }
 
-func NewMemberRepository(session mgo.Session) *MemberRepository {
+func NewMemberRepository(session *mgo.Session) *MemberRepository {
 	return &MemberRepository{
-		col: session.DB("disciples").C("membros"),
+		col: session.DB("disciples").C("Membro"),
 	}
 }
 

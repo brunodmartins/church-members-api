@@ -1,6 +1,6 @@
 package member
 
-import "github.com/BrunoDM2943/church-members-api/pkg/entity"
+import "github.com/BrunoDM2943/church-members-api/entity"
 
 type MemberService struct {
 	repo Repository

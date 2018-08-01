@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"log"
 	"net"
+	"os"
 
 	"gopkg.in/mgo.v2"
 )
@@ -14,9 +15,9 @@ func NewMongoConnection() *mongoConnection {
 	return &mongoConnection{}
 }
 
-func (mongoConn *mongoConnection) connect() *mgo.Session {
+func (mongoConn *mongoConnection) Connect() *mgo.Session {
 	log.Println("Connecting to mongo")
-	var mongoURI = ""
+	var mongoURI = os.Getenv("church-members-database-url")
 	dialInfo, err := mgo.ParseURL(mongoURI)
 	if err != nil {
 		panic(err)

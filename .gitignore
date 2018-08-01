@@ -13,3 +13,6 @@
 
 /vendor
 church-members-api
+.idea
+.vscode
+debug

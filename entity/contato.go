@@ -6,9 +6,9 @@ import (
 
 //Contato struct
 type Contato struct {
-	DDDTelefone int    `json:"dddTelefone"`
-	Telefone    int    `json:"telefone"`
-	DDDCelular  int    `json:"dddCelular"`
+	DDDTelefone int    `json:"dddTelefone,omitempty" bson:"dddTelefone"`
+	Telefone    int    `json:"telefone,omitempty"`
+	DDDCelular  int    `json:"dddCelular" bson:"dddCelular"`
 	Celular     int    `json:"celular"`
 	Email       string `json:"email"`
 }

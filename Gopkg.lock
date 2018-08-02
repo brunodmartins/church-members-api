@@ -3,6 +3,18 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/auth0/go-jwt-middleware"
+  packages = ["."]
+  revision = "5493cabe49f7bfa6e2ec444a09d334d90cd4e2bd"
+
+[[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
+  branch = "master"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
   revision = "22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae"
@@ -68,6 +80,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "8ed7d37fa8019b843748d4dc1d2c6e6451ff468021c084586a506090e5743b67"
+  inputs-digest = "24c3266f1ec04651438418e3bc46e68aa64697a5c3fbca69d768a15d09e7636b"
   solver-name = "gps-cdcl"
   solver-version = 1

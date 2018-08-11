@@ -29,7 +29,14 @@ func (repo *MemberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
 	var result *entity.Membro
 	err := repo.col.FindId(bson.ObjectIdHex(id.String())).One(&result)
 	if err != nil {
+		if err.Error() == "not found" {
+			return nil, MemberNotFound
+		}
 		return nil, err
 	}
 	return result, nil
+}
+
+func (repo *MemberRepository) InsertMember(membro *entity.Membro) (entity.ID, error) {
+	return entity.NewID(), nil
 }

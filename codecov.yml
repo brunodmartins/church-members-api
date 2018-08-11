@@ -1,0 +1,3 @@
+ignore:
+  - "/member/memberMongoRepository.go"
+  - "/infra"

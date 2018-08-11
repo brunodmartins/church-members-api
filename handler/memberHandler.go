@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/BrunoDM2943/church-members-api/entity"
 	"github.com/BrunoDM2943/church-members-api/member"
 	"github.com/gin-gonic/gin"
@@ -29,11 +31,17 @@ func (handler *MemberHandler) getMembers(c *gin.Context) {
 
 func (handler *MemberHandler) getMember(c *gin.Context) {
 	id, _ := c.Params.Get("id")
-	member, err := handler.service.FindByID(entity.StringToID(id))
+	if !entity.IsValidID(id) {
+		c.JSON(http.StatusBadRequest, "Invalid ID")
+		return
+	}
+	m, err := handler.service.FindByID(entity.StringToID(id))
 	if err != nil {
-		c.JSON(500, err.Error())
+		if err == member.MemberNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+		}
 	} else {
-		c.JSON(200, member)
+		c.JSON(http.StatusOK, m)
 	}
 	return
 }

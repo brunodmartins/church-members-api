@@ -1,3 +1,4 @@
 ignore:
   - "/member/memberMongoRepository.go"
+  - "/utils/utilsMongoRepository.go"
   - "/infra"

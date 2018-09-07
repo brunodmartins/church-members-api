@@ -18,18 +18,13 @@ func NewMemberHandler(service member.Reader) *MemberHandler {
 	}
 }
 
-func (handler *MemberHandler) SetUpRoutes(routes *gin.Engine) {
-	routes.GET("/members", handler.getMembers)
-	routes.GET("/members/:id", handler.getMember)
-}
-
-func (handler *MemberHandler) getMembers(c *gin.Context) {
+func (handler *MemberHandler) GetMembers(c *gin.Context) {
 	list, _ := handler.service.FindAll()
 	c.JSON(200, list)
 	return
 }
 
-func (handler *MemberHandler) getMember(c *gin.Context) {
+func (handler *MemberHandler) GetMember(c *gin.Context) {
 	id, _ := c.Params.Get("id")
 	if !entity.IsValidID(id) {
 		c.JSON(http.StatusBadRequest, "Invalid ID")

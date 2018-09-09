@@ -21,8 +21,8 @@ func main() {
 
 	memberHandler := handler.NewMemberHandler(membersService)
 	utilsHandler := handler.NewUtilHandler(*utilsService)
-	r.GET("/members", memberHandler.GetMembers)
-	r.GET("/members/:id", memberHandler.GetMember)
-	r.GET("/utils/aniversariantesMes", utilsHandler.GetBirthDayMembers)
+
+	memberHandler.SetUpRoutes(r)
+	utilsHandler.SetUpRoutes(r)
 	r.Run()
 }

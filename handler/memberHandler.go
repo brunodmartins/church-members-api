@@ -18,6 +18,11 @@ func NewMemberHandler(service member.Reader) *MemberHandler {
 	}
 }
 
+func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
+	r.GET("/members", handler.GetMembers)
+	r.GET("/members/:id", handler.GetMember)
+}
+
 func (handler *MemberHandler) GetMembers(c *gin.Context) {
 	list, _ := handler.service.FindAll()
 	c.JSON(200, list)

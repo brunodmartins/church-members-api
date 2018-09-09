@@ -11,6 +11,10 @@ type UtilHandler struct {
 	service utils.UtilsService
 }
 
+func (handler *UtilHandler) SetUpRoutes(r *gin.Engine) {
+	r.GET("/utils/aniversariantesMes", handler.GetBirthDayMembers)
+}
+
 func NewUtilHandler(service utils.UtilsService) *UtilHandler {
 	return &UtilHandler{
 		service: service,

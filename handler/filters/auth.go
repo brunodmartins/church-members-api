@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 
@@ -60,9 +61,26 @@ func NewAuthFilter() *AuthFilter {
 	}
 }
 
+func (auth *AuthFilter) checkAccessToken(token string) error {
+	accessToken := os.Getenv("CHURCH_MEMBERS_ACCESS_TOKEN")
+	switch {
+	case accessToken == "":
+		return errors.New("Accces token empty")
+	case token == accessToken:
+		return nil
+	default:
+		return errors.New("Access token invalid")
+	}
+}
+
 func (auth *AuthFilter) Validate() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		err := auth.jwtmiddleware.CheckJWT(c.Writer, c.Request)
+		var err error
+		if c.GetHeader("X-Token") != "" {
+			err = auth.checkAccessToken(c.GetHeader("X-Token"))
+		} else {
+			err = auth.jwtmiddleware.CheckJWT(c.Writer, c.Request)
+		}
 		if err != nil {
 			fmt.Println(err)
 			c.Abort()

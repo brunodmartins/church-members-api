@@ -21,5 +21,9 @@ func (s *MemberService) FindByID(id entity.ID) (*entity.Membro, error) {
 }
 
 func (s *MemberService) Insert(membro *entity.Membro) (entity.ID, error) {
-	return s.repo.Insert(membro);
+	return s.repo.Insert(membro)
+}
+
+func (s *MemberService) Search(text string) ([]*entity.Membro, error) {
+	return s.repo.Search(text)
 }

@@ -29,3 +29,16 @@ func TestFindMember(t *testing.T) {
 		t.Error("Member not found")
 	}
 }
+
+func TestSaveMember(t *testing.T){
+	repo := NewMemberInMemoryRepository()
+	service := NewMemberService(repo)
+	membro := &entity.Membro{}
+	id, err := service.Insert(membro)
+	if err != nil {
+		t.Fail()
+	}
+	if !entity.IsValidID(id.String()){
+		t.Fail()
+	}
+}

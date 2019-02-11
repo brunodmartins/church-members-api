@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -157,4 +158,43 @@ func TestPostMemberSucess(t *testing.T) {
 	if w.Code != http.StatusCreated {
 		t.Fail()
 	}
+}
+
+func TestSearch2Results(t *testing.T) {
+	r := gin.Default()
+	repo := member.NewMemberInMemoryRepository()
+	service := member.NewMemberService(repo)
+	memberHandler := NewMemberHandler(service)
+
+	_, _ = repo.Insert(&entity.Membro{
+		Pessoa: entity.Pessoa{
+			Nome: "Bruno",
+			Sobrenome: "Damasceno Martins",
+		},
+	})
+
+	_, _ = repo.Insert(&entity.Membro{
+		Pessoa: entity.Pessoa{
+			Nome: "Teste",
+			Sobrenome: "Brutal",
+		},
+	})
+
+
+
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/members?q=Bru", nil)
+	r.ServeHTTP(w,req)
+	result := make([]*entity.Membro, 0)
+	if w.Code != http.StatusOK {
+		t.Fail()
+	}
+	_ = json.NewDecoder(w.Body).Decode(&result)
+	if len(result) != 2 {
+		t.Fail()
+	}
+
+
 }

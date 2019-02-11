@@ -2,6 +2,7 @@ package member
 
 import (
 	"github.com/BrunoDM2943/church-members-api/entity"
+	"strings"
 )
 
 type MemberInMemoryRepository struct {
@@ -39,4 +40,16 @@ func (repo *MemberInMemoryRepository) FindByID(id entity.ID) (*entity.Membro, er
 		return nil, MemberNotFound
 	}
 	return result, nil
+}
+
+func (repo *MemberInMemoryRepository) Search(text string) ([]*entity.Membro, error) {
+	result := make([]*entity.Membro, 0)
+	for _, m := range repo.dataSet {
+		containsName := strings.Contains(m.Pessoa.Nome, text)
+		containsSurName := strings.Contains(m.Pessoa.Sobrenome, text)
+		if containsName || containsSurName {
+			result = append(result, m)
+		}
+	}
+	return result,nil
 }

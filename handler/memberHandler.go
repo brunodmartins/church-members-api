@@ -23,12 +23,26 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	r.GET("/members", handler.GetMembers)
 	r.GET("/members/:id", handler.GetMember)
 	r.POST("/members", handler.PostMember)
+
 }
 
 func (handler *MemberHandler) GetMembers(c *gin.Context) {
-	list, _ := handler.service.FindAll()
-	c.JSON(200, list)
+	query := c.Query("q")
+	var result []*entity.Membro
+	var err error
+	if query == "" {
+		result, err = handler.service.FindAll()
+	} else {
+		result, err = handler.service.Search(query)
+	}
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		return
+	}
+	c.JSON(200, result)
 	return
+
+
 }
 
 func (handler *MemberHandler) PostMember(c *gin.Context) {
@@ -62,4 +76,8 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 		c.JSON(http.StatusOK, m)
 	}
 	return
+}
+
+func (handler *MemberHandler) SearchMember(c *gin.Context) {
+
 }

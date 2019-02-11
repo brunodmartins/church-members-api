@@ -23,6 +23,7 @@ type Service interface {
 type Reader interface {
 	FindAll() ([]*entity.Membro, error)
 	FindByID(id entity.ID) (*entity.Membro, error)
+	Search(text string) ([]*entity.Membro, error)
 }
 
 type Writer interface {

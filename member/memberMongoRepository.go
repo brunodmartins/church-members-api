@@ -37,6 +37,7 @@ func (repo *MemberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
 	return result, nil
 }
 
-func (repo *MemberRepository) InsertMember(membro *entity.Membro) (entity.ID, error) {
-	return entity.NewID(), nil
+func (repo *MemberRepository) Insert(membro *entity.Membro) (entity.ID, error) {
+	membro.ID = entity.NewID()
+	return membro.ID, repo.col.Insert(membro)
 }

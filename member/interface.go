@@ -15,13 +15,18 @@ func init() {
 	MemberError = errors.New("Member not found")
 }
 
+type Service interface {
+	Reader
+	Writer
+}
+
 type Reader interface {
 	FindAll() ([]*entity.Membro, error)
 	FindByID(id entity.ID) (*entity.Membro, error)
 }
 
 type Writer interface {
-	InsertMember(membro *entity.Membro) (entity.ID, error)
+	Insert(membro *entity.Membro) (entity.ID, error)
 }
 
 //Repository repository interface

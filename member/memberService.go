@@ -19,3 +19,7 @@ func (s *MemberService) FindAll() ([]*entity.Membro, error) {
 func (s *MemberService) FindByID(id entity.ID) (*entity.Membro, error) {
 	return s.repo.FindByID(id)
 }
+
+func (s *MemberService) Insert(membro *entity.Membro) (entity.ID, error) {
+	return s.repo.Insert(membro);
+}

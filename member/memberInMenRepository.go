@@ -18,7 +18,7 @@ func (repo *MemberInMemoryRepository) FindAll() ([]*entity.Membro, error) {
 	return repo.dataSet, nil
 }
 
-func (repo *MemberInMemoryRepository) InsertMember(membro *entity.Membro) (entity.ID, error) {
+func (repo *MemberInMemoryRepository) Insert(membro *entity.Membro) (entity.ID, error) {
 	membro.ID = entity.NewID()
 	repo.dataSet = append(repo.dataSet, membro)
 	return membro.ID, nil

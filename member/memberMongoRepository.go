@@ -1,8 +1,9 @@
 package member
 
 import (
+	"fmt"
 	"github.com/BrunoDM2943/church-members-api/entity"
-	mgo "gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -40,4 +41,18 @@ func (repo *MemberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
 func (repo *MemberRepository) Insert(membro *entity.Membro) (entity.ID, error) {
 	membro.ID = entity.NewID()
 	return membro.ID, repo.col.Insert(membro)
+}
+
+func (repo *MemberRepository) Search(text string) ([]*entity.Membro, error) {
+	var result []*entity.Membro
+	regex := bson.RegEx{fmt.Sprintf(".*%s*.",text), "i"}
+	err := repo.col.Find(
+		bson.M{
+			"$or": []bson.M{
+				{"pessoa.nome": regex},
+				{"pessoa.sobrenome": regex},
+			},
+		},
+		).Select(bson.M{}).All(&result)
+	return result, err
 }

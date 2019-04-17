@@ -53,6 +53,7 @@ func (handler *MemberHandler) PostMember(c *gin.Context) {
 	}
 	var id entity.ID
 	var err error
+	membro.Active = true
 	if id,err = handler.service.Insert(&membro); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return

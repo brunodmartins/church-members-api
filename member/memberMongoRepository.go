@@ -19,7 +19,9 @@ func NewMemberRepository(session *mgo.Session) *MemberRepository {
 
 func (repo *MemberRepository) FindAll() ([]*entity.Membro, error) {
 	var result []*entity.Membro
-	err := repo.col.Find(nil).Select(bson.M{}).All(&result)
+	err := repo.col.Find(bson.M{
+		"active": true,
+	}).Select(bson.M{}).All(&result)
 	if err != nil {
 		return nil, err
 	}

@@ -10,4 +10,5 @@ type Membro struct {
 	ImpedimentosFrequencia string   `json:"impedimentosFrequencia,omitempty" bson:"impedimentosFrequencia"`
 	Pessoa                 Pessoa   `json:"pessoa"`
 	Religiao               Religiao `json:"religiao"`
+	Active				   bool    	`json:"active,omitempty" bson:"active"`
 }

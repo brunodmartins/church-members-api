@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/BrunoDM2943/church-members-api/handler"
-	"github.com/BrunoDM2943/church-members-api/handler/filters"
 	"github.com/BrunoDM2943/church-members-api/infra"
 	"github.com/BrunoDM2943/church-members-api/member"
 	"github.com/BrunoDM2943/church-members-api/utils"
@@ -11,8 +10,8 @@ import (
 
 func main() {
 	r := gin.Default()
-	auth := filters.NewAuthFilter()
-	r.Use(auth.Validate())
+	//auth := filters.NewAuthFilter()
+	//r.Use(auth.Validate())
 	mongo := infra.NewMongoConnection()
 	con := mongo.Connect()
 

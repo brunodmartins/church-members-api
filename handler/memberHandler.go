@@ -2,9 +2,12 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin/binding"
+	"github.com/graphql-go/graphql"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
+	gql "github.com/BrunoDM2943/church-members-api/handler/graphql"
 	"github.com/BrunoDM2943/church-members-api/member"
 	"github.com/gin-gonic/gin"
 )
@@ -23,6 +26,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	r.GET("/members", handler.GetMembers)
 	r.GET("/members/:id", handler.GetMember)
 	r.POST("/members", handler.PostMember)
+	r.POST("/members/search", handler.SearchMember)
 
 }
 
@@ -80,5 +84,14 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 }
 
 func (handler *MemberHandler) SearchMember(c *gin.Context) {
+	schema := gql.CreateSchema(handler.service)
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	result := graphql.Do(graphql.Params{
+		Schema:        schema,
+		RequestString: string(body),
+		Context: c.Request.Context(),
+	})
+
+	c.JSON(200, result)
 
 }

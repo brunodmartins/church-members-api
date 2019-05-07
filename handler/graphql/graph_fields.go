@@ -8,16 +8,22 @@ var memberType = graphql.NewObject(graphql.ObjectConfig{
 		"active": &graphql.Field{
 			Type: graphql.Boolean,
 		},
+		"pessoa": &graphql.Field{
+			Type: personType,
+		},
 	},
 })
 
 var personType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "person",
 	Fields: graphql.Fields{
-		"name": &graphql.Field{
+		"nome": &graphql.Field{
 			Type: graphql.String,
 		},
-		"gender": &graphql.Field{
+		"sobrenome": &graphql.Field{
+			Type: graphql.String,
+		},
+		"sexo": &graphql.Field{
 			Type: graphql.String,
 		},
 	},

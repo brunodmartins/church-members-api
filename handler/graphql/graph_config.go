@@ -1,6 +1,6 @@
 package graphql
 
-import(
+import (
 	"github.com/BrunoDM2943/church-members-api/member"
 	"github.com/graphql-go/graphql"
 )
@@ -10,14 +10,16 @@ func CreateSchema(service member.Service) graphql.Schema {
 		Query: graphql.NewObject(graphql.ObjectConfig{
 			Name: "Query",
 			Fields: graphql.Fields{
-				"person": &graphql.Field{
-					Type: graphql.NewList(personType),
-					Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-						return nil, nil
-					},
-				},
-				"member":  &graphql.Field{
+				"member": &graphql.Field{
 					Type: graphql.NewList(memberType),
+					Args: graphql.FieldConfigArgument{
+						"sexo": &graphql.ArgumentConfig{
+							Type: graphql.String,
+						},
+						"active": &graphql.ArgumentConfig{
+							Type: graphql.Boolean,
+						},
+					},
 					Resolve: newMemberResolver(service).memberResolver,
 				},
 			},

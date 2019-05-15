@@ -1,36 +1,26 @@
 package handler
 
 import (
-	"encoding/json"
+	"github.com/BrunoDM2943/church-members-api/member/repository"
+	mock_service "github.com/BrunoDM2943/church-members-api/member/service/mock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
-	"github.com/BrunoDM2943/church-members-api/member"
 	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
 )
-
-func TestListMembers(t *testing.T) {
-	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
-	memberHandler := NewMemberHandler(service)
-	memberHandler.SetUpRoutes(r)
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/members", nil)
-	r.ServeHTTP(w, req)
-	if w.Code != 200 {
-		t.Fail()
-	}
-}
 
 func TestGetMemberBadRequest(t *testing.T) {
 	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
+
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/members/a", nil)
@@ -42,11 +32,15 @@ func TestGetMemberBadRequest(t *testing.T) {
 
 func TestGetMemberNotFound(t *testing.T) {
 	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
 	id := entity.NewID()
+
+	service.EXPECT().FindMembersByID(id).Return(nil, repository.MemberNotFound)
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/members/"+id.String(), nil)
@@ -58,12 +52,15 @@ func TestGetMemberNotFound(t *testing.T) {
 
 func TestGetMemberOK(t *testing.T) {
 	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
 	member := &entity.Membro{}
-	_, _ = repo.Insert(member)
+	member.ID = entity.NewID()
+	service.EXPECT().FindMembersByID(member.ID).Return(member, nil).AnyTimes()
 
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
@@ -76,8 +73,10 @@ func TestGetMemberOK(t *testing.T) {
 
 func TestPostMemberBadRequest(t *testing.T) {
 	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -89,11 +88,12 @@ func TestPostMemberBadRequest(t *testing.T) {
 	}
 }
 
-
 func TestPostMemberSucess(t *testing.T) {
 	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -153,48 +153,10 @@ func TestPostMemberSucess(t *testing.T) {
    "frequentaEBD": true,
    "frequentaCultoDomingo": true
 }`
+	service.EXPECT().SaveMember(gomock.Any()).Return(entity.NewID(), nil)
 	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {
 		t.Fail()
 	}
-}
-
-func TestSearch2Results(t *testing.T) {
-	r := gin.Default()
-	repo := member.NewMemberInMemoryRepository()
-	service := member.NewMemberService(repo)
-	memberHandler := NewMemberHandler(service)
-
-	_, _ = repo.Insert(&entity.Membro{
-		Pessoa: entity.Pessoa{
-			Nome: "Bruno",
-			Sobrenome: "Damasceno Martins",
-		},
-	})
-
-	_, _ = repo.Insert(&entity.Membro{
-		Pessoa: entity.Pessoa{
-			Nome: "Teste",
-			Sobrenome: "Brutal",
-		},
-	})
-
-
-
-	memberHandler.SetUpRoutes(r)
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/members?q=Bru", nil)
-	r.ServeHTTP(w,req)
-	result := make([]*entity.Membro, 0)
-	if w.Code != http.StatusOK {
-		t.Fail()
-	}
-	_ = json.NewDecoder(w.Body).Decode(&result)
-	if len(result) != 2 {
-		t.Fail()
-	}
-
-
 }

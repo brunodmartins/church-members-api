@@ -3,7 +3,8 @@ package main
 import (
 	"github.com/BrunoDM2943/church-members-api/handler"
 	mongo2 "github.com/BrunoDM2943/church-members-api/infra/mongo"
-	"github.com/BrunoDM2943/church-members-api/member"
+	"github.com/BrunoDM2943/church-members-api/member/repository"
+	"github.com/BrunoDM2943/church-members-api/member/service"
 	"github.com/BrunoDM2943/church-members-api/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +16,7 @@ func main() {
 	mongo := mongo2.NewMongoConnection()
 	con := mongo.Connect()
 
-	membersService := member.NewMemberService(member.NewMemberRepository(con))
+	membersService := service.NewMemberService(repository.NewMemberRepository(con))
 	utilsService := utils.NewUtilsService(utils.NewUtilsRepository(con))
 
 	memberHandler := handler.NewMemberHandler(membersService)

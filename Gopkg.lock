@@ -3,21 +3,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:48580cc50222bd7e64159b6d70a7489d569a10e6b197a91ce87893810817dc74"
-  name = "github.com/BrunoDM2943/church-members-api"
-  packages = [
-    "entity",
-    "handler",
-    "handler/filters",
-    "infra",
-    "member",
-    "utils",
-  ]
-  pruneopts = "UT"
-  revision = "3cfbfc980784e9124ba283148a7cf018bb9a78de"
-
-[[projects]]
-  branch = "master"
   digest = "1:e4fd8a4041e47ec6cb6c38ad4baf4f1f37278c7ba23625905147a5823885787a"
   name = "github.com/auth0/go-jwt-middleware"
   packages = ["."]
@@ -51,6 +36,14 @@
   pruneopts = "UT"
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
+
+[[projects]]
+  digest = "1:be408f349cae090a7c17a279633d6e62b00068e64af66a582cae0983de8890ea"
+  name = "github.com/golang/mock"
+  packages = ["gomock"]
+  pruneopts = "UT"
+  revision = "9fa652df1129bef0e734c9cf9bf6dbae9ef3b9fa"
+  version = "1.3.1"
 
 [[projects]]
   digest = "1:15042ad3498153684d09f393bbaec6b216c8eec6d61f63dff711de7d64ed8861"
@@ -138,16 +131,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/BrunoDM2943/church-members-api/entity",
-    "github.com/BrunoDM2943/church-members-api/handler",
-    "github.com/BrunoDM2943/church-members-api/handler/filters",
-    "github.com/BrunoDM2943/church-members-api/infra",
-    "github.com/BrunoDM2943/church-members-api/member",
-    "github.com/BrunoDM2943/church-members-api/utils",
     "github.com/auth0/go-jwt-middleware",
     "github.com/dgrijalva/jwt-go",
     "github.com/gin-gonic/gin",
     "github.com/gin-gonic/gin/binding",
+    "github.com/golang/mock/gomock",
     "github.com/graphql-go/graphql",
     "gopkg.in/mgo.v2",
     "gopkg.in/mgo.v2/bson",

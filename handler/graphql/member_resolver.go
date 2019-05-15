@@ -1,20 +1,20 @@
 package graphql
 
 import (
-	"github.com/BrunoDM2943/church-members-api/member"
+	"github.com/BrunoDM2943/church-members-api/member/service"
 	"github.com/graphql-go/graphql"
 )
 
 type memberResolver struct {
-	service member.Service
+	service service.IMemberService
 }
 
-func newMemberResolver(service member.Service) memberResolver {
+func newMemberResolver(service service.IMemberService) memberResolver {
 	return memberResolver{
 		service,
 	}
 }
 
 func (this memberResolver) memberResolver(params graphql.ResolveParams) (interface{}, error) {
-	return this.service.FindAll(params.Args)
+	return this.service.FindMembers(params.Args)
 }

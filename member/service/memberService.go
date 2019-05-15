@@ -1,6 +1,8 @@
 package service
 
 import (
+	"time"
+
 	"github.com/BrunoDM2943/church-members-api/entity"
 	"github.com/BrunoDM2943/church-members-api/infra/mongo"
 	"github.com/BrunoDM2943/church-members-api/member/repository"
@@ -10,6 +12,7 @@ type IMemberService interface {
 	FindMembers(filters map[string]interface{}) ([]*entity.Membro, error)
 	FindMembersByID(id entity.ID) (*entity.Membro, error)
 	SaveMember(member *entity.Membro) (entity.ID, error)
+	FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error)
 }
 
 type memberService struct {
@@ -33,7 +36,6 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*entity.M
 		queryFilters.AddFilter("active", active.(bool))
 	}
 
-
 	return s.repo.FindAll(queryFilters)
 }
 
@@ -43,4 +45,8 @@ func (s *memberService) FindMembersByID(id entity.ID) (*entity.Membro, error) {
 
 func (s *memberService) SaveMember(member *entity.Membro) (entity.ID, error) {
 	return s.repo.Insert(member)
+}
+
+func (s *memberService) FindMonthBirthday(month time.Time) ([]*entity.Pessoa, error) {
+	return s.repo.FindMonthBirthday(month)
 }

@@ -8,6 +8,7 @@ import (
 	entity "github.com/BrunoDM2943/church-members-api/entity"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+	time "time"
 )
 
 // MockIMemberService is a mock of IMemberService interface
@@ -76,4 +77,19 @@ func (m *MockIMemberService) SaveMember(member *entity.Membro) (entity.ID, error
 func (mr *MockIMemberServiceMockRecorder) SaveMember(member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveMember", reflect.TypeOf((*MockIMemberService)(nil).SaveMember), member)
+}
+
+// FindMonthBirthday mocks base method
+func (m *MockIMemberService) FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindMonthBirthday", date)
+	ret0, _ := ret[0].([]*entity.Pessoa)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindMonthBirthday indicates an expected call of FindMonthBirthday
+func (mr *MockIMemberServiceMockRecorder) FindMonthBirthday(date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMonthBirthday", reflect.TypeOf((*MockIMemberService)(nil).FindMonthBirthday), date)
 }

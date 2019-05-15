@@ -1,10 +1,12 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin/binding"
-	"github.com/graphql-go/graphql"
 	"io/ioutil"
 	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin/binding"
+	"github.com/graphql-go/graphql"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	gql "github.com/BrunoDM2943/church-members-api/handler/graphql"
@@ -27,6 +29,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	r.GET("/members/:id", handler.GetMember)
 	r.POST("/members", handler.PostMember)
 	r.POST("/members/search", handler.SearchMember)
+	r.GET("/utils/members/aniversariantes", handler.GetBirthDayMembers)
 
 }
 
@@ -39,7 +42,7 @@ func (handler *MemberHandler) PostMember(c *gin.Context) {
 	var id entity.ID
 	var err error
 	membro.Active = true
-	if id,err = handler.service.SaveMember(&membro); err != nil {
+	if id, err = handler.service.SaveMember(&membro); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return
 	}
@@ -70,8 +73,20 @@ func (handler *MemberHandler) SearchMember(c *gin.Context) {
 	result := graphql.Do(graphql.Params{
 		Schema:        schema,
 		RequestString: string(body),
-		Context: c.Request.Context(),
+		Context:       c.Request.Context(),
 	})
 
 	c.JSON(200, result)
+}
+
+func (handler *MemberHandler) GetBirthDayMembers(c *gin.Context) {
+	date := time.Now()
+
+	list, err := handler.service.FindMonthBirthday(date)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+	c.JSON(200, list)
+	return
 }

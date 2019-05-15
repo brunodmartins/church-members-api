@@ -9,6 +9,7 @@ import (
 	mongo "github.com/BrunoDM2943/church-members-api/infra/mongo"
 	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+	time "time"
 )
 
 // MockIMemberRepository is a mock of IMemberRepository interface
@@ -92,4 +93,19 @@ func (m *MockIMemberRepository) Search(text string) ([]*entity.Membro, error) {
 func (mr *MockIMemberRepositoryMockRecorder) Search(text interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockIMemberRepository)(nil).Search), text)
+}
+
+// FindMonthBirthday mocks base method
+func (m *MockIMemberRepository) FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindMonthBirthday", date)
+	ret0, _ := ret[0].([]*entity.Pessoa)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindMonthBirthday indicates an expected call of FindMonthBirthday
+func (mr *MockIMemberRepositoryMockRecorder) FindMonthBirthday(date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMonthBirthday", reflect.TypeOf((*MockIMemberRepository)(nil).FindMonthBirthday), date)
 }

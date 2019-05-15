@@ -17,11 +17,9 @@ func NewMemberRepository(session *mgo.Session) *MemberRepository {
 	}
 }
 
-func (repo *MemberRepository) FindAll() ([]*entity.Membro, error) {
+func (repo *MemberRepository) FindAll(filters map[string]interface {}) ([]*entity.Membro, error) {
 	var result []*entity.Membro
-	err := repo.col.Find(bson.M{
-		"active": true,
-	}).Select(bson.M{}).All(&result)
+	err := repo.col.Find(filters).Select(bson.M{}).All(&result)
 	if err != nil {
 		return nil, err
 	}

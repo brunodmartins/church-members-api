@@ -4,12 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/BrunoDM2943/church-members-api/entity"
+	"github.com/BrunoDM2943/church-members-api/infra/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
 type IMemberRepository interface {
-	FindAll(filters map[string]interface {}) ([]*entity.Membro, error)
+	FindAll(filters mongo.QueryFilters) ([]*entity.Membro, error)
 	FindByID(id entity.ID) (*entity.Membro, error)
 	Insert(membro *entity.Membro) (entity.ID, error)
 	Search(text string) ([]*entity.Membro, error)
@@ -29,7 +30,7 @@ func NewMemberRepository(session *mgo.Session) *memberRepository {
 	}
 }
 
-func (repo *memberRepository) FindAll(filters map[string]interface {}) ([]*entity.Membro, error) {
+func (repo *memberRepository) FindAll(filters mongo.QueryFilters) ([]*entity.Membro, error) {
 	var result []*entity.Membro
 	err := repo.col.Find(filters).Select(bson.M{}).All(&result)
 	if err != nil {

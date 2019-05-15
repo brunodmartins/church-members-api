@@ -74,5 +74,4 @@ func (handler *MemberHandler) SearchMember(c *gin.Context) {
 	})
 
 	c.JSON(200, result)
-
 }

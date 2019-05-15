@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/BrunoDM2943/church-members-api/entity"
+	"github.com/BrunoDM2943/church-members-api/infra/mongo"
 	mock_repository "github.com/BrunoDM2943/church-members-api/member/repository/mock"
 	"github.com/golang/mock/gomock"
 	"testing"
@@ -56,4 +57,21 @@ func TestSaveMember(t *testing.T){
 	if !entity.IsValidID(id.String()){
 		t.Fail()
 	}
+}
+
+func TestFindMembersWithFilters(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	service := NewMemberService(repo)
+	filters := mongo.QueryFilters{}
+	filters.AddFilter("active", true)
+	filters.AddFilter("pessoa.sexo", "F")
+
+	repo.EXPECT().FindAll(gomock.Eq(filters)).Return(nil, nil).AnyTimes()
+
+	service.FindMembers(map[string]interface{}{
+		"sexo": "F",
+		"active": true,
+	})
 }

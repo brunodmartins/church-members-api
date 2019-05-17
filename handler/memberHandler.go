@@ -1,47 +1,35 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin/binding"
+	"io/ioutil"
 	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin/binding"
+	"github.com/graphql-go/graphql"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
-	"github.com/BrunoDM2943/church-members-api/member"
+	gql "github.com/BrunoDM2943/church-members-api/handler/graphql"
+	repo "github.com/BrunoDM2943/church-members-api/member/repository"
+	member "github.com/BrunoDM2943/church-members-api/member/service"
 	"github.com/gin-gonic/gin"
 )
 
 type MemberHandler struct {
-	service member.Service
+	service member.IMemberService
 }
 
-func NewMemberHandler(service member.Service) *MemberHandler {
+func NewMemberHandler(service member.IMemberService) *MemberHandler {
 	return &MemberHandler{
 		service: service,
 	}
 }
 
 func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
-	r.GET("/members", handler.GetMembers)
 	r.GET("/members/:id", handler.GetMember)
 	r.POST("/members", handler.PostMember)
-
-}
-
-func (handler *MemberHandler) GetMembers(c *gin.Context) {
-	query := c.Query("q")
-	var result []*entity.Membro
-	var err error
-	if query == "" {
-		result, err = handler.service.FindAll()
-	} else {
-		result, err = handler.service.Search(query)
-	}
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, err)
-		return
-	}
-	c.JSON(200, result)
-	return
-
+	r.POST("/members/search", handler.SearchMember)
+	r.GET("/utils/members/aniversariantes", handler.GetBirthDayMembers)
 
 }
 
@@ -54,7 +42,7 @@ func (handler *MemberHandler) PostMember(c *gin.Context) {
 	var id entity.ID
 	var err error
 	membro.Active = true
-	if id,err = handler.service.Insert(&membro); err != nil {
+	if id, err = handler.service.SaveMember(&membro); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return
 	}
@@ -68,9 +56,9 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "Invalid ID")
 		return
 	}
-	m, err := handler.service.FindByID(entity.StringToID(id))
+	m, err := handler.service.FindMembersByID(entity.StringToID(id))
 	if err != nil {
-		if err == member.MemberNotFound {
+		if err == repo.MemberNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
 		}
 	} else {
@@ -80,5 +68,25 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 }
 
 func (handler *MemberHandler) SearchMember(c *gin.Context) {
+	schema := gql.CreateSchema(handler.service)
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	result := graphql.Do(graphql.Params{
+		Schema:        schema,
+		RequestString: string(body),
+		Context:       c.Request.Context(),
+	})
 
+	c.JSON(200, result)
+}
+
+func (handler *MemberHandler) GetBirthDayMembers(c *gin.Context) {
+	date := time.Now()
+
+	list, err := handler.service.FindMonthBirthday(date)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+	c.JSON(200, list)
+	return
 }

@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"github.com/BrunoDM2943/church-members-api/entity"
+	"github.com/bearbin/go-age"
 	"github.com/graphql-go/graphql"
 )
 
@@ -35,6 +36,12 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"sexo": &graphql.Field{
 			Type: graphql.String,
+		},
+		"age": &graphql.Field{
+			Type: graphql.Int,
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error){
+				return age.Age(p.Source.(entity.Pessoa).DtNascimento), nil
+			},
 		},
 	},
 })

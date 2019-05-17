@@ -28,3 +28,7 @@ type Pessoa struct {
 	Contato          Contato   `json:"contato"`
 	Endereco         Endereco  `json:"endereco"`
 }
+
+func (pessoa Pessoa) GetFullName() string {
+	return pessoa.Nome + " " + pessoa.Sobrenome
+}

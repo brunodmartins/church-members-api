@@ -9,6 +9,13 @@ import (
 var memberType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "member",
 	Fields: graphql.Fields{
+		"_id": &graphql.Field{
+			Type: graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				member := p.Source.(*entity.Membro)
+				return member.ID.String(), nil
+			},
+		},
 		"active": &graphql.Field{
 			Type: graphql.Boolean,
 		},
@@ -39,7 +46,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"age": &graphql.Field{
 			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (i interface{}, e error){
+			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
 				return age.Age(p.Source.(entity.Pessoa).DtNascimento), nil
 			},
 		},

@@ -75,7 +75,10 @@ func (handler *MemberHandler) SearchMember(c *gin.Context) {
 		RequestString: string(body),
 		Context:       c.Request.Context(),
 	})
-
+	if result.HasErrors() {
+		c.JSON(500, result.Errors)
+		return
+	}
 	c.JSON(200, result)
 }
 

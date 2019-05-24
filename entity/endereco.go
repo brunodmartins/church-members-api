@@ -1,5 +1,7 @@
 package entity
 
+import "fmt"
+
 const (
 	//CASA const
 	CASA string = "C"
@@ -15,4 +17,8 @@ type Endereco struct {
 	Logradouro string `json:"logradouro"`
 	Bairro     string `json:"bairro"`
 	Numero     int    `json:"numero"`
+}
+
+func (this Endereco) GetFormatted() string {
+	return fmt.Sprintf("%s, %d - %s", this.Logradouro, this.Numero, this.Bairro)
 }

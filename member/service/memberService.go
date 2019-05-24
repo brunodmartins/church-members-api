@@ -1,11 +1,13 @@
 package service
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	"github.com/BrunoDM2943/church-members-api/infra/mongo"
 	"github.com/BrunoDM2943/church-members-api/member/repository"
+	"gopkg.in/mgo.v2/bson"
 )
 
 type IMemberService interface {
@@ -34,6 +36,14 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*entity.M
 
 	if active := filters["active"]; active != nil {
 		queryFilters.AddFilter("active", active.(bool))
+	}
+
+	if name := filters["name"]; name != nil {
+		regex := bson.RegEx{fmt.Sprintf(".*%s*.", name), "i"}
+		queryFilters.AddFilter("$or", []bson.M{
+			{"pessoa.nome": regex},
+			{"pessoa.sobrenome": regex},
+		})
 	}
 
 	return s.repo.FindAll(queryFilters)

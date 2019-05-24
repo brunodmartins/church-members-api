@@ -19,6 +19,9 @@ func CreateSchema(service service.IMemberService) graphql.Schema {
 						"active": &graphql.ArgumentConfig{
 							Type: graphql.Boolean,
 						},
+						"name": &graphql.ArgumentConfig{
+							Type: graphql.String,
+						},
 					},
 					Resolve: newMemberResolver(service).memberResolver,
 				},

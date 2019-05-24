@@ -2,12 +2,13 @@ package handler
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/member/repository"
-	mock_service "github.com/BrunoDM2943/church-members-api/member/service/mock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/BrunoDM2943/church-members-api/member/repository"
+	mock_service "github.com/BrunoDM2943/church-members-api/member/service/mock"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	"github.com/gin-gonic/gin"
@@ -263,3 +264,29 @@ func TestPostMemberSearch(t *testing.T) {
 	}
 }
 
+func TestPostMemberSearchError(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	body := `
+	{
+		member(sexo:"M", active:false){
+				pessoa{
+					nome,
+					sobreno
+					sexo
+				}
+		}
+	}`
+	req, _ := http.NewRequest("POST", "/members/search", strings.NewReader(body))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusInternalServerError {
+		t.Fail()
+	}
+}

@@ -10,11 +10,13 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+//go:generate mockgen -source=./memberService.go -destination=./mock/memberService_mock.go
 type IMemberService interface {
 	FindMembers(filters map[string]interface{}) ([]*entity.Membro, error)
 	FindMembersByID(id entity.ID) (*entity.Membro, error)
 	SaveMember(member *entity.Membro) (entity.ID, error)
 	FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error)
+	ChangeStatus(id entity.ID, status bool, reason string) error
 }
 
 type memberService struct {
@@ -59,4 +61,8 @@ func (s *memberService) SaveMember(member *entity.Membro) (entity.ID, error) {
 
 func (s *memberService) FindMonthBirthday(month time.Time) ([]*entity.Pessoa, error) {
 	return s.repo.FindMonthBirthday(month)
+}
+
+func (s *memberService) ChangeStatus(id entity.ID, status bool, reason string) error {
+	return nil
 }

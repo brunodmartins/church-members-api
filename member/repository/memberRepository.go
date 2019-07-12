@@ -102,12 +102,13 @@ func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Pesso
 
 func (repo *memberRepository) UpdateStatus(ID entity.ID, status bool) error {
 	return repo.col.UpdateId(bson.ObjectIdHex(ID.String()), bson.M{
-		"active": status,
-	})
+		"$set": bson.M{
+			"active": status,
+		}})
 }
 
 func (repo *memberRepository) GenerateStatusHistory(id entity.ID, status bool, reason string, date time.Time) error {
-	return repo.col.Insert(bson.M{
+	return repo.colHistory.Insert(bson.M{
 		"member_id":    id,
 		"status":       status,
 		"reason":       reason,

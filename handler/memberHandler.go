@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -19,6 +20,11 @@ type MemberHandler struct {
 	service member.IMemberService
 }
 
+type putStatus struct {
+	Active *bool  `json:"active" binding:"required"`
+	Reason string `json:"reason" binding:"required"`
+}
+
 func NewMemberHandler(service member.IMemberService) *MemberHandler {
 	return &MemberHandler{
 		service: service,
@@ -30,7 +36,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	r.POST("/members", handler.PostMember)
 	r.POST("/members/search", handler.SearchMember)
 	r.GET("/utils/members/aniversariantes", handler.GetBirthDayMembers)
-
+	r.PUT("/members/:id/status", handler.PutStatus)
 }
 
 func (handler *MemberHandler) PostMember(c *gin.Context) {
@@ -92,4 +98,33 @@ func (handler *MemberHandler) GetBirthDayMembers(c *gin.Context) {
 	}
 	c.JSON(200, list)
 	return
+}
+
+func (handler *MemberHandler) PutStatus(c *gin.Context) {
+	request := make(map[string]interface{})
+	id, _ := c.Params.Get("id")
+	if !entity.IsValidID(id) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &request)
+	if request["reason"] == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Reason required"})
+		return
+	}
+	if request["active"] == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Active required"})
+		return
+	}
+
+	err := handler.service.ChangeStatus(entity.StringToID(id),
+		request["active"].(bool), request["reason"].(string))
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error changing status", "error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Member status changed"})
+
 }

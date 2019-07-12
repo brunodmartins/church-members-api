@@ -290,3 +290,39 @@ func TestPostMemberSearchError(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestPutStatus(t *testing.T) {
+	type data struct {
+		url        string
+		body       string
+		statusCode int
+	}
+	id := entity.NewID()
+	urlWithID := "/members/" + id.String() + "/status"
+	table := []data{
+		data{"/members/X/status", "", http.StatusBadRequest},
+		data{urlWithID, `{"active":false}`, http.StatusBadRequest},
+		data{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
+		data{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
+		data{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
+
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	service.EXPECT().ChangeStatus(id, false, "exited").Return(errors.New("Error"))
+	service.EXPECT().ChangeStatus(id, true, "Comed back").Return(nil)
+
+	memberHandler.SetUpRoutes(r)
+
+	for _, test := range table {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("PUT", test.url, strings.NewReader(test.body))
+		r.ServeHTTP(w, req)
+		if w.Code != test.statusCode {
+			t.Errorf("Failed for test: %s, %s, %d", test.url, test.body, test.statusCode)
+		}
+	}
+}

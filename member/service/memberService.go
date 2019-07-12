@@ -63,6 +63,8 @@ func (s *memberService) FindMonthBirthday(month time.Time) ([]*entity.Pessoa, er
 	return s.repo.FindMonthBirthday(month)
 }
 
-func (s *memberService) ChangeStatus(id entity.ID, status bool, reason string) error {
-	return nil
+func (s *memberService) ChangeStatus(ID entity.ID, status bool, reason string) error {
+	err := s.repo.UpdateStatus(ID, status)
+	s.repo.GenerateStatusHistory(ID, status, reason, time.Now())
+	return err
 }

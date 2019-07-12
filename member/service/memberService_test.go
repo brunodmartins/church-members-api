@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -8,6 +9,7 @@ import (
 	"github.com/BrunoDM2943/church-members-api/infra/mongo"
 	mock_repository "github.com/BrunoDM2943/church-members-api/member/repository/mock"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -82,4 +84,28 @@ func TestFindMembersWithFilters(t *testing.T) {
 		"active": true,
 		"name":   "Bruno",
 	})
+}
+
+func TestUpdateStatus(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	service := NewMemberService(repo)
+	id := entity.NewID()
+	repo.EXPECT().UpdateStatus(id, true).Return(nil)
+	repo.EXPECT().GenerateStatusHistory(id, true, "Exited", gomock.Any()).Return(nil)
+	err := service.ChangeStatus(id, true, "Exited")
+	assert.Nil(t, err, "Error not nil")
+}
+
+func TestUpdateStatusError(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	service := NewMemberService(repo)
+	id := entity.NewID()
+	repo.EXPECT().UpdateStatus(id, true).Return(errors.New("Error"))
+	repo.EXPECT().GenerateStatusHistory(id, true, "Exited", gomock.Any()).Return(nil)
+	err := service.ChangeStatus(id, true, "Exited")
+	assert.NotNil(t, err, "Error not raised")
 }

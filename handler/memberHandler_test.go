@@ -291,7 +291,7 @@ func TestPostMemberSearchError(t *testing.T) {
 	}
 }
 
-func TestPutStatusError(t *testing.T) {
+func TestPutStatus(t *testing.T) {
 	type data struct {
 		url        string
 		body       string
@@ -303,7 +303,8 @@ func TestPutStatusError(t *testing.T) {
 		data{"/members/X/status", "", http.StatusBadRequest},
 		data{urlWithID, `{"active":false}`, http.StatusBadRequest},
 		data{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
-		data{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError}}
+		data{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
+		data{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
 
 	r := gin.Default()
 	ctrl := gomock.NewController(t)
@@ -312,6 +313,7 @@ func TestPutStatusError(t *testing.T) {
 	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	service.EXPECT().ChangeStatus(id, false, "exited").Return(errors.New("Error"))
+	service.EXPECT().ChangeStatus(id, true, "Comed back").Return(nil)
 
 	memberHandler.SetUpRoutes(r)
 
@@ -323,5 +325,4 @@ func TestPutStatusError(t *testing.T) {
 			t.Errorf("Failed for test: %s, %s, %d", test.url, test.body, test.statusCode)
 		}
 	}
-
 }

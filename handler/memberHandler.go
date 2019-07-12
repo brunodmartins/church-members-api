@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -101,20 +101,25 @@ func (handler *MemberHandler) GetBirthDayMembers(c *gin.Context) {
 }
 
 func (handler *MemberHandler) PutStatus(c *gin.Context) {
-	var request putStatus
-
+	request := make(map[string]interface{})
 	id, _ := c.Params.Get("id")
 	if !entity.IsValidID(id) {
-		c.JSON(http.StatusBadRequest, "Invalid ID")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	if err := c.ShouldBindWith(&request, binding.JSON); err != nil {
-		fmt.Println(request)
-		fmt.Println(err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	body, _ := ioutil.ReadAll(c.Request.Body)
+	json.Unmarshal(body, &request)
+	if request["reason"] == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Reason required"})
 		return
 	}
-	err := handler.service.ChangeStatus(entity.StringToID(id), *request.Active, request.Reason)
+	if request["active"] == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Active required"})
+		return
+	}
+
+	err := handler.service.ChangeStatus(entity.StringToID(id),
+		request["active"].(bool), request["reason"].(string))
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error changing status", "error": err.Error()})

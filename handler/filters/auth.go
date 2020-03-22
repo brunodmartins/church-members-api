@@ -75,6 +75,9 @@ func (auth *AuthFilter) checkAccessToken(token string) error {
 
 func (auth *AuthFilter) Validate() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if c.Request.URL.EscapedPath() == "/ping" {
+			return
+		}
 		var err error
 		if c.GetHeader("X-Token") != "" {
 			err = auth.checkAccessToken(c.GetHeader("X-Token"))

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -62,7 +62,7 @@ func NewAuthFilter() *AuthFilter {
 }
 
 func (auth *AuthFilter) checkAccessToken(token string) error {
-	accessToken := os.Getenv("CHURCH_MEMBERS_ACCESS_TOKEN")
+	accessToken := viper.GetString("auth.token")
 	switch {
 	case accessToken == "":
 		return errors.New("Accces token empty")

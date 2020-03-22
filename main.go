@@ -9,6 +9,7 @@ import (
 	mongo2 "github.com/BrunoDM2943/church-members-api/infra/mongo"
 	"github.com/BrunoDM2943/church-members-api/member/repository"
 	"github.com/BrunoDM2943/church-members-api/member/service"
+	"github.com/BrunoDM2943/church-members-api/reports"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
@@ -29,10 +30,13 @@ func main() {
 	}
 
 	membersService := service.NewMemberService(repository.NewMemberRepository(con))
+	reportGenerator := reports.NewReportsGenerator(membersService)
 
 	memberHandler := handler.NewMemberHandler(membersService)
+	reportHandler := handler.NewReportHandler(reportGenerator)
 
 	memberHandler.SetUpRoutes(r)
+	reportHandler.SetUpRoutes(r)
 	r.GET("/ping", func(context *gin.Context) {
 		context.JSON(200, "pong")
 	})

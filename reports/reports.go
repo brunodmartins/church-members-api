@@ -4,11 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/csv"
-	"time"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	member "github.com/BrunoDM2943/church-members-api/member/service"
-	"github.com/sirupsen/logrus"
 )
 
 //go:generate mockgen -source=./reports.go -destination=./mock/reports_mock.go
@@ -19,20 +17,21 @@ type ReportsGenerator interface {
 	//MariageReport() ([]byte, error)
 }
 
-type ReportService struct {
+type reportService struct {
 	memberService member.IMemberService
-	repository    ReportRepository
 }
 
-func NewReportsGenerator(memberService member.IMemberService, repository ReportRepository) ReportsGenerator {
-	return ReportService{
+func NewReportsGenerator(memberService member.IMemberService) ReportsGenerator {
+	return reportService{
 		memberService,
-		repository,
 	}
 }
 
-func (report ReportService) BirthdayReport() ([]byte, error) {
-	members, err := report.repository.FindMonthBirthday(time.Now())
+func (report reportService) BirthdayReport() ([]byte, error) {
+
+	members, err := report.memberService.FindMembers(map[string]interface{}{
+		"active": true,
+	})
 
 	if err != nil {
 		return nil, err
@@ -43,23 +42,17 @@ func (report ReportService) BirthdayReport() ([]byte, error) {
 	buffer := bufio.NewWriter(byteArr)
 	writter := csv.NewWriter(buffer)
 	writter.WriteAll(data)
-
-	if writter.Error() != nil {
-		logrus.Error("Error generating CSV", writter.Error())
-		return nil, writter.Error()
-	}
-
 	return byteArr.Bytes(), nil
 }
 
-func transformToCSVData(members []*entity.Pessoa) [][]string {
+func transformToCSVData(members []*entity.Membro) [][]string {
 	data := [][]string{}
 	data = append(data, []string{"Nome", "Data"})
 
 	for _, member := range members {
 		data = append(data, []string{
-			member.GetFullName(),
-			member.DtNascimento.Format("02/01/2006"),
+			member.Pessoa.GetFullName(),
+			member.Pessoa.DtNascimento.Format("02/01/2006"),
 		})
 	}
 

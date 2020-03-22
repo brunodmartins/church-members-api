@@ -20,6 +20,10 @@ func init() {
 }
 
 func wrapEnvVariables() {
+	viper.SetEnvPrefix("VPR")
+	viper.BindEnv("CHURCH_MEMBERS_DATABASE_URL")
+	viper.BindEnv("CHURCH_MEMBERS_ACCESS_TOKEN")
+
 	viper.Set("mongo.url", viper.GetString("CHURCH_MEMBERS_DATABASE_URL"))
 	viper.Set("auth.token", viper.GetString("CHURCH_MEMBERS_ACCESS_TOKEN"))
 }
@@ -29,9 +33,6 @@ func loadViper() {
 	viper.SetConfigName(configFile)
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./config")
-
-	viper.SetEnvPrefix("VPR")
-	viper.BindEnv("CHURCH_MEMBERS_DATABASE_URL")
 
 	err := viper.ReadInConfig()
 	if err != nil {

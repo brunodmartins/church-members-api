@@ -52,7 +52,7 @@ func transformToCSVData(members []*entity.Membro) [][]string {
 	for _, member := range members {
 		data = append(data, []string{
 			member.Pessoa.GetFullName(),
-			member.Pessoa.DtNascimento.Format("02/01/2006"),
+			member.Pessoa.DtNascimento.Format("02/01"),
 		})
 	}
 

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/csv"
+	"sort"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	member "github.com/BrunoDM2943/church-members-api/member/service"
@@ -49,6 +50,7 @@ func transformToCSVData(members []*entity.Membro) [][]string {
 	data := [][]string{}
 	data = append(data, []string{"Nome", "Data"})
 
+	sort.Sort(entity.SortByBirthDay(members))
 	for _, member := range members {
 		data = append(data, []string{
 			member.Pessoa.GetFullName(),

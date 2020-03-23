@@ -33,8 +33,8 @@ func TestTransformCSVToData(t *testing.T) {
 	data := transformToCSVData(members)
 	assert.Equal(t, 3, len(data))
 	assert.Equal(t, []string{"Nome", "Data"}, data[0])
-	assert.Equal(t, []string{"Teste Teste", "10/05"}, data[1])
-	assert.Equal(t, []string{"Teste 2 Teste 2", "22/03"}, data[2])
+	assert.Equal(t, []string{"Teste 2 Teste 2", "22/03"}, data[1])
+	assert.Equal(t, []string{"Teste Teste", "10/05"}, data[2])
 }
 
 func TestBirthdayReportSuccess(t *testing.T) {

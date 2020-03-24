@@ -81,3 +81,37 @@ func TestBirthdayReportSuccessErrorDB(t *testing.T) {
 	assert.Nil(t, out)
 	assert.NotNil(t, err)
 }
+
+func TestMarriageReportSuccessErrorDB(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	memberService := mock_members.NewMockIMemberService(ctrl)
+	service := NewReportsGenerator(memberService)
+
+	memberService.EXPECT().FindMembers(gomock.Any()).Return(nil, errors.New("Error"))
+	out, err := service.MariageReport()
+	assert.Nil(t, out)
+	assert.NotNil(t, err)
+}
+
+func TestMarriageReportSuccess(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	memberService := mock_members.NewMockIMemberService(ctrl)
+	service := NewReportsGenerator(memberService)
+
+	members := []*entity.Membro{
+		&entity.Membro{
+			Pessoa: entity.Pessoa{
+				Nome:        "Esposa",
+				Sobrenome:   "Teste",
+				DtCasamento: time.Now(),
+				NomeConjuge: "Marido Teste",
+			},
+		},
+	}
+	memberService.EXPECT().FindMembers(gomock.Any()).Return(members, nil)
+	out, err := service.BirthdayReport()
+	assert.NotNil(t, out)
+	assert.Nil(t, err)
+}

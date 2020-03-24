@@ -45,11 +45,15 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 			m.Pessoa.DtNascimento.Format("02/01"),
 		}
 	})
+	return writeData(data), nil
+}
+
+func writeData(data [][]string) []byte {
 	byteArr := &bytes.Buffer{}
 	buffer := bufio.NewWriter(byteArr)
 	writter := csv.NewWriter(buffer)
 	writter.WriteAll(data)
-	return byteArr.Bytes(), nil
+	return byteArr.Bytes()
 }
 
 func (report reportService) MariageReport() ([]byte, error) {
@@ -71,11 +75,7 @@ func (report reportService) MariageReport() ([]byte, error) {
 		}
 	})
 
-	byteArr := &bytes.Buffer{}
-	buffer := bufio.NewWriter(byteArr)
-	writter := csv.NewWriter(buffer)
-	writter.WriteAll(data)
-	return byteArr.Bytes(), nil
+	return writeData(data), nil
 }
 
 func transformToCSVData(members []*entity.Membro, clojure func(*entity.Membro) []string) [][]string {

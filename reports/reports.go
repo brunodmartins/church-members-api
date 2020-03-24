@@ -15,7 +15,7 @@ type ReportsGenerator interface {
 	//JudicialReport() ([]byte, error)
 	//MemberReport() ([]byte, error)
 	BirthdayReport() ([]byte, error)
-	//MariageReport() ([]byte, error)
+	MariageReport() ([]byte, error)
 }
 
 type reportService struct {
@@ -38,7 +38,13 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 		return nil, err
 	}
 
-	data := transformToCSVData(members)
+	sort.Sort(entity.SortByBirthDay(members))
+	data := transformToCSVData(members, func(m *entity.Membro) []string {
+		return []string{
+			m.Pessoa.GetFullName(),
+			m.Pessoa.DtNascimento.Format("02/01"),
+		}
+	})
 	byteArr := &bytes.Buffer{}
 	buffer := bufio.NewWriter(byteArr)
 	writter := csv.NewWriter(buffer)
@@ -46,16 +52,38 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 	return byteArr.Bytes(), nil
 }
 
-func transformToCSVData(members []*entity.Membro) [][]string {
+func (report reportService) MariageReport() ([]byte, error) {
+
+	members, err := report.memberService.FindMembers(map[string]interface{}{
+		"active":  true,
+		"married": true,
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	sort.Sort(entity.SortByMarriageDay(members))
+	data := transformToCSVData(members, func(m *entity.Membro) []string {
+		return []string{
+			m.Pessoa.GetFullName() + "&" + m.Pessoa.NomeConjuge,
+			m.Pessoa.DtCasamento.Format("02/01"),
+		}
+	})
+
+	byteArr := &bytes.Buffer{}
+	buffer := bufio.NewWriter(byteArr)
+	writter := csv.NewWriter(buffer)
+	writter.WriteAll(data)
+	return byteArr.Bytes(), nil
+}
+
+func transformToCSVData(members []*entity.Membro, clojure func(*entity.Membro) []string) [][]string {
 	data := [][]string{}
 	data = append(data, []string{"Nome", "Data"})
 
-	sort.Sort(entity.SortByBirthDay(members))
 	for _, member := range members {
-		data = append(data, []string{
-			member.Pessoa.GetFullName(),
-			member.Pessoa.DtNascimento.Format("02/01"),
-		})
+		data = append(data, clojure(member))
 	}
 
 	return data

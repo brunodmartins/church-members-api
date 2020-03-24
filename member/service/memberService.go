@@ -40,6 +40,10 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*entity.M
 		queryFilters.AddFilter("active", active.(bool))
 	}
 
+	if married := filters["married"]; married != nil {
+		queryFilters.AddFilter("pessoa.dtCasamento", bson.M{"$exists": true})
+	}
+
 	if name := filters["name"]; name != nil {
 		regex := bson.RegEx{fmt.Sprintf(".*%s*.", name), "i"}
 		queryFilters.AddFilter("$or", []bson.M{

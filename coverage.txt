@@ -1,6 +1,7 @@
 
 mode: atomic
 mode: atomic
+github.com/BrunoDM2943/church-members-api/entity/pessoa.go:32.43,34.2 1 0
 github.com/BrunoDM2943/church-members-api/entity/contato.go:17.45,19.2 1 1
 github.com/BrunoDM2943/church-members-api/entity/contato.go:22.49,24.2 1 1
 github.com/BrunoDM2943/church-members-api/entity/endereco.go:22.44,24.2 1 1
@@ -18,21 +19,24 @@ github.com/BrunoDM2943/church-members-api/entity/entity.go:41.20,44.3 2 0
 github.com/BrunoDM2943/church-members-api/entity/entity.go:49.30,51.2 1 0
 github.com/BrunoDM2943/church-members-api/entity/entity.go:54.31,56.2 1 0
 github.com/BrunoDM2943/church-members-api/entity/entity.go:59.17,61.2 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:9.40,9.57 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:10.40,10.67 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:11.45,15.44 3 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:15.44,17.3 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:17.8,17.51 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:17.51,19.3 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:19.8,21.3 1 0
-github.com/BrunoDM2943/church-members-api/entity/membro.go:38.43,40.14 2 5
-github.com/BrunoDM2943/church-members-api/entity/membro.go:40.14,42.3 1 1
-github.com/BrunoDM2943/church-members-api/entity/membro.go:42.8,42.21 1 4
-github.com/BrunoDM2943/church-members-api/entity/membro.go:42.21,44.3 1 1
-github.com/BrunoDM2943/church-members-api/entity/membro.go:44.8,44.57 1 3
-github.com/BrunoDM2943/church-members-api/entity/membro.go:44.57,46.3 1 1
-github.com/BrunoDM2943/church-members-api/entity/membro.go:46.8,48.3 1 2
-github.com/BrunoDM2943/church-members-api/entity/pessoa.go:32.43,34.2 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:11.40,11.57 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:12.40,12.67 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:13.45,17.2 3 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:19.54,20.44 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:20.44,22.3 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:22.8,22.51 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:22.51,24.3 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:24.8,26.3 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:31.43,31.60 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:32.43,32.70 1 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:33.48,37.2 3 0
+github.com/BrunoDM2943/church-members-api/entity/membro.go:52.43,54.14 2 5
+github.com/BrunoDM2943/church-members-api/entity/membro.go:54.14,56.3 1 1
+github.com/BrunoDM2943/church-members-api/entity/membro.go:56.8,56.21 1 4
+github.com/BrunoDM2943/church-members-api/entity/membro.go:56.21,58.3 1 1
+github.com/BrunoDM2943/church-members-api/entity/membro.go:58.8,58.57 1 3
+github.com/BrunoDM2943/church-members-api/entity/membro.go:58.57,60.3 1 1
+github.com/BrunoDM2943/church-members-api/entity/membro.go:60.8,62.3 1 2
 mode: atomic
 github.com/BrunoDM2943/church-members-api/handler/memberHandler.go:28.69,32.2 1 9
 github.com/BrunoDM2943/church-members-api/handler/memberHandler.go:34.58,39.2 4 9
@@ -64,10 +68,13 @@ github.com/BrunoDM2943/church-members-api/handler/memberHandler.go:111.30,114.3 
 github.com/BrunoDM2943/church-members-api/handler/memberHandler.go:115.30,118.3 2 1
 github.com/BrunoDM2943/church-members-api/handler/memberHandler.go:123.16,126.3 2 1
 github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:14.79,16.2 1 0
-github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:18.57,20.2 1 0
-github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:22.69,24.16 2 0
-github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:24.16,26.3 1 0
-github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:26.8,32.3 5 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:18.57,21.2 2 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:23.69,25.16 2 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:25.16,27.3 1 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:27.8,33.3 5 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:36.69,38.16 2 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:38.16,40.3 1 0
+github.com/BrunoDM2943/church-members-api/handler/reportHandler.go:40.8,46.3 5 0
 mode: atomic
 mode: atomic
 mode: atomic
@@ -78,22 +85,31 @@ mode: atomic
 github.com/BrunoDM2943/church-members-api/member/service/memberService.go:26.70,30.2 1 6
 github.com/BrunoDM2943/church-members-api/member/service/memberService.go:32.95,35.40 2 2
 github.com/BrunoDM2943/church-members-api/member/service/memberService.go:39.2,39.48 1 2
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:43.2,43.42 1 2
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:51.2,51.37 1 2
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:43.2,43.51 1 2
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:47.2,47.42 1 2
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:55.2,55.37 1 2
 github.com/BrunoDM2943/church-members-api/member/service/memberService.go:35.40,37.3 1 1
 github.com/BrunoDM2943/church-members-api/member/service/memberService.go:39.48,41.3 1 1
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:43.42,49.3 2 1
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:54.79,56.2 1 1
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:58.78,60.2 1 1
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:62.86,64.2 1 0
-github.com/BrunoDM2943/church-members-api/member/service/memberService.go:66.86,70.2 3 2
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:43.51,45.3 1 0
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:47.42,53.3 2 1
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:58.79,60.2 1 1
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:62.78,64.2 1 1
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:66.86,68.2 1 0
+github.com/BrunoDM2943/church-members-api/member/service/memberService.go:70.86,74.2 3 2
 mode: atomic
 mode: atomic
 github.com/BrunoDM2943/church-members-api/reports/reports.go:25.80,29.2 1 2
 github.com/BrunoDM2943/church-members-api/reports/reports.go:31.62,37.16 2 2
-github.com/BrunoDM2943/church-members-api/reports/reports.go:41.2,46.29 6 1
+github.com/BrunoDM2943/church-members-api/reports/reports.go:41.2,42.70 2 1
+github.com/BrunoDM2943/church-members-api/reports/reports.go:48.2,52.29 5 1
 github.com/BrunoDM2943/church-members-api/reports/reports.go:37.16,39.3 1 1
-github.com/BrunoDM2943/church-members-api/reports/reports.go:49.62,54.33 4 2
-github.com/BrunoDM2943/church-members-api/reports/reports.go:61.2,61.13 1 2
-github.com/BrunoDM2943/church-members-api/reports/reports.go:54.33,59.3 1 4
+github.com/BrunoDM2943/church-members-api/reports/reports.go:42.70,47.3 1 2
+github.com/BrunoDM2943/church-members-api/reports/reports.go:55.61,62.16 2 0
+github.com/BrunoDM2943/church-members-api/reports/reports.go:66.2,67.70 2 0
+github.com/BrunoDM2943/church-members-api/reports/reports.go:74.2,78.29 5 0
+github.com/BrunoDM2943/church-members-api/reports/reports.go:62.16,64.3 1 0
+github.com/BrunoDM2943/church-members-api/reports/reports.go:67.70,72.3 1 0
+github.com/BrunoDM2943/church-members-api/reports/reports.go:81.101,85.33 3 2
+github.com/BrunoDM2943/church-members-api/reports/reports.go:89.2,89.13 1 2
+github.com/BrunoDM2943/church-members-api/reports/reports.go:85.33,87.3 1 4
 mode: atomic

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/BrunoDM2943/church-members-api/handler"
 	"github.com/BrunoDM2943/church-members-api/handler/filters"
@@ -18,6 +19,8 @@ import (
 func main() {
 	mongo := mongo2.NewMongoConnection()
 	con := mongo.Connect()
+
+	time.LoadLocation("UTC")
 
 	gin.DebugPrintRouteFunc = func(httpMethod, absolutePath, handlerName string, nuHandlers int) {
 		log.Info(fmt.Sprintf("endpoint %v %v %v %v\n", httpMethod, absolutePath, handlerName, nuHandlers))

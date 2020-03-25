@@ -111,7 +111,7 @@ func TestMarriageReportSuccess(t *testing.T) {
 		},
 	}
 	memberService.EXPECT().FindMembers(gomock.Any()).Return(members, nil)
-	out, err := service.BirthdayReport()
+	out, err := service.MariageReport()
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
 }

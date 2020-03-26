@@ -8,12 +8,13 @@ import (
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	member "github.com/BrunoDM2943/church-members-api/member/service"
+	"github.com/BrunoDM2943/church-members-api/reports/pdf"
 )
 
 //go:generate mockgen -source=./reports.go -destination=./mock/reports_mock.go
 type ReportsGenerator interface {
 	//JudicialReport() ([]byte, error)
-	//MemberReport() ([]byte, error)
+	MemberReport() ([]byte, error)
 	BirthdayReport() ([]byte, error)
 	MariageReport() ([]byte, error)
 }
@@ -29,7 +30,6 @@ func NewReportsGenerator(memberService member.IMemberService) ReportsGenerator {
 }
 
 func (report reportService) BirthdayReport() ([]byte, error) {
-
 	members, err := report.memberService.FindMembers(map[string]interface{}{
 		"active": true,
 	})
@@ -76,6 +76,16 @@ func (report reportService) MariageReport() ([]byte, error) {
 	})
 
 	return writeData(data), nil
+}
+
+func (report reportService) MemberReport() ([]byte, error) {
+	members, _ := report.memberService.FindMembers(map[string]interface{}{
+		"active": true,
+	})
+
+	sort.Sort(entity.SortByName(members))
+	return pdf.BuildPdf("Relatório de Membros", members)
+
 }
 
 func transformToCSVData(members []*entity.Membro, clojure func(*entity.Membro) []string) [][]string {

@@ -2,6 +2,7 @@ package reports
 
 import (
 	"errors"
+	"io/ioutil"
 	"testing"
 	"time"
 
@@ -114,4 +115,43 @@ func TestMarriageReportSuccess(t *testing.T) {
 	out, err := service.MariageReport()
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
+}
+
+func TestGenerateMemberReport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	memberService := mock_members.NewMockIMemberService(ctrl)
+	service := NewReportsGenerator(memberService)
+	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
+	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
+	members := []*entity.Membro{
+		&entity.Membro{
+			Pessoa: entity.Pessoa{
+				Nome:         "Bruno",
+				Sobrenome:    "Damasceno Martins",
+				DtNascimento: dtNascimento,
+				DtCasamento:  dtCasamento,
+				NomeConjuge:  "Leticia de Souza Soares da Costa",
+				Contato: entity.Contato{
+					DDDCelular:  11,
+					Celular:     953200587,
+					DDDTelefone: 11,
+					Telefone:    29435002,
+					Email:       "bdm2943@gmail.com",
+				},
+				Endereco: entity.Endereco{
+					Bairro:     "Belem",
+					Cidade:     "São Paulo",
+					UF:         "SP",
+					Logradouro: "Avenida Celso Garcia",
+					Numero:     1907,
+				},
+			},
+		},
+	}
+	memberService.EXPECT().FindMembers(gomock.Any()).Return(members, nil)
+	out, err := service.MemberReport()
+	assert.NotNil(t, out)
+	assert.Nil(t, err)
+	ioutil.WriteFile("./report.pdf", out, 0644)
 }

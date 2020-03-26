@@ -16,8 +16,10 @@ func NewReportHandler(reportGenerator reports.ReportsGenerator) reportHandler {
 }
 
 func (handler reportHandler) SetUpRoutes(r *gin.Engine) {
+	r.GET("/reports/members", handler.generateMembersReport)
 	r.GET("/reports/members/birthday", handler.generateBirthDayReport)
 	r.GET("/reports/members/marriage", handler.generateMarriageReport)
+
 }
 
 func (handler reportHandler) generateMarriageReport(c *gin.Context) {
@@ -43,5 +45,18 @@ func (handler reportHandler) generateBirthDayReport(c *gin.Context) {
 		c.Header("Content-Disposition", "attachment")
 		c.Header("filename", "aniversariantes.csv")
 		c.Data(200, "application/csv", output)
+	}
+}
+
+func (handler reportHandler) generateMembersReport(c *gin.Context) {
+	output, err := handler.reportGenerator.MemberReport()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
+	} else {
+		c.Status(http.StatusOK)
+		c.Header("Content-Type", "application/pdf")
+		c.Header("Content-Disposition", "attachment")
+		c.Header("filename", "membros.pdf")
+		c.Data(200, "application/pdf", output)
 	}
 }

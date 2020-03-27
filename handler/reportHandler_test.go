@@ -12,7 +12,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestGenerateBirthDayReportSucess(t *testing.T){
+func TestGenerateBirthDayReportSucess(t *testing.T) {
 	r := gin.Default()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -20,7 +20,7 @@ func TestGenerateBirthDayReportSucess(t *testing.T){
 	reports := mock_reports.NewMockReportsGenerator(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
-	
+
 	reports.EXPECT().BirthdayReport().Times(1)
 
 	w := httptest.NewRecorder()
@@ -31,7 +31,7 @@ func TestGenerateBirthDayReportSucess(t *testing.T){
 	}
 }
 
-func TestGenerateBirthDayReportFail(t *testing.T){
+func TestGenerateBirthDayReportFail(t *testing.T) {
 	r := gin.Default()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -39,7 +39,7 @@ func TestGenerateBirthDayReportFail(t *testing.T){
 	reports := mock_reports.NewMockReportsGenerator(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
-	
+
 	reports.EXPECT().BirthdayReport().Return(nil, errors.New(""))
 
 	w := httptest.NewRecorder()
@@ -50,7 +50,7 @@ func TestGenerateBirthDayReportFail(t *testing.T){
 	}
 }
 
-func TestGenerateMarriageReportSucess(t *testing.T){
+func TestGenerateMarriageReportSucess(t *testing.T) {
 	r := gin.Default()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -58,7 +58,7 @@ func TestGenerateMarriageReportSucess(t *testing.T){
 	reports := mock_reports.NewMockReportsGenerator(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
-	
+
 	reports.EXPECT().MariageReport().Times(1)
 
 	w := httptest.NewRecorder()
@@ -69,7 +69,7 @@ func TestGenerateMarriageReportSucess(t *testing.T){
 	}
 }
 
-func TestGenerateMarriageReportFail(t *testing.T){
+func TestGenerateMarriageReportFail(t *testing.T) {
 	r := gin.Default()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -77,7 +77,7 @@ func TestGenerateMarriageReportFail(t *testing.T){
 	reports := mock_reports.NewMockReportsGenerator(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
-	
+
 	reports.EXPECT().MariageReport().Return(nil, errors.New(""))
 
 	w := httptest.NewRecorder()

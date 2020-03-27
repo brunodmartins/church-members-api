@@ -2,7 +2,6 @@ package reports
 
 import (
 	"errors"
-	"io/ioutil"
 	"testing"
 	"time"
 
@@ -153,5 +152,4 @@ func TestGenerateMemberReport(t *testing.T) {
 	out, err := service.MemberReport()
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
-	ioutil.WriteFile("./report.pdf", out, 0644)
 }

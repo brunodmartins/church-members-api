@@ -7,7 +7,6 @@ import (
 	"sort"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
-	member "github.com/BrunoDM2943/church-members-api/member/service"
 	"github.com/BrunoDM2943/church-members-api/reports/pdf"
 )
 
@@ -20,20 +19,17 @@ type ReportsGenerator interface {
 }
 
 type reportService struct {
-	memberService member.IMemberService
+	repo ReportRepository
 }
 
-func NewReportsGenerator(memberService member.IMemberService) ReportsGenerator {
+func NewReportsGenerator(repo ReportRepository) ReportsGenerator {
 	return reportService{
-		memberService,
+		repo,
 	}
 }
 
 func (report reportService) BirthdayReport() ([]byte, error) {
-	members, err := report.memberService.FindMembers(map[string]interface{}{
-		"active": true,
-	})
-
+	members, err := report.repo.FindMembersActive()
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +54,7 @@ func writeData(data [][]string) []byte {
 
 func (report reportService) MariageReport() ([]byte, error) {
 
-	members, err := report.memberService.FindMembers(map[string]interface{}{
-		"active":  true,
-		"married": true,
-	})
+	members, err := report.repo.FindMembersActiveAndMarried()
 
 	if err != nil {
 		return nil, err
@@ -79,10 +72,7 @@ func (report reportService) MariageReport() ([]byte, error) {
 }
 
 func (report reportService) MemberReport() ([]byte, error) {
-	members, _ := report.memberService.FindMembers(map[string]interface{}{
-		"active": true,
-	})
-
+	members, _ := report.repo.FindMembersActive()
 	sort.Sort(entity.SortByName(members))
 	return pdf.BuildPdf("Relatório de Membros", members)
 

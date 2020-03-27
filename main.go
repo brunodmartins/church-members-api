@@ -33,7 +33,7 @@ func main() {
 	}
 
 	membersService := service.NewMemberService(repository.NewMemberRepository(con))
-	reportGenerator := reports.NewReportsGenerator(membersService)
+	reportGenerator := reports.NewReportsGenerator(reports.NewReportRepository(con))
 
 	memberHandler := handler.NewMemberHandler(membersService)
 	reportHandler := handler.NewReportHandler(reportGenerator)

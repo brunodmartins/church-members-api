@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
-	mock_members "github.com/BrunoDM2943/church-members-api/member/service/mock"
+	mock_repo "github.com/BrunoDM2943/church-members-api/reports/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -45,8 +45,8 @@ func TestTransformCSVToData(t *testing.T) {
 func TestBirthdayReportSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	memberService := mock_members.NewMockIMemberService(ctrl)
-	service := NewReportsGenerator(memberService)
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
 
 	members := []*entity.Membro{
 		&entity.Membro{
@@ -64,7 +64,7 @@ func TestBirthdayReportSuccess(t *testing.T) {
 			},
 		},
 	}
-	memberService.EXPECT().FindMembers(gomock.Any()).Return(members, nil)
+	repo.EXPECT().FindMembersActive().Return(members, nil)
 	out, err := service.BirthdayReport()
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
@@ -73,10 +73,10 @@ func TestBirthdayReportSuccess(t *testing.T) {
 func TestBirthdayReportSuccessErrorDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	memberService := mock_members.NewMockIMemberService(ctrl)
-	service := NewReportsGenerator(memberService)
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
 
-	memberService.EXPECT().FindMembers(gomock.Any()).Return(nil, errors.New("Error"))
+	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	out, err := service.BirthdayReport()
 	assert.Nil(t, out)
 	assert.NotNil(t, err)
@@ -85,10 +85,10 @@ func TestBirthdayReportSuccessErrorDB(t *testing.T) {
 func TestMarriageReportSuccessErrorDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	memberService := mock_members.NewMockIMemberService(ctrl)
-	service := NewReportsGenerator(memberService)
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
 
-	memberService.EXPECT().FindMembers(gomock.Any()).Return(nil, errors.New("Error"))
+	repo.EXPECT().FindMembersActiveAndMarried().Return(nil, errors.New("Error"))
 	out, err := service.MariageReport()
 	assert.Nil(t, out)
 	assert.NotNil(t, err)
@@ -97,8 +97,8 @@ func TestMarriageReportSuccessErrorDB(t *testing.T) {
 func TestMarriageReportSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	memberService := mock_members.NewMockIMemberService(ctrl)
-	service := NewReportsGenerator(memberService)
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
 
 	members := []*entity.Membro{
 		&entity.Membro{
@@ -110,7 +110,7 @@ func TestMarriageReportSuccess(t *testing.T) {
 			},
 		},
 	}
-	memberService.EXPECT().FindMembers(gomock.Any()).Return(members, nil)
+	repo.EXPECT().FindMembersActiveAndMarried().Return(members, nil)
 	out, err := service.MariageReport()
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
@@ -119,8 +119,8 @@ func TestMarriageReportSuccess(t *testing.T) {
 func TestGenerateMemberReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	memberService := mock_members.NewMockIMemberService(ctrl)
-	service := NewReportsGenerator(memberService)
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
 	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
 	members := []*entity.Membro{
@@ -148,7 +148,7 @@ func TestGenerateMemberReport(t *testing.T) {
 			},
 		},
 	}
-	memberService.EXPECT().FindMembers(gomock.Any()).Return(members, nil)
+	repo.EXPECT().FindMembersActive().Return(members, nil)
 	out, err := service.MemberReport()
 	assert.NotNil(t, out)
 	assert.Nil(t, err)

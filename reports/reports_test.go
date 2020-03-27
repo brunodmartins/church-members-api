@@ -153,3 +153,63 @@ func TestGenerateMemberReport(t *testing.T) {
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
 }
+
+func TestGenerateMemberReportFail(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
+
+	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
+	_, err := service.MemberReport()
+	assert.NotNil(t, err)
+}
+
+func TestGenerateLegalReport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
+	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
+	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
+	members := []*entity.Membro{
+		&entity.Membro{
+			Pessoa: entity.Pessoa{
+				Nome:         "Bruno",
+				Sobrenome:    "Damasceno Martins",
+				DtNascimento: dtNascimento,
+				DtCasamento:  dtCasamento,
+				NomeConjuge:  "Leticia de Souza Soares da Costa",
+				Contato: entity.Contato{
+					DDDCelular:  11,
+					Celular:     953200587,
+					DDDTelefone: 11,
+					Telefone:    29435002,
+					Email:       "bdm2943@gmail.com",
+				},
+				Endereco: entity.Endereco{
+					Bairro:     "Belem",
+					Cidade:     "São Paulo",
+					UF:         "SP",
+					Logradouro: "Avenida Celso Garcia",
+					Numero:     1907,
+				},
+			},
+		},
+	}
+	repo.EXPECT().FindMembersActive().Return(members, nil)
+	out, err := service.LegalReport()
+	assert.NotNil(t, out)
+	assert.Nil(t, err)
+}
+
+func TestGenerateLegalReportFail(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
+
+	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
+	_, err := service.LegalReport()
+	assert.NotNil(t, err)
+}

@@ -12,7 +12,7 @@ import (
 
 //go:generate mockgen -source=./reports.go -destination=./mock/reports_mock.go
 type ReportsGenerator interface {
-	//JudicialReport() ([]byte, error)
+	LegalReport() ([]byte, error)
 	MemberReport() ([]byte, error)
 	BirthdayReport() ([]byte, error)
 	MariageReport() ([]byte, error)
@@ -72,10 +72,32 @@ func (report reportService) MariageReport() ([]byte, error) {
 }
 
 func (report reportService) MemberReport() ([]byte, error) {
-	members, _ := report.repo.FindMembersActive()
+	members, err := report.repo.FindMembersActive()
+	if err != nil {
+		return nil, err
+	}
 	sort.Sort(entity.SortByName(members))
 	return pdf.BuildPdf("Relatório de Membros", members)
+}
 
+func (report reportService) LegalReport() ([]byte, error) {
+	members, err := report.repo.FindMembersActive()
+	if err != nil {
+		return nil, err
+	}
+	members = filterChildren(members)
+	sort.Sort(entity.SortByName(members))
+	return pdf.BuildPdf("Relatório de Membros - Juridico", members)
+}
+
+func filterChildren(members []*entity.Membro) []*entity.Membro {
+	filtered := []*entity.Membro{}
+	for _, v := range members {
+		if v.Classificacao() != "Criança" {
+			filtered = append(filtered, v)
+		}
+	}
+	return filtered
 }
 
 func transformToCSVData(members []*entity.Membro, clojure func(*entity.Membro) []string) [][]string {

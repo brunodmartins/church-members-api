@@ -3,6 +3,7 @@ package pdf
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	"github.com/signintech/gopdf"
@@ -98,6 +99,26 @@ func buildRowSection(data *entity.Membro, builder *gopdf.GoPdf) {
 
 }
 
+func buildSummarySection(data []*entity.Membro, builder *gopdf.GoPdf) {
+	setField("Quantidade de Membros:", builder)
+	setValue(fmt.Sprintf("%d", len(data)), builder)
+	builder.Br(15)
+
+	summary := map[string]int{}
+	for _, member := range data {
+		count := summary[member.Classificacao()]
+		count++
+		summary[member.Classificacao()] = count
+	}
+
+	for key, value := range summary {
+		setField(key, builder)
+		setValue(fmt.Sprintf("%d", value), builder)
+		builder.Br(15)
+	}
+
+}
+
 func BuildPdf(title string, data []*entity.Membro) ([]byte, error) {
 	pdf := &gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
@@ -115,7 +136,8 @@ func BuildPdf(title string, data []*entity.Membro) ([]byte, error) {
 		}
 		count++
 		buildRowSection(membro, pdf)
-
 	}
+	pdf.AddPage()
+	buildSummarySection(data, pdf)
 	return toBytes(pdf), nil
 }

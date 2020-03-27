@@ -19,6 +19,7 @@ func (handler reportHandler) SetUpRoutes(r *gin.Engine) {
 	r.GET("/reports/members", handler.generateMembersReport)
 	r.GET("/reports/members/birthday", handler.generateBirthDayReport)
 	r.GET("/reports/members/marriage", handler.generateMarriageReport)
+	r.GET("/reports/members/legal", handler.generateLegalReport)
 
 }
 
@@ -57,6 +58,19 @@ func (handler reportHandler) generateMembersReport(c *gin.Context) {
 		c.Header("Content-Type", "application/pdf")
 		c.Header("Content-Disposition", "attachment")
 		c.Header("filename", "membros.pdf")
+		c.Data(200, "application/pdf", output)
+	}
+}
+
+func (handler reportHandler) generateLegalReport(c *gin.Context) {
+	output, err := handler.reportGenerator.LegalReport()
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
+	} else {
+		c.Status(http.StatusOK)
+		c.Header("Content-Type", "application/pdf")
+		c.Header("Content-Disposition", "attachment")
+		c.Header("filename", "membros_juridico.pdf")
 		c.Data(200, "application/pdf", output)
 	}
 }

@@ -35,7 +35,6 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	r.GET("/members/:id", handler.GetMember)
 	r.POST("/members", handler.PostMember)
 	r.POST("/members/search", handler.SearchMember)
-	r.GET("/utils/members/aniversariantes", handler.GetBirthDayMembers)
 	r.PUT("/members/:id/status", handler.PutStatus)
 }
 

@@ -2,4 +2,5 @@ ignore:
   - "/member/repository"
   - "/utils/utilsMongoRepository.go"
   - "/infra"
+  - "/reports/reportsRepository.go"
   - "main.go"

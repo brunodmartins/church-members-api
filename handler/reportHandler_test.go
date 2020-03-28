@@ -24,10 +24,12 @@ func TestRoutesWithSuccess(t *testing.T) {
 	reports.EXPECT().BirthdayReport().Times(1)
 	reports.EXPECT().MariageReport().Times(1)
 	reports.EXPECT().MemberReport().Times(1)
+	reports.EXPECT().LegalReport().Times(1)
 
 	routes := []string{
 		"/reports/members/birthday",
 		"/reports/members/marriage",
+		"/reports/members/legal",
 		"/reports/members",
 	}
 

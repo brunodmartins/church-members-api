@@ -6,10 +6,10 @@ import (
 
 //Contact struct
 type Contact struct {
-	PhoneArea     int    `json:"phone_area,omitempty" bson:"phone_area"`
+	PhoneArea     int    `json:"phoneArea,omitempty" bson:"phoneArea"`
 	Phone         int    `json:"phone,omitempty"`
-	CellPhoneArea int    `json:"cell_phone_area" bson:"cell_phone_area"`
-	CellPhone     int    `json:"cell_phone"`
+	CellPhoneArea int    `json:"cellPhoneArea" bson:"cellPhoneArea"`
+	CellPhone     int    `json:"cellPhone"`
 	Email         string `json:"email"`
 }
 

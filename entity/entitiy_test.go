@@ -8,11 +8,11 @@ import (
 )
 
 func TestFormattedContact(t *testing.T) {
-	c := Contato{
-		Celular:     953200587,
-		DDDCelular:  11,
-		Telefone:    29435002,
-		DDDTelefone: 11,
+	c := Contact{
+		CellPhone:     953200587,
+		CellPhoneArea: 11,
+		Phone:         29435002,
+		PhoneArea:     11,
 	}
 	if "(11) 953200587" != c.GetFormattedCellPhone() {
 		t.Fail()
@@ -25,48 +25,48 @@ func TestFormattedContact(t *testing.T) {
 
 func TestClassificacao(t *testing.T) {
 	t.Run("Crianca", func(t *testing.T) {
-		assert.Equal(t, "Criança", Membro{
-			Pessoa: Pessoa{
-				DtNascimento: time.Now(),
+		assert.Equal(t, "Criança", Member{
+			Person: Person{
+				BirthDate: time.Now(),
 			},
-		}.Classificacao())
+		}.Classification())
 	})
 	t.Run("Adolescente", func(t *testing.T) {
-		assert.Equal(t, "Adolescente", Membro{
-			Pessoa: Pessoa{
-				DtNascimento: time.Now().AddDate(-17, 0, 0),
+		assert.Equal(t, "Adolescente", Member{
+			Person: Person{
+				BirthDate: time.Now().AddDate(-17, 0, 0),
 			},
-		}.Classificacao())
+		}.Classification())
 	})
 	t.Run("Jovem", func(t *testing.T) {
-		assert.Equal(t, "Jovem", Membro{
-			Pessoa: Pessoa{
-				DtNascimento: time.Now().AddDate(-29, 0, 0),
+		assert.Equal(t, "Jovem", Member{
+			Person: Person{
+				BirthDate: time.Now().AddDate(-29, 0, 0),
 			},
-		}.Classificacao())
+		}.Classification())
 	})
 	t.Run("Adulto Solteiro", func(t *testing.T) {
-		assert.Equal(t, "Adulto", Membro{
-			Pessoa: Pessoa{
-				DtNascimento: time.Now().AddDate(-33, 0, 0),
+		assert.Equal(t, "Adulto", Member{
+			Person: Person{
+				BirthDate: time.Now().AddDate(-33, 0, 0),
 			},
-		}.Classificacao())
+		}.Classification())
 	})
 	t.Run("Adulto Casado", func(t *testing.T) {
-		assert.Equal(t, "Adulto", Membro{
-			Pessoa: Pessoa{
-				DtNascimento: time.Now().AddDate(-25, 0, 0),
-				DtCasamento:  time.Now(),
+		assert.Equal(t, "Adulto", Member{
+			Person: Person{
+				BirthDate:    time.Now().AddDate(-25, 0, 0),
+				MarriageDate: time.Now(),
 			},
-		}.Classificacao())
+		}.Classification())
 	})
 }
 
 func TestFormattedAddress(t *testing.T) {
-	address := Endereco{
-		Logradouro: "Rua xicas",
-		Bairro:     "Parque feliz",
-		Numero:     2,
+	address := Address{
+		Address:  "Rua xicas",
+		District: "Parque feliz",
+		Number:   2,
 	}
 	assert.Equal(t, "Rua xicas, 2 - Parque feliz", address.GetFormatted())
 }

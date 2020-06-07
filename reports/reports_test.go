@@ -14,26 +14,26 @@ import (
 func TestTransformCSVToData(t *testing.T) {
 	t1, _ := time.Parse("02/01/2006", "10/05/1995")
 	t2, _ := time.Parse("02/01/2006", "22/03/2020")
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste",
-				Sobrenome:    "Teste",
-				DtNascimento: t1,
+	members := []*entity.Member{
+		&entity.Member{
+			Person: entity.Person{
+				Nome:      "Teste",
+				Sobrenome: "Teste",
+				BirthDate: t1,
 			},
 		},
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste 2",
-				Sobrenome:    "Teste 2",
-				DtNascimento: t2,
+		&entity.Member{
+			Person: entity.Person{
+				Nome:      "Teste 2",
+				Sobrenome: "Teste 2",
+				BirthDate: t2,
 			},
 		},
 	}
-	data := transformToCSVData(members, func(m *entity.Membro) []string {
+	data := transformToCSVData(members, func(m *entity.Member) []string {
 		return []string{
-			m.Pessoa.GetFullName(),
-			m.Pessoa.DtNascimento.Format("02/01"),
+			m.Person.GetFullName(),
+			m.Person.BirthDate.Format("02/01"),
 		}
 	})
 	assert.Equal(t, 3, len(data))
@@ -48,19 +48,19 @@ func TestBirthdayReportSuccess(t *testing.T) {
 	repo := mock_repo.NewMockReportRepository(ctrl)
 	service := NewReportsGenerator(repo)
 
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste",
-				Sobrenome:    "Teste",
-				DtNascimento: time.Now(),
+	members := []*entity.Member{
+		&entity.Member{
+			Person: entity.Person{
+				Nome:      "Teste",
+				Sobrenome: "Teste",
+				BirthDate: time.Now(),
 			},
 		},
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste 2",
-				Sobrenome:    "Teste 2",
-				DtNascimento: time.Now(),
+		&entity.Member{
+			Person: entity.Person{
+				Nome:      "Teste 2",
+				Sobrenome: "Teste 2",
+				BirthDate: time.Now(),
 			},
 		},
 	}
@@ -100,13 +100,13 @@ func TestMarriageReportSuccess(t *testing.T) {
 	repo := mock_repo.NewMockReportRepository(ctrl)
 	service := NewReportsGenerator(repo)
 
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:        "Esposa",
-				Sobrenome:   "Teste",
-				DtCasamento: time.Now(),
-				NomeConjuge: "Marido Teste",
+	members := []*entity.Member{
+		&entity.Member{
+			Person: entity.Person{
+				Nome:         "Esposa",
+				Sobrenome:    "Teste",
+				MarriageDate: time.Now(),
+				NomeConjuge:  "Marido Teste",
 			},
 		},
 	}
@@ -123,20 +123,20 @@ func TestGenerateMemberReport(t *testing.T) {
 	service := NewReportsGenerator(repo)
 	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
+	members := []*entity.Member{
+		&entity.Member{
+			Person: entity.Person{
 				Nome:         "Bruno",
 				Sobrenome:    "Damasceno Martins",
-				DtNascimento: dtNascimento,
-				DtCasamento:  dtCasamento,
+				BirthDate:    dtNascimento,
+				MarriageDate: dtCasamento,
 				NomeConjuge:  "Leticia de Souza Soares da Costa",
-				Contato: entity.Contato{
-					DDDCelular:  11,
-					Celular:     953200587,
-					DDDTelefone: 11,
-					Telefone:    29435002,
-					Email:       "bdm2943@gmail.com",
+				Contact: entity.Contact{
+					DDDCellPhone: 11,
+					CellPhone:    953200587,
+					DDDPhone:     11,
+					Phone:        29435002,
+					Email:        "bdm2943@gmail.com",
 				},
 				Endereco: entity.Endereco{
 					Bairro:     "Belem",
@@ -172,20 +172,20 @@ func TestGenerateLegalReport(t *testing.T) {
 	service := NewReportsGenerator(repo)
 	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
+	members := []*entity.Member{
+		&entity.Member{
+			Person: entity.Person{
 				Nome:         "Bruno",
 				Sobrenome:    "Damasceno Martins",
-				DtNascimento: dtNascimento,
-				DtCasamento:  dtCasamento,
+				BirthDate:    dtNascimento,
+				MarriageDate: dtCasamento,
 				NomeConjuge:  "Leticia de Souza Soares da Costa",
-				Contato: entity.Contato{
-					DDDCelular:  11,
-					Celular:     953200587,
-					DDDTelefone: 11,
-					Telefone:    29435002,
-					Email:       "bdm2943@gmail.com",
+				Contact: entity.Contact{
+					DDDCellPhone: 11,
+					CellPhone:    953200587,
+					DDDPhone:     11,
+					Phone:        29435002,
+					Email:        "bdm2943@gmail.com",
 				},
 				Endereco: entity.Endereco{
 					Bairro:     "Belem",

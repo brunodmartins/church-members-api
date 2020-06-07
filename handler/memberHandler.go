@@ -39,7 +39,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 }
 
 func (handler *MemberHandler) PostMember(c *gin.Context) {
-	var membro entity.Membro
+	var membro entity.Member
 	if err := c.ShouldBindWith(&membro, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err)
 		return

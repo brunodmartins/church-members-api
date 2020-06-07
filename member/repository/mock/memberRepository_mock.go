@@ -36,10 +36,10 @@ func (m *MockIMemberRepository) EXPECT() *MockIMemberRepositoryMockRecorder {
 }
 
 // FindAll mocks base method
-func (m *MockIMemberRepository) FindAll(filters mongo.QueryFilters) ([]*entity.Membro, error) {
+func (m *MockIMemberRepository) FindAll(filters mongo.QueryFilters) ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", filters)
-	ret0, _ := ret[0].([]*entity.Membro)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -51,10 +51,10 @@ func (mr *MockIMemberRepositoryMockRecorder) FindAll(filters interface{}) *gomoc
 }
 
 // FindByID mocks base method
-func (m *MockIMemberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
+func (m *MockIMemberRepository) FindByID(id entity.ID) (*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", id)
-	ret0, _ := ret[0].(*entity.Membro)
+	ret0, _ := ret[0].(*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -66,7 +66,7 @@ func (mr *MockIMemberRepositoryMockRecorder) FindByID(id interface{}) *gomock.Ca
 }
 
 // Insert mocks base method
-func (m *MockIMemberRepository) Insert(membro *entity.Membro) (entity.ID, error) {
+func (m *MockIMemberRepository) Insert(membro *entity.Member) (entity.ID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", membro)
 	ret0, _ := ret[0].(entity.ID)
@@ -81,10 +81,10 @@ func (mr *MockIMemberRepositoryMockRecorder) Insert(membro interface{}) *gomock.
 }
 
 // Search mocks base method
-func (m *MockIMemberRepository) Search(text string) ([]*entity.Membro, error) {
+func (m *MockIMemberRepository) Search(text string) ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Search", text)
-	ret0, _ := ret[0].([]*entity.Membro)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -96,10 +96,10 @@ func (mr *MockIMemberRepositoryMockRecorder) Search(text interface{}) *gomock.Ca
 }
 
 // FindMonthBirthday mocks base method
-func (m *MockIMemberRepository) FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error) {
+func (m *MockIMemberRepository) FindMonthBirthday(date time.Time) ([]*entity.Person, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMonthBirthday", date)
-	ret0, _ := ret[0].([]*entity.Pessoa)
+	ret0, _ := ret[0].([]*entity.Person)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

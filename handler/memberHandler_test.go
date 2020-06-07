@@ -60,7 +60,7 @@ func TestGetMemberOK(t *testing.T) {
 	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
-	member := &entity.Membro{}
+	member := &entity.Member{}
 	member.ID = entity.NewID()
 	service.EXPECT().FindMembersByID(member.ID).Return(member, nil).AnyTimes()
 
@@ -104,13 +104,13 @@ func TestPostMemberSucess(t *testing.T) {
 	{
    "pessoa": {
       "contato": {
-         "dddTelefone": 11,
+         "dddPhone": 11,
          "telefone": 29435002,
-         "dddCelular": 11,
+         "dddCellPhone": 11,
          "celular": 953200587,
          "email": "bdm2943@gmail.com"
       },
-      "endereco": {
+      "address": {
          "cep": "03805090",
          "uf": "SP",
          "cidade": "São Paulo",
@@ -177,13 +177,13 @@ func TestPostMemberFail(t *testing.T) {
 	{
    "pessoa": {
       "contato": {
-         "dddTelefone": 11,
+         "dddPhone": 11,
          "telefone": 29435002,
-         "dddCelular": 11,
+         "dddCellPhone": 11,
          "celular": 953200587,
          "email": "bdm2943@gmail.com"
       },
-      "endereco": {
+      "address": {
          "cep": "03805090",
          "uf": "SP",
          "cidade": "São Paulo",
@@ -256,7 +256,7 @@ func TestPostMemberSearch(t *testing.T) {
 				}
 		}
 	}`
-	service.EXPECT().FindMembers(gomock.Any()).Return([]*entity.Membro{}, nil)
+	service.EXPECT().FindMembers(gomock.Any()).Return([]*entity.Member{}, nil)
 	req, _ := http.NewRequest("POST", "/members/search", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -300,11 +300,11 @@ func TestPutStatus(t *testing.T) {
 	id := entity.NewID()
 	urlWithID := "/members/" + id.String() + "/status"
 	table := []data{
-		data{"/members/X/status", "", http.StatusBadRequest},
-		data{urlWithID, `{"active":false}`, http.StatusBadRequest},
-		data{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
-		data{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
-		data{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
+		{"/members/X/status", "", http.StatusBadRequest},
+		{urlWithID, `{"active":false}`, http.StatusBadRequest},
+		{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
+		{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
+		{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
 
 	r := gin.Default()
 	ctrl := gomock.NewController(t)

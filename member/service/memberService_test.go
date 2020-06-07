@@ -19,8 +19,8 @@ func TestListAllMembers(t *testing.T) {
 	repo := mock_repository.NewMockIMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
-	repo.EXPECT().FindAll(gomock.Any()).Return([]*entity.Membro{
-		&entity.Membro{},
+	repo.EXPECT().FindAll(gomock.Any()).Return([]*entity.Member{
+		&entity.Member{},
 	}, nil).AnyTimes()
 	membros, _ := service.FindMembers(map[string]interface{}{})
 	if len(membros) == 0 {
@@ -35,7 +35,7 @@ func TestFindMember(t *testing.T) {
 	service := NewMemberService(repo)
 
 	id := entity.NewID()
-	membro := &entity.Membro{
+	membro := &entity.Member{
 		ID: id,
 	}
 	repo.EXPECT().FindByID(id).Return(membro, nil).AnyTimes()
@@ -51,7 +51,7 @@ func TestSaveMember(t *testing.T) {
 	repo := mock_repository.NewMockIMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
-	membro := entity.Membro{}
+	membro := entity.Member{}
 
 	repo.EXPECT().Insert(&membro).Return(entity.NewID(), nil).AnyTimes()
 

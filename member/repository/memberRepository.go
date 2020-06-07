@@ -13,11 +13,11 @@ import (
 
 //go:generate mockgen -source=./memberRepository.go -destination=./mock/memberRepository_mock.go
 type IMemberRepository interface {
-	FindAll(filters mongo.QueryFilters) ([]*entity.Membro, error)
-	FindByID(id entity.ID) (*entity.Membro, error)
-	Insert(membro *entity.Membro) (entity.ID, error)
-	Search(text string) ([]*entity.Membro, error)
-	FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error)
+	FindAll(filters mongo.QueryFilters) ([]*entity.Member, error)
+	FindByID(id entity.ID) (*entity.Member, error)
+	Insert(membro *entity.Member) (entity.ID, error)
+	Search(text string) ([]*entity.Member, error)
+	FindMonthBirthday(date time.Time) ([]*entity.Person, error)
 	UpdateStatus(ID entity.ID, status bool) error
 	GenerateStatusHistory(id entity.ID, status bool, reason string, date time.Time) error
 }
@@ -33,13 +33,13 @@ var (
 
 func NewMemberRepository(session *mgo.Session) *memberRepository {
 	return &memberRepository{
-		col:        session.DB("disciples").C("Membro"),
+		col:        session.DB("disciples").C("Member"),
 		colHistory: session.DB("disciples").C("member_history"),
 	}
 }
 
-func (repo *memberRepository) FindAll(filters mongo.QueryFilters) ([]*entity.Membro, error) {
-	var result []*entity.Membro
+func (repo *memberRepository) FindAll(filters mongo.QueryFilters) ([]*entity.Member, error) {
+	var result []*entity.Member
 	err := repo.col.Find(filters).Select(bson.M{}).All(&result)
 	if err != nil {
 		return nil, err
@@ -47,8 +47,8 @@ func (repo *memberRepository) FindAll(filters mongo.QueryFilters) ([]*entity.Mem
 	return result, nil
 }
 
-func (repo *memberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
-	var result *entity.Membro
+func (repo *memberRepository) FindByID(id entity.ID) (*entity.Member, error) {
+	var result *entity.Member
 	err := repo.col.FindId(bson.ObjectIdHex(id.String())).One(&result)
 	if err != nil {
 		if err.Error() == "not found" {
@@ -59,13 +59,13 @@ func (repo *memberRepository) FindByID(id entity.ID) (*entity.Membro, error) {
 	return result, nil
 }
 
-func (repo *memberRepository) Insert(membro *entity.Membro) (entity.ID, error) {
+func (repo *memberRepository) Insert(membro *entity.Member) (entity.ID, error) {
 	membro.ID = entity.NewID()
 	return membro.ID, repo.col.Insert(membro)
 }
 
-func (repo *memberRepository) Search(text string) ([]*entity.Membro, error) {
-	var result []*entity.Membro
+func (repo *memberRepository) Search(text string) ([]*entity.Member, error) {
+	var result []*entity.Member
 	regex := bson.RegEx{fmt.Sprintf(".*%s*.", text), "i"}
 	err := repo.col.Find(
 		bson.M{
@@ -78,9 +78,9 @@ func (repo *memberRepository) Search(text string) ([]*entity.Membro, error) {
 	return result, err
 }
 
-func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error) {
-	var result []*entity.Membro
-	var resultParsed []*entity.Pessoa
+func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Person, error) {
+	var result []*entity.Member
+	var resultParsed []*entity.Person
 	err := repo.col.Find(bson.M{
 		"$expr": bson.M{
 			"$eq": []interface{}{
@@ -95,7 +95,7 @@ func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Pesso
 		return nil, err
 	}
 	for _, membro := range result {
-		resultParsed = append(resultParsed, &membro.Pessoa)
+		resultParsed = append(resultParsed, &membro.Person)
 	}
 	return resultParsed, nil
 }

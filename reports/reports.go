@@ -35,10 +35,10 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 	}
 
 	sort.Sort(entity.SortByBirthDay(members))
-	data := transformToCSVData(members, func(m *entity.Membro) []string {
+	data := transformToCSVData(members, func(m *entity.Member) []string {
 		return []string{
-			m.Pessoa.GetFullName(),
-			m.Pessoa.DtNascimento.Format("02/01"),
+			m.Person.GetFullName(),
+			m.Person.BirthDate.Format("02/01"),
 		}
 	})
 	return writeData(data), nil
@@ -61,10 +61,10 @@ func (report reportService) MariageReport() ([]byte, error) {
 	}
 
 	sort.Sort(entity.SortByMarriageDay(members))
-	data := transformToCSVData(members, func(m *entity.Membro) []string {
+	data := transformToCSVData(members, func(m *entity.Member) []string {
 		return []string{
-			m.Pessoa.GetFullName() + "&" + m.Pessoa.NomeConjuge,
-			m.Pessoa.DtCasamento.Format("02/01"),
+			m.Person.GetFullName() + "&" + m.Person.NomeConjuge,
+			m.Person.MarriageDate.Format("02/01"),
 		}
 	})
 
@@ -77,7 +77,7 @@ func (report reportService) MemberReport() ([]byte, error) {
 		return nil, err
 	}
 	sort.Sort(entity.SortByName(members))
-	return pdf.BuildPdf("Relatório de Membros", members)
+	return pdf.BuildPdf("Relatório de Members", members)
 }
 
 func (report reportService) LegalReport() ([]byte, error) {
@@ -87,20 +87,20 @@ func (report reportService) LegalReport() ([]byte, error) {
 	}
 	members = filterChildren(members)
 	sort.Sort(entity.SortByName(members))
-	return pdf.BuildPdf("Relatório de Membros - Juridico", members)
+	return pdf.BuildPdf("Relatório de Members - Juridico", members)
 }
 
-func filterChildren(members []*entity.Membro) []*entity.Membro {
-	filtered := []*entity.Membro{}
+func filterChildren(members []*entity.Member) []*entity.Member {
+	filtered := []*entity.Member{}
 	for _, v := range members {
-		if v.Classificacao() != "Criança" {
+		if v.Classification() != "Criança" {
 			filtered = append(filtered, v)
 		}
 	}
 	return filtered
 }
 
-func transformToCSVData(members []*entity.Membro, clojure func(*entity.Membro) []string) [][]string {
+func transformToCSVData(members []*entity.Member, clojure func(*entity.Member) []string) [][]string {
 	data := [][]string{}
 	data = append(data, []string{"Nome", "Data"})
 

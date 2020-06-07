@@ -39,15 +39,15 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 }
 
 func (handler *MemberHandler) PostMember(c *gin.Context) {
-	var membro entity.Membro
-	if err := c.ShouldBindWith(&membro, binding.JSON); err != nil {
+	var member entity.Member
+	if err := c.ShouldBindWith(&member, binding.JSON); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err)
 		return
 	}
 	var id entity.ID
 	var err error
-	membro.Active = true
-	if id, err = handler.service.SaveMember(&membro); err != nil {
+	member.Active = true
+	if id, err = handler.service.SaveMember(&member); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return
 	}

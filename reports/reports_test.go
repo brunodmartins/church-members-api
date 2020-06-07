@@ -12,34 +12,34 @@ import (
 )
 
 func TestTransformCSVToData(t *testing.T) {
-	t1, _ := time.Parse("02/01/2006", "10/05/1995")
+	t1, _ := time.Parse("02/01/2006", "07/06/2020")
 	t2, _ := time.Parse("02/01/2006", "22/03/2020")
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste",
-				Sobrenome:    "Teste",
-				DtNascimento: t1,
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName: "Teste",
+				LastName:  "Teste",
+				BirthDate: t1,
 			},
 		},
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste 2",
-				Sobrenome:    "Teste 2",
-				DtNascimento: t2,
+		{
+			Person: entity.Person{
+				FirstName: "Teste 2",
+				LastName:  "Teste 2",
+				BirthDate: t2,
 			},
 		},
 	}
-	data := transformToCSVData(members, func(m *entity.Membro) []string {
+	data := transformToCSVData(members, func(m *entity.Member) []string {
 		return []string{
-			m.Pessoa.GetFullName(),
-			m.Pessoa.DtNascimento.Format("02/01"),
+			m.Person.GetFullName(),
+			m.Person.BirthDate.Format("02/01"),
 		}
 	})
 	assert.Equal(t, 3, len(data))
 	assert.Equal(t, []string{"Nome", "Data"}, data[0])
 	assert.Equal(t, []string{"Teste 2 Teste 2", "22/03"}, data[2])
-	assert.Equal(t, []string{"Teste Teste", "10/05"}, data[1])
+	assert.Equal(t, []string{"Teste Teste", "07/06"}, data[1])
 }
 
 func TestBirthdayReportSuccess(t *testing.T) {
@@ -48,19 +48,19 @@ func TestBirthdayReportSuccess(t *testing.T) {
 	repo := mock_repo.NewMockReportRepository(ctrl)
 	service := NewReportsGenerator(repo)
 
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste",
-				Sobrenome:    "Teste",
-				DtNascimento: time.Now(),
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName: "Teste",
+				LastName:  "Teste",
+				BirthDate: time.Now(),
 			},
 		},
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Teste 2",
-				Sobrenome:    "Teste 2",
-				DtNascimento: time.Now(),
+		{
+			Person: entity.Person{
+				FirstName: "Teste 2",
+				LastName:  "Teste 2",
+				BirthDate: time.Now(),
 			},
 		},
 	}
@@ -100,13 +100,13 @@ func TestMarriageReportSuccess(t *testing.T) {
 	repo := mock_repo.NewMockReportRepository(ctrl)
 	service := NewReportsGenerator(repo)
 
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:        "Esposa",
-				Sobrenome:   "Teste",
-				DtCasamento: time.Now(),
-				NomeConjuge: "Marido Teste",
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName:    "Esposa",
+				LastName:     "Teste",
+				MarriageDate: time.Now(),
+				SpousesName:  "Marido Teste",
 			},
 		},
 	}
@@ -121,29 +121,29 @@ func TestGenerateMemberReport(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_repo.NewMockReportRepository(ctrl)
 	service := NewReportsGenerator(repo)
-	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
+	dtNascimento, _ := time.Parse("2006/01/02", "2020/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Bruno",
-				Sobrenome:    "Damasceno Martins",
-				DtNascimento: dtNascimento,
-				DtCasamento:  dtCasamento,
-				NomeConjuge:  "Leticia de Souza Soares da Costa",
-				Contato: entity.Contato{
-					DDDCelular:  11,
-					Celular:     953200587,
-					DDDTelefone: 11,
-					Telefone:    29435002,
-					Email:       "bdm2943@gmail.com",
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName:    "Test",
+				LastName:     "test test",
+				BirthDate:    dtNascimento,
+				MarriageDate: dtCasamento,
+				SpousesName:  "Test spuse",
+				Contact: entity.Contact{
+					CellPhoneArea: 99,
+					CellPhone:     1234567890,
+					PhoneArea:     99,
+					Phone:         12345678,
+					Email:         "teste@test.com",
 				},
-				Endereco: entity.Endereco{
-					Bairro:     "Belem",
-					Cidade:     "São Paulo",
-					UF:         "SP",
-					Logradouro: "Avenida Celso Garcia",
-					Numero:     1907,
+				Address: entity.Address{
+					District: "9",
+					City:     "Does not sleep",
+					State:    "My-State",
+					Address:  "XXXXX",
+					Number:   9,
 				},
 			},
 		},
@@ -170,29 +170,29 @@ func TestGenerateLegalReport(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_repo.NewMockReportRepository(ctrl)
 	service := NewReportsGenerator(repo)
-	dtNascimento, _ := time.Parse("2006/01/02", "1995/05/10")
+	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*entity.Membro{
-		&entity.Membro{
-			Pessoa: entity.Pessoa{
-				Nome:         "Bruno",
-				Sobrenome:    "Damasceno Martins",
-				DtNascimento: dtNascimento,
-				DtCasamento:  dtCasamento,
-				NomeConjuge:  "Leticia de Souza Soares da Costa",
-				Contato: entity.Contato{
-					DDDCelular:  11,
-					Celular:     953200587,
-					DDDTelefone: 11,
-					Telefone:    29435002,
-					Email:       "bdm2943@gmail.com",
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName:    "Test",
+				LastName:     "test test",
+				BirthDate:    dtNascimento,
+				MarriageDate: dtCasamento,
+				SpousesName:  "Test spuse",
+				Contact: entity.Contact{
+					CellPhoneArea: 99,
+					CellPhone:     1234567890,
+					PhoneArea:     99,
+					Phone:         12345678,
+					Email:         "teste@test.com",
 				},
-				Endereco: entity.Endereco{
-					Bairro:     "Belem",
-					Cidade:     "São Paulo",
-					UF:         "SP",
-					Logradouro: "Avenida Celso Garcia",
-					Numero:     1907,
+				Address: entity.Address{
+					District: "9",
+					City:     "Does not sleep",
+					State:    "My-State",
+					Address:  "XXXXX",
+					Number:   9,
 				},
 			},
 		},

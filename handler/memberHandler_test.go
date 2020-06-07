@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -60,7 +61,7 @@ func TestGetMemberOK(t *testing.T) {
 	service := mock_service.NewMockIMemberService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
-	member := &entity.Membro{}
+	member := &entity.Member{}
 	member.ID = entity.NewID()
 	service.EXPECT().FindMembersByID(member.ID).Return(member, nil).AnyTimes()
 
@@ -100,65 +101,12 @@ func TestPostMemberSucess(t *testing.T) {
 	memberHandler.SetUpRoutes(r)
 
 	w := httptest.NewRecorder()
-	body := `
-	{
-   "pessoa": {
-      "contato": {
-         "dddTelefone": 11,
-         "telefone": 29435002,
-         "dddCelular": 11,
-         "celular": 953200587,
-         "email": "bdm2943@gmail.com"
-      },
-      "endereco": {
-         "cep": "03805090",
-         "uf": "SP",
-         "cidade": "São Paulo",
-         "logradouro": "Rua Dario Costa Mattos",
-         "bairro": "Parque Boturussu",
-         "numero": 661,
-         "complemento": "Casa"
-      },
-      "escolaridade": {
-         "ensinoFundamental": true,
-         "ensinoMedio": true,
-         "ensinoSuperior": true
-      },
-      "nome": "Bruno",
-      "sobrenome": "Damasceno",
-      "dtNascimento": "1995-05-10T00:00:00-03:00",
-      "naturalidade": "Brasil",
-      "cidadeNascimento": "São Paulo",
-      "nomeMae": "Mae",
-      "nomePai": "Pai",
-      "estadoCivil": "S",
-      "sexo":"M",
-      "qtdIrmao": 1,
-      "qtdFilhos": 1,
-      "profissao": "Teste"
-   },
-   "religiao": {
-      "religiaoPais": "Crentes",
-      "batizadoCatolica": true,
-      "idadeConheceuEvangelho": 10,
-      "aceitouJesus": true,
-      "dtAceitouJesus": null,
-      "batizado": true,
-      "dtBatismo": null,
-      "localBatismo": "IEPEM",
-      "conheceDizimo": true,
-      "concordaDizimo": true,
-      "dizimista": true
-   },
-   "frequentaCultoSexta": true,
-   "frequentaCultoSabado": true,
-   "frequentaEBD": true,
-   "frequentaCultoDomingo": true
-}`
+	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
 	service.EXPECT().SaveMember(gomock.Any()).Return(entity.NewID(), nil)
 	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {
+		log.Print(string(w.Body.Bytes()))
 		t.Fail()
 	}
 }
@@ -173,61 +121,7 @@ func TestPostMemberFail(t *testing.T) {
 	memberHandler.SetUpRoutes(r)
 
 	w := httptest.NewRecorder()
-	body := `
-	{
-   "pessoa": {
-      "contato": {
-         "dddTelefone": 11,
-         "telefone": 29435002,
-         "dddCelular": 11,
-         "celular": 953200587,
-         "email": "bdm2943@gmail.com"
-      },
-      "endereco": {
-         "cep": "03805090",
-         "uf": "SP",
-         "cidade": "São Paulo",
-         "logradouro": "Rua Dario Costa Mattos",
-         "bairro": "Parque Boturussu",
-         "numero": 661,
-         "complemento": "Casa"
-      },
-      "escolaridade": {
-         "ensinoFundamental": true,
-         "ensinoMedio": true,
-         "ensinoSuperior": true
-      },
-      "nome": "Bruno",
-      "sobrenome": "Damasceno",
-      "dtNascimento": "1995-05-10T00:00:00-03:00",
-      "naturalidade": "Brasil",
-      "cidadeNascimento": "São Paulo",
-      "nomeMae": "Mae",
-      "nomePai": "Pai",
-      "estadoCivil": "S",
-      "sexo":"M",
-      "qtdIrmao": 1,
-      "qtdFilhos": 1,
-      "profissao": "Teste"
-   },
-   "religiao": {
-      "religiaoPais": "Crentes",
-      "batizadoCatolica": true,
-      "idadeConheceuEvangelho": 10,
-      "aceitouJesus": true,
-      "dtAceitouJesus": null,
-      "batizado": true,
-      "dtBatismo": null,
-      "localBatismo": "IEPEM",
-      "conheceDizimo": true,
-      "concordaDizimo": true,
-      "dizimista": true
-   },
-   "frequentaCultoSexta": true,
-   "frequentaCultoSabado": true,
-   "frequentaEBD": true,
-   "frequentaCultoDomingo": true
-}`
+	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
 	service.EXPECT().SaveMember(gomock.Any()).Return(entity.NewID(), errors.New(""))
 	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
 	r.ServeHTTP(w, req)
@@ -248,15 +142,15 @@ func TestPostMemberSearch(t *testing.T) {
 	w := httptest.NewRecorder()
 	body := `
 	{
-		member(sexo:"M", active:false){
-				pessoa{
-					nome,
-					sobrenome
-					sexo
+		member(gender:"M", active:false){
+				person{
+					firstName,
+					lastName,
+					gender
 				}
 		}
 	}`
-	service.EXPECT().FindMembers(gomock.Any()).Return([]*entity.Membro{}, nil)
+	service.EXPECT().FindMembers(gomock.Any()).Return([]*entity.Member{}, nil)
 	req, _ := http.NewRequest("POST", "/members/search", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -276,11 +170,11 @@ func TestPostMemberSearchError(t *testing.T) {
 	w := httptest.NewRecorder()
 	body := `
 	{
-		member(sexo:"M", active:false){
-				pessoa{
-					nome,
-					sobreno
-					sexo
+		member(gender:"M", active:false){
+				person{
+					name,
+					lastNa
+					gender
 				}
 		}
 	}`
@@ -300,11 +194,11 @@ func TestPutStatus(t *testing.T) {
 	id := entity.NewID()
 	urlWithID := "/members/" + id.String() + "/status"
 	table := []data{
-		data{"/members/X/status", "", http.StatusBadRequest},
-		data{urlWithID, `{"active":false}`, http.StatusBadRequest},
-		data{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
-		data{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
-		data{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
+		{"/members/X/status", "", http.StatusBadRequest},
+		{urlWithID, `{"active":false}`, http.StatusBadRequest},
+		{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
+		{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
+		{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
 
 	r := gin.Default()
 	ctrl := gomock.NewController(t)

@@ -53,43 +53,43 @@ func setValue(value string, builder *gopdf.GoPdf) {
 	builder.Cell(nil, value)
 }
 
-func buildRowSection(data *entity.Membro, builder *gopdf.GoPdf) {
+func buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
 	setField("Nome:", builder)
-	setValue(data.Pessoa.GetFullName(), builder)
+	setValue(data.Person.GetFullName(), builder)
 	builder.Br(15)
 	setField("Classificacao:", builder)
-	setValue(data.Classificacao(), builder)
+	setValue(data.Classification(), builder)
 	builder.Br(15)
-	setField("Endereco:", builder)
-	setValue(data.Pessoa.Endereco.GetFormatted(), builder)
+	setField("Address:", builder)
+	setValue(data.Person.Address.GetFormatted(), builder)
 	builder.Br(15)
 
 	setField("Dt. Nascimento:", builder)
-	setValue(data.Pessoa.DtNascimento.Format("02/01/2006"), builder)
+	setValue(data.Person.BirthDate.Format("02/01/2006"), builder)
 	builder.SetX(builder.GetX() + 10)
-	if !data.Pessoa.DtCasamento.IsZero() {
+	if !data.Person.MarriageDate.IsZero() {
 		setField("Dt. Casamento:", builder)
-		setValue(data.Pessoa.DtCasamento.Format("02/01/2006"), builder)
+		setValue(data.Person.MarriageDate.Format("02/01/2006"), builder)
 	}
 	builder.Br(15)
 
-	setField("Telefone:", builder)
-	if data.Pessoa.Contato.Telefone == 0 {
+	setField("Phone:", builder)
+	if data.Person.Contact.Phone == 0 {
 		setValue("N/A", builder)
 	} else {
-		setValue(data.Pessoa.Contato.GetFormattedPhone(), builder)
+		setValue(data.Person.Contact.GetFormattedPhone(), builder)
 	}
 	builder.SetX(builder.GetX() + 10)
-	setField("Celular:", builder)
-	if data.Pessoa.Contato.Celular == 0 {
+	setField("CellPhone:", builder)
+	if data.Person.Contact.CellPhone == 0 {
 		setValue("N/A", builder)
 	} else {
-		setValue(data.Pessoa.Contato.GetFormattedCellPhone(), builder)
+		setValue(data.Person.Contact.GetFormattedCellPhone(), builder)
 	}
 	builder.Br(15)
 
 	setField("Email:", builder)
-	setValue(data.Pessoa.Contato.Email, builder)
+	setValue(data.Person.Contact.Email, builder)
 
 	builder.Br(10)
 	builder.SetLineWidth(2)
@@ -99,16 +99,16 @@ func buildRowSection(data *entity.Membro, builder *gopdf.GoPdf) {
 
 }
 
-func buildSummarySection(data []*entity.Membro, builder *gopdf.GoPdf) {
-	setField("Quantidade de Membros:", builder)
+func buildSummarySection(data []*entity.Member, builder *gopdf.GoPdf) {
+	setField("Quantidade de Members:", builder)
 	setValue(fmt.Sprintf("%d", len(data)), builder)
 	builder.Br(15)
 
 	summary := map[string]int{}
 	for _, member := range data {
-		count := summary[member.Classificacao()]
+		count := summary[member.Classification()]
 		count++
-		summary[member.Classificacao()] = count
+		summary[member.Classification()] = count
 	}
 
 	for key, value := range summary {
@@ -119,7 +119,7 @@ func buildSummarySection(data []*entity.Membro, builder *gopdf.GoPdf) {
 
 }
 
-func BuildPdf(title string, data []*entity.Membro) ([]byte, error) {
+func BuildPdf(title string, data []*entity.Member) ([]byte, error) {
 	pdf := &gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	if err := setFont(pdf); err != nil {
@@ -129,13 +129,13 @@ func BuildPdf(title string, data []*entity.Membro) ([]byte, error) {
 	pdf.AddPage()
 	const maxPerPage int = 7
 	count := 0
-	for _, membro := range data {
+	for _, member := range data {
 		if count == maxPerPage {
 			pdf.AddPage()
 			count = 0
 		}
 		count++
-		buildRowSection(membro, pdf)
+		buildRowSection(member, pdf)
 	}
 	pdf.AddPage()
 	buildSummarySection(data, pdf)

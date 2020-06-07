@@ -9,8 +9,8 @@ import (
 
 //go:generate mockgen -source=./reportsRepository.go -destination=./mock/reportsRepository_mock.go
 type ReportRepository interface {
-	FindMembersActive() ([]*entity.Membro, error)
-	FindMembersActiveAndMarried() ([]*entity.Membro, error)
+	FindMembersActive() ([]*entity.Member, error)
+	FindMembersActiveAndMarried() ([]*entity.Member, error)
 }
 
 type reportRepositoryImpl struct {
@@ -19,15 +19,15 @@ type reportRepositoryImpl struct {
 
 func NewReportRepository(session *mgo.Session) ReportRepository {
 	return &reportRepositoryImpl{
-		col: session.DB("disciples").C("Membro"),
+		col: session.DB("disciples").C("member"),
 	}
 }
 
-func (repo reportRepositoryImpl) FindMembersActive() ([]*entity.Membro, error) {
-	var result []*entity.Membro
+func (repo reportRepositoryImpl) FindMembersActive() ([]*entity.Member, error) {
+	var result []*entity.Member
 	filters := mongo.QueryFilters{}
 	filters.AddFilter("active", true)
-	err := repo.col.Find(filters).Sort("pessoa.nome", "pessoa.sobrenome").Select(bson.M{}).All(&result)
+	err := repo.col.Find(filters).Sort("person.firstName", "person.lastName").Select(bson.M{}).All(&result)
 	if err != nil {
 		return nil, err
 	}
@@ -35,11 +35,11 @@ func (repo reportRepositoryImpl) FindMembersActive() ([]*entity.Membro, error) {
 
 }
 
-func (repo reportRepositoryImpl) FindMembersActiveAndMarried() ([]*entity.Membro, error) {
-	var result []*entity.Membro
+func (repo reportRepositoryImpl) FindMembersActiveAndMarried() ([]*entity.Member, error) {
+	var result []*entity.Member
 	filters := mongo.QueryFilters{}
 	filters.AddFilter("active", true)
-	filters.AddFilter("pessoa.dtCasamento", bson.M{"$exists": true})
+	filters.AddFilter("person.marriageDate", bson.M{"$exists": true})
 	err := repo.col.Find(filters).Select(bson.M{}).All(&result)
 	if err != nil {
 		return nil, err

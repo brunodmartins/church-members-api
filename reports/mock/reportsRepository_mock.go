@@ -34,10 +34,10 @@ func (m *MockReportRepository) EXPECT() *MockReportRepositoryMockRecorder {
 }
 
 // FindMembersActive mocks base method
-func (m *MockReportRepository) FindMembersActive() ([]*entity.Membro, error) {
+func (m *MockReportRepository) FindMembersActive() ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersActive")
-	ret0, _ := ret[0].([]*entity.Membro)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -49,10 +49,10 @@ func (mr *MockReportRepositoryMockRecorder) FindMembersActive() *gomock.Call {
 }
 
 // FindMembersActiveAndMarried mocks base method
-func (m *MockReportRepository) FindMembersActiveAndMarried() ([]*entity.Membro, error) {
+func (m *MockReportRepository) FindMembersActiveAndMarried() ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersActiveAndMarried")
-	ret0, _ := ret[0].([]*entity.Membro)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

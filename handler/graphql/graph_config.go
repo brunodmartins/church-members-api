@@ -13,7 +13,7 @@ func CreateSchema(service service.IMemberService) graphql.Schema {
 				"member": &graphql.Field{
 					Type: graphql.NewList(memberType),
 					Args: graphql.FieldConfigArgument{
-						"sexo": &graphql.ArgumentConfig{
+						"gender": &graphql.ArgumentConfig{
 							Type: graphql.String,
 						},
 						"active": &graphql.ArgumentConfig{

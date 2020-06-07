@@ -35,10 +35,10 @@ func (m *MockIMemberService) EXPECT() *MockIMemberServiceMockRecorder {
 }
 
 // FindMembers mocks base method
-func (m *MockIMemberService) FindMembers(filters map[string]interface{}) ([]*entity.Membro, error) {
+func (m *MockIMemberService) FindMembers(filters map[string]interface{}) ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembers", filters)
-	ret0, _ := ret[0].([]*entity.Membro)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +50,10 @@ func (mr *MockIMemberServiceMockRecorder) FindMembers(filters interface{}) *gomo
 }
 
 // FindMembersByID mocks base method
-func (m *MockIMemberService) FindMembersByID(id entity.ID) (*entity.Membro, error) {
+func (m *MockIMemberService) FindMembersByID(id entity.ID) (*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersByID", id)
-	ret0, _ := ret[0].(*entity.Membro)
+	ret0, _ := ret[0].(*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,7 +65,7 @@ func (mr *MockIMemberServiceMockRecorder) FindMembersByID(id interface{}) *gomoc
 }
 
 // SaveMember mocks base method
-func (m *MockIMemberService) SaveMember(member *entity.Membro) (entity.ID, error) {
+func (m *MockIMemberService) SaveMember(member *entity.Member) (entity.ID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveMember", member)
 	ret0, _ := ret[0].(entity.ID)
@@ -80,10 +80,10 @@ func (mr *MockIMemberServiceMockRecorder) SaveMember(member interface{}) *gomock
 }
 
 // FindMonthBirthday mocks base method
-func (m *MockIMemberService) FindMonthBirthday(date time.Time) ([]*entity.Pessoa, error) {
+func (m *MockIMemberService) FindMonthBirthday(date time.Time) ([]*entity.Person, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMonthBirthday", date)
-	ret0, _ := ret[0].([]*entity.Pessoa)
+	ret0, _ := ret[0].([]*entity.Person)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

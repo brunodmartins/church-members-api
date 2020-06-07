@@ -60,8 +60,8 @@ func buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
 	setField("Classificacao:", builder)
 	setValue(data.Classification(), builder)
 	builder.Br(15)
-	setField("Endereco:", builder)
-	setValue(data.Person.Endereco.GetFormatted(), builder)
+	setField("Address:", builder)
+	setValue(data.Person.Address.GetFormatted(), builder)
 	builder.Br(15)
 
 	setField("Dt. Nascimento:", builder)

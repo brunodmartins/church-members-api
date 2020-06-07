@@ -71,16 +71,16 @@ func TestFindMembersWithFilters(t *testing.T) {
 	service := NewMemberService(repo)
 	filters := mongo.QueryFilters{}
 	filters.AddFilter("active", true)
-	filters.AddFilter("pessoa.sexo", "F")
+	filters.AddFilter("person.gender", "F")
 	regex := bson.RegEx{fmt.Sprintf(".*%s*.", "Bruno"), "i"}
 	filters.AddFilter("$or", []bson.M{
-		{"pessoa.nome": regex},
-		{"pessoa.sobrenome": regex},
+		{"person.firstName": regex},
+		{"person.lastName": regex},
 	})
 	repo.EXPECT().FindAll(gomock.Eq(filters)).Return(nil, nil).AnyTimes()
 
 	service.FindMembers(map[string]interface{}{
-		"sexo":   "F",
+		"gender": "F",
 		"active": true,
 		"name":   "Bruno",
 	})

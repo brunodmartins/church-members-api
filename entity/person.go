@@ -23,6 +23,6 @@ type Person struct {
 }
 
 //GetFullName of a person
-func (pessoa Person) GetFullName() string {
-	return pessoa.FirstName + " " + pessoa.LastName
+func (person Person) GetFullName() string {
+	return person.FirstName + " " + person.LastName
 }

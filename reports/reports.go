@@ -63,7 +63,7 @@ func (report reportService) MariageReport() ([]byte, error) {
 	sort.Sort(entity.SortByMarriageDay(members))
 	data := transformToCSVData(members, func(m *entity.Member) []string {
 		return []string{
-			m.Person.GetFullName() + "&" + m.Person.NomeConjuge,
+			m.Person.GetFullName() + "&" + m.Person.SpousesName,
 			m.Person.MarriageDate.Format("02/01"),
 		}
 	})

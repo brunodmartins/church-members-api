@@ -13,10 +13,11 @@ require (
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/graphql-go/graphql v0.7.8
+	github.com/mercadolibre/go-meli-toolkit v0.0.0-20200529163511-53388512232a
 	github.com/signintech/gopdf v0.9.7
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
 	golang.org/x/tools v0.0.0-20200321224714-0d839f3cf2ed // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )

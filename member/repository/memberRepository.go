@@ -70,8 +70,8 @@ func (repo *memberRepository) Search(text string) ([]*entity.Member, error) {
 	err := repo.col.Find(
 		bson.M{
 			"$or": []bson.M{
-				{"pessoa.nome": regex},
-				{"pessoa.sobrenome": regex},
+				{"person.firstName": regex},
+				{"person.lastName": regex},
 			},
 		},
 	).Select(bson.M{}).All(&result)
@@ -85,7 +85,7 @@ func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Perso
 		"$expr": bson.M{
 			"$eq": []interface{}{
 				bson.M{
-					"$month": "$pessoa.dtNascimento",
+					"$month": "$person.dtNascimento",
 				},
 				date.Month(),
 			},

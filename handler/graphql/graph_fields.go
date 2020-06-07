@@ -44,8 +44,8 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"fullName": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
-				pessoa := p.Source.(entity.Person)
-				return pessoa.GetFullName(), nil
+				person := p.Source.(entity.Person)
+				return person.GetFullName(), nil
 			},
 		},
 		"gender": &graphql.Field{
@@ -63,11 +63,11 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"marriageDate": &graphql.Field{
 			Type: graphql.DateTime,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				pessoa := p.Source.(entity.Person)
-				if pessoa.MarriageDate.IsZero() {
+				person := p.Source.(entity.Person)
+				if person.MarriageDate.IsZero() {
 					return nil, nil
 				}
-				return pessoa.MarriageDate, nil
+				return person.MarriageDate, nil
 			},
 		},
 		"contact": &graphql.Field{

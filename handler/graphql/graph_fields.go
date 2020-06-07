@@ -25,8 +25,8 @@ var memberType = graphql.NewObject(graphql.ObjectConfig{
 		"classification": &graphql.Field{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				membro := p.Source.(*entity.Member)
-				return membro.Classification(), nil
+				member := p.Source.(*entity.Member)
+				return member.Classification(), nil
 			},
 		},
 	},

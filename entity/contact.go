@@ -9,7 +9,7 @@ type Contact struct {
 	PhoneArea     int    `json:"phoneArea,omitempty" bson:"phoneArea"`
 	Phone         int    `json:"phone,omitempty"`
 	CellPhoneArea int    `json:"cellPhoneArea" bson:"cellPhoneArea"`
-	CellPhone     int    `json:"cellPhone"`
+	CellPhone     int    `json:"cellPhone" bson:"cellPhone"`
 	Email         string `json:"email"`
 }
 

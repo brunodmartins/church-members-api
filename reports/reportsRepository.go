@@ -19,7 +19,7 @@ type reportRepositoryImpl struct {
 
 func NewReportRepository(session *mgo.Session) ReportRepository {
 	return &reportRepositoryImpl{
-		col: session.DB("disciples").C("Member"),
+		col: session.DB("disciples").C("member"),
 	}
 }
 

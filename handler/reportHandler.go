@@ -57,7 +57,7 @@ func (handler reportHandler) generateMembersReport(c *gin.Context) {
 		c.Status(http.StatusOK)
 		c.Header("Content-Type", "application/pdf")
 		c.Header("Content-Disposition", "attachment")
-		c.Header("filename", "membros.pdf")
+		c.Header("filename", "members.pdf")
 		c.Data(200, "application/pdf", output)
 	}
 }
@@ -70,7 +70,7 @@ func (handler reportHandler) generateLegalReport(c *gin.Context) {
 		c.Status(http.StatusOK)
 		c.Header("Content-Type", "application/pdf")
 		c.Header("Content-Disposition", "attachment")
-		c.Header("filename", "membros_juridico.pdf")
+		c.Header("filename", "members_juridico.pdf")
 		c.Data(200, "application/pdf", output)
 	}
 }

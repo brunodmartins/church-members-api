@@ -66,18 +66,18 @@ func (mr *MockIMemberRepositoryMockRecorder) FindByID(id interface{}) *gomock.Ca
 }
 
 // Insert mocks base method
-func (m *MockIMemberRepository) Insert(membro *entity.Member) (entity.ID, error) {
+func (m *MockIMemberRepository) Insert(member *entity.Member) (entity.ID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Insert", membro)
+	ret := m.ctrl.Call(m, "Insert", member)
 	ret0, _ := ret[0].(entity.ID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Insert indicates an expected call of Insert
-func (mr *MockIMemberRepositoryMockRecorder) Insert(membro interface{}) *gomock.Call {
+func (mr *MockIMemberRepositoryMockRecorder) Insert(member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockIMemberRepository)(nil).Insert), membro)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockIMemberRepository)(nil).Insert), member)
 }
 
 // Search mocks base method

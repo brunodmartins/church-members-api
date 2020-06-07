@@ -129,13 +129,13 @@ func BuildPdf(title string, data []*entity.Member) ([]byte, error) {
 	pdf.AddPage()
 	const maxPerPage int = 7
 	count := 0
-	for _, membro := range data {
+	for _, member := range data {
 		if count == maxPerPage {
 			pdf.AddPage()
 			count = 0
 		}
 		count++
-		buildRowSection(membro, pdf)
+		buildRowSection(member, pdf)
 	}
 	pdf.AddPage()
 	buildSummarySection(data, pdf)

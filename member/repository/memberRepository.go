@@ -15,7 +15,7 @@ import (
 type IMemberRepository interface {
 	FindAll(filters mongo.QueryFilters) ([]*entity.Member, error)
 	FindByID(id entity.ID) (*entity.Member, error)
-	Insert(membro *entity.Member) (entity.ID, error)
+	Insert(member *entity.Member) (entity.ID, error)
 	Search(text string) ([]*entity.Member, error)
 	FindMonthBirthday(date time.Time) ([]*entity.Person, error)
 	UpdateStatus(ID entity.ID, status bool) error
@@ -33,7 +33,7 @@ var (
 
 func NewMemberRepository(session *mgo.Session) *memberRepository {
 	return &memberRepository{
-		col:        session.DB("disciples").C("Member"),
+		col:        session.DB("disciples").C("member"),
 		colHistory: session.DB("disciples").C("member_history"),
 	}
 }
@@ -59,9 +59,9 @@ func (repo *memberRepository) FindByID(id entity.ID) (*entity.Member, error) {
 	return result, nil
 }
 
-func (repo *memberRepository) Insert(membro *entity.Member) (entity.ID, error) {
-	membro.ID = entity.NewID()
-	return membro.ID, repo.col.Insert(membro)
+func (repo *memberRepository) Insert(member *entity.Member) (entity.ID, error) {
+	member.ID = entity.NewID()
+	return member.ID, repo.col.Insert(member)
 }
 
 func (repo *memberRepository) Search(text string) ([]*entity.Member, error) {
@@ -94,8 +94,8 @@ func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Perso
 	if err != nil {
 		return nil, err
 	}
-	for _, membro := range result {
-		resultParsed = append(resultParsed, &membro.Person)
+	for _, member := range result {
+		resultParsed = append(resultParsed, &member.Person)
 	}
 	return resultParsed, nil
 }

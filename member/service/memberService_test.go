@@ -22,8 +22,8 @@ func TestListAllMembers(t *testing.T) {
 	repo.EXPECT().FindAll(gomock.Any()).Return([]*entity.Member{
 		&entity.Member{},
 	}, nil).AnyTimes()
-	membros, _ := service.FindMembers(map[string]interface{}{})
-	if len(membros) == 0 {
+	members, _ := service.FindMembers(map[string]interface{}{})
+	if len(members) == 0 {
 		t.Error("No members returned from database")
 	}
 }
@@ -35,12 +35,12 @@ func TestFindMember(t *testing.T) {
 	service := NewMemberService(repo)
 
 	id := entity.NewID()
-	membro := &entity.Member{
+	member := &entity.Member{
 		ID: id,
 	}
-	repo.EXPECT().FindByID(id).Return(membro, nil).AnyTimes()
-	membroFound, _ := service.FindMembersByID(id)
-	if membroFound.ID != id {
+	repo.EXPECT().FindByID(id).Return(member, nil).AnyTimes()
+	memberFound, _ := service.FindMembersByID(id)
+	if memberFound.ID != id {
 		t.Error("Member not found")
 	}
 }
@@ -51,11 +51,11 @@ func TestSaveMember(t *testing.T) {
 	repo := mock_repository.NewMockIMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
-	membro := entity.Member{}
+	member := entity.Member{}
 
-	repo.EXPECT().Insert(&membro).Return(entity.NewID(), nil).AnyTimes()
+	repo.EXPECT().Insert(&member).Return(entity.NewID(), nil).AnyTimes()
 
-	id, err := service.SaveMember(&membro)
+	id, err := service.SaveMember(&member)
 	if err != nil {
 		t.Fail()
 	}

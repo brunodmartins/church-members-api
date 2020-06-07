@@ -7,7 +7,7 @@ import (
 //Member struct
 type Member struct {
 	ID                     ID       `json:"id" bson:"_id,omitempty"`
-	OldChurch              string   `json:"oldChurch,omitempty"`
+	OldChurch              string   `json:"oldChurch,omitempty" bson:"oldChurch"`
 	AttendsFridayWorship   bool     `json:"attendsFridayWorship" bson:"attendsFridayWorship"`
 	AttendsSaturdayWorship bool     `json:"attendsSaturdayWorship" bson:"attendsSaturdayWorship"`
 	AttendsSundayWorship   bool     `json:"attendsSundayWorship" bson:"attendsSundayWorship"`

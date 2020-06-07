@@ -7,6 +7,7 @@ import (
 	"github.com/BrunoDM2943/church-members-api/handler"
 	"github.com/BrunoDM2943/church-members-api/handler/filters"
 	_ "github.com/BrunoDM2943/church-members-api/infra/config"
+	_ "github.com/BrunoDM2943/church-members-api/infra/i18n"
 	mongo2 "github.com/BrunoDM2943/church-members-api/infra/mongo"
 	"github.com/BrunoDM2943/church-members-api/member/repository"
 	"github.com/BrunoDM2943/church-members-api/member/service"

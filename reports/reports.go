@@ -7,7 +7,9 @@ import (
 	"sort"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
+	tr "github.com/BrunoDM2943/church-members-api/infra/i18n"
 	"github.com/BrunoDM2943/church-members-api/reports/pdf"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 //go:generate mockgen -source=./reports.go -destination=./mock/reports_mock.go
@@ -77,7 +79,12 @@ func (report reportService) MemberReport() ([]byte, error) {
 		return nil, err
 	}
 	sort.Sort(entity.SortByName(members))
-	return pdf.BuildPdf("Relatório de Members", members)
+	return pdf.BuildPdf(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Reports.Title.Default",
+			Other: "Member's report",
+		},
+	}), members)
 }
 
 func (report reportService) LegalReport() ([]byte, error) {
@@ -87,7 +94,12 @@ func (report reportService) LegalReport() ([]byte, error) {
 	}
 	members = filterChildren(members)
 	sort.Sort(entity.SortByName(members))
-	return pdf.BuildPdf("Relatório de Members - Juridico", members)
+	return pdf.BuildPdf(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Reports.Title.Legal",
+			Other: "Member's report - Legal",
+		},
+	}), members)
 }
 
 func filterChildren(members []*entity.Member) []*entity.Member {
@@ -102,7 +114,17 @@ func filterChildren(members []*entity.Member) []*entity.Member {
 
 func transformToCSVData(members []*entity.Member, clojure func(*entity.Member) []string) [][]string {
 	data := [][]string{}
-	data = append(data, []string{"Nome", "Data"})
+	data = append(data, []string{tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Name",
+			Other: "Name",
+		},
+	}), tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Date",
+			Other: "Date",
+		},
+	})})
 
 	for _, member := range members {
 		data = append(data, clojure(member))

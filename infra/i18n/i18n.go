@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
@@ -20,9 +21,10 @@ func init() {
 func loadBundle(language language.Tag) *i18n.Bundle {
 	bundle := i18n.NewBundle(language)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	languageStr := language.String()
 	logrus.Infof("Loading bundle for language %s", language)
-	bundle.MustLoadMessageFile(fmt.Sprintf("./bundles/%s.toml", languageStr))
+	base := os.Getenv("GOPATH")
+	appPath := "github.com/BrunoDM2943/church-members-api"
+	bundle.MustLoadMessageFile(fmt.Sprintf("%s/src/%s/bundles/%s.toml", base, appPath, language))
 	logrus.Infof("Bundle %s loaded", language)
 	return bundle
 }

@@ -71,7 +71,7 @@ func buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
 			Other: "Classification",
 		},
 	}), builder)
-	setValue(data.Classification(), builder)
+	setValue(data.ClassificationLocalized(tr.Localizer), builder)
 	builder.Br(15)
 	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -156,7 +156,7 @@ func buildSummarySection(data []*entity.Member, builder *gopdf.GoPdf) {
 	for _, member := range data {
 		count := summary[member.Classification()]
 		count++
-		summary[member.Classification()] = count
+		summary[member.ClassificationLocalized(tr.Localizer)] = count
 	}
 
 	for key, value := range summary {

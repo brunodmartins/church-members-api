@@ -105,7 +105,7 @@ func (report reportService) LegalReport() ([]byte, error) {
 func filterChildren(members []*entity.Member) []*entity.Member {
 	filtered := []*entity.Member{}
 	for _, v := range members {
-		if v.Classification() != "Criança" {
+		if v.Classification() != "Children" {
 			filtered = append(filtered, v)
 		}
 	}

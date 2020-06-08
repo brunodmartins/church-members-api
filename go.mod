@@ -19,7 +19,7 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.4.0
-	github.com/ugorji/go/codec v1.1.7 // indirect
+	github.com/ugorji/go v1.1.7 // indirect
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
 	golang.org/x/sys v0.0.0-20190922100055-0a153f010e69 // indirect
 	golang.org/x/text v0.3.2

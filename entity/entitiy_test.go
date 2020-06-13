@@ -25,35 +25,35 @@ func TestFormattedContact(t *testing.T) {
 
 func TestClassificacao(t *testing.T) {
 	t.Run("Crianca", func(t *testing.T) {
-		assert.Equal(t, "Criança", Member{
+		assert.Equal(t, "Children", Member{
 			Person: Person{
 				BirthDate: time.Now(),
 			},
 		}.Classification())
 	})
 	t.Run("Adolescente", func(t *testing.T) {
-		assert.Equal(t, "Adolescente", Member{
+		assert.Equal(t, "Teen", Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-17, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Jovem", func(t *testing.T) {
-		assert.Equal(t, "Jovem", Member{
+		assert.Equal(t, "Young", Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-29, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Adulto Solteiro", func(t *testing.T) {
-		assert.Equal(t, "Adulto", Member{
+		assert.Equal(t, "Adult", Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-33, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Adulto Casado", func(t *testing.T) {
-		assert.Equal(t, "Adulto", Member{
+		assert.Equal(t, "Adult", Member{
 			Person: Person{
 				BirthDate:    time.Now().AddDate(-25, 0, 0),
 				MarriageDate: time.Now(),

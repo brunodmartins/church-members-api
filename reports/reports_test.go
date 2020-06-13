@@ -37,7 +37,7 @@ func TestTransformCSVToData(t *testing.T) {
 		}
 	})
 	assert.Equal(t, 3, len(data))
-	assert.Equal(t, []string{"Nome", "Data"}, data[0])
+	assert.Equal(t, []string{"Name", "Date"}, data[0])
 	assert.Equal(t, []string{"Teste 2 Teste 2", "22/03"}, data[2])
 	assert.Equal(t, []string{"Teste Teste", "07/06"}, data[1])
 }

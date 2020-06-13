@@ -23,9 +23,12 @@ func wrapEnvVariables() {
 	viper.SetEnvPrefix("VPR")
 	viper.BindEnv("CHURCH_MEMBERS_DATABASE_URL")
 	viper.BindEnv("CHURCH_MEMBERS_ACCESS_TOKEN")
+	viper.BindEnv("CHURCH_NAME")
 
 	viper.Set("mongo.url", viper.GetString("CHURCH_MEMBERS_DATABASE_URL"))
 	viper.Set("auth.token", viper.GetString("CHURCH_MEMBERS_ACCESS_TOKEN"))
+	viper.Set("church.name", viper.GetString("CHURCH_NAME"))
+
 }
 
 func loadViper() {

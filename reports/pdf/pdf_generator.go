@@ -6,7 +6,10 @@ import (
 	"fmt"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
+	tr "github.com/BrunoDM2943/church-members-api/infra/i18n"
+	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/signintech/gopdf"
+	"github.com/spf13/viper"
 )
 
 func buildFirstPageSection(title string, builder *gopdf.GoPdf) {
@@ -19,7 +22,7 @@ func buildFirstPageSection(title string, builder *gopdf.GoPdf) {
 
 	builder.SetX(0)
 	builder.SetY(100)
-	builder.CellWithOption(rect, "Igreja Evangélica de Pinheiros na Vila São Francisco", options)
+	builder.CellWithOption(rect, viper.GetString("church.name"), options)
 	builder.SetY(120)
 	builder.SetX(0)
 	builder.CellWithOption(rect, title, options)
@@ -45,7 +48,7 @@ func toBytes(builder *gopdf.GoPdf) []byte {
 }
 
 func setField(field string, builder *gopdf.GoPdf) {
-	builder.Cell(nil, field)
+	builder.Cell(nil, fmt.Sprintf("%s:", field))
 	builder.SetX(builder.GetX() + 10)
 }
 
@@ -54,33 +57,68 @@ func setValue(value string, builder *gopdf.GoPdf) {
 }
 
 func buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
-	setField("Nome:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Name",
+			Other: "Name",
+		},
+	}), builder)
 	setValue(data.Person.GetFullName(), builder)
 	builder.Br(15)
-	setField("Classificacao:", builder)
-	setValue(data.Classification(), builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Classification",
+			Other: "Classification",
+		},
+	}), builder)
+	setValue(data.ClassificationLocalized(tr.Localizer), builder)
 	builder.Br(15)
-	setField("Address:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Address",
+			Other: "Address",
+		},
+	}), builder)
 	setValue(data.Person.Address.GetFormatted(), builder)
 	builder.Br(15)
 
-	setField("Dt. Nascimento:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.BirthDate",
+			Other: "Birth date",
+		},
+	}), builder)
 	setValue(data.Person.BirthDate.Format("02/01/2006"), builder)
 	builder.SetX(builder.GetX() + 10)
 	if !data.Person.MarriageDate.IsZero() {
-		setField("Dt. Casamento:", builder)
+		setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "Domain.MarriageDate",
+				Other: "Marriage Date",
+			},
+		}), builder)
 		setValue(data.Person.MarriageDate.Format("02/01/2006"), builder)
 	}
 	builder.Br(15)
 
-	setField("Phone:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Phone",
+			Other: "Phone",
+		},
+	}), builder)
 	if data.Person.Contact.Phone == 0 {
 		setValue("N/A", builder)
 	} else {
 		setValue(data.Person.Contact.GetFormattedPhone(), builder)
 	}
 	builder.SetX(builder.GetX() + 10)
-	setField("CellPhone:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.CellPhone",
+			Other: "CellPhone",
+		},
+	}), builder)
 	if data.Person.Contact.CellPhone == 0 {
 		setValue("N/A", builder)
 	} else {
@@ -88,7 +126,12 @@ func buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
 	}
 	builder.Br(15)
 
-	setField("Email:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Email",
+			Other: "Email",
+		},
+	}), builder)
 	setValue(data.Person.Contact.Email, builder)
 
 	builder.Br(10)
@@ -100,7 +143,12 @@ func buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
 }
 
 func buildSummarySection(data []*entity.Member, builder *gopdf.GoPdf) {
-	setField("Quantidade de Members:", builder)
+	setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.MembersQuantity",
+			Other: "Number of members",
+		},
+	}), builder)
 	setValue(fmt.Sprintf("%d", len(data)), builder)
 	builder.Br(15)
 
@@ -108,7 +156,7 @@ func buildSummarySection(data []*entity.Member, builder *gopdf.GoPdf) {
 	for _, member := range data {
 		count := summary[member.Classification()]
 		count++
-		summary[member.Classification()] = count
+		summary[member.ClassificationLocalized(tr.Localizer)] = count
 	}
 
 	for key, value := range summary {
@@ -129,13 +177,13 @@ func BuildPdf(title string, data []*entity.Member) ([]byte, error) {
 	pdf.AddPage()
 	const maxPerPage int = 7
 	count := 0
-	for _, member := range data {
+	for _, membro := range data {
 		if count == maxPerPage {
 			pdf.AddPage()
 			count = 0
 		}
 		count++
-		buildRowSection(member, pdf)
+		buildRowSection(membro, pdf)
 	}
 	pdf.AddPage()
 	buildSummarySection(data, pdf)

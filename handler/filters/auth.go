@@ -34,13 +34,13 @@ func NewAuthFilter() *AuthFilter {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			// Verify 'aud' claim
-			aud := "https://church-members-api"
+			aud := viper.GetString("auth.aud")
 			checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 			if !checkAud {
 				return token, errors.New("Invalid audience.")
 			}
 			// Verify 'iss' claim
-			iss := "https://churchs.auth0.com/"
+			iss := viper.GetString("auth.iss")
 			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
 			if !checkIss {
 				return token, errors.New("Invalid issuer.")
@@ -96,7 +96,8 @@ func (auth *AuthFilter) Validate() gin.HandlerFunc {
 
 func getPemCert(token *jwt.Token) (string, error) {
 	cert := ""
-	resp, err := http.Get("https://churchs.auth0.com/.well-known/jwks.json")
+
+	resp, err := http.Get(viper.GetString("auth.jwk"))
 
 	if err != nil {
 		return cert, err

@@ -156,11 +156,16 @@ func buildSummarySection(data []*entity.Member, builder *gopdf.GoPdf) {
 	for _, member := range data {
 		count := summary[member.Classification()]
 		count++
-		summary[member.ClassificationLocalized(tr.Localizer)] = count
+		summary[member.Classification()] = count
 	}
 
 	for key, value := range summary {
-		setField(key, builder)
+		setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+			DefaultMessage: &i18n.Message{
+				ID:    "Domain.Classification." + key,
+				Other: key,
+			},
+		}), builder)
 		setValue(fmt.Sprintf("%d", value), builder)
 		builder.Br(15)
 	}

@@ -11,13 +11,18 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
-type mongoConnection struct{}
-
-func NewMongoConnection() *mongoConnection {
-	return &mongoConnection{}
+type mongoConnection struct{
+	session *mgo.Session
 }
 
-func (mongoConn *mongoConnection) Connect() *mgo.Session {
+func NewMongoConnection() *mongoConnection {
+	session := buildSession()
+	return &mongoConnection{
+		session,
+	}
+}
+
+func buildSession() *mgo.Session {
 	log.Info("Connecting to mongo")
 	var mongoURI = viper.GetString("mongo.url")
 
@@ -46,4 +51,8 @@ func (mongoConn *mongoConnection) Connect() *mgo.Session {
 	session.SetMode(mgo.Monotonic, true)
 	log.Info("Connected")
 	return session
+}
+
+func (mongoConn *mongoConnection) GetSession()  *mgo.Session{
+	return mongoConn.session
 }

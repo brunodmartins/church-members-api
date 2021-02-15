@@ -28,10 +28,10 @@ jobs:
       run: cp ./config/* /home/runner/work/church-members-api/church-members-api/handler/config
 
     - name: Create location folder
-      run: mkdir -p /src/github.com/BrunoDM2943/church-members-api/bundles
+      run: mkdir -p /home/runner/work/church-members-api/church-members-api/src/github.com/BrunoDM2943/church-members-api/bundles
       
     - name: Set up location files
-      run: cp ./bundles/* /src/github.com/BrunoDM2943/church-members-api/bundles
+      run: cp ./bundles/* /home/runner/work/church-members-api/church-members-api/src/github.com/BrunoDM2943/church-members-api/bundles
 
     - name: Test
-      run: go test -v ./...
+      run: GOPATH=/home/runner/work/church-members-api/church-members-api/ go test -v ./...

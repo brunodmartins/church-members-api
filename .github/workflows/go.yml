@@ -1,0 +1,31 @@
+name: Go
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Set up configurations files
+      run: cp ./config/* /home/runner/work/church-members-api/church-members-api/handler/config
+
+    - name: Set up location files
+      run: cp ./bundles/* /src/github.com/BrunoDM2943/church-members-api/bundles
+
+    - name: Test
+      run: go test -v ./...

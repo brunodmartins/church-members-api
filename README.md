@@ -1,5 +1,6 @@
 # church-members-api
 
+![Go](https://github.com/BrunoDM2943/church-members-api/workflows/Go/badge.svg)
 [![codecov](https://codecov.io/gh/BrunoDM2943/church-members-api/branch/master/graph/badge.svg)](https://codecov.io/gh/BrunoDM2943/church-members-api)  [![Go Report Card](https://goreportcard.com/badge/github.com/BrunoDM2943/church-members-api?style=flat-square)](https://goreportcard.com/report/github.com/BrunoDM2943/church-members-api)
 
 

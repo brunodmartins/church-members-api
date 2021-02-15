@@ -69,6 +69,10 @@ func IsProd() bool {
 	return scope == "prod"
 }
 
+func IsTest() bool {
+	return scope == "test"
+}
+
 func GetScope() string {
 	return scope
 }

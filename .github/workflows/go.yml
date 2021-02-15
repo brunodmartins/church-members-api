@@ -11,27 +11,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
 
-    - name: Build
-      run: go build -v ./...
-      
-    - name: Create Configuration folder
-      run: mkdir -p /home/runner/work/church-members-api/church-members-api/handler/config
-      
-    - name: Set up configurations files
-      run: cp ./config/* /home/runner/work/church-members-api/church-members-api/handler/config
+      - name: Build
+        run: go build -v ./...
 
-    - name: Create location folder
-      run: mkdir -p /home/runner/work/church-members-api/church-members-api/src/github.com/BrunoDM2943/church-members-api/bundles
-      
-    - name: Set up location files
-      run: cp ./bundles/* /home/runner/work/church-members-api/church-members-api/src/github.com/BrunoDM2943/church-members-api/bundles
+      - name: Create Configuration folder
+        run: mkdir -p /home/runner/work/church-members-api/church-members-api/handler/config
 
-    - name: Test
-      run: GOPATH=/home/runner/work/church-members-api/church-members-api/ go test -v ./...
+      - name: Create Location folder
+        run: mkdir -p /home/runner/work/church-members-api/church-members-api/bundles
+
+      - name: Set up configurations files
+        run: cp ./config/* /home/runner/work/church-members-api/church-members-api/handler/config
+
+      - name: Set up location files
+        run: cp ./bundles/* /home/runner/work/church-members-api/church-members-api/bundles
+
+      - name: Test
+        run: SCOPE=test go test -v ./...

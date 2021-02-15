@@ -2,6 +2,7 @@ package i18n
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"os"
 
 	"github.com/BrunoDM2943/church-members-api/infra/config"
@@ -32,6 +33,9 @@ func loadBundle(language language.Tag) *i18n.Bundle {
 	path := fmt.Sprintf("%s/src/%s/bundles/%s.toml", base, appPath, language)
 	if config.IsProd() {
 		path = fmt.Sprintf("./bundles/%s.toml", language)
+	}
+	if config.IsTest() {
+		path = viper.GetString("bundle.location")
 	}
 	bundle.MustLoadMessageFile(path)
 	logrus.Infof("Bundle %s loaded", language)

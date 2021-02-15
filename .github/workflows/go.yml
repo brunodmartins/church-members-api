@@ -30,8 +30,5 @@ jobs:
       - name: Set up configurations files
         run: cp ./config/* /home/runner/work/church-members-api/church-members-api/handler/config
 
-      - name: Set up location files
-        run: cp ./bundles/* /home/runner/work/church-members-api/church-members-api/bundles
-
       - name: Test
         run: SCOPE=test go test -v ./...

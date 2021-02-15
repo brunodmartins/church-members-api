@@ -85,7 +85,7 @@ func (repo *memberRepository) FindMonthBirthday(date time.Time) ([]*entity.Perso
 		"$expr": bson.M{
 			"$eq": []interface{}{
 				bson.M{
-					"$month": "$person.dtNascimento",
+					"$month": "$person.birthDate",
 				},
 				date.Month(),
 			},

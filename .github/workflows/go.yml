@@ -22,13 +22,13 @@ jobs:
       run: go build -v ./...
       
     - name: Create Configuration folder
-      run: mkdirs /home/runner/work/church-members-api/church-members-api/handler/config
+      run: mkdir -p /home/runner/work/church-members-api/church-members-api/handler/config
       
     - name: Set up configurations files
       run: cp ./config/* /home/runner/work/church-members-api/church-members-api/handler/config
 
     - name: Create location folder
-      run: mkdirs /src/github.com/BrunoDM2943/church-members-api/bundles
+      run: mkdir -p /src/github.com/BrunoDM2943/church-members-api/bundles
       
     - name: Set up location files
       run: cp ./bundles/* /src/github.com/BrunoDM2943/church-members-api/bundles

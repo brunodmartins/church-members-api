@@ -35,7 +35,7 @@ func loadBundle(language language.Tag) *i18n.Bundle {
 		path = fmt.Sprintf("./bundles/%s.toml", language)
 	}
 	if config.IsTest() {
-		path = viper.GetString("bundle.location")
+		path = fmt.Sprintf("%s/%s.toml", viper.GetString("bundle.location"), language)
 	}
 	bundle.MustLoadMessageFile(path)
 	logrus.Infof("Bundle %s loaded", language)

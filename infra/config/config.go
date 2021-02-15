@@ -47,8 +47,11 @@ func loadViper() {
 	configFile := fmt.Sprintf("config_%s", scope)
 	viper.SetConfigName(configFile)
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./config")
-
+	if IsTest() {
+		viper.AddConfigPath("/home/runner/work/church-members-api/church-members-api/config")
+	} else {
+		viper.AddConfigPath("./config")
+	}
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.WithFields(log.Fields{

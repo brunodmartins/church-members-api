@@ -22,7 +22,7 @@ jobs:
         run: go build -v ./...
 
       - name: Test
-        run: SCOPE=test go test ./... -race -coverprofile=profile.out -covermode=atomic
+        run: SCOPE=test go test ./... -race -coverprofile=coverage.txt -covermode=atomic
       
       - name: Coverage
         uses: codecov/codecov-action@v1

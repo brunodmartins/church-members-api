@@ -14,6 +14,7 @@ require (
 	github.com/gorilla/mux v1.7.4 // indirect
 	github.com/graphql-go/graphql v0.7.8
 	github.com/json-iterator/go v1.1.7 // indirect
+	github.com/magiconair/properties v1.8.1
 	github.com/nicksnyder/go-i18n/v2 v2.0.3
 	github.com/signintech/gopdf v0.9.7
 	github.com/sirupsen/logrus v1.4.2

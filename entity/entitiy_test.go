@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"github.com/BrunoDM2943/church-members-api/infra/i18n"
 	"testing"
 	"time"
 	"gopkg.in/mgo.v2/bson"
@@ -60,6 +61,15 @@ func TestClassification(t *testing.T) {
 			},
 		}.Classification())
 	})
+	t.Run("Localized", func(t *testing.T) {
+
+		assert.Equal(t, "Adult", Member{
+			Person: Person{
+				BirthDate:    time.Now().AddDate(-25, 0, 0),
+				MarriageDate: time.Now(),
+			},
+		}.ClassificationLocalized(i18n.Localizer))
+	})
 }
 
 func TestFormattedAddress(t *testing.T) {
@@ -69,6 +79,13 @@ func TestFormattedAddress(t *testing.T) {
 		Number:   2,
 	}
 	assert.Equal(t, "Rua xicas, 2 - Parque feliz", address.GetFormatted())
+}
+
+func TestGetFullName(t *testing.T) {
+	assert.Equal(t, Person{
+		FirstName: "John",
+		LastName:  "Doe",
+	}.GetFullName(), "John Doe")
 }
 
 func TestID(t *testing.T) {

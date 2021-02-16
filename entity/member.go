@@ -35,34 +35,11 @@ func (member Member) Classification() string {
 
 //Classification returns a member classification based on age and marriage
 func (member Member) ClassificationLocalized(localizer *i18n.Localizer) string {
-	age := age.Age(member.Person.BirthDate)
-	if age < 15 {
-		return localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:    "Domain.Classification.Children",
-				Other: "Children",
-			},
-		})
-	} else if age < 18 {
-		return localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:    "Domain.Classification.Teen",
-				Other: "Teen",
-			},
-		})
-	} else if age < 30 && member.Person.MarriageDate.IsZero() {
-		return localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:    "Domain.Classification.Young",
-				Other: "Young",
-			},
-		})
-	} else {
-		return localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:    "Domain.Classification.Adult",
-				Other: "Adult",
-			},
-		})
-	}
+	classification := member.Classification()
+	return localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Domain.Classification." + classification,
+			Other: classification,
+		},
+	})
 }

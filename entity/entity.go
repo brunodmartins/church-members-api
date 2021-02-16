@@ -26,25 +26,6 @@ func (i *ID) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// GetBSON implements bson.Getter.
-func (i ID) GetBSON() (interface{}, error) {
-	if i == "" {
-		return "", nil
-	}
-	return bson.ObjectId(i), nil
-}
-
-// SetBSON implements bson.Setter.
-func (i *ID) SetBSON(raw bson.Raw) error {
-	decoded := new(string)
-	bsonErr := raw.Unmarshal(decoded)
-	if bsonErr == nil {
-		*i = ID(bson.ObjectId(*decoded))
-		return nil
-	}
-	return bsonErr
-}
-
 //StringToID convert a string to an ID
 func StringToID(s string) ID {
 	return ID(bson.ObjectIdHex(s))

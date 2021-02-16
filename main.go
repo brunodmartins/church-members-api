@@ -20,7 +20,7 @@ import (
 var session *mgo.Session
 
 func provideMongoSession() *mgo.Session {
-	if session != nil{
+	if session == nil{
 		session = mongo.NewMongoConnection().GetSession()
 	}
 	return session

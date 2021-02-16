@@ -1,9 +1,6 @@
 coverage:
   status:
-    patch:
-      default:
-        target: auto
-        threshold: 0%
+    patch: no
 ignore:
   - "/entity/bson.go"
   - "/member/repository"

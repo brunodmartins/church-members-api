@@ -3,7 +3,7 @@ package entity
 import (
 	"testing"
 	"time"
-
+	"gopkg.in/mgo.v2/bson"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,36 +23,36 @@ func TestFormattedContact(t *testing.T) {
 	}
 }
 
-func TestClassificacao(t *testing.T) {
-	t.Run("Crianca", func(t *testing.T) {
+func TestClassification(t *testing.T) {
+	t.Run("Children", func(t *testing.T) {
 		assert.Equal(t, "Children", Member{
 			Person: Person{
 				BirthDate: time.Now(),
 			},
 		}.Classification())
 	})
-	t.Run("Adolescente", func(t *testing.T) {
+	t.Run("Teen", func(t *testing.T) {
 		assert.Equal(t, "Teen", Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-17, 0, 0),
 			},
 		}.Classification())
 	})
-	t.Run("Jovem", func(t *testing.T) {
+	t.Run("Young", func(t *testing.T) {
 		assert.Equal(t, "Young", Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-29, 0, 0),
 			},
 		}.Classification())
 	})
-	t.Run("Adulto Solteiro", func(t *testing.T) {
+	t.Run("Adult Single", func(t *testing.T) {
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-33, 0, 0),
 			},
 		}.Classification())
 	})
-	t.Run("Adulto Casado", func(t *testing.T) {
+	t.Run("Adult Married", func(t *testing.T) {
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
 				BirthDate:    time.Now().AddDate(-25, 0, 0),
@@ -69,4 +69,21 @@ func TestFormattedAddress(t *testing.T) {
 		Number:   2,
 	}
 	assert.Equal(t, "Rua xicas, 2 - Parque feliz", address.GetFormatted())
+}
+
+func TestID(t *testing.T) {
+	t.Run("Test Marshal and Unmarshal", func(t *testing.T) {
+		originalId := NewID()
+		bytes, _ := originalId.MarshalJSON()
+		newId := NewID()
+		newId.UnmarshalJSON(bytes)
+		assert.Equal(t, originalId.String(), newId.String())
+	})
+	t.Run("Test Get BSON", func(t *testing.T) {
+		originalId := NewID()
+		bsonValue, _ := originalId.GetBSON()
+		objectId := bsonValue.(bson.ObjectId)
+		assert.Equal(t, originalId.String(), objectId.Hex())
+	})
+
 }

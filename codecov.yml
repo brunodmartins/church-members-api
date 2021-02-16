@@ -1,4 +1,5 @@
 ignore:
+  - "/entity/bson.go"
   - "/member/repository"
   - "/utils/utilsMongoRepository.go"
   - "/infra"

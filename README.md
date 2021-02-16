@@ -2,6 +2,8 @@
 
 ![Go](https://github.com/BrunoDM2943/church-members-api/workflows/Go/badge.svg)
 [![codecov](https://codecov.io/gh/BrunoDM2943/church-members-api/branch/master/graph/badge.svg)](https://codecov.io/gh/BrunoDM2943/church-members-api)  [![Go Report Card](https://goreportcard.com/badge/github.com/BrunoDM2943/church-members-api?style=flat-square)](https://goreportcard.com/report/github.com/BrunoDM2943/church-members-api)
+![Deploy](https://github.com/BrunoDM2943/church-members-api/workflows/Deploy/badge.svg)
+![Docker Image CI](https://github.com/BrunoDM2943/church-members-api/workflows/Docker%20Image%20CI/badge.svg)
 
 
 Its a simple API to manage a church's members. The API is written on Go 1.13 and the data is saved on MongoDB. It also supports Auth0, protecting against unathorized acess. 

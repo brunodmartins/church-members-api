@@ -2,9 +2,9 @@ coverage:
   status:
     patch: no
 ignore:
-  - "/entity/bson.go"
+  - "/entity/bson*"
   - "/member/repository"
-  - "/utils/utilsMongoRepository.go"
+  - "/utils/utilsMongoRepository*"
   - "/infra"
-  - "/reports/reportsRepository.go"
-  - "main.go"
+  - "/reports/reportsRepository*"
+  - "main*"

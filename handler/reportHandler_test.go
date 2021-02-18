@@ -25,11 +25,13 @@ func TestRoutesWithSuccess(t *testing.T) {
 	reports.EXPECT().MariageReport().Times(1)
 	reports.EXPECT().MemberReport().Times(1)
 	reports.EXPECT().LegalReport().Times(1)
+	reports.EXPECT().ClassificationReport("children").Times(1)
 
 	routes := []string{
 		"/reports/members/birthday",
 		"/reports/members/marriage",
 		"/reports/members/legal",
+		"/reports/members/classification/children",
 		"/reports/members",
 	}
 
@@ -55,10 +57,12 @@ func TestRoutesWithFail(t *testing.T) {
 	reports.EXPECT().BirthdayReport().Return(nil, errors.New("")).Times(1)
 	reports.EXPECT().MariageReport().Return(nil, errors.New("")).Times(1)
 	reports.EXPECT().MemberReport().Return(nil, errors.New("")).Times(1)
+	reports.EXPECT().ClassificationReport("adult").Return(nil, errors.New("")).Times(1)
 
 	routes := []string{
 		"/reports/members/birthday",
 		"/reports/members/marriage",
+		"/reports/members/classification/adult",
 		"/reports/members",
 	}
 

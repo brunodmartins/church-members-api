@@ -91,3 +91,18 @@ func (mr *MockReportsGeneratorMockRecorder) MariageReport() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MariageReport", reflect.TypeOf((*MockReportsGenerator)(nil).MariageReport))
 }
+
+// ClassificationReport mocks base method
+func (m *MockReportsGenerator) ClassificationReport(classification string) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClassificationReport", classification)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ClassificationReport indicates an expected call of ClassificationReport
+func (mr *MockReportsGeneratorMockRecorder) ClassificationReport(classification interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClassificationReport", reflect.TypeOf((*MockReportsGenerator)(nil).ClassificationReport), classification)
+}

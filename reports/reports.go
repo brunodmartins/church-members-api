@@ -18,6 +18,7 @@ type ReportsGenerator interface {
 	MemberReport() ([]byte, error)
 	BirthdayReport() ([]byte, error)
 	MariageReport() ([]byte, error)
+	ClassificationReport(classification string) ([]byte, error)
 }
 
 type reportService struct {
@@ -86,6 +87,32 @@ func (report reportService) MemberReport() ([]byte, error) {
 		},
 	}), members)
 }
+
+func (report reportService) ClassificationReport(classification string) ([]byte, error) {
+	members, err := report.repo.FindMembersActive()
+	if err != nil {
+		return nil, err
+	}
+	members = filterClassification(classification, members)
+	sort.Sort(entity.SortByName(members))
+	return pdf.BuildPdf(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    "Reports.Title.Default",
+			Other: "Member's report",
+		},
+	}), members)
+}
+
+func filterClassification(classification string, members []*entity.Member) []*entity.Member {
+	filtered := []*entity.Member{}
+	for _, v := range members {
+		if v.Classification() == classification {
+			filtered = append(filtered, v)
+		}
+	}
+	return filtered
+}
+
 
 func (report reportService) LegalReport() ([]byte, error) {
 	members, err := report.repo.FindMembersActive()

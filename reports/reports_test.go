@@ -262,3 +262,22 @@ func TestGenerateLegalReportFail(t *testing.T) {
 	_, err := service.LegalReport()
 	assert.NotNil(t, err)
 }
+
+func TestFilterByClassification(t *testing.T) {
+	adult, _ := time.Parse("2006/01/02", "1990/07/06")
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName:    "Adult",
+				BirthDate:    adult,
+			},
+		},
+		{
+			Person: entity.Person{
+				FirstName:    "Children",
+				BirthDate:    time.Now(),
+			},
+		},
+	}
+	assert.Equal(t, 1, len(filterClassification("adult", members)))
+}

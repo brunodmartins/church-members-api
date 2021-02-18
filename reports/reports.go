@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/csv"
 	"sort"
+	"strings"
 
 	"github.com/BrunoDM2943/church-members-api/entity"
 	tr "github.com/BrunoDM2943/church-members-api/infra/i18n"
@@ -106,7 +107,7 @@ func (report reportService) ClassificationReport(classification string) ([]byte,
 func filterClassification(classification string, members []*entity.Member) []*entity.Member {
 	filtered := []*entity.Member{}
 	for _, v := range members {
-		if v.Classification() == classification {
+		if strings.ToLower(v.Classification()) == classification {
 			filtered = append(filtered, v)
 		}
 	}

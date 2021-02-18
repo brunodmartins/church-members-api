@@ -25,13 +25,19 @@ func TestRoutesWithSuccess(t *testing.T) {
 	reports.EXPECT().MariageReport().Times(1)
 	reports.EXPECT().MemberReport().Times(1)
 	reports.EXPECT().LegalReport().Times(1)
-	reports.EXPECT().ClassificationReport("children").Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq("children")).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq("teen")).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq("adult")).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq("young")).Times(1)
 
 	routes := []string{
 		"/reports/members/birthday",
 		"/reports/members/marriage",
 		"/reports/members/legal",
 		"/reports/members/classification/children",
+		"/reports/members/classification/teen",
+		"/reports/members/classification/adult",
+		"/reports/members/classification/young",
 		"/reports/members",
 	}
 
@@ -73,5 +79,22 @@ func TestRoutesWithFail(t *testing.T) {
 		if w.Code != http.StatusInternalServerError {
 			t.Fail()
 		}
+	}
+}
+
+func TestRoutesForClassificationWithBadRequest(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	reports := mock_reports.NewMockReportsGenerator(ctrl)
+	reportHandler := NewReportHandler(reports)
+	reportHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/reports/members/classification/X", strings.NewReader(""))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fail()
 	}
 }

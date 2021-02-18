@@ -154,6 +154,44 @@ func TestGenerateMemberReport(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestGenerateClassificationReport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
+	dtNascimento, _ := time.Parse("2006/01/02", "1990/07/06")
+	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName:    "Test",
+				LastName:     "test test",
+				BirthDate:    dtNascimento,
+				MarriageDate: dtCasamento,
+				SpousesName:  "Test spuse",
+				Contact: entity.Contact{
+					CellPhoneArea: 99,
+					CellPhone:     1234567890,
+					PhoneArea:     99,
+					Phone:         12345678,
+					Email:         "teste@test.com",
+				},
+				Address: entity.Address{
+					District: "9",
+					City:     "Does not sleep",
+					State:    "My-State",
+					Address:  "XXXXX",
+					Number:   9,
+				},
+			},
+		},
+	}
+	repo.EXPECT().FindMembersActive().Return(members, nil)
+	out, err := service.ClassificationReport("adult")
+	assert.NotNil(t, out)
+	assert.Nil(t, err)
+}
+
 func TestGenerateMemberReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -162,6 +200,17 @@ func TestGenerateMemberReportFail(t *testing.T) {
 
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	_, err := service.MemberReport()
+	assert.NotNil(t, err)
+}
+
+func TestGenerateClassificationReportFail(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_repo.NewMockReportRepository(ctrl)
+	service := NewReportsGenerator(repo)
+
+	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
+	_, err := service.ClassificationReport("adult")
 	assert.NotNil(t, err)
 }
 
@@ -212,4 +261,23 @@ func TestGenerateLegalReportFail(t *testing.T) {
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	_, err := service.LegalReport()
 	assert.NotNil(t, err)
+}
+
+func TestFilterByClassification(t *testing.T) {
+	adult, _ := time.Parse("2006/01/02", "1990/07/06")
+	members := []*entity.Member{
+		{
+			Person: entity.Person{
+				FirstName:    "Adult",
+				BirthDate:    adult,
+			},
+		},
+		{
+			Person: entity.Person{
+				FirstName:    "Children",
+				BirthDate:    time.Now(),
+			},
+		},
+	}
+	assert.Equal(t, 1, len(filterClassification("adult", members)))
 }

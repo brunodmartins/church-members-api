@@ -16,10 +16,40 @@ func NewReportHandler(reportGenerator reports.ReportsGenerator) reportHandler {
 }
 
 func (handler reportHandler) SetUpRoutes(r *gin.Engine) {
-	r.GET("/reports/members", handler.generateMembersReport)
 	r.GET("/reports/members/birthday", handler.generateBirthDayReport)
 	r.GET("/reports/members/marriage", handler.generateMarriageReport)
 	r.GET("/reports/members/legal", handler.generateLegalReport)
+	r.GET("/reports/members/classification/:classification", handler.generateClassificationReport)
+	r.GET("/reports/members", handler.generateMembersReport)
+
+}
+
+func isValidClassification(classification string) bool {
+	if classification == "" {
+		return false
+	}
+	if classification != "adult" && classification != "teen" && classification != "young" && classification != "children" {
+		return false
+	}
+	return true
+}
+
+func (handler reportHandler) generateClassificationReport(c *gin.Context) {
+	classification := c.Param("classification")
+	if !isValidClassification(classification) {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "Invalid classification: " + classification})
+	} else {
+		output, err := handler.reportGenerator.ClassificationReport(classification)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
+		} else {
+			c.Status(http.StatusOK)
+			c.Header("Content-Type", "application/csv")
+			c.Header("Content-Disposition", "attachment")
+			c.Header("filename", "casamento.csv")
+			c.Data(200, "application/csv", output)
+		}
+	}
 
 }
 

@@ -1,0 +1,221 @@
+package gin
+
+import (
+	"errors"
+	repository2 "github.com/BrunoDM2943/church-members-api/internal/repository"
+	"log"
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
+	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	mock_service "github.com/BrunoDM2943/church-members-api/internal/service/mock"
+	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
+)
+
+func TestGetMemberBadRequest(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+
+	memberHandler.SetUpRoutes(r)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/members/a", nil)
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fail()
+	}
+}
+
+func TestGetMemberNotFound(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+
+	id := model.NewID()
+
+	service.EXPECT().FindMembersByID(id).Return(nil, repository2.MemberNotFound)
+	memberHandler.SetUpRoutes(r)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/members/"+id.String(), nil)
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusNotFound {
+		t.Fail()
+	}
+}
+
+func TestGetMemberOK(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+
+	member := &model.Member{}
+	member.ID = model.NewID()
+	service.EXPECT().FindMembersByID(member.ID).Return(member, nil).AnyTimes()
+
+	memberHandler.SetUpRoutes(r)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/members/"+member.ID.String(), nil)
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Fail()
+	}
+}
+
+func TestPostMemberBadRequest(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/members", strings.NewReader(""))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusBadRequest {
+		t.Fail()
+	}
+}
+
+func TestPostMemberSucess(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
+	service.EXPECT().SaveMember(gomock.Any()).Return(model.NewID(), nil)
+	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusCreated {
+		log.Print(string(w.Body.Bytes()))
+		t.Fail()
+	}
+}
+
+func TestPostMemberFail(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
+	service.EXPECT().SaveMember(gomock.Any()).Return(model.NewID(), errors.New(""))
+	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusInternalServerError {
+		t.Fail()
+	}
+}
+
+func TestPostMemberSearch(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	body := `
+	{
+		member(gender:"M", active:false){
+				person{
+					firstName,
+					lastName,
+					gender
+				}
+		}
+	}`
+	service.EXPECT().FindMembers(gomock.Any()).Return([]*model.Member{}, nil)
+	req, _ := http.NewRequest("POST", "/members/search", strings.NewReader(body))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusOK {
+		t.Fail()
+	}
+}
+
+func TestPostMemberSearchError(t *testing.T) {
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(r)
+
+	w := httptest.NewRecorder()
+	body := `
+	{
+		member(gender:"M", active:false){
+				person{
+					name,
+					lastNa
+					gender
+				}
+		}
+	}`
+	req, _ := http.NewRequest("POST", "/members/search", strings.NewReader(body))
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusInternalServerError {
+		t.Fail()
+	}
+}
+
+func TestPutStatus(t *testing.T) {
+	type data struct {
+		url        string
+		body       string
+		statusCode int
+	}
+	id := model.NewID()
+	urlWithID := "/members/" + id.String() + "/status"
+	table := []data{
+		{"/members/X/status", "", http.StatusBadRequest},
+		{urlWithID, `{"active":false}`, http.StatusBadRequest},
+		{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
+		{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
+		{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
+
+	r := gin.Default()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	service := mock_service.NewMockIMemberService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	service.EXPECT().ChangeStatus(id, false, "exited").Return(errors.New("Error"))
+	service.EXPECT().ChangeStatus(id, true, "Comed back").Return(nil)
+
+	memberHandler.SetUpRoutes(r)
+
+	for _, test := range table {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("PUT", test.url, strings.NewReader(test.body))
+		r.ServeHTTP(w, req)
+		if w.Code != test.statusCode {
+			t.Errorf("Failed for test: %s, %s, %d", test.url, test.body, test.statusCode)
+		}
+	}
+}

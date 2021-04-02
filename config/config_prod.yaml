@@ -1,7 +1,0 @@
-mongo:
-  url: "VPR_CHURCH_MEMBERS_DATABASE_URL"
-auth:
-  enable: true
-  token: "VPR_CHURCH_MEMBERS_ACCESS_TOKEN"
-church:
-  name: "VPR_CHURCH_NAME"

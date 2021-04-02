@@ -3,8 +3,7 @@ coverage:
     patch: no
 ignore:
   - "entity/bson.go"
-  - "member/repository"
-  - "utils/utilsMongoRepository.go"
   - "infra"
-  - "reports/reportsRepository.go"
+  - "internal/repository/memberRepository.go"
+  - "cmd"
   - "main.go"

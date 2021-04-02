@@ -11,9 +11,6 @@ var scope = ""
 func init() {
 	loadScope()
 	loadViper()
-	if IsProd() {
-		loadEnvIntoViper()
-	}
 }
 
 func loadScope() {

@@ -2,10 +2,6 @@ package config
 
 import "github.com/spf13/viper"
 
-func loadEnvIntoViper() {
-
-}
-
 func loadViper(){
 	switch scope {
 	case "local":

@@ -27,7 +27,7 @@ func init() {
 func loadBundle(language language.Tag) *i18n.Bundle {
 	bundle := i18n.NewBundle(language)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	logrus.Infof("Loading bundle for language %s", language)
+	logrus.Infof("Loading bundle for language %s - Current Scope: %s", language, config.GetScope())
 	base := os.Getenv("GOPATH")
 	appPath := "github.com/BrunoDM2943/church-members-api"
 	path := fmt.Sprintf("%s/src/%s/bundles/%s.toml", base, appPath, language)

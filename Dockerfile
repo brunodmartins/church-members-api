@@ -21,7 +21,6 @@ ENV VPR_CHURCH_MEMBERS_DATABASE_URL $VPR_CHURCH_MEMBERS_DATABASE_URL \
 
 COPY --from=build /go/src/app/bundles/* ./bundles/
 COPY --from=build /go/src/app/fonts/* ./fonts/
-COPY --from=build /go/src/app/config/* ./config/
 COPY --from=build /go/src/app/church-members-api .
 
 CMD ["/app/church-members-api"]

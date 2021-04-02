@@ -2,7 +2,6 @@ package report
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 	"github.com/BrunoDM2943/church-members-api/internal/repository/mock"
 	mock_file "github.com/BrunoDM2943/church-members-api/internal/storage/file/mock"
 	"testing"
@@ -14,7 +13,6 @@ import (
 )
 
 func TestBirthdayReportSuccess(t *testing.T) {
-	i18n.BootStrapI18N()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_repository.NewMockMemberRepository(ctrl)
@@ -70,7 +68,6 @@ func TestMarriageReportSuccessErrorDB(t *testing.T) {
 }
 
 func TestMarriageReportSuccess(t *testing.T) {
-	i18n.BootStrapI18N()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_repository.NewMockMemberRepository(ctrl)

@@ -15,7 +15,7 @@ import (
 //Localizer var
 var Localizer *i18n.Localizer
 
-func BootStrapI18N() {
+func init() {
 	lang := language.English
 	if envLang := os.Getenv("APP_LANG"); envLang != "" {
 		lang = language.MustParse(envLang)

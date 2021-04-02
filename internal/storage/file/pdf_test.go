@@ -2,15 +2,12 @@ package file
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 )
 
 func TestBuildFile(t *testing.T){
-	i18n.BootStrapI18N()
-
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
 	data := []*model.Member{

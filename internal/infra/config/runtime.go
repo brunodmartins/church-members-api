@@ -8,7 +8,7 @@ import (
 
 var scope = ""
 
-func BootStrapConfiguration() {
+func init() {
 	loadScope()
 	loadViper()
 	if IsProd() {

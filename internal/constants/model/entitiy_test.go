@@ -25,7 +25,6 @@ func TestFormattedContact(t *testing.T) {
 }
 
 func TestClassification(t *testing.T) {
-	i18n.BootStrapI18N()
 	t.Run("Children", func(t *testing.T) {
 		assert.Equal(t, "Children", Member{
 			Person: Person{

@@ -2,7 +2,7 @@ package gin
 
 import (
 	"errors"
-	repository2 "github.com/BrunoDM2943/church-members-api/internal/repository"
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	mock_service "github.com/BrunoDM2943/church-members-api/internal/service/mock"
+	mock_service "github.com/BrunoDM2943/church-members-api/internal/service/member/mock"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 )
@@ -20,7 +20,7 @@ func TestGetMemberBadRequest(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
 	memberHandler.SetUpRoutes(r)
@@ -37,12 +37,12 @@ func TestGetMemberNotFound(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
 	id := model.NewID()
 
-	service.EXPECT().FindMembersByID(id).Return(nil, repository2.MemberNotFound)
+	service.EXPECT().FindMembersByID(id).Return(nil, repository.MemberNotFound)
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/members/"+id.String(), nil)
@@ -57,7 +57,7 @@ func TestGetMemberOK(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
 	member := &model.Member{}
@@ -78,7 +78,7 @@ func TestPostMemberBadRequest(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -95,7 +95,7 @@ func TestPostMemberSucess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -115,7 +115,7 @@ func TestPostMemberFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -134,7 +134,7 @@ func TestPostMemberSearch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -162,7 +162,7 @@ func TestPostMemberSearchError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	memberHandler.SetUpRoutes(r)
 
@@ -203,7 +203,7 @@ func TestPutStatus(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	service := mock_service.NewMockIMemberService(ctrl)
+	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	service.EXPECT().ChangeStatus(id, false, "exited").Return(errors.New("Error"))
 	service.EXPECT().ChangeStatus(id, true, "Comed back").Return(nil)

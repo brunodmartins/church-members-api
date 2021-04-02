@@ -1,15 +1,15 @@
 package graphql
 
 import (
-	service2 "github.com/BrunoDM2943/church-members-api/internal/service"
+	"github.com/BrunoDM2943/church-members-api/internal/service/member"
 	"github.com/graphql-go/graphql"
 )
 
 type memberResolver struct {
-	service service2.IMemberService
+	service member.Service
 }
 
-func newMemberResolver(service service2.IMemberService) memberResolver {
+func newMemberResolver(service member.Service) memberResolver {
 	return memberResolver{
 		service,
 	}

@@ -2,7 +2,7 @@ package gin
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/service/mock"
+	"github.com/BrunoDM2943/church-members-api/internal/service/report/mock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -17,7 +17,7 @@ func TestRoutesWithSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	reports := mock_service.NewMockReportsGenerator(ctrl)
+	reports := mock_report.NewMockService(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
 
@@ -56,7 +56,7 @@ func TestRoutesWithFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	reports := mock_service.NewMockReportsGenerator(ctrl)
+	reports := mock_report.NewMockService(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
 
@@ -87,7 +87,7 @@ func TestRoutesForClassificationWithBadRequest(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	reports := mock_service.NewMockReportsGenerator(ctrl)
+	reports := mock_report.NewMockService(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
 

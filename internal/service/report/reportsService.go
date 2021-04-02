@@ -1,4 +1,4 @@
-package service
+package report
 
 import (
 	"bufio"
@@ -15,7 +15,7 @@ import (
 )
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
-type ReportsGenerator interface {
+type Service interface {
 	LegalReport() ([]byte, error)
 	MemberReport() ([]byte, error)
 	BirthdayReport() ([]byte, error)
@@ -24,12 +24,12 @@ type ReportsGenerator interface {
 }
 
 type reportService struct {
-	repo repository.ReportRepository
+	repo repository.MemberRepository
 	fileBuilder file.Builder
 }
 
-func NewReportsGenerator(repo repository.ReportRepository, fileBuilder file.Builder) ReportsGenerator {
-	return reportService{
+func NewReportService(repo repository.MemberRepository, fileBuilder file.Builder) Service {
+	return &reportService{
 		repo,
 	fileBuilder,
 	}

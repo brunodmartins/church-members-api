@@ -1,4 +1,4 @@
-package service
+package member
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ import (
 func TestListAllMembers(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
 	repo.EXPECT().FindAll(gomock.Any()).Return([]*model.Member{
@@ -31,7 +31,7 @@ func TestListAllMembers(t *testing.T) {
 func TestFindMember(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
 	id := model.NewID()
@@ -48,7 +48,7 @@ func TestFindMember(t *testing.T) {
 func TestSaveMember(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
 	member := model.Member{}
@@ -67,7 +67,7 @@ func TestSaveMember(t *testing.T) {
 func TestFindMembersWithFilters(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 	filters := mongo.QueryFilters{}
 	filters.AddFilter("active", true)
@@ -89,7 +89,7 @@ func TestFindMembersWithFilters(t *testing.T) {
 func TestUpdateStatus(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 	id := model.NewID()
 	repo.EXPECT().UpdateStatus(id, true).Return(nil)
@@ -101,7 +101,7 @@ func TestUpdateStatus(t *testing.T) {
 func TestUpdateStatusError(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockIMemberRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 	id := model.NewID()
 	repo.EXPECT().UpdateStatus(id, true).Return(errors.New("Error"))

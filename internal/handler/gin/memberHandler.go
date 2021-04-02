@@ -3,7 +3,7 @@ package gin
 import (
 	"encoding/json"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
-	service2 "github.com/BrunoDM2943/church-members-api/internal/service"
+	"github.com/BrunoDM2943/church-members-api/internal/service/member"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -17,7 +17,7 @@ import (
 )
 
 type MemberHandler struct {
-	service service2.IMemberService
+	service member.Service
 }
 
 type putStatus struct {
@@ -25,7 +25,7 @@ type putStatus struct {
 	Reason string `json:"reason" binding:"required"`
 }
 
-func NewMemberHandler(service service2.IMemberService) *MemberHandler {
+func NewMemberHandler(service member.Service) *MemberHandler {
 	return &MemberHandler{
 		service: service,
 	}

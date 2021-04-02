@@ -1,4 +1,4 @@
-package service
+package report
 
 import (
 	"errors"
@@ -17,9 +17,9 @@ func TestBirthdayReportSuccess(t *testing.T) {
 	i18n.BootStrapI18N()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	members := []*model.Member{
 		{
@@ -46,9 +46,9 @@ func TestBirthdayReportSuccess(t *testing.T) {
 func TestBirthdayReportSuccessErrorDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	out, err := service.BirthdayReport()
@@ -59,9 +59,9 @@ func TestBirthdayReportSuccessErrorDB(t *testing.T) {
 func TestMarriageReportSuccessErrorDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	repo.EXPECT().FindMembersActiveAndMarried().Return(nil, errors.New("Error"))
 	out, err := service.MarriageReport()
@@ -73,9 +73,9 @@ func TestMarriageReportSuccess(t *testing.T) {
 	i18n.BootStrapI18N()
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	members := []*model.Member{
 		{
@@ -96,9 +96,9 @@ func TestMarriageReportSuccess(t *testing.T) {
 func TestGenerateMemberReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
 	members := []*model.Member{
@@ -136,9 +136,9 @@ func TestGenerateMemberReport(t *testing.T) {
 func TestGenerateClassificationReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 	dtNascimento, _ := time.Parse("2006/01/02", "1990/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
 	members := []*model.Member{
@@ -176,9 +176,9 @@ func TestGenerateClassificationReport(t *testing.T) {
 func TestGenerateMemberReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	_, err := service.MemberReport()
@@ -188,9 +188,9 @@ func TestGenerateMemberReportFail(t *testing.T) {
 func TestGenerateClassificationReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	_, err := service.ClassificationReport("adult")
@@ -200,9 +200,9 @@ func TestGenerateClassificationReportFail(t *testing.T) {
 func TestGenerateLegalReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
@@ -241,9 +241,9 @@ func TestGenerateLegalReport(t *testing.T) {
 func TestGenerateLegalReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_repository.NewMockReportRepository(ctrl)
+	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := NewReportsGenerator(repo, fileBuilder)
+	service := NewReportService(repo, fileBuilder)
 
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
 	_, err := service.LegalReport()

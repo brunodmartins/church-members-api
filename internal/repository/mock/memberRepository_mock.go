@@ -13,31 +13,31 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// MockIMemberRepository is a mock of IMemberRepository interface.
-type MockIMemberRepository struct {
+// MockMemberRepository is a mock of MemberRepository interface.
+type MockMemberRepository struct {
 	ctrl     *gomock.Controller
-	recorder *MockIMemberRepositoryMockRecorder
+	recorder *MockMemberRepositoryMockRecorder
 }
 
-// MockIMemberRepositoryMockRecorder is the mock recorder for MockIMemberRepository.
-type MockIMemberRepositoryMockRecorder struct {
-	mock *MockIMemberRepository
+// MockMemberRepositoryMockRecorder is the mock recorder for MockMemberRepository.
+type MockMemberRepositoryMockRecorder struct {
+	mock *MockMemberRepository
 }
 
-// NewMockIMemberRepository creates a new mock instance.
-func NewMockIMemberRepository(ctrl *gomock.Controller) *MockIMemberRepository {
-	mock := &MockIMemberRepository{ctrl: ctrl}
-	mock.recorder = &MockIMemberRepositoryMockRecorder{mock}
+// NewMockMemberRepository creates a new mock instance.
+func NewMockMemberRepository(ctrl *gomock.Controller) *MockMemberRepository {
+	mock := &MockMemberRepository{ctrl: ctrl}
+	mock.recorder = &MockMemberRepositoryMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockIMemberRepository) EXPECT() *MockIMemberRepositoryMockRecorder {
+func (m *MockMemberRepository) EXPECT() *MockMemberRepositoryMockRecorder {
 	return m.recorder
 }
 
 // FindAll mocks base method.
-func (m *MockIMemberRepository) FindAll(filters mongo.QueryFilters) ([]*model.Member, error) {
+func (m *MockMemberRepository) FindAll(filters mongo.QueryFilters) ([]*model.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", filters)
 	ret0, _ := ret[0].([]*model.Member)
@@ -46,13 +46,13 @@ func (m *MockIMemberRepository) FindAll(filters mongo.QueryFilters) ([]*model.Me
 }
 
 // FindAll indicates an expected call of FindAll.
-func (mr *MockIMemberRepositoryMockRecorder) FindAll(filters interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) FindAll(filters interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockIMemberRepository)(nil).FindAll), filters)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockMemberRepository)(nil).FindAll), filters)
 }
 
 // FindByID mocks base method.
-func (m *MockIMemberRepository) FindByID(id model.ID) (*model.Member, error) {
+func (m *MockMemberRepository) FindByID(id model.ID) (*model.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", id)
 	ret0, _ := ret[0].(*model.Member)
@@ -61,13 +61,43 @@ func (m *MockIMemberRepository) FindByID(id model.ID) (*model.Member, error) {
 }
 
 // FindByID indicates an expected call of FindByID.
-func (mr *MockIMemberRepositoryMockRecorder) FindByID(id interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) FindByID(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockIMemberRepository)(nil).FindByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockMemberRepository)(nil).FindByID), id)
+}
+
+// FindMembersActive mocks base method.
+func (m *MockMemberRepository) FindMembersActive() ([]*model.Member, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindMembersActive")
+	ret0, _ := ret[0].([]*model.Member)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindMembersActive indicates an expected call of FindMembersActive.
+func (mr *MockMemberRepositoryMockRecorder) FindMembersActive() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMembersActive", reflect.TypeOf((*MockMemberRepository)(nil).FindMembersActive))
+}
+
+// FindMembersActiveAndMarried mocks base method.
+func (m *MockMemberRepository) FindMembersActiveAndMarried() ([]*model.Member, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindMembersActiveAndMarried")
+	ret0, _ := ret[0].([]*model.Member)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindMembersActiveAndMarried indicates an expected call of FindMembersActiveAndMarried.
+func (mr *MockMemberRepositoryMockRecorder) FindMembersActiveAndMarried() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMembersActiveAndMarried", reflect.TypeOf((*MockMemberRepository)(nil).FindMembersActiveAndMarried))
 }
 
 // FindMonthBirthday mocks base method.
-func (m *MockIMemberRepository) FindMonthBirthday(date time.Time) ([]*model.Person, error) {
+func (m *MockMemberRepository) FindMonthBirthday(date time.Time) ([]*model.Person, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMonthBirthday", date)
 	ret0, _ := ret[0].([]*model.Person)
@@ -76,13 +106,13 @@ func (m *MockIMemberRepository) FindMonthBirthday(date time.Time) ([]*model.Pers
 }
 
 // FindMonthBirthday indicates an expected call of FindMonthBirthday.
-func (mr *MockIMemberRepositoryMockRecorder) FindMonthBirthday(date interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) FindMonthBirthday(date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMonthBirthday", reflect.TypeOf((*MockIMemberRepository)(nil).FindMonthBirthday), date)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMonthBirthday", reflect.TypeOf((*MockMemberRepository)(nil).FindMonthBirthday), date)
 }
 
 // GenerateStatusHistory mocks base method.
-func (m *MockIMemberRepository) GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error {
+func (m *MockMemberRepository) GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateStatusHistory", id, status, reason, date)
 	ret0, _ := ret[0].(error)
@@ -90,13 +120,13 @@ func (m *MockIMemberRepository) GenerateStatusHistory(id model.ID, status bool, 
 }
 
 // GenerateStatusHistory indicates an expected call of GenerateStatusHistory.
-func (mr *MockIMemberRepositoryMockRecorder) GenerateStatusHistory(id, status, reason, date interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) GenerateStatusHistory(id, status, reason, date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateStatusHistory", reflect.TypeOf((*MockIMemberRepository)(nil).GenerateStatusHistory), id, status, reason, date)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateStatusHistory", reflect.TypeOf((*MockMemberRepository)(nil).GenerateStatusHistory), id, status, reason, date)
 }
 
 // Insert mocks base method.
-func (m *MockIMemberRepository) Insert(member *model.Member) (model.ID, error) {
+func (m *MockMemberRepository) Insert(member *model.Member) (model.ID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", member)
 	ret0, _ := ret[0].(model.ID)
@@ -105,13 +135,13 @@ func (m *MockIMemberRepository) Insert(member *model.Member) (model.ID, error) {
 }
 
 // Insert indicates an expected call of Insert.
-func (mr *MockIMemberRepositoryMockRecorder) Insert(member interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) Insert(member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockIMemberRepository)(nil).Insert), member)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockMemberRepository)(nil).Insert), member)
 }
 
 // Search mocks base method.
-func (m *MockIMemberRepository) Search(text string) ([]*model.Member, error) {
+func (m *MockMemberRepository) Search(text string) ([]*model.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Search", text)
 	ret0, _ := ret[0].([]*model.Member)
@@ -120,13 +150,13 @@ func (m *MockIMemberRepository) Search(text string) ([]*model.Member, error) {
 }
 
 // Search indicates an expected call of Search.
-func (mr *MockIMemberRepositoryMockRecorder) Search(text interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) Search(text interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockIMemberRepository)(nil).Search), text)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockMemberRepository)(nil).Search), text)
 }
 
 // UpdateStatus mocks base method.
-func (m *MockIMemberRepository) UpdateStatus(ID model.ID, status bool) error {
+func (m *MockMemberRepository) UpdateStatus(ID model.ID, status bool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateStatus", ID, status)
 	ret0, _ := ret[0].(error)
@@ -134,7 +164,7 @@ func (m *MockIMemberRepository) UpdateStatus(ID model.ID, status bool) error {
 }
 
 // UpdateStatus indicates an expected call of UpdateStatus.
-func (mr *MockIMemberRepositoryMockRecorder) UpdateStatus(ID, status interface{}) *gomock.Call {
+func (mr *MockMemberRepositoryMockRecorder) UpdateStatus(ID, status interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockIMemberRepository)(nil).UpdateStatus), ID, status)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockMemberRepository)(nil).UpdateStatus), ID, status)
 }

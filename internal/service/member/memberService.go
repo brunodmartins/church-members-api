@@ -1,8 +1,8 @@
-package service
+package member
 
 import (
 	"fmt"
-	repository2 "github.com/BrunoDM2943/church-members-api/internal/repository"
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
@@ -11,7 +11,7 @@ import (
 )
 
 //go:generate mockgen -source=./memberService.go -destination=./mock/memberService_mock.go
-type IMemberService interface {
+type Service interface {
 	FindMembers(filters map[string]interface{}) ([]*model.Member, error)
 	FindMembersByID(id model.ID) (*model.Member, error)
 	SaveMember(member *model.Member) (model.ID, error)
@@ -20,10 +20,10 @@ type IMemberService interface {
 }
 
 type memberService struct {
-	repo repository2.IMemberRepository
+	repo repository.MemberRepository
 }
 
-func NewMemberService(r repository2.IMemberRepository) *memberService {
+func NewMemberService(r repository.MemberRepository) *memberService {
 	return &memberService{
 		repo: r,
 	}

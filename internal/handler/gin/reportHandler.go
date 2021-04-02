@@ -1,17 +1,17 @@
 package gin
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/service"
+	"github.com/BrunoDM2943/church-members-api/internal/service/report"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type ReportHandler struct {
-	reportGenerator service.ReportsGenerator
+	reportGenerator report.Service
 }
 
-func NewReportHandler(reportGenerator service.ReportsGenerator) *ReportHandler {
+func NewReportHandler(reportGenerator report.Service) *ReportHandler {
 	return &ReportHandler{reportGenerator}
 }
 

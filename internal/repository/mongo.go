@@ -56,28 +56,6 @@ func (repo *mongoRepository) Insert(member *model.Member) (model.ID, error) {
 	return member.ID, repo.col.Insert(member)
 }
 
-func (repo *mongoRepository) FindMonthBirthday(date time.Time) ([]*model.Person, error) {
-	var result []*model.Member
-	var resultParsed []*model.Person
-	err := repo.col.Find(bson.M{
-		"$expr": bson.M{
-			"$eq": []interface{}{
-				bson.M{
-					"$month": "$person.birthDate",
-				},
-				date.Month(),
-			},
-		},
-	}).All(&result)
-	if err != nil {
-		return nil, err
-	}
-	for _, member := range result {
-		resultParsed = append(resultParsed, &member.Person)
-	}
-	return resultParsed, nil
-}
-
 func (repo *mongoRepository) UpdateStatus(ID model.ID, status bool) error {
 	return repo.col.UpdateId(bson.ObjectIdHex(ID.String()), bson.M{
 		"$set": bson.M{

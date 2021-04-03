@@ -22,7 +22,6 @@ type MemberRepository interface {
 	FindAll(filters QueryFilters) ([]*model.Member, error)
 	FindByID(id model.ID) (*model.Member, error)
 	Insert(member *model.Member) (model.ID, error)
-	FindMonthBirthday(date time.Time) ([]*model.Person, error)
 	UpdateStatus(ID model.ID, status bool) error
 	GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error
 	FindMembersActive() ([]*model.Member, error)

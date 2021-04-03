@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"github.com/BrunoDM2943/church-members-api/internal/service/member"
-	"io/ioutil"
-	"net/http"
-	"time"
-
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
+	"io/ioutil"
+	"net/http"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
@@ -87,18 +85,6 @@ func (handler *MemberHandler) SearchMember(c *gin.Context) {
 		return
 	}
 	c.JSON(200, result)
-}
-
-func (handler *MemberHandler) GetBirthDayMembers(c *gin.Context) {
-	date := time.Now()
-
-	list, err := handler.service.FindMonthBirthday(date)
-	if err != nil {
-		c.JSON(500, err)
-		return
-	}
-	c.JSON(200, list)
-	return
 }
 
 func (handler *MemberHandler) PutStatus(c *gin.Context) {

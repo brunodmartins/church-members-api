@@ -3,11 +3,11 @@ package member
 import (
 	"errors"
 	"fmt"
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/mongo"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/mgo.v2/bson"
@@ -69,7 +69,7 @@ func TestFindMembersWithFilters(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
-	filters := mongo.QueryFilters{}
+	filters := repository.QueryFilters{}
 	filters.AddFilter("active", true)
 	filters.AddFilter("person.gender", "F")
 	regex := bson.RegEx{fmt.Sprintf(".*%s*.", "Bruno"), "i"}

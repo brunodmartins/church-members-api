@@ -12,7 +12,6 @@ type Service interface {
 	FindMembers(filters map[string]interface{}) ([]*model.Member, error)
 	FindMembersByID(id model.ID) (*model.Member, error)
 	SaveMember(member *model.Member) (model.ID, error)
-	FindMonthBirthday(date time.Time) ([]*model.Person, error)
 	ChangeStatus(id model.ID, status bool, reason string) error
 }
 
@@ -50,10 +49,6 @@ func (s *memberService) FindMembersByID(id model.ID) (*model.Member, error) {
 
 func (s *memberService) SaveMember(member *model.Member) (model.ID, error) {
 	return s.repo.Insert(member)
-}
-
-func (s *memberService) FindMonthBirthday(month time.Time) ([]*model.Person, error) {
-	return s.repo.FindMonthBirthday(month)
 }
 
 func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string) error {

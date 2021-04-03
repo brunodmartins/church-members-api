@@ -6,7 +6,6 @@ package mock_member
 
 import (
 	reflect "reflect"
-	time "time"
 
 	model "github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	gomock "github.com/golang/mock/gomock"
@@ -77,21 +76,6 @@ func (m *MockService) FindMembersByID(id model.ID) (*model.Member, error) {
 func (mr *MockServiceMockRecorder) FindMembersByID(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMembersByID", reflect.TypeOf((*MockService)(nil).FindMembersByID), id)
-}
-
-// FindMonthBirthday mocks base method.
-func (m *MockService) FindMonthBirthday(date time.Time) ([]*model.Person, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindMonthBirthday", date)
-	ret0, _ := ret[0].([]*model.Person)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindMonthBirthday indicates an expected call of FindMonthBirthday.
-func (mr *MockServiceMockRecorder) FindMonthBirthday(date interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMonthBirthday", reflect.TypeOf((*MockService)(nil).FindMonthBirthday), date)
 }
 
 // SaveMember mocks base method.

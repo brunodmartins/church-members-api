@@ -84,10 +84,6 @@ func (repo dynamoRepository) Insert(member *model.Member) (model.ID, error) {
 	panic("implement me")
 }
 
-func (repo dynamoRepository) FindMonthBirthday(date time.Time) ([]*model.Person, error) {
-	panic("implement me")
-}
-
 func (repo dynamoRepository) UpdateStatus(ID model.ID, status bool) error {
 	panic("implement me")
 }
@@ -97,11 +93,53 @@ func (repo dynamoRepository) GenerateStatusHistory(id model.ID, status bool, rea
 }
 
 func (repo dynamoRepository) FindMembersActive() ([]*model.Member, error) {
-	panic("implement me")
+	var members = make([]*model.Member, 0)
+
+	builderExpresion := expression.NewBuilder().WithFilter(expression.Name("active").Equal(expression.Value(true)))
+
+	expr, _ := builderExpresion.Build()
+	resp, err := repo.client.Scan(context.TODO(), &dynamodb.ScanInput{
+		TableName:        aws.String("member"),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		FilterExpression:          expr.Filter(),
+		ProjectionExpression:      expr.Projection(),
+	})
+	if err != nil{
+		return nil, err
+	}
+	if len(resp.Items) != 0 {
+		for _, item := range resp.Items {
+			members = append(members, unmarshalItem(item))
+		}
+	}
+	return members, nil
 }
 
 func (repo dynamoRepository) FindMembersActiveAndMarried() ([]*model.Member, error) {
-	panic("implement me")
+	var members = make([]*model.Member, 0)
+
+	builderExpresion := expression.NewBuilder()
+	builderExpresion = builderExpresion.WithFilter(expression.Name("active").Equal(expression.Value(true)))
+	builderExpresion = builderExpresion.WithFilter(expression.Name("marriageDate").AttributeExists())
+
+	expr, _ := builderExpresion.Build()
+	resp, err := repo.client.Scan(context.TODO(), &dynamodb.ScanInput{
+		TableName:        aws.String("member"),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		FilterExpression:          expr.Filter(),
+		ProjectionExpression:      expr.Projection(),
+	})
+	if err != nil{
+		return nil, err
+	}
+	if len(resp.Items) != 0 {
+		for _, item := range resp.Items {
+			members = append(members, unmarshalItem(item))
+		}
+	}
+	return members, nil
 }
 
 func unmarshalItem(item map[string]types.AttributeValue) *model.Member {

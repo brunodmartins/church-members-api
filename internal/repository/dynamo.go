@@ -105,11 +105,11 @@ func (repo dynamoRepository) UpdateStatus(ID model.ID, status bool) error {
 		},
 		TableName:                 aws.String("member"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":status": &types.AttributeValueMemberBOOL{
+			":active": &types.AttributeValueMemberBOOL{
 				Value: status,
 			},
 		},
-		UpdateExpression:          aws.String("set status = :status"),
+		UpdateExpression:          aws.String("set active = :active"),
 	})
 	return err
 }

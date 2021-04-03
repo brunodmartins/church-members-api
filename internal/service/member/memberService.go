@@ -53,6 +53,8 @@ func (s *memberService) SaveMember(member *model.Member) (model.ID, error) {
 
 func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string) error {
 	err := s.repo.UpdateStatus(ID, status)
-	s.repo.GenerateStatusHistory(ID, status, reason, time.Now())
+	if err == nil {
+		return s.repo.GenerateStatusHistory(ID, status, reason, time.Now())
+	}
 	return err
 }

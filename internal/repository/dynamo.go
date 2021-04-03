@@ -96,11 +96,11 @@ func (repo dynamoRepository) Insert(member *model.Member) (model.ID, error) {
 	return id, err
 }
 
-func (repo dynamoRepository) UpdateStatus(ID model.ID, status bool) error {
+func (repo dynamoRepository) UpdateStatus(id model.ID, status bool) error {
 	_, err := repo.client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
-				Value: string(ID),
+				Value: id.String(),
 			},
 		},
 		TableName:                 aws.String("member"),
@@ -118,7 +118,7 @@ func (repo dynamoRepository) GenerateStatusHistory(id model.ID, status bool, rea
 	_, err := repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{Value: uuid.New().String()},
-			"member_id": &types.AttributeValueMemberS{Value: string(id)},
+			"member_id": &types.AttributeValueMemberS{Value: id.String()},
 			"reason": &types.AttributeValueMemberS{Value: reason},
 			"status": &types.AttributeValueMemberBOOL{Value: status},
 			"date": &types.AttributeValueMemberS{Value: date.String()},

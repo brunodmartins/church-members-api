@@ -9,13 +9,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/google/uuid"
 	"time"
 )
 
 type dynamoRepository struct {
 	client *dynamodb.Client
 }
-
 
 func NewDynamoDBRepository() MemberRepository {
 	cfg, err := config.LoadDefaultConfig(context.TODO())
@@ -81,15 +81,51 @@ func (repo dynamoRepository) FindByID(id model.ID) (*model.Member, error) {
 }
 
 func (repo dynamoRepository) Insert(member *model.Member) (model.ID, error) {
-	panic("implement me")
+	id := model.NewID()
+	member.ID = id
+	av, err := attributevalue.MarshalMap(member)
+
+	if err != nil {
+		return id, err
+	}
+
+	_, err = repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String("member"),
+	})
+	return id, err
 }
 
 func (repo dynamoRepository) UpdateStatus(ID model.ID, status bool) error {
-	panic("implement me")
+	_, err := repo.client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{
+				Value: string(ID),
+			},
+		},
+		TableName:                 aws.String("member"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":status": &types.AttributeValueMemberBOOL{
+				Value: status,
+			},
+		},
+		UpdateExpression:          aws.String("set status = :status"),
+	})
+	return err
 }
 
 func (repo dynamoRepository) GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error {
-	panic("implement me")
+	_, err := repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		Item: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{Value: uuid.New().String()},
+			"member_id": &types.AttributeValueMemberS{Value: string(id)},
+			"reason": &types.AttributeValueMemberS{Value: reason},
+			"status": &types.AttributeValueMemberBOOL{Value: status},
+			"date": &types.AttributeValueMemberS{Value: date.String()},
+		},
+		TableName: aws.String("member_history"),
+	})
+	return err
 }
 
 func (repo dynamoRepository) FindMembersActive() ([]*model.Member, error) {

@@ -17,6 +17,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
 	github.com/golang/mock v1.3.1-0.20190508161146-9fa652df1129
+	github.com/google/uuid v1.2.0
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/graphql-go/graphql v0.7.8
 	github.com/magiconair/properties v1.8.1
@@ -26,7 +27,5 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/text v0.3.3
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
-	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )

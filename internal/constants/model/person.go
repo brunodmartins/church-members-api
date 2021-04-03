@@ -20,7 +20,7 @@ type Person struct {
 	Profession        string    `json:"profession,omitempty"`
 	Gender            string    `json:"gender"`
 	Contact           Contact   `json:"contact"`
-	Address           Address   `json:"address"`
+	Address           Address   `json:"address" dynamodbav:"-"`
 }
 
 //GetFullName of a person

@@ -1,13 +1,10 @@
 package member
 
 import (
-	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/mongo"
-	"gopkg.in/mgo.v2/bson"
 )
 
 //go:generate mockgen -source=./memberService.go -destination=./mock/memberService_mock.go
@@ -30,7 +27,7 @@ func NewMemberService(r repository.MemberRepository) *memberService {
 }
 
 func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Member, error) {
-	queryFilters := mongo.QueryFilters{}
+	queryFilters := repository.QueryFilters{}
 
 	if sex := filters["gender"]; sex != nil {
 		queryFilters.AddFilter("person.gender", sex)
@@ -41,11 +38,7 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Me
 	}
 
 	if name := filters["name"]; name != nil {
-		regex := bson.RegEx{fmt.Sprintf(".*%s*.", name), "i"}
-		queryFilters.AddFilter("$or", []bson.M{
-			{"person.firstName": regex},
-			{"person.lastName": regex},
-		})
+		queryFilters.AddFilter("name", name)
 	}
 
 	return s.repo.FindAll(queryFilters)

@@ -5,15 +5,23 @@ import (
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/mongo"
 )
+
+type QueryFilters map[string]interface{}
+
+func (qf QueryFilters) AddFilter(key string, value interface{}) {
+	qf[key] = value
+}
+
+func (qf QueryFilters) GetFilter(key string) interface{} {
+	return qf[key]
+}
 
 //go:generate mockgen -source=./memberRepository.go -destination=./mock/memberRepository_mock.go
 type MemberRepository interface {
-	FindAll(filters mongo.QueryFilters) ([]*model.Member, error)
+	FindAll(filters QueryFilters) ([]*model.Member, error)
 	FindByID(id model.ID) (*model.Member, error)
 	Insert(member *model.Member) (model.ID, error)
-	Search(text string) ([]*model.Member, error)
 	FindMonthBirthday(date time.Time) ([]*model.Person, error)
 	UpdateStatus(ID model.ID, status bool) error
 	GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error

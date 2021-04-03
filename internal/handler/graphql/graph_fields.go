@@ -13,7 +13,7 @@ var memberType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				member := p.Source.(*model.Member)
-				return member.ID.String(), nil
+				return string(member.ID), nil
 			},
 		},
 		"active": &graphql.Field{

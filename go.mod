@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.3.1
 	github.com/aws/aws-sdk-go-v2/config v1.1.4
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.0.5
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.0.5
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.2.1
 	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1

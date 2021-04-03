@@ -3,7 +3,6 @@ package repository
 import (
 	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	"time"
@@ -21,8 +20,18 @@ func NewMongoRepository(session *mgo.Session) MemberRepository {
 	}
 }
 
-func (repo *mongoRepository) FindAll(filters mongo.QueryFilters) ([]*model.Member, error) {
+func (repo *mongoRepository) FindAll(filters QueryFilters) ([]*model.Member, error) {
 	var result []*model.Member
+
+	if filters.GetFilter("name") != nil {
+		name := filters.GetFilter("name").(string)
+		regex := bson.RegEx{fmt.Sprintf(".*%s*.", name), "i"}
+		filters.AddFilter("$or", []bson.M{
+			{"person.firstName": regex},
+			{"person.lastName": regex},
+		})
+	}
+
 	err := repo.col.Find(filters).Select(bson.M{}).All(&result)
 	if err != nil {
 		return nil, err
@@ -45,20 +54,6 @@ func (repo *mongoRepository) FindByID(id model.ID) (*model.Member, error) {
 func (repo *mongoRepository) Insert(member *model.Member) (model.ID, error) {
 	member.ID = model.NewID()
 	return member.ID, repo.col.Insert(member)
-}
-
-func (repo *mongoRepository) Search(text string) ([]*model.Member, error) {
-	var result []*model.Member
-	regex := bson.RegEx{fmt.Sprintf(".*%s*.", text), "i"}
-	err := repo.col.Find(
-		bson.M{
-			"$or": []bson.M{
-				{"person.firstName": regex},
-				{"person.lastName": regex},
-			},
-		},
-	).Select(bson.M{}).All(&result)
-	return result, err
 }
 
 func (repo *mongoRepository) FindMonthBirthday(date time.Time) ([]*model.Person, error) {
@@ -101,7 +96,7 @@ func (repo *mongoRepository) GenerateStatusHistory(id model.ID, status bool, rea
 
 func (repo *mongoRepository)FindMembersActive() ([]*model.Member, error) {
 	var result []*model.Member
-	filters := mongo.QueryFilters{}
+	filters := QueryFilters{}
 	filters.AddFilter("active", true)
 	err := repo.col.Find(filters).Sort("person.firstName", "person.lastName").Select(bson.M{}).All(&result)
 	if err != nil {
@@ -113,7 +108,7 @@ func (repo *mongoRepository)FindMembersActive() ([]*model.Member, error) {
 
 func (repo *mongoRepository) FindMembersActiveAndMarried() ([]*model.Member, error) {
 	var result []*model.Member
-	filters := mongo.QueryFilters{}
+	filters := QueryFilters{}
 	filters.AddFilter("active", true)
 	filters.AddFilter("person.marriageDate", bson.M{"$exists": true})
 	err := repo.col.Find(filters).Select(bson.M{}).All(&result)

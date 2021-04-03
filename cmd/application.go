@@ -9,7 +9,7 @@ type Application interface {
 }
 
 func ProvideRunner() Application {
-	if config.IsAWS() {
+	if config.IsAWS() && !config.IsLocal() {
 		return LambdaApplication{}
 	} else {
 		return GinApplication{}

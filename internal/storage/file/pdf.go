@@ -43,8 +43,8 @@ func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, builder *gopdf
 }
 
 func (pdfBuilder *pdfBuilder) setFont(builder *gopdf.GoPdf) error {
-	builder.AddTTFFont("arial", "./arial.ttf")
-	builder.AddTTFFont("arial", "./fonts/arial.ttf")
+	builder.AddTTFFont("arial", "./Arial.ttf")
+	builder.AddTTFFont("arial", "./fonts/Arial.ttf")
 
 	err := builder.SetFont("arial", "", 14)
 	if err != nil {

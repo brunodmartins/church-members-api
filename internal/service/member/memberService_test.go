@@ -2,7 +2,6 @@ package member
 
 import (
 	"errors"
-	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"testing"
 
@@ -10,7 +9,6 @@ import (
 	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/mgo.v2/bson"
 )
 
 func TestListAllMembers(t *testing.T) {
@@ -72,11 +70,7 @@ func TestFindMembersWithFilters(t *testing.T) {
 	filters := repository.QueryFilters{}
 	filters.AddFilter("active", true)
 	filters.AddFilter("person.gender", "F")
-	regex := bson.RegEx{fmt.Sprintf(".*%s*.", "Bruno"), "i"}
-	filters.AddFilter("$or", []bson.M{
-		{"person.firstName": regex},
-		{"person.lastName": regex},
-	})
+	filters.AddFilter("name", "Bruno")
 	repo.EXPECT().FindAll(gomock.Eq(filters)).Return(nil, nil).AnyTimes()
 
 	service.FindMembers(map[string]interface{}{

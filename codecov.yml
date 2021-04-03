@@ -1,0 +1,9 @@
+coverage:
+  status:
+    patch: no
+ignore:
+  - "entity/bson.go"
+  - "infra"
+  - "internal/repository/memberRepository.go"
+  - "cmd"
+  - "main.go"

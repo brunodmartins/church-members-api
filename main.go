@@ -1,20 +1,11 @@
 package main
 
 import (
-	"github.com/BrunoDM2943/church-members-api/handler"
-	"github.com/BrunoDM2943/church-members-api/infra"
-	"github.com/BrunoDM2943/church-members-api/member"
-	"github.com/gin-gonic/gin"
+	"github.com/BrunoDM2943/church-members-api/cmd"
+	_ "github.com/BrunoDM2943/church-members-api/internal/infra/config"
+	_ "github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 )
 
 func main() {
-	r := gin.Default()
-
-	mongo := infra.NewMongoConnection()
-	repo := member.NewMemberRepository(mongo.Connect())
-	service := member.NewMemberService(repo)
-
-	memberHandler := handler.NewMemberHandler(service)
-	memberHandler.SetUpRoutes(r)
-	r.Run()
+	cmd.ProvideRunner().Run()
 }

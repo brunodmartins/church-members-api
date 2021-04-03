@@ -5,10 +5,12 @@ go 1.13
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/auth0/go-jwt-middleware v0.0.0-20170425171159-5493cabe49f7
-	github.com/aws/aws-lambda-go v1.23.0 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.1.4 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.0.5 // indirect
-	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0 // indirect
+	github.com/aws/aws-lambda-go v1.23.0
+	github.com/aws/aws-sdk-go-v2 v1.3.1
+	github.com/aws/aws-sdk-go-v2/config v1.1.4
+	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.0.5
+	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.2.1
+	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1
 	github.com/codegangsta/negroni v1.0.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible

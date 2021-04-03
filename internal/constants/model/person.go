@@ -6,6 +6,7 @@ import (
 
 //Person type
 type Person struct {
+	Name			  string    `json:"name"`
 	FirstName         string    `json:"firstName" bson:"firstName"`
 	LastName          string    `json:"lastName" bson:"lastName"`
 	BirthDate         time.Time `json:"birthDate" bson:"birthDate"`

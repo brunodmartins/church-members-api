@@ -11,6 +11,7 @@ func loadViper(){
 		viper.Set("mongo.url", "mongodb://127.0.0.1:27017/admin")
 		viper.Set("auth.enable", false)
 		viper.Set("church.name", "Test")
+		viper.Set("cloud", os.Getenv("SERVER"))
 	case "test":
 		viper.Set("mongo.url", "mongodb://127.0.0.1:27017/admin")
 		viper.Set("auth.enable", false)

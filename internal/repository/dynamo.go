@@ -44,8 +44,8 @@ func (repo dynamoRepository) FindByID(id model.ID) (*model.Member, error) {
 	if err != nil {
 		return nil, err
 	}
-	if output.Item != nil {
-		return nil, nil
+	if output.Item == nil {
+		return nil, MemberNotFound
 	}
 	return UnmarshalItem(output.Item), nil
 }
@@ -84,14 +84,15 @@ func UnmarshalItem(item map[string]types.AttributeValue) *model.Member {
 	var contact model.Contact
 	var address model.Address
 	var religion model.Religion
-	attributevalue.UnmarshalMap(item, person)
-	attributevalue.UnmarshalMap(item, contact)
-	attributevalue.UnmarshalMap(item, address)
-	attributevalue.UnmarshalMap(item, religion)
-	attributevalue.UnmarshalMap(item, member)
+	attributevalue.UnmarshalMap(item, &person)
+	attributevalue.UnmarshalMap(item, &contact)
+	attributevalue.UnmarshalMap(item, &address)
+	attributevalue.UnmarshalMap(item, &religion)
+	attributevalue.UnmarshalMap(item, &member)
 
 	person.Address = address
 	person.Contact = contact
+	person.Name = person.GetFullName()
 	member.Person = person
 	member.Religion = religion
 

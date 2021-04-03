@@ -65,6 +65,8 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 	if err != nil {
 		if err == repository.MemberNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
+		} else {
+			c.JSON(http.StatusInternalServerError, err.Error())
 		}
 	} else {
 		c.JSON(http.StatusOK, m)

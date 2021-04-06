@@ -16,3 +16,7 @@ church-members-api
 .idea
 .vscode
 debug
+.terraform*
+terraform*
+cmd.zip
+internal.zip

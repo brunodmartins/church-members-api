@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+	"unicode/utf8"
 )
 
 func TestBuildFile(t *testing.T){
@@ -38,7 +39,7 @@ func TestBuildFile(t *testing.T){
 
 	pdfBuilder := NewPDFBuilder()
 	out, err := pdfBuilder.BuildFile("Test", data)
-
+	assert.False(t, utf8.Valid(out))
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
 }

@@ -110,9 +110,23 @@ resource "aws_ecr_repository" "repo" {
   name = local.ecr_repository_name
 }
 
+data "archive_file" "internal" {
+  type        = "zip"
+  source_dir  = "internal/"
+  output_path = "internal.zip"
+}
+
+data "archive_file" "cmd" {
+  type        = "zip"
+  source_dir  = "internal/"
+  output_path = "cmd.zip"
+}
+
 resource "null_resource" "ecr_image" {
   triggers = {
     docker_file = md5(file("${path.module}/Dockerfile"))
+    src_hash    = data.archive_file.internal.output_sha
+    src_hash    = data.archive_file.cmd.output_sha
   }
 
   provisioner "local-exec" {
@@ -120,6 +134,7 @@ resource "null_resource" "ecr_image" {
            aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.${var.region}.amazonaws.com
            docker build -t ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag} .
            docker push ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag}
+           rm cmd.zip internal.zip
        EOF
   }
 }
@@ -156,7 +171,7 @@ data "template_file" "aws_api_swagger" {
   vars = {
     aws_region     = data.aws_region.current.name
     aws_account_id = data.aws_caller_identity.current.account_id
-    lambda_id    = "${local.app_name}-lambda"
+    lambda_id      = "${local.app_name}-lambda"
   }
 }
 
@@ -183,6 +198,9 @@ resource "aws_api_gateway_deployment" "api-deployment" {
 }
 
 resource "aws_api_gateway_stage" "api-stage" {
+  depends_on = [
+    aws_api_gateway_deployment.api-deployment
+  ]
   deployment_id = aws_api_gateway_deployment.api-deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api-gateway.id
   stage_name    = "prod"
@@ -250,4 +268,8 @@ resource "aws_lambda_permission" "policy-get-reports-members-classification" {
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api-gateway.id}/*/GET/reports/members/classification/*"
+}
+
+output "api-gateway" {
+  value = aws_api_gateway_rest_api.api-gateway.id
 }

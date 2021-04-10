@@ -17,8 +17,8 @@ ENV VPR_CHURCH_MEMBERS_DATABASE_URL $VPR_CHURCH_MEMBERS_DATABASE_URL \
     VPR_AUTH_TOKEN $VPR_AUTH_TOKEN \
     VPR_AUTH_AUD $VPR_AUTH_AUD \
     SCOPE $SCOPE \
-    APP_LANG $APP_LANG \
-    SERVER $SERVER
+    SERVER $SERVER \
+    APP_LANG $APP_LANG
 
 COPY --from=build /go/src/app/bundles/* ./bundles/
 COPY --from=build /go/src/app/fonts/* ./fonts/

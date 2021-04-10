@@ -12,7 +12,7 @@ type Service interface {
 	FindMembers(filters map[string]interface{}) ([]*model.Member, error)
 	FindMembersByID(id model.ID) (*model.Member, error)
 	SaveMember(member *model.Member) (model.ID, error)
-	ChangeStatus(id model.ID, status bool, reason string) error
+	ChangeStatus(id model.ID, status bool, reason string, date time.Time) error
 }
 
 type memberService struct {
@@ -51,10 +51,10 @@ func (s *memberService) SaveMember(member *model.Member) (model.ID, error) {
 	return s.repo.Insert(member)
 }
 
-func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string) error {
+func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string, date time.Time) error {
 	err := s.repo.UpdateStatus(ID, status)
 	if err == nil {
-		return s.repo.GenerateStatusHistory(ID, status, reason, time.Now())
+		return s.repo.GenerateStatusHistory(ID, status, reason, date)
 	}
 	return err
 }

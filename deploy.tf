@@ -162,6 +162,8 @@ resource "aws_lambda_function" "lambda" {
     variables = {
       "SERVER" : "AWS",
       "SCOPE" : "prod"
+      "APP_LANG" : "pt-BR"
+      "VPR_CHURCH_NAME" : ""
     }
   }
 }
@@ -172,6 +174,7 @@ data "template_file" "aws_api_swagger" {
     aws_region     = data.aws_region.current.name
     aws_account_id = data.aws_caller_identity.current.account_id
     lambda_id      = "${local.app_name}-lambda"
+    cognito_pool   = aws_cognito_user_pool.user-pool.arn
   }
 }
 
@@ -204,6 +207,14 @@ resource "aws_api_gateway_stage" "api-stage" {
   deployment_id = aws_api_gateway_deployment.api-deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api-gateway.id
   stage_name    = "prod"
+}
+
+resource "aws_lambda_permission" "policy-post-members-create" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda.arn
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api-gateway.id}/*/POST/members"
 }
 
 resource "aws_lambda_permission" "policy-get-members" {
@@ -268,6 +279,25 @@ resource "aws_lambda_permission" "policy-get-reports-members-classification" {
   principal     = "apigateway.amazonaws.com"
 
   source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api-gateway.id}/*/GET/reports/members/classification/*"
+}
+
+resource "aws_cognito_user_pool" "user-pool" {
+  name = "church-members-user-pool"
+  admin_create_user_config {
+    allow_admin_create_user_only = true
+  }
+}
+
+resource "aws_api_gateway_authorizer" "authorizer" {
+  depends_on = [
+    aws_api_gateway_rest_api.api-gateway
+  ]
+  name          = "authorizer"
+  rest_api_id   = aws_api_gateway_rest_api.api-gateway.id
+  type          = "COGNITO_USER_POOLS"
+  provider_arns = [
+    aws_cognito_user_pool.user-pool.arn
+  ]
 }
 
 output "api-gateway" {

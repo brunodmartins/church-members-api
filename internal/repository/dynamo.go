@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -55,7 +56,9 @@ func (repo dynamoRepository) FindAll(filters QueryFilters) ([]*model.Member, err
 	}
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
-			members = append(members, unmarshalItem(item))
+			record := &dto.MemberItem{}
+			attributevalue.UnmarshalMap(item, record)
+			members = append(members, record.ToMember())
 		}
 	}
 	return members, nil
@@ -77,13 +80,15 @@ func (repo dynamoRepository) FindByID(id model.ID) (*model.Member, error) {
 	if output.Item == nil {
 		return nil, MemberNotFound
 	}
-	return unmarshalItem(output.Item), nil
+	record := &dto.MemberItem{}
+	attributevalue.UnmarshalMap(output.Item, record)
+	return record.ToMember(), nil
 }
 
 func (repo dynamoRepository) Insert(member *model.Member) (model.ID, error) {
 	id := model.NewID()
 	member.ID = id
-	av, err := attributevalue.MarshalMap(member)
+	av, err := attributevalue.MarshalMap(dto.NewMemberItem(member))
 
 	if err != nil {
 		return id, err
@@ -146,7 +151,9 @@ func (repo dynamoRepository) FindMembersActive() ([]*model.Member, error) {
 	}
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
-			members = append(members, unmarshalItem(item))
+			record := &dto.MemberItem{}
+			attributevalue.UnmarshalMap(item, record)
+			members = append(members, record.ToMember())
 		}
 	}
 	return members, nil
@@ -172,29 +179,10 @@ func (repo dynamoRepository) FindMembersActiveAndMarried() ([]*model.Member, err
 	}
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
-			members = append(members, unmarshalItem(item))
+			record := &dto.MemberItem{}
+			attributevalue.UnmarshalMap(item, record)
+			members = append(members, record.ToMember())
 		}
 	}
 	return members, nil
-}
-
-func unmarshalItem(item map[string]types.AttributeValue) *model.Member {
-	member :=  &model.Member{}
-	person := &model.Person{}
-	contact :=  &model.Contact{}
-	address := &model.Address{}
-	religion := &model.Religion{}
-	attributevalue.UnmarshalMap(item, person)
-	attributevalue.UnmarshalMap(item, contact)
-	attributevalue.UnmarshalMap(item, address)
-	attributevalue.UnmarshalMap(item, religion)
-	attributevalue.UnmarshalMap(item, member)
-
-	person.Address = *address
-	person.Contact = *contact
-	person.Name = person.GetFullName()
-	member.Person = *person
-	member.Religion = *religion
-
-	return member
 }

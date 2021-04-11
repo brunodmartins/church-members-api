@@ -72,7 +72,7 @@ func (repo *mongoRepository) GenerateStatusHistory(id model.ID, status bool, rea
 	})
 }
 
-func (repo *mongoRepository)FindMembersActive() ([]*model.Member, error) {
+func (repo *mongoRepository) FindMembersActive() ([]*model.Member, error) {
 	var result []*model.Member
 	filters := QueryFilters{}
 	filters.AddFilter("active", true)

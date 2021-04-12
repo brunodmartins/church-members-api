@@ -2,6 +2,7 @@ package cdi
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/handler/gin"
+	"github.com/BrunoDM2943/church-members-api/internal/infra/config"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"github.com/BrunoDM2943/church-members-api/internal/service/member"
 	"github.com/BrunoDM2943/church-members-api/internal/service/report"
@@ -35,7 +36,12 @@ func provideMemberService() member.Service {
 
 func provideMemberRepository() repository.MemberRepository {
 	if memberRepository == nil {
-		memberRepository = repository.NewMemberRepository(provideMongoSession())
+		if config.IsAWS() {
+			memberRepository = repository.NewDynamoDBRepository()
+		} else {
+			memberRepository = repository.NewMongoRepository(provideMongoSession())
+		}
+
 	}
 	return memberRepository
 }

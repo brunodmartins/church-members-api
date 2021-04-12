@@ -1,4 +1,4 @@
-package gin
+package cmd
 
 import (
 	"fmt"
@@ -9,7 +9,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-func StartGinGonicHandler(){
+type GinApplication struct {}
+
+func (GinApplication) Run(){
 	router := provideGinGonic()
 	memberHandler := cdi.ProvideMemberHandler()
 	reportHandler := cdi.ProvideReportHandler()

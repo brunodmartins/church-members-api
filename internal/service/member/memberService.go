@@ -1,13 +1,10 @@
 package member
 
 import (
-	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/mongo"
-	"gopkg.in/mgo.v2/bson"
 )
 
 //go:generate mockgen -source=./memberService.go -destination=./mock/memberService_mock.go
@@ -15,8 +12,7 @@ type Service interface {
 	FindMembers(filters map[string]interface{}) ([]*model.Member, error)
 	FindMembersByID(id model.ID) (*model.Member, error)
 	SaveMember(member *model.Member) (model.ID, error)
-	FindMonthBirthday(date time.Time) ([]*model.Person, error)
-	ChangeStatus(id model.ID, status bool, reason string) error
+	ChangeStatus(id model.ID, status bool, reason string, date time.Time) error
 }
 
 type memberService struct {
@@ -30,7 +26,7 @@ func NewMemberService(r repository.MemberRepository) *memberService {
 }
 
 func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Member, error) {
-	queryFilters := mongo.QueryFilters{}
+	queryFilters := repository.QueryFilters{}
 
 	if sex := filters["gender"]; sex != nil {
 		queryFilters.AddFilter("person.gender", sex)
@@ -41,11 +37,7 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Me
 	}
 
 	if name := filters["name"]; name != nil {
-		regex := bson.RegEx{fmt.Sprintf(".*%s*.", name), "i"}
-		queryFilters.AddFilter("$or", []bson.M{
-			{"person.firstName": regex},
-			{"person.lastName": regex},
-		})
+		queryFilters.AddFilter("name", name)
 	}
 
 	return s.repo.FindAll(queryFilters)
@@ -59,12 +51,10 @@ func (s *memberService) SaveMember(member *model.Member) (model.ID, error) {
 	return s.repo.Insert(member)
 }
 
-func (s *memberService) FindMonthBirthday(month time.Time) ([]*model.Person, error) {
-	return s.repo.FindMonthBirthday(month)
-}
-
-func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string) error {
+func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string, date time.Time) error {
 	err := s.repo.UpdateStatus(ID, status)
-	s.repo.GenerateStatusHistory(ID, status, reason, time.Now())
+	if err == nil {
+		return s.repo.GenerateStatusHistory(ID, status, reason, date)
+	}
 	return err
 }

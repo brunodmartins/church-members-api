@@ -2,10 +2,9 @@ package model
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
-	"gopkg.in/mgo.v2/bson"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestFormattedContact(t *testing.T) {
@@ -86,21 +85,4 @@ func TestGetFullName(t *testing.T) {
 		FirstName: "John",
 		LastName:  "Doe",
 	}.GetFullName(), "John Doe")
-}
-
-func TestID(t *testing.T) {
-	t.Run("Test Marshal and Unmarshal", func(t *testing.T) {
-		originalId := NewID()
-		bytes, _ := originalId.MarshalJSON()
-		newId := NewID()
-		newId.UnmarshalJSON(bytes)
-		assert.Equal(t, originalId.String(), newId.String())
-	})
-	t.Run("Test Get BSON", func(t *testing.T) {
-		originalId := NewID()
-		bsonValue, _ := originalId.GetBSON()
-		objectId := bsonValue.(bson.ObjectId)
-		assert.Equal(t, originalId.String(), objectId.Hex())
-	})
-
 }

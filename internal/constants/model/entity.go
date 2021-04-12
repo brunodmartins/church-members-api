@@ -10,22 +10,6 @@ func (i ID) String() string {
 	return bson.ObjectId(i).Hex()
 }
 
-// MarshalJSON will marshal ID to Json
-func (i ID) MarshalJSON() ([]byte, error) {
-	return bson.ObjectId(i).MarshalJSON()
-}
-
-// UnmarshalJSON will convert a string to an ID
-func (i *ID) UnmarshalJSON(data []byte) error {
-	s := string(data)
-	s = s[1 : len(s)-1]
-	if bson.IsObjectIdHex(s) {
-		*i = ID(bson.ObjectIdHex(s))
-	}
-
-	return nil
-}
-
 //StringToID convert a string to an ID
 func StringToID(s string) ID {
 	return ID(bson.ObjectIdHex(s))

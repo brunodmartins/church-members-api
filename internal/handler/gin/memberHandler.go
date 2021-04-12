@@ -1,15 +1,13 @@
 package gin
 
 import (
-	"encoding/json"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"github.com/BrunoDM2943/church-members-api/internal/service/member"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/graphql-go/graphql"
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin/binding"
-	"github.com/graphql-go/graphql"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
@@ -21,8 +19,9 @@ type MemberHandler struct {
 }
 
 type putStatus struct {
-	Active *bool  `json:"active" binding:"required"`
-	Reason string `json:"reason" binding:"required"`
+	Active *bool     `json:"active" binding:"required"`
+	Reason string    `json:"reason" binding:"required"`
+	Date   time.Time `json:"date"`
 }
 
 func NewMemberHandler(service member.Service) *MemberHandler {
@@ -51,7 +50,7 @@ func (handler *MemberHandler) PostMember(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return
 	}
-	c.JSON(201, gin.H{"msg": "Member created", "id": id})
+	c.JSON(201, gin.H{"msg": "Member created", "id": id.String()})
 	return
 }
 
@@ -65,6 +64,8 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 	if err != nil {
 		if err == repository.MemberNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
+		} else {
+			c.JSON(http.StatusInternalServerError, err.Error())
 		}
 	} else {
 		c.JSON(http.StatusOK, m)
@@ -87,38 +88,28 @@ func (handler *MemberHandler) SearchMember(c *gin.Context) {
 	c.JSON(200, result)
 }
 
-func (handler *MemberHandler) GetBirthDayMembers(c *gin.Context) {
-	date := time.Now()
-
-	list, err := handler.service.FindMonthBirthday(date)
-	if err != nil {
-		c.JSON(500, err)
-		return
-	}
-	c.JSON(200, list)
-	return
-}
-
 func (handler *MemberHandler) PutStatus(c *gin.Context) {
-	request := make(map[string]interface{})
 	id, _ := c.Params.Get("id")
 	if !model.IsValidID(id) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	json.Unmarshal(body, &request)
-	if request["reason"] == nil {
+	var body = &putStatus{}
+	c.ShouldBindJSON(body)
+	if body.Reason == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Reason required"})
 		return
 	}
-	if request["active"] == nil {
+	if body.Active == nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Active required"})
 		return
 	}
 
-	err := handler.service.ChangeStatus(model.StringToID(id),
-		request["active"].(bool), request["reason"].(string))
+	if body.Date.IsZero() {
+		body.Date = time.Now()
+	}
+
+	err := handler.service.ChangeStatus(model.StringToID(id), *body.Active, body.Reason, body.Date)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error changing status", "error": err.Error()})

@@ -4,6 +4,6 @@ coverage:
 ignore:
   - "entity/bson.go"
   - "infra"
-  - "internal/repository/memberRepository.go"
+  - "internal/repository"
   - "cmd"
   - "main.go"

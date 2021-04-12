@@ -1,6 +1,9 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"os"
+)
 
 func loadViper(){
 	switch scope {
@@ -8,6 +11,7 @@ func loadViper(){
 		viper.Set("mongo.url", "mongodb://127.0.0.1:27017/admin")
 		viper.Set("auth.enable", false)
 		viper.Set("church.name", "Test")
+		viper.Set("cloud", os.Getenv("SERVER"))
 	case "test":
 		viper.Set("mongo.url", "mongodb://127.0.0.1:27017/admin")
 		viper.Set("auth.enable", false)
@@ -31,5 +35,6 @@ func loadViper(){
 		viper.Set("auth.jwk", viper.GetString("AUTH_JWK"))
 		viper.Set("auth.iss", viper.GetString("AUTH_ISS"))
 		viper.Set("auth.aud", viper.GetString("AUTH_AUD"))
+		viper.Set("cloud", os.Getenv("SERVER"))
 	}
 }

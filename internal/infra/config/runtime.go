@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"os"
 )
 
@@ -31,6 +32,10 @@ func IsProd() bool {
 
 func IsTest() bool {
 	return scope == "test"
+}
+
+func IsAWS() bool {
+	return viper.GetString("cloud") == "AWS"
 }
 
 func GetScope() string {

@@ -43,14 +43,14 @@ func (handler *MemberHandler) PostMember(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, err)
 		return
 	}
-	var id model.ID
+	var id string
 	var err error
 	member.Active = true
 	if id, err = handler.service.SaveMember(&member); err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return
 	}
-	c.JSON(201, gin.H{"msg": "Member created", "id": id.String()})
+	c.JSON(201, gin.H{"msg": "Member created", "id": id})
 	return
 }
 
@@ -60,7 +60,7 @@ func (handler *MemberHandler) GetMember(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "Invalid ID")
 		return
 	}
-	m, err := handler.service.FindMembersByID(model.StringToID(id))
+	m, err := handler.service.FindMembersByID(id)
 	if err != nil {
 		if err == repository.MemberNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
@@ -109,7 +109,7 @@ func (handler *MemberHandler) PutStatus(c *gin.Context) {
 		body.Date = time.Now()
 	}
 
-	err := handler.service.ChangeStatus(model.StringToID(id), *body.Active, body.Reason, body.Date)
+	err := handler.service.ChangeStatus(id, *body.Active, body.Reason, body.Date)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error changing status", "error": err.Error()})

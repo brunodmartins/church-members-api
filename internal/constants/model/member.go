@@ -2,12 +2,14 @@ package model
 
 import (
 	"github.com/bearbin/go-age"
+	"github.com/google/uuid"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"regexp"
 )
 
 //Member struct
 type Member struct {
-	ID                     ID       `json:"id" bson:"_id,omitempty"`
+	ID                     string       `json:"id" bson:"_id,omitempty"`
 	OldChurch              string   `json:"oldChurch,omitempty" bson:"oldChurch"`
 	AttendsFridayWorship   bool     `json:"attendsFridayWorship" bson:"attendsFridayWorship"`
 	AttendsSaturdayWorship bool     `json:"attendsSaturdayWorship" bson:"attendsSaturdayWorship"`
@@ -21,12 +23,12 @@ type Member struct {
 
 //Classification returns a member classification based on age and marriage
 func (member Member) Classification() string {
-	age := age.Age(member.Person.BirthDate)
+	age := age.Age(*member.Person.BirthDate)
 	if age < 15 {
 		return "Children"
 	} else if age < 18 {
 		return "Teen"
-	} else if age < 30 && member.Person.MarriageDate.IsZero() {
+	} else if age < 30 && member.Person.MarriageDate == nil {
 		return "Young"
 	} else {
 		return "Adult"
@@ -42,4 +44,13 @@ func (member Member) ClassificationLocalized(localizer *i18n.Localizer) string {
 			Other: classification,
 		},
 	})
+}
+
+func IsValidID(id string) bool {
+	r := regexp.MustCompile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$")
+	return r.MatchString(id)
+}
+
+func NewID() string {
+	return uuid.NewString()
 }

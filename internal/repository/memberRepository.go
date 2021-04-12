@@ -20,10 +20,10 @@ func (qf QueryFilters) GetFilter(key string) interface{} {
 //go:generate mockgen -source=./memberRepository.go -destination=./mock/memberRepository_mock.go
 type MemberRepository interface {
 	FindAll(filters QueryFilters) ([]*model.Member, error)
-	FindByID(id model.ID) (*model.Member, error)
-	Insert(member *model.Member) (model.ID, error)
-	UpdateStatus(ID model.ID, status bool) error
-	GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error
+	FindByID(id string) (*model.Member, error)
+	Insert(member *model.Member) (string, error)
+	UpdateStatus(ID string, status bool) error
+	GenerateStatusHistory(id string, status bool, reason string, date time.Time) error
 	FindMembersActive() ([]*model.Member, error)
 	FindMembersActiveAndMarried() ([]*model.Member, error)
 }

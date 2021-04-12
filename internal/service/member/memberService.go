@@ -10,9 +10,9 @@ import (
 //go:generate mockgen -source=./memberService.go -destination=./mock/memberService_mock.go
 type Service interface {
 	FindMembers(filters map[string]interface{}) ([]*model.Member, error)
-	FindMembersByID(id model.ID) (*model.Member, error)
-	SaveMember(member *model.Member) (model.ID, error)
-	ChangeStatus(id model.ID, status bool, reason string, date time.Time) error
+	FindMembersByID(id string) (*model.Member, error)
+	SaveMember(member *model.Member) (string, error)
+	ChangeStatus(id string, status bool, reason string, date time.Time) error
 }
 
 type memberService struct {
@@ -43,15 +43,15 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Me
 	return s.repo.FindAll(queryFilters)
 }
 
-func (s *memberService) FindMembersByID(id model.ID) (*model.Member, error) {
+func (s *memberService) FindMembersByID(id string) (*model.Member, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *memberService) SaveMember(member *model.Member) (model.ID, error) {
+func (s *memberService) SaveMember(member *model.Member) (string, error) {
 	return s.repo.Insert(member)
 }
 
-func (s *memberService) ChangeStatus(ID model.ID, status bool, reason string, date time.Time) error {
+func (s *memberService) ChangeStatus(ID string, status bool, reason string, date time.Time) error {
 	err := s.repo.UpdateStatus(ID, status)
 	if err == nil {
 		return s.repo.GenerateStatusHistory(ID, status, reason, date)

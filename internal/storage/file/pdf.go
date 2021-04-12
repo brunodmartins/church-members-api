@@ -104,7 +104,7 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *model.Member, builder *gopdf
 	}), builder)
 	pdfBuilder.setValue(data.Person.BirthDate.Format("02/01/2006"), builder)
 	builder.SetX(builder.GetX() + 10)
-	if !data.Person.MarriageDate.IsZero() {
+	if data.Person.MarriageDate != nil {
 		pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
 			DefaultMessage: &i18n.Message{
 				ID:    "Domain.MarriageDate",

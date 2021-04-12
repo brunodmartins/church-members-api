@@ -24,48 +24,53 @@ func TestFormattedContact(t *testing.T) {
 }
 
 func TestClassification(t *testing.T) {
+	now := time.Now()
 	t.Run("Children", func(t *testing.T) {
 		assert.Equal(t, "Children", Member{
 			Person: Person{
-				BirthDate: time.Now(),
+				BirthDate: &now,
 			},
 		}.Classification())
 	})
 	t.Run("Teen", func(t *testing.T) {
+		birthDate := time.Now().AddDate(-17, 0, 0)
 		assert.Equal(t, "Teen", Member{
 			Person: Person{
-				BirthDate: time.Now().AddDate(-17, 0, 0),
+				BirthDate: &birthDate,
 			},
 		}.Classification())
 	})
 	t.Run("Young", func(t *testing.T) {
+		birthDate := time.Now().AddDate(-29, 0, 0)
 		assert.Equal(t, "Young", Member{
 			Person: Person{
-				BirthDate: time.Now().AddDate(-29, 0, 0),
+				BirthDate: &birthDate,
 			},
 		}.Classification())
 	})
 	t.Run("Adult Single", func(t *testing.T) {
+		birthDate := time.Now().AddDate(-33, 0, 0)
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
-				BirthDate: time.Now().AddDate(-33, 0, 0),
+				BirthDate: &birthDate,
 			},
 		}.Classification())
 	})
 	t.Run("Adult Married", func(t *testing.T) {
+		birthDate := time.Now().AddDate(-25, 0, 0)
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
-				BirthDate:    time.Now().AddDate(-25, 0, 0),
-				MarriageDate: time.Now(),
+				BirthDate: &birthDate,
+				MarriageDate: &now,
 			},
 		}.Classification())
 	})
 	t.Run("Localized", func(t *testing.T) {
-
+		birthDate := time.Now().AddDate(-25, 0, 0)
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
-				BirthDate:    time.Now().AddDate(-25, 0, 0),
-				MarriageDate: time.Now(),
+				BirthDate: &birthDate,
+				MarriageDate: &now,
 			},
 		}.ClassificationLocalized(i18n.Localizer))
 	})

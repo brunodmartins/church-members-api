@@ -58,7 +58,7 @@ func TestSaveMember(t *testing.T) {
 	if err != nil {
 		t.Fail()
 	}
-	if !model.IsValidID(id.String()) {
+	if !model.IsValidID(id) {
 		t.Fail()
 	}
 }

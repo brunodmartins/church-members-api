@@ -52,7 +52,7 @@ func (mr *MockMemberRepositoryMockRecorder) FindAll(filters interface{}) *gomock
 }
 
 // FindByID mocks base method.
-func (m *MockMemberRepository) FindByID(id model.ID) (*model.Member, error) {
+func (m *MockMemberRepository) FindByID(id string) (*model.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", id)
 	ret0, _ := ret[0].(*model.Member)
@@ -97,7 +97,7 @@ func (mr *MockMemberRepositoryMockRecorder) FindMembersActiveAndMarried() *gomoc
 }
 
 // GenerateStatusHistory mocks base method.
-func (m *MockMemberRepository) GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error {
+func (m *MockMemberRepository) GenerateStatusHistory(id string, status bool, reason string, date time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateStatusHistory", id, status, reason, date)
 	ret0, _ := ret[0].(error)
@@ -111,10 +111,10 @@ func (mr *MockMemberRepositoryMockRecorder) GenerateStatusHistory(id, status, re
 }
 
 // Insert mocks base method.
-func (m *MockMemberRepository) Insert(member *model.Member) (model.ID, error) {
+func (m *MockMemberRepository) Insert(member *model.Member) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", member)
-	ret0, _ := ret[0].(model.ID)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -126,7 +126,7 @@ func (mr *MockMemberRepositoryMockRecorder) Insert(member interface{}) *gomock.C
 }
 
 // UpdateStatus mocks base method.
-func (m *MockMemberRepository) UpdateStatus(ID model.ID, status bool) error {
+func (m *MockMemberRepository) UpdateStatus(ID string, status bool) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateStatus", ID, status)
 	ret0, _ := ret[0].(error)

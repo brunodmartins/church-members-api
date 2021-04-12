@@ -45,7 +45,7 @@ func TestGetMemberNotFound(t *testing.T) {
 	service.EXPECT().FindMembersByID(id).Return(nil, repository.MemberNotFound)
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/members/"+id.String(), nil)
+	req, _ := http.NewRequest("GET", "/members/"+id, nil)
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusNotFound {
 		t.Fail()
@@ -66,7 +66,7 @@ func TestGetMemberOK(t *testing.T) {
 
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/members/"+member.ID.String(), nil)
+	req, _ := http.NewRequest("GET", "/members/"+member.ID, nil)
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
 		t.Fail()
@@ -191,7 +191,7 @@ func TestPutStatus(t *testing.T) {
 		statusCode int
 	}
 	id := model.NewID()
-	urlWithID := "/members/" + id.String() + "/status"
+	urlWithID := "/members/" + id + "/status"
 	table := []data{
 		{"/members/X/status", "", http.StatusBadRequest},
 		{urlWithID, `{"active":false}`, http.StatusBadRequest},

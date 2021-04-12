@@ -13,7 +13,7 @@ var memberType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				member := p.Source.(*model.Member)
-				return string(member.ID), nil
+				return member.ID, nil
 			},
 		},
 		"active": &graphql.Field{
@@ -54,7 +54,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"age": &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
-				return age.Age(p.Source.(model.Person).BirthDate), nil
+				return age.Age(*p.Source.(model.Person).BirthDate), nil
 			},
 		},
 		"birthDate": &graphql.Field{
@@ -64,7 +64,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.DateTime,
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				person := p.Source.(model.Person)
-				if person.MarriageDate.IsZero() {
+				if person.MarriageDate == nil {
 					return nil, nil
 				}
 				return person.MarriageDate, nil

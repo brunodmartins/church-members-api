@@ -3,10 +3,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/infra/cdi"
-	"github.com/BrunoDM2943/church-members-api/internal/infra/security/auth0"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 type GinApplication struct {}
@@ -32,9 +30,5 @@ func provideGinGonic() *gin.Engine {
 	}
 	router := gin.Default()
 
-	if viper.GetBool("auth.enable") {
-		auth := auth0.NewAuthFilter()
-		router.Use(auth.Validate())
-	}
 	return router
 }

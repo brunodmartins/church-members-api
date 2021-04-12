@@ -15,6 +15,6 @@ type Religion struct {
 	KnowsTithe        bool      `json:"knowsTithe" bson:"knowsTithe"  bson:"knowsTithe"`
 	AgreesTithe       bool      `json:"agreesTithe" bson:"agreesTithe"  bson:"agreesTithe"`
 	Tithe             bool      `json:"tithe"`
-	AcceptedJesusDate time.Time `json:"acceptedJesusDate" bson:"acceptedJesusDate"  bson:"acceptedJesusDate"`
-	BaptismDate       time.Time `json:"baptismDate" bson:"baptismDate"  bson:"baptismDate"`
+	AcceptedJesusDate *time.Time `json:"acceptedJesusDate" bson:"acceptedJesusDate"  bson:"acceptedJesusDate"`
+	BaptismDate       *time.Time `json:"baptismDate" bson:"baptismDate"  bson:"baptismDate"`
 }

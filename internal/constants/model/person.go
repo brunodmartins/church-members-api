@@ -9,8 +9,8 @@ type Person struct {
 	Name			  string    `json:"name"`
 	FirstName         string    `json:"firstName" bson:"firstName"`
 	LastName          string    `json:"lastName" bson:"lastName"`
-	BirthDate         time.Time `json:"birthDate" bson:"birthDate"`
-	MarriageDate      time.Time `json:"marriageDate,omitempty" bson:"marriageDate"`
+	BirthDate         *time.Time `json:"birthDate" bson:"birthDate"`
+	MarriageDate      *time.Time `json:"marriageDate,omitempty" bson:"marriageDate"`
 	PlaceOfBirth      string    `json:"placeOfBirth" bson:"placeOfBirth"`
 	FathersName       string    `json:"fathersName" bson:"fathersName"`
 	MothersName       string    `json:"mothersName" bson:"mothersName"`

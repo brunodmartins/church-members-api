@@ -36,7 +36,7 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // ChangeStatus mocks base method.
-func (m *MockService) ChangeStatus(id model.ID, status bool, reason string, date time.Time) error {
+func (m *MockService) ChangeStatus(id string, status bool, reason string, date time.Time) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ChangeStatus", id, status, reason, date)
 	ret0, _ := ret[0].(error)
@@ -65,7 +65,7 @@ func (mr *MockServiceMockRecorder) FindMembers(filters interface{}) *gomock.Call
 }
 
 // FindMembersByID mocks base method.
-func (m *MockService) FindMembersByID(id model.ID) (*model.Member, error) {
+func (m *MockService) FindMembersByID(id string) (*model.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersByID", id)
 	ret0, _ := ret[0].(*model.Member)
@@ -80,10 +80,10 @@ func (mr *MockServiceMockRecorder) FindMembersByID(id interface{}) *gomock.Call 
 }
 
 // SaveMember mocks base method.
-func (m *MockService) SaveMember(member *model.Member) (model.ID, error) {
+func (m *MockService) SaveMember(member *model.Member) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveMember", member)
-	ret0, _ := ret[0].(model.ID)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

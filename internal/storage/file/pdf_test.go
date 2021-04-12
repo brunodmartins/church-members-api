@@ -16,8 +16,8 @@ func TestBuildFile(t *testing.T){
 			Person: model.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
-				BirthDate:    dtNascimento,
-				MarriageDate: dtCasamento,
+				BirthDate:    &dtNascimento,
+				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
 				Contact: model.Contact{
 					CellPhoneArea: 99,

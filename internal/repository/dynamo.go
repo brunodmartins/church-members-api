@@ -64,11 +64,11 @@ func (repo dynamoRepository) FindAll(filters QueryFilters) ([]*model.Member, err
 	return members, nil
 }
 
-func (repo dynamoRepository) FindByID(id model.ID) (*model.Member, error) {
+func (repo dynamoRepository) FindByID(id string) (*model.Member, error) {
 	output, err := repo.client.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
-				Value : id.String(),
+				Value : id,
 			},
 		},
 		TableName: aws.String("member"),
@@ -85,14 +85,13 @@ func (repo dynamoRepository) FindByID(id model.ID) (*model.Member, error) {
 	return record.ToMember(), nil
 }
 
-func (repo dynamoRepository) Insert(member *model.Member) (model.ID, error) {
-	id := model.NewID()
-	member.ID = id
+func (repo dynamoRepository) Insert(member *model.Member) (string, error) {
+	id := uuid.NewString()
 	av, err := attributevalue.MarshalMap(dto.NewMemberItem(member))
 
-	if err != nil {
-		return id, err
-	}
+	delete(av, "id")
+	av["id"] = &types.AttributeValueMemberS{Value: id}
+
 
 	_, err = repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item:      av,
@@ -101,11 +100,11 @@ func (repo dynamoRepository) Insert(member *model.Member) (model.ID, error) {
 	return id, err
 }
 
-func (repo dynamoRepository) UpdateStatus(id model.ID, status bool) error {
+func (repo dynamoRepository) UpdateStatus(id string, status bool) error {
 	_, err := repo.client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
-				Value: id.String(),
+				Value: id,
 			},
 		},
 		TableName:                 aws.String("member"),
@@ -119,11 +118,11 @@ func (repo dynamoRepository) UpdateStatus(id model.ID, status bool) error {
 	return err
 }
 
-func (repo dynamoRepository) GenerateStatusHistory(id model.ID, status bool, reason string, date time.Time) error {
+func (repo dynamoRepository) GenerateStatusHistory(id string, status bool, reason string, date time.Time) error {
 	_, err := repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{Value: uuid.New().String()},
-			"member_id": &types.AttributeValueMemberS{Value: id.String()},
+			"member_id": &types.AttributeValueMemberS{Value: id},
 			"reason": &types.AttributeValueMemberS{Value: reason},
 			"status": &types.AttributeValueMemberBOOL{Value: status},
 			"date": &types.AttributeValueMemberS{Value: date.String()},

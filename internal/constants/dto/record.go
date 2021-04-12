@@ -17,8 +17,8 @@ type MemberItem struct {
 	Name                   string    `dynamodbav:"name"`
 	FirstName              string    `dynamodbav:"firstName"`
 	LastName               string    `dynamodbav:"lastName"`
-	BirthDate              time.Time `dynamodbav:"birthDate"`
-	MarriageDate           time.Time `dynamodbav:"marriageDate,omitempty"`
+	BirthDate              *time.Time `dynamodbav:"birthDate"`
+	MarriageDate           *time.Time `dynamodbav:"marriageDate,omitempty"`
 	PlaceOfBirth           string    `dynamodbav:"placeOfBirth"`
 	FathersName            string    `dynamodbav:"fathersName"`
 	MothersName            string    `dynamodbav:"mothersName"`
@@ -48,14 +48,14 @@ type MemberItem struct {
 	KnowsTithe             bool      `dynamodbav:"knowsTithe"`
 	AgreesTithe            bool      `dynamodbav:"agreesTithe"`
 	Tithe                  bool      `dynamodbav:"tithe"`
-	AcceptedJesusDate      time.Time `dynamodbav:"acceptedJesusDate"`
-	BaptismDate            time.Time `dynamodbav:"baptismDate"`
+	AcceptedJesusDate      *time.Time `dynamodbav:"acceptedJesusDate"`
+	BaptismDate            *time.Time `dynamodbav:"baptismDate"`
 	Active                 bool      `dynamodbav:"active,omitempty"`
 }
 
 func NewMemberItem(member *model.Member) *MemberItem {
 	return &MemberItem{
-		ID:                     member.ID.String(),
+		ID:                     member.ID,
 		OldChurch:              member.OldChurch,
 		AttendsFridayWorship:   member.AttendsFridayWorship,
 		AttendsSaturdayWorship: member.AttendsSaturdayWorship,
@@ -105,7 +105,7 @@ func NewMemberItem(member *model.Member) *MemberItem {
 
 func (item *MemberItem) ToMember() *model.Member {
 	return &model.Member{
-		ID:                     model.ID(item.ID),
+		ID:                     item.ID,
 		OldChurch:              item.OldChurch,
 		AttendsFridayWorship:   item.AttendsFridayWorship,
 		AttendsSaturdayWorship: item.AttendsSaturdayWorship,

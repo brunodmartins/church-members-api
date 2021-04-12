@@ -10,17 +10,19 @@ import (
 func TestSortByBirth(t *testing.T) {
 	firstId := NewID()
 	secondId := NewID()
+	birthDateOne := time.Now().AddDate(0, 0, 2)
+	birthDateTwo := time.Now().AddDate(0, 0, 1)
 	members := []*Member{
 		{
 			ID: secondId,
 			Person: Person{
-				BirthDate: time.Now().AddDate(0, 0, 2),
+				BirthDate: &birthDateOne,
 			},
 		},
 		{
 			ID: firstId,
 			Person: Person{
-				BirthDate: time.Now().AddDate(0, 0, 1),
+				BirthDate: &birthDateTwo,
 			},
 		},
 	}
@@ -32,17 +34,19 @@ func TestSortByBirth(t *testing.T) {
 func TestSortByMarriage(t *testing.T) {
 	firstId := NewID()
 	secondId := NewID()
+	birthDateOne := time.Now().AddDate(-2, 0, 2)
+	birthDateTwo := time.Now().AddDate(0, 0, 1)
 	members := []*Member{
 		{
 			ID: secondId,
 			Person: Person{
-				MarriageDate: time.Now().AddDate(-2, 0, 2),
+				MarriageDate: &birthDateOne,
 			},
 		},
 		{
 			ID: firstId,
 			Person: Person{
-				MarriageDate: time.Now().AddDate(0, 0, 1),
+				MarriageDate: &birthDateTwo,
 			},
 		},
 	}

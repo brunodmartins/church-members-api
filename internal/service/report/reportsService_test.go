@@ -18,20 +18,20 @@ func TestBirthdayReportSuccess(t *testing.T) {
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
 	service := NewReportService(repo, fileBuilder)
-
+	now := time.Now()
 	members := []*model.Member{
 		{
 			Person: model.Person{
 				FirstName: "Teste",
 				LastName:  "Teste",
-				BirthDate: time.Now(),
+				BirthDate: &now,
 			},
 		},
 		{
 			Person: model.Person{
 				FirstName: "Teste 2",
 				LastName:  "Teste 2",
-				BirthDate: time.Now(),
+				BirthDate: &now,
 			},
 		},
 	}
@@ -73,13 +73,13 @@ func TestMarriageReportSuccess(t *testing.T) {
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
 	service := NewReportService(repo, fileBuilder)
-
+	now := time.Now()
 	members := []*model.Member{
 		{
 			Person: model.Person{
 				FirstName:    "Esposa",
 				LastName:     "Teste",
-				MarriageDate: time.Now(),
+				MarriageDate: &now,
 				SpousesName:  "Marido Teste",
 			},
 		},
@@ -103,8 +103,8 @@ func TestGenerateMemberReport(t *testing.T) {
 			Person: model.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
-				BirthDate:    dtNascimento,
-				MarriageDate: dtCasamento,
+				BirthDate:    &dtNascimento,
+				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
 				Contact: model.Contact{
 					CellPhoneArea: 99,
@@ -143,8 +143,8 @@ func TestGenerateClassificationReport(t *testing.T) {
 			Person: model.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
-				BirthDate:    dtNascimento,
-				MarriageDate: dtCasamento,
+				BirthDate:    &dtNascimento,
+				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
 				Contact: model.Contact{
 					CellPhoneArea: 99,
@@ -208,8 +208,8 @@ func TestGenerateLegalReport(t *testing.T) {
 			Person: model.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
-				BirthDate:    dtNascimento,
-				MarriageDate: dtCasamento,
+				BirthDate:    &dtNascimento,
+				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
 				Contact: model.Contact{
 					CellPhoneArea: 99,
@@ -249,17 +249,18 @@ func TestGenerateLegalReportFail(t *testing.T) {
 
 func TestFilterByClassification(t *testing.T) {
 	adult, _ := time.Parse("2006/01/02", "1990/07/06")
+	now := time.Now()
 	members := []*model.Member{
 		{
 			Person: model.Person{
 				FirstName:    "Adult",
-				BirthDate:    adult,
+				BirthDate:    &adult,
 			},
 		},
 		{
 			Person: model.Person{
 				FirstName:    "Children",
-				BirthDate:    time.Now(),
+				BirthDate:    &now,
 			},
 		},
 	}

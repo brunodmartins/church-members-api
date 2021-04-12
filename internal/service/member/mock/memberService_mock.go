@@ -6,6 +6,7 @@ package mock_member
 
 import (
 	reflect "reflect"
+	time "time"
 
 	model "github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	gomock "github.com/golang/mock/gomock"
@@ -35,17 +36,17 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // ChangeStatus mocks base method.
-func (m *MockService) ChangeStatus(id model.ID, status bool, reason string) error {
+func (m *MockService) ChangeStatus(id model.ID, status bool, reason string, date time.Time) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ChangeStatus", id, status, reason)
+	ret := m.ctrl.Call(m, "ChangeStatus", id, status, reason, date)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // ChangeStatus indicates an expected call of ChangeStatus.
-func (mr *MockServiceMockRecorder) ChangeStatus(id, status, reason interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ChangeStatus(id, status, reason, date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeStatus", reflect.TypeOf((*MockService)(nil).ChangeStatus), id, status, reason)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeStatus", reflect.TypeOf((*MockService)(nil).ChangeStatus), id, status, reason, date)
 }
 
 // FindMembers mocks base method.

@@ -21,7 +21,7 @@ type MemberHandler struct {
 type putStatus struct {
 	Active *bool     `json:"active" binding:"required"`
 	Reason string    `json:"reason" binding:"required"`
-	Date   time.Time `json:"date" binding:"required"`
+	Date   time.Time `json:"date"`
 }
 
 func NewMemberHandler(service member.Service) *MemberHandler {
@@ -95,7 +95,7 @@ func (handler *MemberHandler) PutStatus(c *gin.Context) {
 		return
 	}
 	var body = &putStatus{}
-	c.BindJSON(body)
+	c.ShouldBindJSON(body)
 	if body.Reason == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Reason required"})
 		return

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"testing"
+	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
@@ -88,7 +89,7 @@ func TestUpdateStatus(t *testing.T) {
 	id := model.NewID()
 	repo.EXPECT().UpdateStatus(id, true).Return(nil)
 	repo.EXPECT().GenerateStatusHistory(id, true, "Exited", gomock.Any()).Return(nil)
-	err := service.ChangeStatus(id, true, "Exited")
+	err := service.ChangeStatus(id, true, "Exited", time.Now())
 	assert.Nil(t, err, "Error not nil")
 }
 
@@ -99,7 +100,6 @@ func TestUpdateStatusError(t *testing.T) {
 	service := NewMemberService(repo)
 	id := model.NewID()
 	repo.EXPECT().UpdateStatus(id, true).Return(errors.New("Error"))
-	repo.EXPECT().GenerateStatusHistory(id, true, "Exited", gomock.Any()).Return(nil)
-	err := service.ChangeStatus(id, true, "Exited")
+	err := service.ChangeStatus(id, true, "Exited", time.Now())
 	assert.NotNil(t, err, "Error not raised")
 }

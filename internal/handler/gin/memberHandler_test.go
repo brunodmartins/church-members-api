@@ -205,8 +205,8 @@ func TestPutStatus(t *testing.T) {
 
 	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
-	service.EXPECT().ChangeStatus(id, false, "exited").Return(errors.New("Error"))
-	service.EXPECT().ChangeStatus(id, true, "Comed back").Return(nil)
+	service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("exited"), gomock.Any()).Return(errors.New("Error"))
+	service.EXPECT().ChangeStatus(id, gomock.Eq(true), gomock.Eq("Comed back"), gomock.Any()).Return(nil)
 
 	memberHandler.SetUpRoutes(r)
 
@@ -215,7 +215,7 @@ func TestPutStatus(t *testing.T) {
 		req, _ := http.NewRequest("PUT", test.url, strings.NewReader(test.body))
 		r.ServeHTTP(w, req)
 		if w.Code != test.statusCode {
-			t.Errorf("Failed for test: %s, %s, %d", test.url, test.body, test.statusCode)
+			t.Errorf("Failed for test: %s, %s, Status Code: %d, Expected: %d", test.url, test.body, w.Code, test.statusCode)
 		}
 	}
 }

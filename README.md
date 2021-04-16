@@ -6,7 +6,7 @@
 ![Docker Image CI](https://github.com/BrunoDM2943/church-members-api/workflows/Docker%20Image%20CI/badge.svg)
 
 
-Its a simple API to manage a church's members. The API is written on Go 1.13 and the data is saved on MongoDB. It also supports Auth0, protecting against unathorized acess. 
+Its a simple API to manage a church's members. The API is written on Go 1.13 and the data is saved on DynamoDB. The application is supported to be run on AWS, using DynamoDB, Lambda and API Gateway
 
 ## Installation
 
@@ -14,10 +14,6 @@ The API is containerized thanks to Docker. So, its so simple as build the image 
 
 - APP_LANG - app language for i18n (supports only pt-BR and en)
 - SCOPE - apps scope for resources usage (for production, use 'prod')
-- VPR_CHURCH_MEMBERS_DATABASE_URL - URL to mongo database
-- VPR_CHURCH_NAME - Church's name
-- VPR_AUTH_ENABLE - enabled Auth0 support (true/false)
-- VPR_AUTH_JWK, VPR_AUTH_ISS, VPR_AUTH_TOKEN, VPR_AUTH_AUD - Auth0 keys
 
 ## Improvements, Issue
 

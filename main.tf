@@ -4,6 +4,15 @@ terraform {
       source = "hashicorp/aws"
     }
   }
+
+  backend "remote" {
+    hostname = "app.terraform.io"
+    organization = "church-members-api"
+
+    workspaces {
+      name = "church-members-api"
+    }
+  }
 }
 
 variable "region" {

@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"time"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -11,7 +13,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
-	"time"
 )
 
 type dynamoRepository struct {
@@ -45,13 +46,13 @@ func (repo dynamoRepository) FindAll(filters QueryFilters) ([]*model.Member, err
 
 	expr, _ := builderExpresion.Build()
 	resp, err := repo.client.Scan(context.TODO(), &dynamodb.ScanInput{
-		TableName:        aws.String("member"),
+		TableName:                 aws.String("member"),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
 	})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	if len(resp.Items) != 0 {
@@ -68,10 +69,10 @@ func (repo dynamoRepository) FindByID(id string) (*model.Member, error) {
 	output, err := repo.client.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
-				Value : id,
+				Value: id,
 			},
 		},
-		TableName: aws.String("member"),
+		TableName:      aws.String("member"),
 		ConsistentRead: aws.Bool(true),
 	})
 	if err != nil {
@@ -92,7 +93,6 @@ func (repo dynamoRepository) Insert(member *model.Member) (string, error) {
 	delete(av, "id")
 	av["id"] = &types.AttributeValueMemberS{Value: id}
 
-
 	_, err = repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String("member"),
@@ -107,13 +107,13 @@ func (repo dynamoRepository) UpdateStatus(id string, status bool) error {
 				Value: id,
 			},
 		},
-		TableName:                 aws.String("member"),
+		TableName: aws.String("member"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":active": &types.AttributeValueMemberBOOL{
 				Value: status,
 			},
 		},
-		UpdateExpression:          aws.String("set active = :active"),
+		UpdateExpression: aws.String("set active = :active"),
 	})
 	return err
 }
@@ -121,11 +121,11 @@ func (repo dynamoRepository) UpdateStatus(id string, status bool) error {
 func (repo dynamoRepository) GenerateStatusHistory(id string, status bool, reason string, date time.Time) error {
 	_, err := repo.client.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item: map[string]types.AttributeValue{
-			"id": &types.AttributeValueMemberS{Value: uuid.New().String()},
+			"id":        &types.AttributeValueMemberS{Value: uuid.New().String()},
 			"member_id": &types.AttributeValueMemberS{Value: id},
-			"reason": &types.AttributeValueMemberS{Value: reason},
-			"status": &types.AttributeValueMemberBOOL{Value: status},
-			"date": &types.AttributeValueMemberS{Value: date.String()},
+			"reason":    &types.AttributeValueMemberS{Value: reason},
+			"status":    &types.AttributeValueMemberBOOL{Value: status},
+			"date":      &types.AttributeValueMemberS{Value: date.String()},
 		},
 		TableName: aws.String("member_history"),
 	})
@@ -139,13 +139,13 @@ func (repo dynamoRepository) FindMembersActive() ([]*model.Member, error) {
 
 	expr, _ := builderExpresion.Build()
 	resp, err := repo.client.Scan(context.TODO(), &dynamodb.ScanInput{
-		TableName:        aws.String("member"),
+		TableName:                 aws.String("member"),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
 	})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	if len(resp.Items) != 0 {
@@ -167,13 +167,13 @@ func (repo dynamoRepository) FindMembersActiveAndMarried() ([]*model.Member, err
 
 	expr, _ := builderExpresion.Build()
 	resp, err := repo.client.Scan(context.TODO(), &dynamodb.ScanInput{
-		TableName:        aws.String("member"),
+		TableName:                 aws.String("member"),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
 	})
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	if len(resp.Items) != 0 {

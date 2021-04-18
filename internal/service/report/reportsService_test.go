@@ -2,10 +2,11 @@ package report
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/repository/mock"
-	mock_file "github.com/BrunoDM2943/church-members-api/internal/storage/file/mock"
 	"testing"
 	"time"
+
+	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
+	mock_file "github.com/BrunoDM2943/church-members-api/internal/storage/file/mock"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	"github.com/golang/mock/gomock"
@@ -253,14 +254,14 @@ func TestFilterByClassification(t *testing.T) {
 	members := []*model.Member{
 		{
 			Person: model.Person{
-				FirstName:    "Adult",
-				BirthDate:    &adult,
+				FirstName: "Adult",
+				BirthDate: &adult,
 			},
 		},
 		{
 			Person: model.Person{
-				FirstName:    "Children",
-				BirthDate:    &now,
+				FirstName: "Children",
+				BirthDate: &now,
 			},
 		},
 	}

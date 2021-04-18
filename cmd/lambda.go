@@ -6,9 +6,9 @@ import (
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 )
 
-type LambdaApplication struct {}
+type LambdaApplication struct{}
 
-func (LambdaApplication) Run(){
+func (LambdaApplication) Run() {
 	router := provideGinGonic()
 	memberHandler := cdi.ProvideMemberHandler()
 	reportHandler := cdi.ProvideReportHandler()

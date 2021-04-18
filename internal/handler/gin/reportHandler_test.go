@@ -2,11 +2,12 @@ package gin
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/service/report/mock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	mock_report "github.com/BrunoDM2943/church-members-api/internal/service/report/mock"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"

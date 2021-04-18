@@ -1,24 +1,25 @@
 package model
 
 import (
+	"regexp"
+
 	"github.com/bearbin/go-age"
 	"github.com/google/uuid"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
-	"regexp"
 )
 
 //Member struct
 type Member struct {
-	ID                     string       `json:"id" bson:"_id,omitempty"`
-	OldChurch              string   `json:"oldChurch,omitempty" bson:"oldChurch"`
-	AttendsFridayWorship   bool     `json:"attendsFridayWorship" bson:"attendsFridayWorship"`
-	AttendsSaturdayWorship bool     `json:"attendsSaturdayWorship" bson:"attendsSaturdayWorship"`
-	AttendsSundayWorship   bool     `json:"attendsSundayWorship" bson:"attendsSundayWorship"`
-	AttendsSundaySchool    bool     `json:"attendsSundaySchool" bson:"attendsSundaySchool"`
-	AttendsObservation     string   `json:"attendsObservation,omitempty" bson:"attendsObservation"`
+	ID                     string   `json:"id"`
+	OldChurch              string   `json:"oldChurch,omitempty"`
+	AttendsFridayWorship   bool     `json:"attendsFridayWorship"`
+	AttendsSaturdayWorship bool     `json:"attendsSaturdayWorship"`
+	AttendsSundayWorship   bool     `json:"attendsSundayWorship"`
+	AttendsSundaySchool    bool     `json:"attendsSundaySchool"`
+	AttendsObservation     string   `json:"attendsObservation,omitempty"`
 	Person                 Person   `json:"person"`
 	Religion               Religion `json:"religion"`
-	Active                 bool     `json:"active,omitempty" bson:"active"`
+	Active                 bool     `json:"active,omitempty"`
 }
 
 //Classification returns a member classification based on age and marriage

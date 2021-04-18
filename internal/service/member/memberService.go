@@ -1,8 +1,9 @@
 package member
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 )

@@ -1,10 +1,11 @@
 package model
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFormattedContact(t *testing.T) {
@@ -60,7 +61,7 @@ func TestClassification(t *testing.T) {
 		birthDate := time.Now().AddDate(-25, 0, 0)
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
-				BirthDate: &birthDate,
+				BirthDate:    &birthDate,
 				MarriageDate: &now,
 			},
 		}.Classification())
@@ -69,7 +70,7 @@ func TestClassification(t *testing.T) {
 		birthDate := time.Now().AddDate(-25, 0, 0)
 		assert.Equal(t, "Adult", Member{
 			Person: Person{
-				BirthDate: &birthDate,
+				BirthDate:    &birthDate,
 				MarriageDate: &now,
 			},
 		}.ClassificationLocalized(i18n.Localizer))

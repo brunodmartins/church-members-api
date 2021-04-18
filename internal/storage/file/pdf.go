@@ -19,7 +19,6 @@ type Builder interface {
 }
 
 type pdfBuilder struct {
-
 }
 
 func NewPDFBuilder() *pdfBuilder {

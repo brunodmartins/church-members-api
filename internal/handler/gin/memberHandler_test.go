@@ -2,12 +2,13 @@ package gin
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	mock_service "github.com/BrunoDM2943/church-members-api/internal/service/member/mock"

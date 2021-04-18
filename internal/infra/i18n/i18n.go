@@ -2,8 +2,9 @@ package i18n
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 	"os"
+
+	"github.com/spf13/viper"
 
 	"github.com/BrunoDM2943/church-members-api/internal/infra/config"
 	"github.com/BurntSushi/toml"

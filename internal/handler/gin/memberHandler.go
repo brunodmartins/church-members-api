@@ -1,13 +1,14 @@
 package gin
 
 import (
+	"io/ioutil"
+	"net/http"
+	"time"
+
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"github.com/BrunoDM2943/church-members-api/internal/service/member"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
-	"io/ioutil"
-	"net/http"
-	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"

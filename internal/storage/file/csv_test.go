@@ -1,10 +1,11 @@
 package file
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTransformCSVToData(t *testing.T) {
@@ -12,7 +13,7 @@ func TestTransformCSVToData(t *testing.T) {
 	t2, _ := time.Parse("02/01/2006", "22/03/2020")
 	data := []Data{
 		{
-			Value: 	model.Member{
+			Value: model.Member{
 				Person: model.Person{
 					FirstName: "Teste",
 					LastName:  "Teste",
@@ -21,7 +22,7 @@ func TestTransformCSVToData(t *testing.T) {
 			},
 		},
 		{
-			Value: 	model.Member{
+			Value: model.Member{
 				Person: model.Person{
 					FirstName: "Teste 2",
 					LastName:  "Teste 2",

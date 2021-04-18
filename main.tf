@@ -33,7 +33,7 @@ locals {
   account_id          = data.aws_caller_identity.current.account_id
   ecr_repository_name = "${local.app_name}-container"
   ecr_image_tag       = "latest"
-  swagger-file-path   = "swagger.json"
+  swagger-file-path   = "swagger-terraform.json"
 }
 
 resource "aws_dynamodb_table" "member-table" {

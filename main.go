@@ -24,7 +24,7 @@ import (
 	_ "github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 )
 
-//go:generate swagger generate spec -m -o ../../docs/specs/swagger.yaml
+//go:generate swagger generate spec -m -o ./docs/specs/swagger.yaml
 func main() {
 	cmd.ProvideRunner().Run()
 }

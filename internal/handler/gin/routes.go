@@ -192,7 +192,7 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	r.GET("/reports/members/legal", handler.generateLegalReport)
-	// swagger:operation PUT /reports/members/classification/{classification} generateMembersReport
+	// swagger:operation PUT /reports/members/classification/{classification} generateClassificationReport
 	//
 	// Member report
 	//
@@ -204,7 +204,7 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	// parameters:
 	// - name: classification
 	//   in: path
-	//   description: The member classification: adult, teen, young, children
+	//   description: The member classification [adult, teen, young, children]
 	//   required: true
 	// responses:
 	//   '200':

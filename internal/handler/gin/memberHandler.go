@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -15,66 +16,54 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//MemberHandler is a REST controller
 type MemberHandler struct {
 	service member.Service
 }
 
-type putStatus struct {
-	Active *bool     `json:"active" binding:"required"`
-	Reason string    `json:"reason" binding:"required"`
-	Date   time.Time `json:"date"`
-}
 
+//NewMemberHandler builds a new MemberHandler
 func NewMemberHandler(service member.Service) *MemberHandler {
 	return &MemberHandler{
 		service: service,
 	}
 }
 
-func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
-	r.GET("/members/:id", handler.GetMember)
-	r.POST("/members", handler.PostMember)
-	r.POST("/members/search", handler.SearchMember)
-	r.PUT("/members/:id/status", handler.PutStatus)
-}
-
-func (handler *MemberHandler) PostMember(c *gin.Context) {
-	var member model.Member
-	if err := c.ShouldBindWith(&member, binding.JSON); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, err)
+func (handler *MemberHandler) postMember(c *gin.Context) {
+	var requestBody dto.CreateMemberRequest
+	if err := c.ShouldBindWith(&requestBody, binding.JSON); err != nil {
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
-	var id string
-	var err error
-	member.Active = true
-	if id, err = handler.service.SaveMember(&member); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
+	id, err := handler.service.SaveMember(requestBody.Member)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
 		return
 	}
-	c.JSON(201, gin.H{"msg": "Member created", "id": id})
-	return
+	c.JSON(http.StatusCreated, dto.CreateMemberResponse{ID: id})
 }
 
-func (handler *MemberHandler) GetMember(c *gin.Context) {
+func (handler *MemberHandler) getMember(c *gin.Context) {
 	id, _ := c.Params.Get("id")
 	if !model.IsValidID(id) {
-		c.JSON(http.StatusBadRequest, "Invalid ID")
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}
 	m, err := handler.service.FindMembersByID(id)
 	if err != nil {
+		code := http.StatusInternalServerError
 		if err == repository.MemberNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-		} else {
-			c.JSON(http.StatusInternalServerError, err.Error())
+			code = http.StatusNotFound
 		}
+		c.JSON(code, dto.ErrorResponse{Message: err.Error()})
+		return
 	} else {
 		c.JSON(http.StatusOK, m)
 	}
 	return
 }
 
-func (handler *MemberHandler) SearchMember(c *gin.Context) {
+func (handler *MemberHandler) searchMember(c *gin.Context) {
 	schema := gql.CreateSchema(handler.service)
 	body, _ := ioutil.ReadAll(c.Request.Body)
 	result := graphql.Do(graphql.Params{
@@ -83,26 +72,26 @@ func (handler *MemberHandler) SearchMember(c *gin.Context) {
 		Context:       c.Request.Context(),
 	})
 	if result.HasErrors() {
-		c.JSON(500, result.Errors)
+		c.JSON(http.StatusInternalServerError, dto.GraphQLErrorResponse{Errors: result.Errors})
 		return
 	}
-	c.JSON(200, result)
+	c.JSON(http.StatusOK, result)
 }
 
-func (handler *MemberHandler) PutStatus(c *gin.Context) {
+func (handler *MemberHandler) putStatus(c *gin.Context) {
 	id, _ := c.Params.Get("id")
 	if !model.IsValidID(id) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}
-	var body = &putStatus{}
+	var body = &dto.PutMemberStatusRequest{}
 	c.ShouldBindJSON(body)
 	if body.Reason == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Reason required"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Reason required"})
 		return
 	}
 	if body.Active == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Active required"})
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Active required"})
 		return
 	}
 
@@ -113,7 +102,11 @@ func (handler *MemberHandler) PutStatus(c *gin.Context) {
 	err := handler.service.ChangeStatus(id, *body.Active, body.Reason, body.Date)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error changing status", "error": err.Error()})
+		code := http.StatusInternalServerError
+		if err == repository.MemberNotFound {
+			code = http.StatusNotFound
+		}
+		c.JSON(code, dto.ErrorResponse{Message: "Error changing status", Error: err})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Member status changed"})

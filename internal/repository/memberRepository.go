@@ -29,5 +29,5 @@ type MemberRepository interface {
 }
 
 var (
-	MemberNotFound = errors.New("Member not found")
+	MemberNotFound = errors.New("member not found")
 )

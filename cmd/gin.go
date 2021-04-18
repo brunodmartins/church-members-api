@@ -7,8 +7,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//GinApplication implements the Application interface to run this app with Gin-Gonic framework
 type GinApplication struct{}
 
+//Run starts a web server with Gin-Gonic
 func (GinApplication) Run() {
 	router := provideGinGonic()
 	memberHandler := cdi.ProvideMemberHandler()

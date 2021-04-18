@@ -1,6 +1,7 @@
 package gin
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"net/http"
 
 	"github.com/BrunoDM2943/church-members-api/internal/service/report"
@@ -8,100 +9,58 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//ReportHandler is a REST controller
 type ReportHandler struct {
 	reportGenerator report.Service
 }
 
+//NewReportHandler builds a new ReportHandler
 func NewReportHandler(reportGenerator report.Service) *ReportHandler {
 	return &ReportHandler{reportGenerator}
 }
 
-func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
-	r.GET("/reports/members/birthday", handler.generateBirthDayReport)
-	r.GET("/reports/members/marriage", handler.generateMarriageReport)
-	r.GET("/reports/members/legal", handler.generateLegalReport)
-	r.GET("/reports/members/classification/:classification", handler.generateClassificationReport)
-	r.GET("/reports/members", handler.generateMembersReport)
-
-}
-
 func isValidClassification(classification string) bool {
-	if classification == "" {
-		return false
-	}
-	if classification != "adult" && classification != "teen" && classification != "young" && classification != "children" {
-		return false
-	}
-	return true
+	return classification == "adult" || classification == "teen" || classification == "young" || classification == "children"
 }
 
 func (handler *ReportHandler) generateClassificationReport(c *gin.Context) {
 	classification := c.Param("classification")
 	if !isValidClassification(classification) {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"msg": "Invalid classification: " + classification})
-	} else {
-		output, err := handler.reportGenerator.ClassificationReport(classification)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
-		} else {
-			c.Status(http.StatusOK)
-			c.Header("Content-Type", "application/csv")
-			c.Header("Content-Disposition", "attachment")
-			c.Header("filename", "casamento.csv")
-			c.Data(200, "application/csv", output)
-		}
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{ Message: "Invalid classification: " + classification})
+		return
 	}
-
+	output, err := handler.reportGenerator.ClassificationReport(classification)
+	handler.buildResponse(c, output, "classification_report.pdf", "application/pdf", err)
 }
 
 func (handler *ReportHandler) generateMarriageReport(c *gin.Context) {
 	output, err := handler.reportGenerator.MarriageReport()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
-	} else {
-		c.Status(http.StatusOK)
-		c.Header("Content-Type", "application/csv")
-		c.Header("Content-Disposition", "attachment")
-		c.Header("filename", "casamento.csv")
-		c.Data(200, "application/csv", output)
-	}
+	handler.buildResponse(c, output, "marriage.csv", "application/csv", err)
 }
 
 func (handler *ReportHandler) generateBirthDayReport(c *gin.Context) {
 	output, err := handler.reportGenerator.BirthdayReport()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
-	} else {
-		c.Status(http.StatusOK)
-		c.Header("Content-Type", "application/csv")
-		c.Header("Content-Disposition", "attachment")
-		c.Header("filename", "aniversariantes.csv")
-		c.Data(200, "application/csv", output)
-	}
+	handler.buildResponse(c, output, "birthday.csv", "application/csv", err)
 }
 
 func (handler *ReportHandler) generateMembersReport(c *gin.Context) {
 	output, err := handler.reportGenerator.MemberReport()
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
-	} else {
-		c.Status(http.StatusOK)
-		c.Header("Content-Type", "application/pdf")
-		c.Header("Content-Disposition", "attachment")
-		c.Header("filename", "members.pdf")
-		c.Data(200, "application/pdf", output)
-	}
+	handler.buildResponse(c, output, "members_report.pdf", "application/pdf", err)
 }
 
 func (handler *ReportHandler) generateLegalReport(c *gin.Context) {
 	output, err := handler.reportGenerator.LegalReport()
+	handler.buildResponse(c, output, "legal_report.pdf", "application/pdf", err)
+}
+
+func (handler *ReportHandler) buildResponse(c *gin.Context, data []byte, fileName string, contentType string, err error){
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"msg": "Error generating report", "err": err.Error()})
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{ Message: "Error generating report", Error: err})
 	} else {
 		c.Status(http.StatusOK)
-		c.Header("Content-Type", "application/pdf")
+		c.Header("Content-Type", contentType)
 		c.Header("Content-Disposition", "attachment")
-		c.Header("filename", "members_juridico.pdf")
-		c.Data(200, "application/pdf", output)
+		c.Header("filename", fileName)
+		c.Data(http.StatusOK, contentType, data)
 	}
 }

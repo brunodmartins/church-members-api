@@ -102,7 +102,7 @@ func TestPostMemberSucess(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
-	service.EXPECT().SaveMember(gomock.Any()).Return(model.NewID(), nil)
+	service.EXPECT().SaveMember(gomock.AssignableToTypeOf(&model.Member{})).Return(model.NewID(), nil)
 	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {

@@ -49,6 +49,7 @@ func (s *memberService) FindMembersByID(id string) (*model.Member, error) {
 }
 
 func (s *memberService) SaveMember(member *model.Member) (string, error) {
+	member.Active = true
 	return s.repo.Insert(member)
 }
 

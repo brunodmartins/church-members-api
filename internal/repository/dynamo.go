@@ -101,7 +101,7 @@ func (repo dynamoRepository) Insert(member *model.Member) (string, error) {
 }
 
 func (repo dynamoRepository) UpdateStatus(id string, status bool) error {
-	_, err := repo.client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+	output, err := repo.client.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
 				Value: id,
@@ -113,8 +113,12 @@ func (repo dynamoRepository) UpdateStatus(id string, status bool) error {
 				Value: status,
 			},
 		},
+		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String("set active = :active"),
 	})
+	if err == nil && len(output.Attributes) == 0 {
+		return MemberNotFound
+	}
 	return err
 }
 

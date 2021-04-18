@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
+//CreateSchema builds a GraphQL schema
 func CreateSchema(service member.Service) graphql.Schema {
 	schema, _ := graphql.NewSchema(graphql.SchemaConfig{
 		Query: graphql.NewObject(graphql.ObjectConfig{

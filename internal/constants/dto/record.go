@@ -54,6 +54,7 @@ type MemberItem struct {
 	Active                 bool       `dynamodbav:"active,omitempty"`
 }
 
+//NewMemberItem creates a MemberItem from a model.Member
 func NewMemberItem(member *model.Member) *MemberItem {
 	return &MemberItem{
 		ID:                     member.ID,
@@ -103,6 +104,7 @@ func NewMemberItem(member *model.Member) *MemberItem {
 	}
 }
 
+//ToMember converts a MemberItem into a model.Member
 func (item *MemberItem) ToMember() *model.Member {
 	return &model.Member{
 		ID:                     item.ID,

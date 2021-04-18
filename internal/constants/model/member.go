@@ -1,10 +1,7 @@
 package model
 
 import (
-	"regexp"
-
 	"github.com/bearbin/go-age"
-	"github.com/google/uuid"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
@@ -45,13 +42,4 @@ func (member Member) ClassificationLocalized(localizer *i18n.Localizer) string {
 			Other: classification,
 		},
 	})
-}
-
-func IsValidID(id string) bool {
-	r := regexp.MustCompile("^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[8|9|aA|bB][a-fA-F0-9]{3}-[a-fA-F0-9]{12}$")
-	return r.MatchString(id)
-}
-
-func NewID() string {
-	return uuid.NewString()
 }

@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"os"
 )
 
 var scope = ""

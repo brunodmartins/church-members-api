@@ -1,11 +1,12 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
-func loadViper(){
+func loadViper() {
 	switch scope {
 	case "local":
 		viper.Set("mongo.url", "mongodb://127.0.0.1:27017/admin")

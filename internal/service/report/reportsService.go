@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/csv"
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
 	"sort"
 	"strings"
+
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
+	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	tr "github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
@@ -24,14 +25,14 @@ type Service interface {
 }
 
 type reportService struct {
-	repo repository.MemberRepository
+	repo        repository.MemberRepository
 	fileBuilder file.Builder
 }
 
 func NewReportService(repo repository.MemberRepository, fileBuilder file.Builder) Service {
 	return &reportService{
 		repo,
-	fileBuilder,
+		fileBuilder,
 	}
 }
 
@@ -119,7 +120,6 @@ func filterClassification(classification string, members []*model.Member) []*mod
 	}
 	return filtered
 }
-
 
 func (report reportService) LegalReport() ([]byte, error) {
 	members, err := report.repo.FindMembersActive()

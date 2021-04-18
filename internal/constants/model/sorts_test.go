@@ -1,10 +1,11 @@
 package model
 
 import (
-	"github.com/magiconair/properties/assert"
 	"sort"
 	"testing"
 	"time"
+
+	"github.com/magiconair/properties/assert"
 )
 
 func TestSortByBirth(t *testing.T) {
@@ -60,13 +61,13 @@ func TestSortByName(t *testing.T) {
 		{
 			Person: Person{
 				FirstName: "John",
-				LastName: "Mclane",
+				LastName:  "Mclane",
 			},
 		},
 		{
 			Person: Person{
 				FirstName: "John",
-				LastName: "Doe",
+				LastName:  "Doe",
 			},
 		},
 	}

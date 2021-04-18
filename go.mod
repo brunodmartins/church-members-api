@@ -23,5 +23,4 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/text v0.3.3
-	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 )

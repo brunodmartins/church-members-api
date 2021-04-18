@@ -1,8 +1,9 @@
 package gin
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/service/report"
 	"net/http"
+
+	"github.com/BrunoDM2943/church-members-api/internal/service/report"
 
 	"github.com/gin-gonic/gin"
 )

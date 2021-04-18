@@ -7,9 +7,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type GinApplication struct {}
+type GinApplication struct{}
 
-func (GinApplication) Run(){
+func (GinApplication) Run() {
 	router := provideGinGonic()
 	memberHandler := cdi.ProvideMemberHandler()
 	reportHandler := cdi.ProvideReportHandler()

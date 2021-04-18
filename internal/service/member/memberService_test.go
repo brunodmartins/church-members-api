@@ -2,9 +2,10 @@ package member
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"testing"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/repository"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
@@ -19,7 +20,7 @@ func TestListAllMembers(t *testing.T) {
 	service := NewMemberService(repo)
 
 	repo.EXPECT().FindAll(gomock.Any()).Return([]*model.Member{
-		&model.Member{},
+		{},
 	}, nil).AnyTimes()
 	members, _ := service.FindMembers(map[string]interface{}{})
 	if len(members) == 0 {

@@ -131,34 +131,14 @@ data "archive_file" "cmd" {
   output_path = "cmd.zip"
 }
 
-resource "null_resource" "ecr_image" {
-  triggers = {
-    docker_file = md5(file("${path.module}/Dockerfile"))
-    src_hash    = data.archive_file.internal.output_sha
-    src_hash    = data.archive_file.cmd.output_sha
-  }
-
-  provisioner "local-exec" {
-    command = <<EOF
-           aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${local.account_id}.dkr.ecr.${var.region}.amazonaws.com
-           docker build -t ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag} .
-           docker push ${aws_ecr_repository.repo.repository_url}:${local.ecr_image_tag}
-           rm cmd.zip internal.zip
-       EOF
-  }
-}
 
 data "aws_ecr_image" "lambda_image" {
-  depends_on = [
-    null_resource.ecr_image
-  ]
   repository_name = local.ecr_repository_name
   image_tag       = local.ecr_image_tag
 }
 
 resource "aws_lambda_function" "lambda" {
   depends_on = [
-    null_resource.ecr_image,
     aws_dynamodb_table.member-table,
     aws_dynamodb_table.member-history-table
   ]

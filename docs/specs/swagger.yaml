@@ -89,17 +89,20 @@ definitions:
   CreateMemberResponse:
     description: CreateMemberResponse for HTTP create member responses
     properties:
-      ID:
+      id:
         type: string
+        x-go-name: ID
     type: object
     x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
   ErrorResponse:
     description: ErrorResponse for HTTP error responses
     properties:
-      Error:
+      error:
         type: string
-      Message:
+        x-go-name: Error
+      message:
         type: string
+        x-go-name: Message
     type: object
     x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
   FormattedError:
@@ -160,10 +163,11 @@ definitions:
   GraphQLErrorResponse:
     description: GraphQLErrorResponse for HTTP error responses
     properties:
-      Errors:
+      errors:
         items:
           $ref: '#/definitions/FormattedError'
         type: array
+        x-go-name: Errors
     type: object
     x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
   Member:

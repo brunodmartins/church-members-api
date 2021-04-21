@@ -8,20 +8,20 @@ import (
 //ErrorResponse for HTTP error responses
 // swagger:model ErrorResponse
 type ErrorResponse struct {
-	Message string
-	Error   error
+	Message string `json:"message"`
+	Error   error `json:"error"`
 }
 
 //GraphQLErrorResponse for HTTP error responses
 // swagger:model GraphQLErrorResponse
 type GraphQLErrorResponse struct {
-	Errors []gqlerrors.FormattedError
+	Errors []gqlerrors.FormattedError `json:"errors"`
 }
 
 //CreateMemberResponse for HTTP create member responses
 // swagger:model CreateMemberResponse
 type CreateMemberResponse struct {
-	ID		string
+	ID		string `json:"id"`
 }
 
 //GetMemberResponse for HTTP get member responses

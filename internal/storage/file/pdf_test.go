@@ -1,6 +1,7 @@
 package file
 
 import (
+	"github.com/spf13/viper"
 	"testing"
 	"time"
 	"unicode/utf8"
@@ -8,6 +9,11 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
 	"github.com/stretchr/testify/assert"
 )
+
+func init(){
+	viper.Set("bundles.location", "../../../bundles")
+}
+
 
 func TestBuildFile(t *testing.T) {
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")

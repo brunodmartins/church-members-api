@@ -6,8 +6,7 @@ import (
 	"fmt"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	tr "github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
+	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 	"github.com/signintech/gopdf"
 	"github.com/spf13/viper"
 )
@@ -19,10 +18,13 @@ type Builder interface {
 }
 
 type pdfBuilder struct {
+	messageService *i18n.MessageService
 }
 
 func NewPDFBuilder() *pdfBuilder {
-	return &pdfBuilder{}
+	return &pdfBuilder{
+		messageService: i18n.GetMessageService(),
+	}
 }
 
 func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, builder *gopdf.GoPdf) {
@@ -70,68 +72,36 @@ func (pdfBuilder *pdfBuilder) setValue(value string, builder *gopdf.GoPdf) {
 }
 
 func (pdfBuilder *pdfBuilder) buildRowSection(data *model.Member, builder *gopdf.GoPdf) {
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Name",
-			Other: "Name",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Name", "Name"), builder)
 	pdfBuilder.setValue(data.Person.GetFullName(), builder)
 	builder.Br(15)
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Classification",
-			Other: "Classification",
-		},
-	}), builder)
-	pdfBuilder.setValue(data.ClassificationLocalized(tr.Localizer), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification", "Classification"), builder)
+	classification := data.Classification()
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification, classification), builder)
 	builder.Br(15)
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Address",
-			Other: "Address",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Address", "Address"), builder)
 	pdfBuilder.setValue(data.Person.Address.GetFormatted(), builder)
 	builder.Br(15)
 
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.BirthDate",
-			Other: "Birth date",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.BirthDate", "Birth date"), builder)
 	pdfBuilder.setValue(data.Person.BirthDate.Format("02/01/2006"), builder)
 	builder.SetX(builder.GetX() + 10)
 	if data.Person.MarriageDate != nil {
-		pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:    "Domain.MarriageDate",
-				Other: "Marriage Date",
-			},
-		}), builder)
+		pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.MarriageDate", "Marriage Date"), builder)
 		pdfBuilder.setValue(data.Person.MarriageDate.Format("02/01/2006"), builder)
 	}
 	builder.Br(15)
 
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Phone",
-			Other: "Phone",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Phone", "Phone"), builder)
+
 	if data.Person.Contact.Phone == 0 {
 		pdfBuilder.setValue("N/A", builder)
 	} else {
 		pdfBuilder.setValue(data.Person.Contact.GetFormattedPhone(), builder)
 	}
 	builder.SetX(builder.GetX() + 10)
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.CellPhone",
-			Other: "CellPhone",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.CellPhone", "CellPhone"), builder)
+
 	if data.Person.Contact.CellPhone == 0 {
 		pdfBuilder.setValue("N/A", builder)
 	} else {
@@ -139,12 +109,7 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *model.Member, builder *gopdf
 	}
 	builder.Br(15)
 
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Email",
-			Other: "Email",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Email", "Email"), builder)
 	pdfBuilder.setValue(data.Person.Contact.Email, builder)
 
 	builder.Br(10)
@@ -156,12 +121,7 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *model.Member, builder *gopdf
 }
 
 func (pdfBuilder *pdfBuilder) buildSummarySection(data []*model.Member, builder *gopdf.GoPdf) {
-	pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.MembersQuantity",
-			Other: "Number of members",
-		},
-	}), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.MembersQuantity", "Number of members"), builder)
 	pdfBuilder.setValue(fmt.Sprintf("%d", len(data)), builder)
 	builder.Br(15)
 
@@ -173,12 +133,7 @@ func (pdfBuilder *pdfBuilder) buildSummarySection(data []*model.Member, builder 
 	}
 
 	for key, value := range summary {
-		pdfBuilder.setField(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-			DefaultMessage: &i18n.Message{
-				ID:    "Domain.Classification." + key,
-				Other: key,
-			},
-		}), builder)
+		pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification." + key, key), builder)
 		pdfBuilder.setValue(fmt.Sprintf("%d", value), builder)
 		builder.Br(15)
 	}

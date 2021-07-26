@@ -2,6 +2,7 @@ package report
 
 import (
 	"errors"
+	"github.com/spf13/viper"
 	"testing"
 	"time"
 
@@ -12,6 +13,10 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
+
+func init(){
+	viper.Set("bundles.location", "../../../bundles")
+}
 
 func TestBirthdayReportSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)

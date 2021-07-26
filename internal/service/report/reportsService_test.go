@@ -272,3 +272,24 @@ func TestFilterByClassification(t *testing.T) {
 	}
 	assert.Equal(t, 1, len(filterClassification("adult", members)))
 }
+
+func TestFilterByClassificationRemovingChildren(t *testing.T) {
+	adult, _ := time.Parse("2006/01/02", "1990/07/06")
+	now := time.Now()
+	members := []*model.Member{
+		{
+			Person: model.Person{
+				FirstName: "Adult",
+				BirthDate: &adult,
+			},
+		},
+		{
+			Person: model.Person{
+				FirstName: "Children",
+				BirthDate: &now,
+			},
+		},
+	}
+	assert.Equal(t, 1, len(filterChildren(members)))
+}
+

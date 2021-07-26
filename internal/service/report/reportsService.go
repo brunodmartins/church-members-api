@@ -123,7 +123,7 @@ func (report reportService) LegalReport() ([]byte, error) {
 }
 
 func filterChildren(members []*model.Member) []*model.Member {
-	filtered := []*model.Member{}
+	var filtered []*model.Member
 	for _, v := range members {
 		if v.Classification() != "Children" {
 			filtered = append(filtered, v)

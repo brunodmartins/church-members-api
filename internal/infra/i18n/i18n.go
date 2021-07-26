@@ -2,42 +2,58 @@ package i18n
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/spf13/viper"
+	"sync"
 
-	"github.com/BrunoDM2943/church-members-api/internal/infra/config"
 	"github.com/BurntSushi/toml"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 )
 
-//Localizer var
-var Localizer *i18n.Localizer
 
-func init() {
+type MessageService struct {
+	localize *i18n.Localizer
+}
+
+func (service *MessageService) GetMessage(key, defaultValue string) string {
+	return service.localize.MustLocalize(&i18n.LocalizeConfig{
+		DefaultMessage: &i18n.Message{
+			ID:    key,
+			Other: defaultValue,
+		},
+	})
+}
+
+var (
+	service *MessageService
+	serviceOnce sync.Once
+)
+
+//GetMessageService builds a singleton instance for MessageService
+func GetMessageService() *MessageService {
+	serviceOnce.Do(func() {
+		buildMessageService()
+	})
+	return service
+}
+
+func buildMessageService() {
 	lang := language.English
-	if envLang := os.Getenv("APP_LANG"); envLang != "" {
+	if envLang := viper.GetString("lang"); envLang != "" {
 		lang = language.MustParse(envLang)
 	}
 	bundle := loadBundle(lang)
-	Localizer = i18n.NewLocalizer(bundle)
+	service = &MessageService{
+		localize: i18n.NewLocalizer(bundle),
+	}
 }
 
 func loadBundle(language language.Tag) *i18n.Bundle {
 	bundle := i18n.NewBundle(language)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	logrus.Infof("Loading bundle for language %s - Current Scope: %s", language, config.GetScope())
-	base := os.Getenv("GOPATH")
-	appPath := "github.com/BrunoDM2943/church-members-api"
-	path := fmt.Sprintf("%s/src/%s/bundles/%s.toml", base, appPath, language)
-	if config.IsProd() {
-		path = fmt.Sprintf("./bundles/%s.toml", language)
-	}
-	if config.IsTest() {
-		path = fmt.Sprintf("%s/%s.toml", viper.GetString("bundle.location"), language)
-	}
+	logrus.Infof("Loading bundle for language %s", language)
+	path := fmt.Sprintf("%s/%s.toml", viper.GetString("bundles.location"), language)
 	bundle.MustLoadMessageFile(path)
 	logrus.Infof("Bundle %s loaded", language)
 	return bundle

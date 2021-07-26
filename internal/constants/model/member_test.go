@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -65,15 +64,6 @@ func TestClassification(t *testing.T) {
 				MarriageDate: &now,
 			},
 		}.Classification())
-	})
-	t.Run("Localized", func(t *testing.T) {
-		birthDate := time.Now().AddDate(-25, 0, 0)
-		assert.Equal(t, "Adult", Member{
-			Person: Person{
-				BirthDate:    &birthDate,
-				MarriageDate: &now,
-			},
-		}.ClassificationLocalized(i18n.Localizer))
 	})
 }
 

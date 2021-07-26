@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/csv"
+	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 	"sort"
 	"strings"
 
@@ -11,8 +12,6 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
-	tr "github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
@@ -27,12 +26,14 @@ type Service interface {
 type reportService struct {
 	repo        repository.MemberRepository
 	fileBuilder file.Builder
+	messageService *i18n.MessageService
 }
 
 func NewReportService(repo repository.MemberRepository, fileBuilder file.Builder) Service {
 	return &reportService{
 		repo,
 		fileBuilder,
+		i18n.GetMessageService(),
 	}
 }
 
@@ -43,7 +44,7 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 	}
 
 	sort.Sort(model.SortByBirthDay(members))
-	csvOut := file.TransformToCSVData(buildCSVData(members), getCSVColumns(), func(row file.Data) []string {
+	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
 		member := row.Value.(*model.Member)
 		return []string{
 			member.Person.GetFullName(),
@@ -71,7 +72,7 @@ func (report reportService) MarriageReport() ([]byte, error) {
 
 	sort.Sort(model.SortByMarriageDay(members))
 
-	csvOut := file.TransformToCSVData(buildCSVData(members), getCSVColumns(), func(row file.Data) []string {
+	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
 		member := row.Value.(*model.Member)
 		return []string{
 			member.Person.GetFullName() + "&" + member.Person.SpousesName,
@@ -88,12 +89,7 @@ func (report reportService) MemberReport() ([]byte, error) {
 		return nil, err
 	}
 	sort.Sort(model.SortByName(members))
-	return report.fileBuilder.BuildFile(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Reports.Title.Default",
-			Other: "Member's report",
-		},
-	}), members)
+	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
 func (report reportService) ClassificationReport(classification string) ([]byte, error) {
@@ -103,12 +99,7 @@ func (report reportService) ClassificationReport(classification string) ([]byte,
 	}
 	members = filterClassification(classification, members)
 	sort.Sort(model.SortByName(members))
-	return report.fileBuilder.BuildFile(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Reports.Title.Default",
-			Other: "Member's report",
-		},
-	}), members)
+	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
 func filterClassification(classification string, members []*model.Member) []*model.Member {
@@ -128,16 +119,11 @@ func (report reportService) LegalReport() ([]byte, error) {
 	}
 	members = filterChildren(members)
 	sort.Sort(model.SortByName(members))
-	return report.fileBuilder.BuildFile(tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Reports.Title.Legal",
-			Other: "Member's report - Legal",
-		},
-	}), members)
+	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), members)
 }
 
 func filterChildren(members []*model.Member) []*model.Member {
-	filtered := []*model.Member{}
+	var filtered []*model.Member
 	for _, v := range members {
 		if v.Classification() != "Children" {
 			filtered = append(filtered, v)
@@ -146,18 +132,11 @@ func filterChildren(members []*model.Member) []*model.Member {
 	return filtered
 }
 
-func getCSVColumns() []string {
-	return []string{tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Name",
-			Other: "Name",
-		},
-	}), tr.Localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Date",
-			Other: "Date",
-		},
-	})}
+func (report *reportService) getCSVColumns() []string {
+	return []string{
+		report.messageService.GetMessage("Domain.Name", "Name"),
+		report.messageService.GetMessage("Domain.Date", "Date"),
+	}
 }
 
 func buildCSVData(members []*model.Member) []file.Data {

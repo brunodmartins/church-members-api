@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/bearbin/go-age"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 //Member struct
@@ -31,15 +30,4 @@ func (member Member) Classification() string {
 	} else {
 		return "Adult"
 	}
-}
-
-//Classification returns a member classification based on age and marriage
-func (member Member) ClassificationLocalized(localizer *i18n.Localizer) string {
-	classification := member.Classification()
-	return localizer.MustLocalize(&i18n.LocalizeConfig{
-		DefaultMessage: &i18n.Message{
-			ID:    "Domain.Classification." + classification,
-			Other: classification,
-		},
-	})
 }

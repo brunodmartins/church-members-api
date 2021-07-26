@@ -7,6 +7,7 @@ package mock_report
 import (
 	reflect "reflect"
 
+	enum "github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -49,7 +50,7 @@ func (mr *MockServiceMockRecorder) BirthdayReport() *gomock.Call {
 }
 
 // ClassificationReport mocks base method.
-func (m *MockService) ClassificationReport(classification string) ([]byte, error) {
+func (m *MockService) ClassificationReport(classification enum.Classification) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ClassificationReport", classification)
 	ret0, _ := ret[0].([]byte)

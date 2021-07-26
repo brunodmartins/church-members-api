@@ -5,14 +5,14 @@ import (
 
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 )
 
 //go:generate mockgen -source=./memberService.go -destination=./mock/memberService_mock.go
 type Service interface {
-	FindMembers(filters map[string]interface{}) ([]*model.Member, error)
-	FindMembersByID(id string) (*model.Member, error)
-	SaveMember(member *model.Member) (string, error)
+	FindMembers(filters map[string]interface{}) ([]*entity.Member, error)
+	FindMembersByID(id string) (*entity.Member, error)
+	SaveMember(member *entity.Member) (string, error)
 	ChangeStatus(id string, status bool, reason string, date time.Time) error
 }
 
@@ -26,7 +26,7 @@ func NewMemberService(r repository.MemberRepository) *memberService {
 	}
 }
 
-func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Member, error) {
+func (s *memberService) FindMembers(filters map[string]interface{}) ([]*entity.Member, error) {
 	queryFilters := repository.QueryFilters{}
 
 	if sex := filters["gender"]; sex != nil {
@@ -44,11 +44,11 @@ func (s *memberService) FindMembers(filters map[string]interface{}) ([]*model.Me
 	return s.repo.FindAll(queryFilters)
 }
 
-func (s *memberService) FindMembersByID(id string) (*model.Member, error) {
+func (s *memberService) FindMembersByID(id string) (*entity.Member, error) {
 	return s.repo.FindByID(id)
 }
 
-func (s *memberService) SaveMember(member *model.Member) (string, error) {
+func (s *memberService) SaveMember(member *entity.Member) (string, error) {
 	member.Active = true
 	return s.repo.Insert(member)
 }

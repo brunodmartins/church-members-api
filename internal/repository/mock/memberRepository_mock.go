@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	model "github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	entity "github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	repository "github.com/BrunoDM2943/church-members-api/internal/repository"
 	gomock "github.com/golang/mock/gomock"
 )
@@ -37,10 +37,10 @@ func (m *MockMemberRepository) EXPECT() *MockMemberRepositoryMockRecorder {
 }
 
 // FindAll mocks base method.
-func (m *MockMemberRepository) FindAll(filters repository.QueryFilters) ([]*model.Member, error) {
+func (m *MockMemberRepository) FindAll(filters repository.QueryFilters) ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", filters)
-	ret0, _ := ret[0].([]*model.Member)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -52,10 +52,10 @@ func (mr *MockMemberRepositoryMockRecorder) FindAll(filters interface{}) *gomock
 }
 
 // FindByID mocks base method.
-func (m *MockMemberRepository) FindByID(id string) (*model.Member, error) {
+func (m *MockMemberRepository) FindByID(id string) (*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", id)
-	ret0, _ := ret[0].(*model.Member)
+	ret0, _ := ret[0].(*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -67,10 +67,10 @@ func (mr *MockMemberRepositoryMockRecorder) FindByID(id interface{}) *gomock.Cal
 }
 
 // FindMembersActive mocks base method.
-func (m *MockMemberRepository) FindMembersActive() ([]*model.Member, error) {
+func (m *MockMemberRepository) FindMembersActive() ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersActive")
-	ret0, _ := ret[0].([]*model.Member)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -82,10 +82,10 @@ func (mr *MockMemberRepositoryMockRecorder) FindMembersActive() *gomock.Call {
 }
 
 // FindMembersActiveAndMarried mocks base method.
-func (m *MockMemberRepository) FindMembersActiveAndMarried() ([]*model.Member, error) {
+func (m *MockMemberRepository) FindMembersActiveAndMarried() ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersActiveAndMarried")
-	ret0, _ := ret[0].([]*model.Member)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -111,7 +111,7 @@ func (mr *MockMemberRepositoryMockRecorder) GenerateStatusHistory(id, status, re
 }
 
 // Insert mocks base method.
-func (m *MockMemberRepository) Insert(member *model.Member) (string, error) {
+func (m *MockMemberRepository) Insert(member *entity.Member) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", member)
 	ret0, _ := ret[0].(string)

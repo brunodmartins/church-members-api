@@ -1,6 +1,7 @@
-package model
+package entity
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"testing"
 	"time"
 
@@ -26,7 +27,7 @@ func TestFormattedContact(t *testing.T) {
 func TestClassification(t *testing.T) {
 	now := time.Now()
 	t.Run("Children", func(t *testing.T) {
-		assert.Equal(t, "Children", Member{
+		assert.Equal(t, enum.CHILDREN, Member{
 			Person: Person{
 				BirthDate: &now,
 			},
@@ -34,7 +35,7 @@ func TestClassification(t *testing.T) {
 	})
 	t.Run("Teen", func(t *testing.T) {
 		birthDate := time.Now().AddDate(-17, 0, 0)
-		assert.Equal(t, "Teen", Member{
+		assert.Equal(t, enum.TEEN, Member{
 			Person: Person{
 				BirthDate: &birthDate,
 			},
@@ -42,7 +43,7 @@ func TestClassification(t *testing.T) {
 	})
 	t.Run("Young", func(t *testing.T) {
 		birthDate := time.Now().AddDate(-29, 0, 0)
-		assert.Equal(t, "Young", Member{
+		assert.Equal(t, enum.YOUNG, Member{
 			Person: Person{
 				BirthDate: &birthDate,
 			},
@@ -50,7 +51,7 @@ func TestClassification(t *testing.T) {
 	})
 	t.Run("Adult Single", func(t *testing.T) {
 		birthDate := time.Now().AddDate(-33, 0, 0)
-		assert.Equal(t, "Adult", Member{
+		assert.Equal(t, enum.ADULT, Member{
 			Person: Person{
 				BirthDate: &birthDate,
 			},
@@ -58,7 +59,7 @@ func TestClassification(t *testing.T) {
 	})
 	t.Run("Adult Married", func(t *testing.T) {
 		birthDate := time.Now().AddDate(-25, 0, 0)
-		assert.Equal(t, "Adult", Member{
+		assert.Equal(t, enum.ADULT, Member{
 			Person: Person{
 				BirthDate:    &birthDate,
 				MarriageDate: &now,

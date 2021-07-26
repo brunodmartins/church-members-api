@@ -1,6 +1,7 @@
-package model
+package entity
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/bearbin/go-age"
 )
 
@@ -19,15 +20,15 @@ type Member struct {
 }
 
 //Classification returns a member classification based on age and marriage
-func (member Member) Classification() string {
+func (member Member) Classification() enum.Classification {
 	age := age.Age(*member.Person.BirthDate)
 	if age < 15 {
-		return "Children"
+		return enum.CHILDREN
 	} else if age < 18 {
-		return "Teen"
+		return enum.TEEN
 	} else if age < 30 && member.Person.MarriageDate == nil {
-		return "Young"
+		return enum.YOUNG
 	} else {
-		return "Adult"
+		return enum.ADULT
 	}
 }

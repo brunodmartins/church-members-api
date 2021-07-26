@@ -6,7 +6,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,22 +18,22 @@ func init(){
 func TestBuildFile(t *testing.T) {
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	data := []*model.Member{
+	data := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
 				BirthDate:    &dtNascimento,
 				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
-				Contact: model.Contact{
+				Contact: entity.Contact{
 					CellPhoneArea: 99,
 					CellPhone:     1234567890,
 					PhoneArea:     99,
 					Phone:         12345678,
 					Email:         "teste@test.com",
 				},
-				Address: model.Address{
+				Address: entity.Address{
 					District: "9",
 					City:     "Does not sleep",
 					State:    "My-State",
@@ -54,18 +54,18 @@ func TestBuildFile(t *testing.T) {
 func TestBuildFileWithEmptyPhones(t *testing.T) {
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	data := []*model.Member{
+	data := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
 				BirthDate:    &dtNascimento,
 				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
-				Contact: model.Contact{
+				Contact: entity.Contact{
 					Email:         "teste@test.com",
 				},
-				Address: model.Address{
+				Address: entity.Address{
 					District: "9",
 					City:     "Does not sleep",
 					State:    "My-State",
@@ -86,17 +86,17 @@ func TestBuildFileWithEmptyPhones(t *testing.T) {
 func TestBuildFileWithOneHundredMembers(t *testing.T) {
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	member := &model.Member{
-		Person: model.Person{
+	member := &entity.Member{
+		Person: entity.Person{
 			FirstName:    "Test",
 			LastName:     "test test",
 			BirthDate:    &dtNascimento,
 			MarriageDate: &dtCasamento,
 			SpousesName:  "Test spuse",
-			Contact: model.Contact{
+			Contact: entity.Contact{
 				Email: "teste@test.com",
 			},
-			Address: model.Address{
+			Address: entity.Address{
 				District: "9",
 				City:     "Does not sleep",
 				State:    "My-State",
@@ -105,7 +105,7 @@ func TestBuildFileWithOneHundredMembers(t *testing.T) {
 			},
 		},
 	}
-	var data []*model.Member
+	var data []*entity.Member
 	for i:=0;i<100;i++ {
 		data = append(data, member)
 	}

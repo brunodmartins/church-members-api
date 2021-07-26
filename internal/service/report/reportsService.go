@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/csv"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
-	"sort"
-	"strings"
-
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
+	"sort"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 )
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
@@ -20,7 +19,7 @@ type Service interface {
 	MemberReport() ([]byte, error)
 	BirthdayReport() ([]byte, error)
 	MarriageReport() ([]byte, error)
-	ClassificationReport(classification string) ([]byte, error)
+	ClassificationReport(classification enum.Classification) ([]byte, error)
 }
 
 type reportService struct {
@@ -43,9 +42,9 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 		return nil, err
 	}
 
-	sort.Sort(model.SortByBirthDay(members))
+	sort.Sort(entity.SortByBirthDay(members))
 	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
-		member := row.Value.(*model.Member)
+		member := row.Value.(*entity.Member)
 		return []string{
 			member.Person.GetFullName(),
 			member.Person.BirthDate.Format("02/01"),
@@ -70,10 +69,10 @@ func (report reportService) MarriageReport() ([]byte, error) {
 		return nil, err
 	}
 
-	sort.Sort(model.SortByMarriageDay(members))
+	sort.Sort(entity.SortByMarriageDay(members))
 
 	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
-		member := row.Value.(*model.Member)
+		member := row.Value.(*entity.Member)
 		return []string{
 			member.Person.GetFullName() + "&" + member.Person.SpousesName,
 			member.Person.MarriageDate.Format("02/01"),
@@ -88,24 +87,24 @@ func (report reportService) MemberReport() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	sort.Sort(model.SortByName(members))
+	sort.Sort(entity.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
-func (report reportService) ClassificationReport(classification string) ([]byte, error) {
+func (report reportService) ClassificationReport(classification enum.Classification) ([]byte, error) {
 	members, err := report.repo.FindMembersActive()
 	if err != nil {
 		return nil, err
 	}
 	members = filterClassification(classification, members)
-	sort.Sort(model.SortByName(members))
+	sort.Sort(entity.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
-func filterClassification(classification string, members []*model.Member) []*model.Member {
-	filtered := []*model.Member{}
+func filterClassification(classification enum.Classification, members []*entity.Member) []*entity.Member {
+	filtered := []*entity.Member{}
 	for _, v := range members {
-		if strings.ToLower(v.Classification()) == classification {
+		if v.Classification() == classification {
 			filtered = append(filtered, v)
 		}
 	}
@@ -118,14 +117,14 @@ func (report reportService) LegalReport() ([]byte, error) {
 		return nil, err
 	}
 	members = filterChildren(members)
-	sort.Sort(model.SortByName(members))
+	sort.Sort(entity.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), members)
 }
 
-func filterChildren(members []*model.Member) []*model.Member {
-	var filtered []*model.Member
+func filterChildren(members []*entity.Member) []*entity.Member {
+	var filtered []*entity.Member
 	for _, v := range members {
-		if v.Classification() != "Children" {
+		if v.Classification() != enum.CHILDREN {
 			filtered = append(filtered, v)
 		}
 	}
@@ -139,7 +138,7 @@ func (report *reportService) getCSVColumns() []string {
 	}
 }
 
-func buildCSVData(members []*model.Member) []file.Data {
+func buildCSVData(members []*entity.Member) []file.Data {
 	var data []file.Data
 	for _, member := range members {
 		data = append(data, file.Data{Value: member})

@@ -2,6 +2,7 @@ package gin
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"net/http"
 
 	"github.com/BrunoDM2943/church-members-api/internal/service/report"
@@ -19,14 +20,10 @@ func NewReportHandler(reportGenerator report.Service) *ReportHandler {
 	return &ReportHandler{reportGenerator}
 }
 
-func isValidClassification(classification string) bool {
-	return classification == "adult" || classification == "teen" || classification == "young" || classification == "children"
-}
-
 func (handler *ReportHandler) generateClassificationReport(c *gin.Context) {
-	classification := c.Param("classification")
-	if !isValidClassification(classification) {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{ Message: "Invalid classification: " + classification})
+	classification, err := new(enum.Classification).From(c.Param("classification"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{ Message: "Invalid classification: " + err.Error()})
 		return
 	}
 	output, err := handler.reportGenerator.ClassificationReport(classification)

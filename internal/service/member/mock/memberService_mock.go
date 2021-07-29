@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 	time "time"
 
-	model "github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	entity "github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -50,10 +50,10 @@ func (mr *MockServiceMockRecorder) ChangeStatus(id, status, reason, date interfa
 }
 
 // FindMembers mocks base method.
-func (m *MockService) FindMembers(filters map[string]interface{}) ([]*model.Member, error) {
+func (m *MockService) FindMembers(filters map[string]interface{}) ([]*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembers", filters)
-	ret0, _ := ret[0].([]*model.Member)
+	ret0, _ := ret[0].([]*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -65,10 +65,10 @@ func (mr *MockServiceMockRecorder) FindMembers(filters interface{}) *gomock.Call
 }
 
 // FindMembersByID mocks base method.
-func (m *MockService) FindMembersByID(id string) (*model.Member, error) {
+func (m *MockService) FindMembersByID(id string) (*entity.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindMembersByID", id)
-	ret0, _ := ret[0].(*model.Member)
+	ret0, _ := ret[0].(*entity.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -80,7 +80,7 @@ func (mr *MockServiceMockRecorder) FindMembersByID(id interface{}) *gomock.Call 
 }
 
 // SaveMember mocks base method.
-func (m *MockService) SaveMember(member *model.Member) (string, error) {
+func (m *MockService) SaveMember(member *entity.Member) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SaveMember", member)
 	ret0, _ := ret[0].(string)

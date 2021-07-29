@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
 	"github.com/signintech/gopdf"
 	"github.com/spf13/viper"
@@ -14,7 +14,7 @@ import (
 //Builder interface
 //go:generate mockgen -source=./pdf.go -destination=./mock/pdf_mock.go
 type Builder interface {
-	BuildFile(title string, data []*model.Member) ([]byte, error)
+	BuildFile(title string, data []*entity.Member) ([]byte, error)
 }
 
 type pdfBuilder struct {
@@ -71,13 +71,13 @@ func (pdfBuilder *pdfBuilder) setValue(value string, builder *gopdf.GoPdf) {
 	builder.Cell(nil, value)
 }
 
-func (pdfBuilder *pdfBuilder) buildRowSection(data *model.Member, builder *gopdf.GoPdf) {
+func (pdfBuilder *pdfBuilder) buildRowSection(data *entity.Member, builder *gopdf.GoPdf) {
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Name", "Name"), builder)
 	pdfBuilder.setValue(data.Person.GetFullName(), builder)
 	builder.Br(15)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification", "Classification"), builder)
 	classification := data.Classification()
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification, classification), builder)
+	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification.String(), classification.String()), builder)
 	builder.Br(15)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Address", "Address"), builder)
 	pdfBuilder.setValue(data.Person.Address.GetFormatted(), builder)
@@ -120,16 +120,16 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *model.Member, builder *gopdf
 
 }
 
-func (pdfBuilder *pdfBuilder) buildSummarySection(data []*model.Member, builder *gopdf.GoPdf) {
+func (pdfBuilder *pdfBuilder) buildSummarySection(data []*entity.Member, builder *gopdf.GoPdf) {
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.MembersQuantity", "Number of members"), builder)
 	pdfBuilder.setValue(fmt.Sprintf("%d", len(data)), builder)
 	builder.Br(15)
 
 	summary := map[string]int{}
 	for _, member := range data {
-		count := summary[member.Classification()]
+		count := summary[member.Classification().String()]
 		count++
-		summary[member.Classification()] = count
+		summary[member.Classification().String()] = count
 	}
 
 	for key, value := range summary {
@@ -140,7 +140,7 @@ func (pdfBuilder *pdfBuilder) buildSummarySection(data []*model.Member, builder 
 
 }
 
-func (pdfBuilder *pdfBuilder) BuildFile(title string, data []*model.Member) ([]byte, error) {
+func (pdfBuilder *pdfBuilder) BuildFile(title string, data []*entity.Member) ([]byte, error) {
 	pdf := &gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	if err := pdfBuilder.setFont(pdf); err != nil {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	mock_service "github.com/BrunoDM2943/church-members-api/internal/service/member/mock"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -41,7 +41,7 @@ func TestGetMemberNotFound(t *testing.T) {
 	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
-	id := model.NewID()
+	id := entity.NewID()
 
 	service.EXPECT().FindMembersByID(id).Return(nil, repository.MemberNotFound)
 	memberHandler.SetUpRoutes(r)
@@ -61,8 +61,8 @@ func TestGetMemberOK(t *testing.T) {
 	service := mock_service.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 
-	member := &model.Member{}
-	member.ID = model.NewID()
+	member := &entity.Member{}
+	member.ID = entity.NewID()
 	service.EXPECT().FindMembersByID(member.ID).Return(member, nil).AnyTimes()
 
 	memberHandler.SetUpRoutes(r)
@@ -102,7 +102,7 @@ func TestPostMemberSucess(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
-	service.EXPECT().SaveMember(gomock.AssignableToTypeOf(&model.Member{})).Return(model.NewID(), nil)
+	service.EXPECT().SaveMember(gomock.AssignableToTypeOf(&entity.Member{})).Return(entity.NewID(), nil)
 	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusCreated {
@@ -122,7 +122,7 @@ func TestPostMemberFail(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	body := `{"attendsFridayWorship":true,"attendsSaturdayWorship":true,"attendsSundayWorship":true,"attendsSundaySchool":true,"person":{"firstName":"XXXX","lastName":"XXXX XXX","birthDate":"2020-01-01T00:00:00-03:00","naturalidade":"XXXXX","placeOfBirth":"XXXXX","fathersName":"XXXXXX","mothersName":"XXXXX","spousesName":"XXXXX","brothersQuantity":0,"childrensQuantity":0,"profession":"XXXXXX","gender":"M","contact":{"cellPhoneArea":99,"cellPhone":123456789,"email":"XXXXXX"},"address":{"zipCode":"XXXXXXX","state":"XXXX","city":"XXXXX","address":"XXXX","district":"XXX","number":1,"moreInfo":"xxXXX"}},"religion":{"fathersReligion":"Crentes","baptismPlace":"IEPEM","learnedGospelAge":10,"acceptedJesus":true,"baptized":true,"catholicBaptized":true,"knowsTithe":true,"agreesTithe":true,"tithe":true}}`
-	service.EXPECT().SaveMember(gomock.Any()).Return(model.NewID(), errors.New(""))
+	service.EXPECT().SaveMember(gomock.Any()).Return(entity.NewID(), errors.New(""))
 	req, _ := http.NewRequest("POST", "/members", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusInternalServerError {
@@ -150,7 +150,7 @@ func TestPostMemberSearch(t *testing.T) {
 				}
 		}
 	}`
-	service.EXPECT().FindMembers(gomock.Any()).Return([]*model.Member{}, nil)
+	service.EXPECT().FindMembers(gomock.Any()).Return([]*entity.Member{}, nil)
 	req, _ := http.NewRequest("POST", "/members/search", strings.NewReader(body))
 	r.ServeHTTP(w, req)
 	if w.Code != http.StatusOK {
@@ -191,7 +191,7 @@ func TestPutStatus(t *testing.T) {
 		body       string
 		statusCode int
 	}
-	id := model.NewID()
+	id := entity.NewID()
 	urlWithID := "/members/" + id + "/status"
 	table := []data{
 		{"/members/X/status", "", http.StatusBadRequest},

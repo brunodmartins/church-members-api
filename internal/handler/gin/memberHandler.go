@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
 	"github.com/gin-gonic/gin"
 )
@@ -45,7 +45,7 @@ func (handler *MemberHandler) postMember(c *gin.Context) {
 
 func (handler *MemberHandler) getMember(c *gin.Context) {
 	id, _ := c.Params.Get("id")
-	if !model.IsValidID(id) {
+	if !entity.IsValidID(id) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}
@@ -80,7 +80,7 @@ func (handler *MemberHandler) searchMember(c *gin.Context) {
 
 func (handler *MemberHandler) putStatus(c *gin.Context) {
 	id, _ := c.Params.Get("id")
-	if !model.IsValidID(id) {
+	if !entity.IsValidID(id) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}

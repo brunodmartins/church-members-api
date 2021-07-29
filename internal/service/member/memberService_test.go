@@ -7,7 +7,7 @@ import (
 
 	"github.com/BrunoDM2943/church-members-api/internal/repository"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +19,7 @@ func TestListAllMembers(t *testing.T) {
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
-	repo.EXPECT().FindAll(gomock.Any()).Return([]*model.Member{
+	repo.EXPECT().FindAll(gomock.Any()).Return([]*entity.Member{
 		{},
 	}, nil).AnyTimes()
 	members, _ := service.FindMembers(map[string]interface{}{})
@@ -34,8 +34,8 @@ func TestFindMember(t *testing.T) {
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
-	id := model.NewID()
-	member := &model.Member{
+	id := entity.NewID()
+	member := &entity.Member{
 		ID: id,
 	}
 	repo.EXPECT().FindByID(id).Return(member, nil).AnyTimes()
@@ -51,15 +51,15 @@ func TestSaveMember(t *testing.T) {
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
 
-	member := model.Member{}
+	member := entity.Member{}
 
-	repo.EXPECT().Insert(&member).Return(model.NewID(), nil).AnyTimes()
+	repo.EXPECT().Insert(&member).Return(entity.NewID(), nil).AnyTimes()
 
 	id, err := service.SaveMember(&member)
 	if err != nil {
 		t.Fail()
 	}
-	if !model.IsValidID(id) {
+	if !entity.IsValidID(id) {
 		t.Fail()
 	}
 }
@@ -87,7 +87,7 @@ func TestUpdateStatus(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
-	id := model.NewID()
+	id := entity.NewID()
 	repo.EXPECT().UpdateStatus(id, true).Return(nil)
 	repo.EXPECT().GenerateStatusHistory(id, true, "Exited", gomock.Any()).Return(nil)
 	err := service.ChangeStatus(id, true, "Exited", time.Now())
@@ -99,7 +99,7 @@ func TestUpdateStatusError(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_repository.NewMockMemberRepository(ctrl)
 	service := NewMemberService(repo)
-	id := model.NewID()
+	id := entity.NewID()
 	repo.EXPECT().UpdateStatus(id, true).Return(errors.New("Error"))
 	err := service.ChangeStatus(id, true, "Exited", time.Now())
 	assert.NotNil(t, err, "Error not raised")

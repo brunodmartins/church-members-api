@@ -2,6 +2,7 @@ package report
 
 import (
 	"errors"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/spf13/viper"
 	"testing"
 	"time"
@@ -9,7 +10,7 @@ import (
 	mock_repository "github.com/BrunoDM2943/church-members-api/internal/repository/mock"
 	mock_file "github.com/BrunoDM2943/church-members-api/internal/storage/file/mock"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
@@ -25,16 +26,16 @@ func TestBirthdayReportSuccess(t *testing.T) {
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
 	service := NewReportService(repo, fileBuilder)
 	now := time.Now()
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName: "Teste",
 				LastName:  "Teste",
 				BirthDate: &now,
 			},
 		},
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName: "Teste 2",
 				LastName:  "Teste 2",
 				BirthDate: &now,
@@ -80,9 +81,9 @@ func TestMarriageReportSuccess(t *testing.T) {
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
 	service := NewReportService(repo, fileBuilder)
 	now := time.Now()
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName:    "Esposa",
 				LastName:     "Teste",
 				MarriageDate: &now,
@@ -104,22 +105,22 @@ func TestGenerateMemberReport(t *testing.T) {
 	service := NewReportService(repo, fileBuilder)
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
 				BirthDate:    &dtNascimento,
 				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
-				Contact: model.Contact{
+				Contact: entity.Contact{
 					CellPhoneArea: 99,
 					CellPhone:     1234567890,
 					PhoneArea:     99,
 					Phone:         12345678,
 					Email:         "teste@test.com",
 				},
-				Address: model.Address{
+				Address: entity.Address{
 					District: "9",
 					City:     "Does not sleep",
 					State:    "My-State",
@@ -144,22 +145,22 @@ func TestGenerateClassificationReport(t *testing.T) {
 	service := NewReportService(repo, fileBuilder)
 	dtNascimento, _ := time.Parse("2006/01/02", "1990/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
 				BirthDate:    &dtNascimento,
 				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
-				Contact: model.Contact{
+				Contact: entity.Contact{
 					CellPhoneArea: 99,
 					CellPhone:     1234567890,
 					PhoneArea:     99,
 					Phone:         12345678,
 					Email:         "teste@test.com",
 				},
-				Address: model.Address{
+				Address: entity.Address{
 					District: "9",
 					City:     "Does not sleep",
 					State:    "My-State",
@@ -171,7 +172,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 	}
 	repo.EXPECT().FindMembersActive().Return(members, nil)
 	fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
-	out, err := service.ClassificationReport("adult")
+	out, err := service.ClassificationReport(enum.ADULT)
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
 }
@@ -196,7 +197,7 @@ func TestGenerateClassificationReportFail(t *testing.T) {
 	service := NewReportService(repo, fileBuilder)
 
 	repo.EXPECT().FindMembersActive().Return(nil, errors.New("Error"))
-	_, err := service.ClassificationReport("adult")
+	_, err := service.ClassificationReport(enum.ADULT)
 	assert.NotNil(t, err)
 }
 
@@ -209,22 +210,22 @@ func TestGenerateLegalReport(t *testing.T) {
 
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName:    "Test",
 				LastName:     "test test",
 				BirthDate:    &dtNascimento,
 				MarriageDate: &dtCasamento,
 				SpousesName:  "Test spuse",
-				Contact: model.Contact{
+				Contact: entity.Contact{
 					CellPhoneArea: 99,
 					CellPhone:     1234567890,
 					PhoneArea:     99,
 					Phone:         12345678,
 					Email:         "teste@test.com",
 				},
-				Address: model.Address{
+				Address: entity.Address{
 					District: "9",
 					City:     "Does not sleep",
 					State:    "My-State",
@@ -256,35 +257,35 @@ func TestGenerateLegalReportFail(t *testing.T) {
 func TestFilterByClassification(t *testing.T) {
 	adult, _ := time.Parse("2006/01/02", "1990/07/06")
 	now := time.Now()
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName: "Adult",
 				BirthDate: &adult,
 			},
 		},
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName: "Children",
 				BirthDate: &now,
 			},
 		},
 	}
-	assert.Equal(t, 1, len(filterClassification("adult", members)))
+	assert.Equal(t, 1, len(filterClassification(enum.ADULT, members)))
 }
 
 func TestFilterByClassificationRemovingChildren(t *testing.T) {
 	adult, _ := time.Parse("2006/01/02", "1990/07/06")
 	now := time.Now()
-	members := []*model.Member{
+	members := []*entity.Member{
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName: "Adult",
 				BirthDate: &adult,
 			},
 		},
 		{
-			Person: model.Person{
+			Person: entity.Person{
 				FirstName: "Children",
 				BirthDate: &now,
 			},

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -30,8 +30,8 @@ func NewDynamoDBRepository() MemberRepository {
 	}
 }
 
-func (repo dynamoRepository) FindAll(filters QueryFilters) ([]*model.Member, error) {
-	var members = make([]*model.Member, 0)
+func (repo dynamoRepository) FindAll(filters QueryFilters) ([]*entity.Member, error) {
+	var members = make([]*entity.Member, 0)
 
 	builderExpresion := expression.NewBuilder()
 	if filters.GetFilter("person.gender") != nil {
@@ -65,7 +65,7 @@ func (repo dynamoRepository) FindAll(filters QueryFilters) ([]*model.Member, err
 	return members, nil
 }
 
-func (repo dynamoRepository) FindByID(id string) (*model.Member, error) {
+func (repo dynamoRepository) FindByID(id string) (*entity.Member, error) {
 	output, err := repo.client.GetItem(context.TODO(), &dynamodb.GetItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
@@ -86,7 +86,7 @@ func (repo dynamoRepository) FindByID(id string) (*model.Member, error) {
 	return record.ToMember(), nil
 }
 
-func (repo dynamoRepository) Insert(member *model.Member) (string, error) {
+func (repo dynamoRepository) Insert(member *entity.Member) (string, error) {
 	id := uuid.NewString()
 	av, err := attributevalue.MarshalMap(dto.NewMemberItem(member))
 
@@ -136,8 +136,8 @@ func (repo dynamoRepository) GenerateStatusHistory(id string, status bool, reaso
 	return err
 }
 
-func (repo dynamoRepository) FindMembersActive() ([]*model.Member, error) {
-	var members = make([]*model.Member, 0)
+func (repo dynamoRepository) FindMembersActive() ([]*entity.Member, error) {
+	var members = make([]*entity.Member, 0)
 
 	builderExpresion := expression.NewBuilder().WithFilter(expression.Name("active").Equal(expression.Value(true)))
 
@@ -162,8 +162,8 @@ func (repo dynamoRepository) FindMembersActive() ([]*model.Member, error) {
 	return members, nil
 }
 
-func (repo dynamoRepository) FindMembersActiveAndMarried() ([]*model.Member, error) {
-	var members = make([]*model.Member, 0)
+func (repo dynamoRepository) FindMembersActiveAndMarried() ([]*entity.Member, error) {
+	var members = make([]*entity.Member, 0)
 
 	builderExpresion := expression.NewBuilder()
 	builderExpresion = builderExpresion.WithFilter(expression.Name("active").Equal(expression.Value(true)))

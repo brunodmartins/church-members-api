@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/model"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,8 +13,8 @@ func TestTransformCSVToData(t *testing.T) {
 	t2, _ := time.Parse("02/01/2006", "22/03/2020")
 	data := []Data{
 		{
-			Value: model.Member{
-				Person: model.Person{
+			Value: entity.Member{
+				Person: entity.Person{
 					FirstName: "Teste",
 					LastName:  "Teste",
 					BirthDate: &t1,
@@ -22,8 +22,8 @@ func TestTransformCSVToData(t *testing.T) {
 			},
 		},
 		{
-			Value: model.Member{
-				Person: model.Person{
+			Value: entity.Member{
+				Person: entity.Person{
 					FirstName: "Teste 2",
 					LastName:  "Teste 2",
 					BirthDate: &t2,
@@ -32,7 +32,7 @@ func TestTransformCSVToData(t *testing.T) {
 		},
 	}
 	csvOut := TransformToCSVData(data, []string{"Name", "Date"}, func(row Data) []string {
-		member := row.Value.(model.Member)
+		member := row.Value.(entity.Member)
 		return []string{
 			member.Person.GetFullName(),
 			member.Person.BirthDate.Format("02/01"),

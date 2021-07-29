@@ -2,6 +2,7 @@ package gin
 
 import (
 	"errors"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -26,10 +27,10 @@ func TestRoutesWithSuccess(t *testing.T) {
 	reports.EXPECT().MarriageReport().Times(1)
 	reports.EXPECT().MemberReport().Times(1)
 	reports.EXPECT().LegalReport().Times(1)
-	reports.EXPECT().ClassificationReport(gomock.Eq("children")).Times(1)
-	reports.EXPECT().ClassificationReport(gomock.Eq("teen")).Times(1)
-	reports.EXPECT().ClassificationReport(gomock.Eq("adult")).Times(1)
-	reports.EXPECT().ClassificationReport(gomock.Eq("young")).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq(enum.CHILDREN)).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq(enum.TEEN)).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq(enum.ADULT)).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq(enum.YOUNG)).Times(1)
 
 	routes := []string{
 		"/reports/members/birthday",
@@ -64,7 +65,7 @@ func TestRoutesWithFail(t *testing.T) {
 	reports.EXPECT().BirthdayReport().Return(nil, errors.New("")).Times(1)
 	reports.EXPECT().MarriageReport().Return(nil, errors.New("")).Times(1)
 	reports.EXPECT().MemberReport().Return(nil, errors.New("")).Times(1)
-	reports.EXPECT().ClassificationReport("adult").Return(nil, errors.New("")).Times(1)
+	reports.EXPECT().ClassificationReport(gomock.Eq(enum.ADULT)).Return(nil, errors.New("")).Times(1)
 
 	routes := []string{
 		"/reports/members/birthday",

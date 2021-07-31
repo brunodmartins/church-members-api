@@ -7,7 +7,7 @@ package mock_file
 import (
 	reflect "reflect"
 
-	entity "github.com/BrunoDM2943/church-members-api/internal/constants/entity"
+	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,7 +35,7 @@ func (m *MockBuilder) EXPECT() *MockBuilderMockRecorder {
 }
 
 // BuildFile mocks base method.
-func (m *MockBuilder) BuildFile(title string, data []*entity.Member) ([]byte, error) {
+func (m *MockBuilder) BuildFile(title string, data []*domain.Member) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "BuildFile", title, data)
 	ret0, _ := ret[0].([]byte)

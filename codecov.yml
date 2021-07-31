@@ -2,7 +2,7 @@ coverage:
   status:
     patch: no
 ignore:
-  - "entity/bson.go"
+  - "domain/bson.go"
   - "infra"
   - "internal/repository"
   - "cmd"

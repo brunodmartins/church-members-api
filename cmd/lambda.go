@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/infra/cdi"
+	cdi2 "github.com/BrunoDM2943/church-members-api/platform/cdi"
 	"github.com/aws/aws-lambda-go/lambda"
 	ginadapter "github.com/awslabs/aws-lambda-go-api-proxy/gin"
 )
@@ -12,8 +12,8 @@ type LambdaApplication struct{}
 //Run starts a lambda adapter on top of gin-gonic to execute the application on serverless
 func (LambdaApplication) Run() {
 	router := provideGinGonic()
-	memberHandler := cdi.ProvideMemberHandler()
-	reportHandler := cdi.ProvideReportHandler()
+	memberHandler := cdi2.ProvideMemberHandler()
+	reportHandler := cdi2.ProvideReportHandler()
 
 	memberHandler.SetUpRoutes(router)
 	reportHandler.SetUpRoutes(router)

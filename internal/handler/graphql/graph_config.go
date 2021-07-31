@@ -1,12 +1,12 @@
 package graphql
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/service/member"
+	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/graphql-go/graphql"
 )
 
 //CreateSchema builds a GraphQL schema
-func CreateSchema(service member.Service) graphql.Schema {
+func CreateSchema(service member2.Service) graphql.Schema {
 	schema, _ := graphql.NewSchema(graphql.SchemaConfig{
 		Query: graphql.NewObject(graphql.ObjectConfig{
 			Name: "Query",

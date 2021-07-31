@@ -28,7 +28,7 @@ definitions:
         type: string
         x-go-name: ZipCode
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/entity
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
   Contact:
     description: Contact struct
     properties:
@@ -52,7 +52,7 @@ definitions:
         type: integer
         x-go-name: PhoneArea
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/entity
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
   CreateMemberRequest:
     description: CreateMemberRequest for HTTP calls to post member
     properties:
@@ -202,7 +202,7 @@ definitions:
       religion:
         $ref: '#/definitions/Religion'
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/entity
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
   Person:
     description: Person type
     properties:
@@ -254,7 +254,7 @@ definitions:
         type: string
         x-go-name: SpousesName
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/entity
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
   PutMemberStatusRequest:
     description: PutMemberStatusRequest for HTTP calls to put member status
     properties:
@@ -310,7 +310,7 @@ definitions:
         type: boolean
         x-go-name: Tithe
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/entity
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
   SourceLocation:
     properties:
       column:

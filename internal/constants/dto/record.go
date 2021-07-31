@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 )
 
 //MemberItem for dynamoDB struct
@@ -54,8 +54,8 @@ type MemberItem struct {
 	Active                 bool       `dynamodbav:"active,omitempty"`
 }
 
-//NewMemberItem creates a MemberItem from a entity.Member
-func NewMemberItem(member *entity.Member) *MemberItem {
+//NewMemberItem creates a MemberItem from a domain.Member
+func NewMemberItem(member *domain.Member) *MemberItem {
 	return &MemberItem{
 		ID:                     member.ID,
 		OldChurch:              member.OldChurch,
@@ -104,9 +104,9 @@ func NewMemberItem(member *entity.Member) *MemberItem {
 	}
 }
 
-//ToMember converts a MemberItem into a entity.Member
-func (item *MemberItem) ToMember() *entity.Member {
-	return &entity.Member{
+//ToMember converts a MemberItem into a domain.Member
+func (item *MemberItem) ToMember() *domain.Member {
+	return &domain.Member{
 		ID:                     item.ID,
 		OldChurch:              item.OldChurch,
 		AttendsFridayWorship:   item.AttendsFridayWorship,
@@ -114,7 +114,7 @@ func (item *MemberItem) ToMember() *entity.Member {
 		AttendsSundayWorship:   item.AttendsSundayWorship,
 		AttendsSundaySchool:    item.AttendsSundaySchool,
 		AttendsObservation:     item.AttendsObservation,
-		Person: entity.Person{
+		Person: domain.Person{
 			Name:             item.Name,
 			FirstName:        item.FirstName,
 			LastName:         item.LastName,
@@ -128,14 +128,14 @@ func (item *MemberItem) ToMember() *entity.Member {
 			ChildrenQuantity: item.ChildrenQuantity,
 			Profession:       item.Profession,
 			Gender:           item.Gender,
-			Contact: entity.Contact{
+			Contact: domain.Contact{
 				PhoneArea:     item.PhoneArea,
 				Phone:         item.Phone,
 				CellPhoneArea: item.CellPhoneArea,
 				CellPhone:     item.CellPhone,
 				Email:         item.Email,
 			},
-			Address: entity.Address{
+			Address: domain.Address{
 				ZipCode:  item.ZipCode,
 				State:    item.State,
 				City:     item.City,
@@ -145,7 +145,7 @@ func (item *MemberItem) ToMember() *entity.Member {
 				MoreInfo: item.MoreInfo,
 			},
 		},
-		Religion: entity.Religion{
+		Religion: domain.Religion{
 			FathersReligion:   item.FathersReligion,
 			BaptismPlace:      item.BaptismPlace,
 			LearnedGospelAge:  item.LearnedGospelAge,

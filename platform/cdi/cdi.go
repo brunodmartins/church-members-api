@@ -2,16 +2,16 @@ package cdi
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/handler/gin"
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
-	"github.com/BrunoDM2943/church-members-api/internal/service/member"
+	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/service/report"
 	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
+	"github.com/spf13/viper"
 )
 
-var memberService member.Service
+var memberService member2.Service
 var reportGenerator report.Service
 
-var memberRepository repository.MemberRepository
+var memberRepository member2.Repository
 
 func ProvideMemberHandler() *gin.MemberHandler {
 	return gin.NewMemberHandler(provideMemberService())
@@ -21,23 +21,23 @@ func ProvideReportHandler() *gin.ReportHandler {
 	return gin.NewReportHandler(provideReportGenerator())
 }
 
-func provideMemberService() member.Service {
+func provideMemberService() member2.Service {
 	if memberService == nil {
-		memberService = member.NewMemberService(provideMemberRepository())
+		memberService = member2.NewMemberService(provideMemberRepository())
 	}
 	return memberService
 }
 
-func provideMemberRepository() repository.MemberRepository {
+func provideMemberRepository() member2.Repository {
 	if memberRepository == nil {
-		memberRepository = repository.NewDynamoDBRepository()
+		memberRepository = member2.NewRepository(provideDynamoDB(), viper.GetString("tables.member"), viper.GetString("tables.member_history"))
 	}
 	return memberRepository
 }
 
 func provideReportGenerator() report.Service {
 	if reportGenerator == nil {
-		reportGenerator = report.NewReportService(provideMemberRepository(), file.NewPDFBuilder())
+		reportGenerator = report.NewReportService(provideMemberService(), file.NewPDFBuilder())
 	}
 	return reportGenerator
 }

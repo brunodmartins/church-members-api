@@ -1,4 +1,4 @@
-package entity
+package domain
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
@@ -74,7 +74,7 @@ func TestFormattedAddress(t *testing.T) {
 		District: "Parque feliz",
 		Number:   2,
 	}
-	assert.Equal(t, "Rua xicas, 2 - Parque feliz", address.GetFormatted())
+	assert.Equal(t, "Rua xicas, 2 - Parque feliz", address.String())
 }
 
 func TestGetFullName(t *testing.T) {

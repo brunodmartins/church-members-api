@@ -1,4 +1,4 @@
-package entity
+package domain
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"

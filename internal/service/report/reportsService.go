@@ -5,12 +5,12 @@ import (
 	"bytes"
 	"encoding/csv"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
-	"github.com/BrunoDM2943/church-members-api/internal/infra/i18n"
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
+	i18n2 "github.com/BrunoDM2943/church-members-api/platform/i18n"
 	"sort"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 )
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
@@ -23,28 +23,28 @@ type Service interface {
 }
 
 type reportService struct {
-	repo        repository.MemberRepository
-	fileBuilder file.Builder
-	messageService *i18n.MessageService
+	memberService 	member.Service
+	fileBuilder    	file.Builder
+	messageService *i18n2.MessageService
 }
 
-func NewReportService(repo repository.MemberRepository, fileBuilder file.Builder) Service {
+func NewReportService(memberService member.Service, fileBuilder file.Builder) Service {
 	return &reportService{
-		repo,
+		memberService,
 		fileBuilder,
-		i18n.GetMessageService(),
+		i18n2.GetMessageService(),
 	}
 }
 
 func (report reportService) BirthdayReport() ([]byte, error) {
-	members, err := report.repo.FindMembersActive()
+	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
 
-	sort.Sort(entity.SortByBirthDay(members))
+	sort.Sort(domain.SortByBirthDay(members))
 	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
-		member := row.Value.(*entity.Member)
+		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName(),
 			member.Person.BirthDate.Format("02/01"),
@@ -63,16 +63,16 @@ func writeData(data [][]string) []byte {
 
 func (report reportService) MarriageReport() ([]byte, error) {
 
-	members, err := report.repo.FindMembersActiveAndMarried()
+	members, err := report.memberService.FindMembers(member.CreateMarriageFilter())
 
 	if err != nil {
 		return nil, err
 	}
 
-	sort.Sort(entity.SortByMarriageDay(members))
+	sort.Sort(domain.SortByMarriageDay(members))
 
 	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
-		member := row.Value.(*entity.Member)
+		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName() + "&" + member.Person.SpousesName,
 			member.Person.MarriageDate.Format("02/01"),
@@ -83,26 +83,26 @@ func (report reportService) MarriageReport() ([]byte, error) {
 }
 
 func (report reportService) MemberReport() ([]byte, error) {
-	members, err := report.repo.FindMembersActive()
+	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
-	sort.Sort(entity.SortByName(members))
+	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
 func (report reportService) ClassificationReport(classification enum.Classification) ([]byte, error) {
-	members, err := report.repo.FindMembersActive()
+	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
 	members = filterClassification(classification, members)
-	sort.Sort(entity.SortByName(members))
+	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
-func filterClassification(classification enum.Classification, members []*entity.Member) []*entity.Member {
-	filtered := []*entity.Member{}
+func filterClassification(classification enum.Classification, members []*domain.Member) []*domain.Member {
+	filtered := []*domain.Member{}
 	for _, v := range members {
 		if v.Classification() == classification {
 			filtered = append(filtered, v)
@@ -112,17 +112,17 @@ func filterClassification(classification enum.Classification, members []*entity.
 }
 
 func (report reportService) LegalReport() ([]byte, error) {
-	members, err := report.repo.FindMembersActive()
+	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
 	members = filterChildren(members)
-	sort.Sort(entity.SortByName(members))
+	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), members)
 }
 
-func filterChildren(members []*entity.Member) []*entity.Member {
-	var filtered []*entity.Member
+func filterChildren(members []*domain.Member) []*domain.Member {
+	var filtered []*domain.Member
 	for _, v := range members {
 		if v.Classification() != enum.CHILDREN {
 			filtered = append(filtered, v)
@@ -138,7 +138,7 @@ func (report *reportService) getCSVColumns() []string {
 	}
 }
 
-func buildCSVData(members []*entity.Member) []file.Data {
+func buildCSVData(members []*domain.Member) []file.Data {
 	var data []file.Data
 	for _, member := range members {
 		data = append(data, file.Data{Value: member})

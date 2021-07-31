@@ -1,13 +1,6 @@
-package entity
+package domain
 
 import "fmt"
-
-const (
-	//HOUSE const
-	HOUSE string = "H"
-	//APARTMENT const
-	APARTMENT string = "A"
-)
 
 //Address struct
 type Address struct {
@@ -20,7 +13,7 @@ type Address struct {
 	MoreInfo string `json:"moreInfo"`
 }
 
-//GetFormatted address
-func (address Address) GetFormatted() string {
+//String address
+func (address Address) String() string {
 	return fmt.Sprintf("%s, %d - %s", address.Address, address.Number, address.District)
 }

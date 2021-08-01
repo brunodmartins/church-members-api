@@ -51,9 +51,9 @@ func (mr *MockServiceMockRecorder) ChangeStatus(id, status, reason, date interfa
 }
 
 // FindMembers mocks base method.
-func (m *MockService) FindMembers(specification member.Specification) ([]*domain.Member, error) {
+func (m *MockService) SearchMembers(specification member.Specification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindMembers", specification)
+	ret := m.ctrl.Call(m, "SearchMembers", specification)
 	ret0, _ := ret[0].([]*domain.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -62,13 +62,13 @@ func (m *MockService) FindMembers(specification member.Specification) ([]*domain
 // FindMembers indicates an expected call of FindMembers.
 func (mr *MockServiceMockRecorder) FindMembers(specification interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMembers", reflect.TypeOf((*MockService)(nil).FindMembers), specification)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), specification)
 }
 
 // FindMembersByID mocks base method.
-func (m *MockService) FindMembersByID(id string) (*domain.Member, error) {
+func (m *MockService) GetMember(id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindMembersByID", id)
+	ret := m.ctrl.Call(m, "GetMember", id)
 	ret0, _ := ret[0].(*domain.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -77,7 +77,7 @@ func (m *MockService) FindMembersByID(id string) (*domain.Member, error) {
 // FindMembersByID indicates an expected call of FindMembersByID.
 func (mr *MockServiceMockRecorder) FindMembersByID(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMembersByID", reflect.TypeOf((*MockService)(nil).FindMembersByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMember", reflect.TypeOf((*MockService)(nil).GetMember), id)
 }
 
 // SaveMember mocks base method.

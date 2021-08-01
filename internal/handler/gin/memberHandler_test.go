@@ -42,7 +42,7 @@ func TestGetMemberNotFound(t *testing.T) {
 
 	id := domain.NewID()
 
-	service.EXPECT().FindMembersByID(id).Return(nil, member.MemberNotFound)
+	service.EXPECT().FindMembersByID(id).Return(nil, member.NotFound)
 	memberHandler.SetUpRoutes(r)
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/members/"+id, nil)

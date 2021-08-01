@@ -29,5 +29,5 @@ func (resolver memberResolver) memberResolver(params graphql.ResolveParams) (int
 	if name := params.Args["name"]; name != nil {
 		queryFilters.AddFilter("name", name)
 	}
-	return resolver.service.FindMembers(queryFilters.ToSpecification())
+	return resolver.service.SearchMembers(queryFilters.ToSpecification())
 }

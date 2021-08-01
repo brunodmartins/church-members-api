@@ -81,12 +81,11 @@ func (mr *MockRepositoryMockRecorder) GenerateStatusHistory(id, status, reason, 
 }
 
 // Insert mocks base method.
-func (m *MockRepository) Insert(member *domain.Member) (string, error) {
+func (m *MockRepository) Insert(member *domain.Member) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", member)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Insert indicates an expected call of Insert.
@@ -96,15 +95,15 @@ func (mr *MockRepositoryMockRecorder) Insert(member interface{}) *gomock.Call {
 }
 
 // UpdateStatus mocks base method.
-func (m *MockRepository) UpdateStatus(ID string, status bool) error {
+func (m *MockRepository) UpdateStatus(member *domain.Member) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateStatus", ID, status)
+	ret := m.ctrl.Call(m, "UpdateStatus", member)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateStatus indicates an expected call of UpdateStatus.
-func (mr *MockRepositoryMockRecorder) UpdateStatus(ID, status interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) UpdateStatus(member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockRepository)(nil).UpdateStatus), ID, status)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockRepository)(nil).UpdateStatus), member)
 }

@@ -21,13 +21,13 @@ import (
 type Repository interface {
 	FindAll(specification Specification) ([]*domain.Member, error)
 	FindByID(id string) (*domain.Member, error)
-	Insert(member *domain.Member) (string, error)
-	UpdateStatus(ID string, status bool) error
+	Insert(member *domain.Member) error
+	UpdateStatus(member *domain.Member) error
 	GenerateStatusHistory(id string, status bool, reason string, date time.Time) error
 }
 
 var (
-	MemberNotFound = errors.New("member not found")
+	NotFound = errors.New("member not found")
 )
 
 
@@ -86,46 +86,39 @@ func (repo dynamoRepository) FindByID(id string) (*domain.Member, error) {
 		return nil, err
 	}
 	if output.Item == nil {
-		return nil, MemberNotFound
+		return nil, NotFound
 	}
 	record := &dto.MemberItem{}
 	attributevalue.UnmarshalMap(output.Item, record)
 	return record.ToMember(), nil
 }
 
-func (repo dynamoRepository) Insert(member *domain.Member) (string, error) {
-	id := uuid.NewString()
-	av, err := attributevalue.MarshalMap(dto.NewMemberItem(member))
-
-	delete(av, "id")
-	av["id"] = &types.AttributeValueMemberS{Value: id}
-
-	_, err = repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
+func (repo dynamoRepository) Insert(member *domain.Member) error {
+	member.ID = uuid.NewString()
+	av, _ := attributevalue.MarshalMap(dto.NewMemberItem(member))
+	_, err := repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String(repo.memberTable),
 	})
-	return id, err
+	return err
 }
 
-func (repo dynamoRepository) UpdateStatus(id string, status bool) error {
-	output, err := repo.api.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+func (repo dynamoRepository) UpdateStatus(member *domain.Member) error {
+	_, err := repo.api.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
-				Value: id,
+				Value: member.ID,
 			},
 		},
 		TableName: aws.String(repo.memberTable),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":active": &types.AttributeValueMemberBOOL{
-				Value: status,
+				Value: member.Active,
 			},
 		},
 		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String("set active = :active"),
 	})
-	if err == nil && len(output.Attributes) == 0 {
-		return MemberNotFound
-	}
 	return err
 }
 

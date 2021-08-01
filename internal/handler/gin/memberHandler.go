@@ -48,10 +48,10 @@ func (handler *MemberHandler) getMember(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}
-	m, err := handler.service.FindMembersByID(id)
+	m, err := handler.service.GetMember(id)
 	if err != nil {
 		code := http.StatusInternalServerError
-		if err == member2.MemberNotFound {
+		if err == member2.NotFound {
 			code = http.StatusNotFound
 		}
 		c.JSON(code, dto.ErrorResponse{Message: err.Error()})
@@ -102,7 +102,7 @@ func (handler *MemberHandler) putStatus(c *gin.Context) {
 
 	if err != nil {
 		code := http.StatusInternalServerError
-		if err == member2.MemberNotFound {
+		if err == member2.NotFound {
 			code = http.StatusNotFound
 		}
 		c.JSON(code, dto.ErrorResponse{Message: "Error changing status", Error: err})

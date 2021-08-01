@@ -37,7 +37,7 @@ func NewReportService(memberService member.Service, fileBuilder file.Builder) Se
 }
 
 func (report reportService) BirthdayReport() ([]byte, error) {
-	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func writeData(data [][]string) []byte {
 
 func (report reportService) MarriageReport() ([]byte, error) {
 
-	members, err := report.memberService.FindMembers(member.CreateMarriageFilter())
+	members, err := report.memberService.SearchMembers(member.CreateMarriageFilter())
 
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (report reportService) MarriageReport() ([]byte, error) {
 }
 
 func (report reportService) MemberReport() ([]byte, error) {
-	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (report reportService) MemberReport() ([]byte, error) {
 }
 
 func (report reportService) ClassificationReport(classification enum.Classification) ([]byte, error) {
-	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func filterClassification(classification enum.Classification, members []*domain.
 }
 
 func (report reportService) LegalReport() ([]byte, error) {
-	members, err := report.memberService.FindMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
 	if err != nil {
 		return nil, err
 	}

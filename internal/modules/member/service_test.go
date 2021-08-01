@@ -1,7 +1,6 @@
 package member_test
 
 import (
-	"errors"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
 	"testing"
@@ -17,14 +16,19 @@ func TestListAllMembers(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	service := member.NewMemberService(repo)
+	spec := member.Specification(nil)
+	t.Run("Success", func(t *testing.T) {
+		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(buildMembers(2), nil)
+		members, err := service.SearchMembers(member.CreateActiveFilter())
+		assert.Nil(t, err)
+		assert.Len(t, members, 2)
+	})
+	t.Run("Fail", func(t *testing.T) {
+		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
+		_, err := service.SearchMembers(member.CreateActiveFilter())
+		assert.NotNil(t, err)
+	})
 
-	repo.EXPECT().FindAll(gomock.AssignableToTypeOf(member.Specification(nil))).Return([]*domain.Member{
-		{},
-	}, nil).AnyTimes()
-	members, _ := service.FindMembers(member.CreateActiveFilter())
-	if len(members) == 0 {
-		t.Error("No members returned from database")
-	}
 }
 
 func TestFindMember(t *testing.T) {
@@ -34,14 +38,22 @@ func TestFindMember(t *testing.T) {
 	service := member.NewMemberService(repo)
 
 	id := domain.NewID()
-	member := &domain.Member{
-		ID: id,
-	}
-	repo.EXPECT().FindByID(id).Return(member, nil).AnyTimes()
-	memberFound, _ := service.FindMembersByID(id)
-	if memberFound.ID != id {
-		t.Error("Member not found")
-	}
+	member := buildMember(id)
+	t.Run("Success", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(id)).Return(member, nil)
+		found, err := service.GetMember(id)
+		assert.Equal(t, id, found.ID)
+		assert.Nil(t, err)
+	})
+	t.Run("Fail", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(id)).Return(nil, genericError)
+		_, err := service.GetMember(id)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Invalid ID", func(t *testing.T) {
+		_, err := service.GetMember( "")
+		assert.NotNil(t, err)
+	})
 }
 
 func TestSaveMember(t *testing.T) {
@@ -50,38 +62,55 @@ func TestSaveMember(t *testing.T) {
 	repo := mock_member.NewMockRepository(ctrl)
 	service := member.NewMemberService(repo)
 
-	member := domain.Member{}
-
-	repo.EXPECT().Insert(&member).Return(domain.NewID(), nil).AnyTimes()
-
-	id, err := service.SaveMember(&member)
-	if err != nil {
-		t.Fail()
-	}
-	if !domain.IsValidID(id) {
-		t.Fail()
-	}
+	t.Run("Success", func(t *testing.T) {
+		member := buildMember("")
+		repo.EXPECT().Insert(gomock.AssignableToTypeOf(member)).DoAndReturn(func(member *domain.Member) error {
+			member.ID = domain.NewID()
+			return nil
+		})
+		id, err := service.SaveMember(member)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, member.ID)
+		assert.NotEmpty(t, id)
+		assert.True(t, member.Active)
+	})
+	t.Run("Fail", func(t *testing.T) {
+		member := buildMember("")
+		repo.EXPECT().Insert(gomock.AssignableToTypeOf(member)).Return(genericError)
+		_, err := service.SaveMember(member)
+		assert.NotNil(t, err)
+	})
 }
 
-func TestUpdateStatus(t *testing.T) {
+func TestChangeStatus(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	service := member.NewMemberService(repo)
 	id := domain.NewID()
-	repo.EXPECT().UpdateStatus(id, true).Return(nil)
-	repo.EXPECT().GenerateStatusHistory(id, true, "Exited", gomock.Any()).Return(nil)
-	err := service.ChangeStatus(id, true, "Exited", time.Now())
-	assert.Nil(t, err, "Error not nil")
-}
-
-func TestUpdateStatusError(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
-	id := domain.NewID()
-	repo.EXPECT().UpdateStatus(id, true).Return(errors.New("Error"))
-	err := service.ChangeStatus(id, true, "Exited", time.Now())
-	assert.NotNil(t, err, "Error not raised")
+	status := true
+	reason := "test"
+	date := time.Now()
+	member := buildMember(id)
+	t.Run("Success", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(id)).Return(member, nil)
+		repo.EXPECT().UpdateStatus(gomock.AssignableToTypeOf(member)).Return(nil)
+		repo.EXPECT().GenerateStatusHistory(id, status, reason, date).Return(nil)
+		assert.Nil(t, service.ChangeStatus(id, status, reason, date))
+	})
+	t.Run("Fail - Status History", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(id)).Return(member, nil)
+		repo.EXPECT().UpdateStatus(gomock.AssignableToTypeOf(member)).Return(nil)
+		repo.EXPECT().GenerateStatusHistory(id, status, reason, date).Return(genericError)
+		assert.NotNil(t, service.ChangeStatus(id, status, reason, date))
+	})
+	t.Run("Fail - Update Status", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(id)).Return(member, nil)
+		repo.EXPECT().UpdateStatus(gomock.AssignableToTypeOf(member)).Return(genericError)
+		assert.NotNil(t, service.ChangeStatus(id, status, reason, date))
+	})
+	t.Run("Fail - Get Member", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(id)).Return(nil, genericError)
+		assert.NotNil(t, service.ChangeStatus(id, status, reason, date))
+	})
 }

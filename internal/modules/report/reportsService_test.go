@@ -5,11 +5,10 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
+	mock_file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file/mock"
 	"github.com/spf13/viper"
 	"testing"
 	"time"
-
-	mock_file "github.com/BrunoDM2943/church-members-api/internal/storage/file/mock"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/golang/mock/gomock"
@@ -24,7 +23,7 @@ func TestBirthdayReportSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 	now := time.Now()
 	members := []*domain.Member{
@@ -53,7 +52,7 @@ func TestBirthdayReportSuccessErrorDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 
 	memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(member.Specification(nil))).Return(nil, errors.New("error"))
@@ -66,7 +65,7 @@ func TestMarriageReportSuccessErrorDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 
 	memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(member.Specification(nil))).Return(nil, errors.New("error"))
@@ -79,7 +78,7 @@ func TestMarriageReportSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 	now := time.Now()
 	members := []*domain.Member{
@@ -102,7 +101,7 @@ func TestGenerateMemberReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
@@ -142,7 +141,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 	dtNascimento, _ := time.Parse("2006/01/02", "1990/07/06")
 	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
@@ -182,7 +181,7 @@ func TestGenerateMemberReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 
 	memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(member.Specification(nil))).Return(nil, errors.New("error"))
@@ -194,7 +193,7 @@ func TestGenerateClassificationReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 
 	memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(member.Specification(nil))).Return(nil, errors.New("error"))
@@ -206,7 +205,7 @@ func TestGenerateLegalReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 
 	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
@@ -247,7 +246,7 @@ func TestGenerateLegalReportFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
-	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	fileBuilder := mock_file2.NewMockBuilder(ctrl)
 	service := NewReportService(memberService, fileBuilder)
 
 	memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(member.Specification(nil))).Return(nil, errors.New("error"))

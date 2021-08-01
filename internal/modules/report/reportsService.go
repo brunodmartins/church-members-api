@@ -6,7 +6,7 @@ import (
 	"encoding/csv"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
+	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
 	i18n2 "github.com/BrunoDM2943/church-members-api/platform/i18n"
 	"sort"
 
@@ -23,12 +23,12 @@ type Service interface {
 }
 
 type reportService struct {
-	memberService 	member.Service
-	fileBuilder    	file.Builder
+	memberService  member.Service
+	fileBuilder    file2.Builder
 	messageService *i18n2.MessageService
 }
 
-func NewReportService(memberService member.Service, fileBuilder file.Builder) Service {
+func NewReportService(memberService member.Service, fileBuilder file2.Builder) Service {
 	return &reportService{
 		memberService,
 		fileBuilder,
@@ -43,7 +43,7 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 	}
 
 	sort.Sort(domain.SortByBirthDay(members))
-	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
+	csvOut := file2.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file2.Data) []string {
 		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName(),
@@ -71,7 +71,7 @@ func (report reportService) MarriageReport() ([]byte, error) {
 
 	sort.Sort(domain.SortByMarriageDay(members))
 
-	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
+	csvOut := file2.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file2.Data) []string {
 		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName() + "&" + member.Person.SpousesName,
@@ -138,10 +138,10 @@ func (report *reportService) getCSVColumns() []string {
 	}
 }
 
-func buildCSVData(members []*domain.Member) []file.Data {
-	var data []file.Data
+func buildCSVData(members []*domain.Member) []file2.Data {
+	var data []file2.Data
 	for _, member := range members {
-		data = append(data, file.Data{Value: member})
+		data = append(data, file2.Data{Value: member})
 	}
 	return data
 }

@@ -3,13 +3,13 @@ package cdi
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/handler/gin"
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	"github.com/BrunoDM2943/church-members-api/internal/service/report"
-	"github.com/BrunoDM2943/church-members-api/internal/storage/file"
+	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
+	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
 	"github.com/spf13/viper"
 )
 
 var memberService member2.Service
-var reportGenerator report.Service
+var reportGenerator report2.Service
 
 var memberRepository member2.Repository
 
@@ -35,9 +35,9 @@ func provideMemberRepository() member2.Repository {
 	return memberRepository
 }
 
-func provideReportGenerator() report.Service {
+func provideReportGenerator() report2.Service {
 	if reportGenerator == nil {
-		reportGenerator = report.NewReportService(provideMemberService(), file.NewPDFBuilder())
+		reportGenerator = report2.NewReportService(provideMemberService(), file2.NewPDFBuilder())
 	}
 	return reportGenerator
 }

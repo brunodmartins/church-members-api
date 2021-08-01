@@ -13,6 +13,7 @@ func InitConfiguration() {
 	viper.Set("bundles.location", "bundles")
 	viper.Set("tables.member", "member")
 	viper.Set("tables.member_history", "member_history")
+	viper.Set("pdf.font.path", "./fonts/Arial.ttf")
 }
 
 func IsAWS() bool {

@@ -44,8 +44,7 @@ func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, builder *gopdf
 }
 
 func (pdfBuilder *pdfBuilder) setFont(builder *gopdf.GoPdf) error {
-	builder.AddTTFFont("arial", "./Arial.ttf")
-	builder.AddTTFFont("arial", "./fonts/Arial.ttf")
+	builder.AddTTFFont("arial", viper.GetString("pdf.font.path"))
 
 	err := builder.SetFont("arial", "", 14)
 	if err != nil {

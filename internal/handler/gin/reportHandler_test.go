@@ -3,12 +3,11 @@ package gin
 import (
 	"errors"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	mock_report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/mock"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	mock_report "github.com/BrunoDM2943/church-members-api/internal/service/report/mock"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
@@ -19,7 +18,7 @@ func TestRoutesWithSuccess(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	reports := mock_report.NewMockService(ctrl)
+	reports := mock_report2.NewMockService(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
 
@@ -58,7 +57,7 @@ func TestRoutesWithFail(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	reports := mock_report.NewMockService(ctrl)
+	reports := mock_report2.NewMockService(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
 
@@ -89,7 +88,7 @@ func TestRoutesForClassificationWithBadRequest(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	reports := mock_report.NewMockService(ctrl)
+	reports := mock_report2.NewMockService(ctrl)
 	reportHandler := NewReportHandler(reports)
 	reportHandler.SetUpRoutes(r)
 

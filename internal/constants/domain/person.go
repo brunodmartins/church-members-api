@@ -9,7 +9,7 @@ type Person struct {
 	Name             string     `json:"name"`
 	FirstName        string     `json:"firstName"`
 	LastName         string     `json:"lastName"`
-	BirthDate        *time.Time `json:"birthDate"`
+	BirthDate        time.Time `json:"birthDate"`
 	MarriageDate     *time.Time `json:"marriageDate,omitempty"`
 	PlaceOfBirth     string     `json:"placeOfBirth"`
 	FathersName      string     `json:"fathersName"`

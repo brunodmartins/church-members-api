@@ -17,13 +17,13 @@ func TestSortByBirth(t *testing.T) {
 		{
 			ID: secondId,
 			Person: Person{
-				BirthDate: &birthDateOne,
+				BirthDate: birthDateOne,
 			},
 		},
 		{
 			ID: firstId,
 			Person: Person{
-				BirthDate: &birthDateTwo,
+				BirthDate: birthDateTwo,
 			},
 		},
 	}

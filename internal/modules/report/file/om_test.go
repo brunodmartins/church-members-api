@@ -25,7 +25,7 @@ func buildMember(id string) *domain.Member{
 		Person: domain.Person{
 			FirstName: "First Name",
 			LastName:  "Last Name",
-			BirthDate: &now,
+			BirthDate: now,
 			MarriageDate: &now,
 			SpousesName: "Spouses name",
 			Contact: domain.Contact{

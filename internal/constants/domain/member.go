@@ -21,7 +21,7 @@ type Member struct {
 
 //Classification returns a member classification based on age and marriage
 func (member Member) Classification() enum.Classification {
-	age := age.Age(*member.Person.BirthDate)
+	age := age.Age(member.Person.BirthDate)
 	if age < 15 {
 		return enum.CHILDREN
 	} else if age < 18 {

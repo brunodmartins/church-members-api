@@ -36,19 +36,17 @@ func TestSelectByClassification(t *testing.T) {
 }
 
 func BuildChildren() *domain.Member {
-	birthDate := time.Now()
 	return &domain.Member{
 		Person: domain.Person{
-			BirthDate: &birthDate,
+			BirthDate: time.Now(),
 		},
 	}
 }
 
 func BuildAdult() *domain.Member {
-	birthDate := time.Now().AddDate(-20,0,0)
 	return &domain.Member{
 		Person: domain.Person{
-			BirthDate: &birthDate,
+			BirthDate: time.Now().AddDate(-20,0,0),
 		},
 	}
 }

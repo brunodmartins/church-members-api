@@ -54,7 +54,7 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		"age": &graphql.Field{
 			Type: graphql.Int,
 			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
-				return age.Age(*p.Source.(domain.Person).BirthDate), nil
+				return age.Age(p.Source.(domain.Person).BirthDate), nil
 			},
 		},
 		"birthDate": &graphql.Field{

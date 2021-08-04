@@ -18,7 +18,7 @@ type MemberItem struct {
 	Name                   string     `dynamodbav:"name"`
 	FirstName              string     `dynamodbav:"firstName"`
 	LastName               string     `dynamodbav:"lastName"`
-	BirthDate              *time.Time `dynamodbav:"birthDate"`
+	BirthDate              time.Time `dynamodbav:"birthDate"`
 	MarriageDate           *time.Time `dynamodbav:"marriageDate,omitempty"`
 	PlaceOfBirth           string     `dynamodbav:"placeOfBirth"`
 	FathersName            string     `dynamodbav:"fathersName"`

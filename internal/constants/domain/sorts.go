@@ -25,7 +25,7 @@ func (a SortByBirthDay) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 func (a SortByBirthDay) Less(i, j int) bool {
 	firstDate := a[i].Person.BirthDate
 	secondDate := a[j].Person.BirthDate
-	return lessByDay(*firstDate, *secondDate)
+	return lessByDay(firstDate, secondDate)
 }
 
 func (a SortByMarriageDay) Len() int      { return len(a) }

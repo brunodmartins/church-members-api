@@ -27,43 +27,39 @@ func TestFormattedContact(t *testing.T) {
 }
 
 func TestClassification(t *testing.T) {
-	now := time.Now()
 	t.Run("Children", func(t *testing.T) {
 		assert.Equal(t, enum.CHILDREN, Member{
 			Person: Person{
-				BirthDate: &now,
+				BirthDate: time.Now(),
 			},
 		}.Classification())
 	})
 	t.Run("Teen", func(t *testing.T) {
-		birthDate := time.Now().AddDate(-17, 0, 0)
 		assert.Equal(t, enum.TEEN, Member{
 			Person: Person{
-				BirthDate: &birthDate,
+				BirthDate: time.Now().AddDate(-17, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Young", func(t *testing.T) {
-		birthDate := time.Now().AddDate(-29, 0, 0)
 		assert.Equal(t, enum.YOUNG, Member{
 			Person: Person{
-				BirthDate: &birthDate,
+				BirthDate: time.Now().AddDate(-29, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Adult Single", func(t *testing.T) {
-		birthDate := time.Now().AddDate(-33, 0, 0)
 		assert.Equal(t, enum.ADULT, Member{
 			Person: Person{
-				BirthDate: &birthDate,
+				BirthDate: time.Now().AddDate(-33, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Adult Married", func(t *testing.T) {
-		birthDate := time.Now().AddDate(-25, 0, 0)
+		now := time.Now()
 		assert.Equal(t, enum.ADULT, Member{
 			Person: Person{
-				BirthDate:    &birthDate,
+				BirthDate:    time.Now().AddDate(-25, 0, 0),
 				MarriageDate: &now,
 			},
 		}.Classification())

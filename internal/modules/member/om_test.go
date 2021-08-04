@@ -9,7 +9,7 @@ var (
 	genericError = errors.New("generic error")
 )
 
-func buildMembers(size int) []*domain.Member {
+func BuildMembers(size int) []*domain.Member {
 	var members []*domain.Member
 	for i:=0;i<size;i++ {
 		members = append(members, buildMember(domain.NewID()))

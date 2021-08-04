@@ -15,10 +15,16 @@ type Contact struct {
 
 //GetFormattedPhone (99) 99999999
 func (c Contact) GetFormattedPhone() string {
+	if c.Phone == 0 {
+		return ""
+	}
 	return fmt.Sprintf("(%d) %d", c.PhoneArea, c.Phone)
 }
 
 //GetFormattedCellPhone (99) 999999999
 func (c Contact) GetFormattedCellPhone() string {
+	if c.CellPhone == 0 {
+		return ""
+	}
 	return fmt.Sprintf("(%d) %d", c.CellPhoneArea, c.CellPhone)
 }

@@ -6,8 +6,8 @@ import (
 	"encoding/csv"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
-	i18n2 "github.com/BrunoDM2943/church-members-api/platform/i18n"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
+	"github.com/BrunoDM2943/church-members-api/platform/i18n"
 	"sort"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -24,15 +24,15 @@ type Service interface {
 
 type reportService struct {
 	memberService  member.Service
-	fileBuilder    file2.Builder
-	messageService *i18n2.MessageService
+	fileBuilder    file.Builder
+	messageService *i18n.MessageService
 }
 
-func NewReportService(memberService member.Service, fileBuilder file2.Builder) Service {
+func NewReportService(memberService member.Service, fileBuilder file.Builder) Service {
 	return &reportService{
 		memberService,
 		fileBuilder,
-		i18n2.GetMessageService(),
+		i18n.GetMessageService(),
 	}
 }
 
@@ -43,7 +43,7 @@ func (report reportService) BirthdayReport() ([]byte, error) {
 	}
 
 	sort.Sort(domain.SortByBirthDay(members))
-	csvOut := file2.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file2.Data) []string {
+	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
 		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName(),
@@ -63,7 +63,7 @@ func writeData(data [][]string) []byte {
 
 func (report reportService) MarriageReport() ([]byte, error) {
 
-	members, err := report.memberService.SearchMembers(member.CreateMarriageFilter())
+	members, err := report.memberService.SearchMembers(createMarriageFilter())
 
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (report reportService) MarriageReport() ([]byte, error) {
 
 	sort.Sort(domain.SortByMarriageDay(members))
 
-	csvOut := file2.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file2.Data) []string {
+	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
 		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName() + "&" + member.Person.SpousesName,
@@ -96,20 +96,11 @@ func (report reportService) ClassificationReport(classification enum.Classificat
 	if err != nil {
 		return nil, err
 	}
-	members = filterClassification(classification, members)
+	members = selectByClassification(classification, members)
 	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
-func filterClassification(classification enum.Classification, members []*domain.Member) []*domain.Member {
-	filtered := []*domain.Member{}
-	for _, v := range members {
-		if v.Classification() == classification {
-			filtered = append(filtered, v)
-		}
-	}
-	return filtered
-}
 
 func (report reportService) LegalReport() ([]byte, error) {
 	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
@@ -138,10 +129,10 @@ func (report *reportService) getCSVColumns() []string {
 	}
 }
 
-func buildCSVData(members []*domain.Member) []file2.Data {
-	var data []file2.Data
+func buildCSVData(members []*domain.Member) []file.Data {
+	var data []file.Data
 	for _, member := range members {
-		data = append(data, file2.Data{Value: member})
+		data = append(data, file.Data{Value: member})
 	}
 	return data
 }

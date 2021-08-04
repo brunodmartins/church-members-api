@@ -29,15 +29,6 @@ func TestCreateActiveFilter(t *testing.T) {
 	assert.Len(t, expression.Names(), 1)
 }
 
-func TestCreateMarriageFilter(t *testing.T) {
-	builder := expression.NewBuilder()
-	spec := CreateMarriageFilter()
-	builder = spec(builder)
-	expression, err := builder.Build()
-	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 2)
-}
-
 func TestQuerySpecification_ApplyFilters(t *testing.T) {
 	assertFilters := func(querySpec *QuerySpecification, length int) {
 		builder := expression.NewBuilder()

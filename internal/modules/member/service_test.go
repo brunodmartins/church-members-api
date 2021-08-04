@@ -18,7 +18,7 @@ func TestListAllMembers(t *testing.T) {
 	service := member.NewMemberService(repo)
 	spec := member.Specification(nil)
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(buildMembers(2), nil)
+		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(2), nil)
 		members, err := service.SearchMembers(member.CreateActiveFilter())
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)

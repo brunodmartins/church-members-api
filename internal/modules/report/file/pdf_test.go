@@ -1,12 +1,11 @@
-package file
+package file_test
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
 	"github.com/spf13/viper"
 	"testing"
-	"time"
 	"unicode/utf8"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,101 +16,8 @@ func init(){
 
 
 func TestBuildFile(t *testing.T) {
-	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
-	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	data := []*domain.Member{
-		{
-			Person: domain.Person{
-				FirstName:    "Test",
-				LastName:     "test test",
-				BirthDate:    &dtNascimento,
-				MarriageDate: &dtCasamento,
-				SpousesName:  "Test spuse",
-				Contact: domain.Contact{
-					CellPhoneArea: 99,
-					CellPhone:     1234567890,
-					PhoneArea:     99,
-					Phone:         12345678,
-					Email:         "teste@test.com",
-				},
-				Address: domain.Address{
-					District: "9",
-					City:     "Does not sleep",
-					State:    "My-State",
-					Address:  "XXXXX",
-					Number:   9,
-				},
-			},
-		},
-	}
-
-	pdfBuilder := NewPDFBuilder()
-	out, err := pdfBuilder.BuildFile("Test", data)
-	assert.False(t, utf8.Valid(out))
-	assert.NotNil(t, out)
-	assert.Nil(t, err)
-}
-
-func TestBuildFileWithEmptyPhones(t *testing.T) {
-	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
-	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	data := []*domain.Member{
-		{
-			Person: domain.Person{
-				FirstName:    "Test",
-				LastName:     "test test",
-				BirthDate:    &dtNascimento,
-				MarriageDate: &dtCasamento,
-				SpousesName:  "Test spuse",
-				Contact: domain.Contact{
-					Email:         "teste@test.com",
-				},
-				Address: domain.Address{
-					District: "9",
-					City:     "Does not sleep",
-					State:    "My-State",
-					Address:  "XXXXX",
-					Number:   9,
-				},
-			},
-		},
-	}
-
-	pdfBuilder := NewPDFBuilder()
-	out, err := pdfBuilder.BuildFile("Test", data)
-	assert.False(t, utf8.Valid(out))
-	assert.NotNil(t, out)
-	assert.Nil(t, err)
-}
-
-func TestBuildFileWithOneHundredMembers(t *testing.T) {
-	dtNascimento, _ := time.Parse("2006/01/02", "2020/06/07")
-	dtCasamento, _ := time.Parse("2006/01/02", "2019/09/14")
-	member := &domain.Member{
-		Person: domain.Person{
-			FirstName:    "Test",
-			LastName:     "test test",
-			BirthDate:    &dtNascimento,
-			MarriageDate: &dtCasamento,
-			SpousesName:  "Test spuse",
-			Contact: domain.Contact{
-				Email: "teste@test.com",
-			},
-			Address: domain.Address{
-				District: "9",
-				City:     "Does not sleep",
-				State:    "My-State",
-				Address:  "XXXXX",
-				Number:   9,
-			},
-		},
-	}
-	var data []*domain.Member
-	for i:=0;i<100;i++ {
-		data = append(data, member)
-	}
-	pdfBuilder := NewPDFBuilder()
-	out, err := pdfBuilder.BuildFile("Test", data)
+	pdfBuilder := file.NewPDFBuilder()
+	out, err := pdfBuilder.BuildFile("Test", BuildMembers(100))
 	assert.False(t, utf8.Valid(out))
 	assert.NotNil(t, out)
 	assert.Nil(t, err)

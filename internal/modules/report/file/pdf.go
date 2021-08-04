@@ -93,19 +93,12 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *domain.Member, builder *gopd
 
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Phone", "Phone"), builder)
 
-	if data.Person.Contact.Phone == 0 {
-		pdfBuilder.setValue("N/A", builder)
-	} else {
-		pdfBuilder.setValue(data.Person.Contact.GetFormattedPhone(), builder)
-	}
+	pdfBuilder.setValue(data.Person.Contact.GetFormattedPhone(), builder)
+
 	builder.SetX(builder.GetX() + 10)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.CellPhone", "CellPhone"), builder)
 
-	if data.Person.Contact.CellPhone == 0 {
-		pdfBuilder.setValue("N/A", builder)
-	} else {
-		pdfBuilder.setValue(data.Person.Contact.GetFormattedCellPhone(), builder)
-	}
+	pdfBuilder.setValue(data.Person.Contact.GetFormattedCellPhone(), builder)
 	builder.Br(15)
 
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Email", "Email"), builder)

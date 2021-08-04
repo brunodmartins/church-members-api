@@ -46,12 +46,6 @@ func (spec *QuerySpecification) ToSpecification() Specification {
 
 }
 
-func CreateMarriageFilter() Specification {
-	return func(builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("marriageDate").AttributeExists().And(activeCondition(true)))
-	}
-}
-
 func CreateActiveFilter() Specification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(activeCondition(true))

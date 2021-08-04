@@ -9,19 +9,21 @@ import (
 )
 
 func TestFormattedContact(t *testing.T) {
-	c := Contact{
-		CellPhone:     953200587,
-		CellPhoneArea: 11,
-		Phone:         29435002,
-		PhoneArea:     11,
-	}
-	if "(11) 953200587" != c.GetFormattedCellPhone() {
-		t.Fail()
-	}
-
-	if "(11) 29435002" != c.GetFormattedPhone() {
-		t.Fail()
-	}
+	t.Run("With Values", func(t *testing.T) {
+		contact := Contact{
+			CellPhone:     953200587,
+			CellPhoneArea: 11,
+			Phone:         29435002,
+			PhoneArea:     11,
+		}
+		assert.Equal(t, "(11) 953200587", contact.GetFormattedCellPhone())
+		assert.Equal(t, "(11) 29435002", contact.GetFormattedPhone())
+	})
+	t.Run("Without Values", func(t *testing.T) {
+		contact := Contact{}
+		assert.Empty(t, contact.GetFormattedCellPhone())
+		assert.Empty(t, contact.GetFormattedPhone())
+	})
 }
 
 func TestClassification(t *testing.T) {

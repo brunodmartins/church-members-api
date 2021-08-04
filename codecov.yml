@@ -2,8 +2,6 @@ coverage:
   status:
     patch: no
 ignore:
-  - "domain/bson.go"
-  - "infra"
-  - "internal/repository"
+  - "platform"
   - "cmd"
   - "main.go"

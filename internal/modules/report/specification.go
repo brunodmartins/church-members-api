@@ -26,3 +26,13 @@ func selectByClassification(classification enum.Classification, members []*domai
 	}
 	return filtered
 }
+
+func selectByNotInClassification(classification enum.Classification, members []*domain.Member) []*domain.Member {
+	var filtered []*domain.Member
+	for _, v := range members {
+		if v.Classification() != classification {
+			filtered = append(filtered, v)
+		}
+	}
+	return filtered
+}

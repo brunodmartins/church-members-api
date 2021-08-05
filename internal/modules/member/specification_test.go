@@ -56,7 +56,7 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 		spec := new(QuerySpecification)
 		spec.AddFilter("name", "test")
 		spec.AddFilter("active", true)
-		spec.AddFilter("person.gender", "M")
+		spec.AddFilter("gender", "M")
 		assertFilters(spec, 3)
 	})
 }

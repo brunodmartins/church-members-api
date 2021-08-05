@@ -22,8 +22,8 @@ func (spec *QuerySpecification) AddFilter(key string, value interface{}) {
 func (spec *QuerySpecification) ToSpecification() Specification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		var conditions []expression.ConditionBuilder
-		if spec.values["person.gender"] != nil {
-			conditions = append(conditions, expression.Name("gender").Equal(expression.Value(spec.values["person.gender"].(string))))
+		if spec.values["gender"] != nil {
+			conditions = append(conditions, expression.Name("gender").Equal(expression.Value(spec.values["gender"].(string))))
 		}
 		if spec.values["active"] != nil {
 			conditions = append(conditions, activeCondition(spec.values["active"].(bool)))

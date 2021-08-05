@@ -35,6 +35,23 @@ func TestSelectByClassification(t *testing.T) {
 	})
 }
 
+func TestSelectByNotInClassification(t *testing.T) {
+	t.Run("Empty list", func(t *testing.T) {
+		var members []*domain.Member
+		assert.Nil(t, selectByNotInClassification(enum.CHILDREN, members))
+	})
+	t.Run("Filtering", func(t *testing.T) {
+		members := []*domain.Member{
+			BuildChildren(),
+			BuildAdult(),
+		}
+		filtered := selectByNotInClassification(enum.CHILDREN, members)
+		assert.Len(t, filtered, 1)
+		assert.NotEqual(t, enum.CHILDREN, filtered[0].Classification())
+	})
+}
+
+
 func BuildChildren() *domain.Member {
 	return &domain.Member{
 		Person: domain.Person{

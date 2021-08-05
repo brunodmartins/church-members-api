@@ -17,17 +17,8 @@ func newMemberResolver(service member.Service) memberResolver {
 
 func (resolver memberResolver) memberResolver(params graphql.ResolveParams) (interface{}, error) {
 	queryFilters := member.QuerySpecification{}
-
-	if sex := params.Args["gender"]; sex != nil {
-		queryFilters.AddFilter("person.gender", sex)
-	}
-
-	if active := params.Args["active"]; active != nil {
-		queryFilters.AddFilter("active", active.(bool))
-	}
-
-	if name := params.Args["name"]; name != nil {
-		queryFilters.AddFilter("name", name)
+	for key, value := range params.Args {
+		queryFilters.AddFilter(key, value)
 	}
 	return resolver.service.SearchMembers(queryFilters.ToSpecification())
 }

@@ -22,3 +22,10 @@ func TestBuildFile(t *testing.T) {
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
 }
+
+func TestBuildFileErrorOnFont(t *testing.T) {
+	viper.Set("pdf.font.path", ".")
+	pdfBuilder := file.NewPDFBuilder()
+	_, err := pdfBuilder.BuildFile("Test", BuildMembers(100))
+	assert.NotNil(t, err)
+}

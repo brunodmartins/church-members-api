@@ -136,7 +136,7 @@ func (pdfBuilder *pdfBuilder) BuildFile(title string, data []*domain.Member) ([]
 	pdf := &gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	if err := pdfBuilder.setFont(pdf); err != nil {
-		panic(err)
+		return nil, err
 	}
 	pdfBuilder.buildFirstPageSection(title, pdf)
 	pdf.AddPage()

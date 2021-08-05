@@ -25,7 +25,7 @@ func TestBirthdayReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder)
 	t.Run("Success", func(t *testing.T) {
 		spec := member.Specification(nil)
-		memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+		memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(1), nil)
 		out, err := service.BirthdayReport()
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
@@ -50,7 +50,7 @@ func TestMarriageReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder)
 	t.Run("Success", func(t *testing.T) {
 		spec := member.Specification(nil)
-		memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+		memberService.EXPECT().FindMembers(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(1), nil)
 		out, err := service.MarriageReport()
 		assert.NotNil(t, out)
 		assert.Nil(t, err)

@@ -1,8 +1,6 @@
 package graphql
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/bearbin/go-age"
 	"github.com/graphql-go/graphql"
 )
 
@@ -11,10 +9,7 @@ var memberType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"id": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				member := p.Source.(*domain.Member)
-				return member.ID, nil
-			},
+			Resolve: idResolver,
 		},
 		"active": &graphql.Field{
 			Type: graphql.Boolean,
@@ -24,10 +19,7 @@ var memberType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"classification": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				member := p.Source.(*domain.Member)
-				return member.Classification(), nil
-			},
+			Resolve: classificationResolver,
 		},
 	},
 })
@@ -43,32 +35,21 @@ var personType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"fullName": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
-				person := p.Source.(domain.Person)
-				return person.GetFullName(), nil
-			},
+			Resolve: fullNameResolver,
 		},
 		"gender": &graphql.Field{
 			Type: graphql.String,
 		},
 		"age": &graphql.Field{
 			Type: graphql.Int,
-			Resolve: func(p graphql.ResolveParams) (i interface{}, e error) {
-				return age.Age(p.Source.(domain.Person).BirthDate), nil
-			},
+			Resolve: ageResolver,
 		},
 		"birthDate": &graphql.Field{
 			Type: graphql.DateTime,
 		},
 		"marriageDate": &graphql.Field{
 			Type: graphql.DateTime,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				person := p.Source.(domain.Person)
-				if person.MarriageDate == nil {
-					return nil, nil
-				}
-				return person.MarriageDate, nil
-			},
+			Resolve: marriageDateResolver,
 		},
 		"contact": &graphql.Field{
 			Type: contactType,
@@ -87,23 +68,11 @@ var contactType = graphql.NewObject(graphql.ObjectConfig{
 	Fields: graphql.Fields{
 		"cellphone": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				contato := p.Source.(domain.Contact)
-				if contato.CellPhone != 0 {
-					return contato.GetFormattedCellPhone(), nil
-				}
-				return nil, nil
-			},
+			Resolve: cellPhoneResolver,
 		},
 		"phone": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				contato := p.Source.(domain.Contact)
-				if contato.Phone != 0 {
-					return contato.GetFormattedPhone(), nil
-				}
-				return nil, nil
-			},
+			Resolve: phoneResolver,
 		},
 		"email": &graphql.Field{
 			Type: graphql.String,
@@ -134,10 +103,7 @@ var addressType = graphql.NewObject(graphql.ObjectConfig{
 		},
 		"full": &graphql.Field{
 			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				address := p.Source.(domain.Address)
-				return address.String(), nil
-			},
+			Resolve: fullAddressResolver,
 		},
 	},
 })

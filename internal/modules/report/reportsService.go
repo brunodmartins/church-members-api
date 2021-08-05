@@ -107,19 +107,9 @@ func (report reportService) LegalReport() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	members = filterChildren(members)
+	members = selectByNotInClassification(enum.CHILDREN, members)
 	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), members)
-}
-
-func filterChildren(members []*domain.Member) []*domain.Member {
-	var filtered []*domain.Member
-	for _, v := range members {
-		if v.Classification() != enum.CHILDREN {
-			filtered = append(filtered, v)
-		}
-	}
-	return filtered
 }
 
 func (report *reportService) getCSVColumns() []string {

@@ -197,6 +197,7 @@ func TestPutStatus(t *testing.T) {
 		{urlWithID, `{"active":false}`, http.StatusBadRequest},
 		{urlWithID, `{"reason": "exited"}`, http.StatusBadRequest},
 		{urlWithID, `{"active":false, "reason": "exited"}`, http.StatusInternalServerError},
+		{urlWithID, `{"active":false, "reason": "Not Found"}`, http.StatusNotFound},
 		{urlWithID, `{"active":true, "reason": "Comed back"}`, http.StatusOK}}
 
 	r := gin.Default()
@@ -206,6 +207,7 @@ func TestPutStatus(t *testing.T) {
 	service := mock_member.NewMockService(ctrl)
 	memberHandler := NewMemberHandler(service)
 	service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("exited"), gomock.Any()).Return(errors.New("Error"))
+	service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("Not Found"), gomock.Any()).Return(member.NotFound)
 	service.EXPECT().ChangeStatus(id, gomock.Eq(true), gomock.Eq("Comed back"), gomock.Any()).Return(nil)
 
 	memberHandler.SetUpRoutes(r)

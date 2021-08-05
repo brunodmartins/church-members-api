@@ -1,14 +1,16 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 //Routable defines a way to builds a REST Controller routes
 type Routable interface {
 	//SetUpRoutes build the REST controller routes
-	SetUpRoutes(r *gin.Engine)
+	SetUpRoutes(app *fiber.App)
 }
 
-func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
+func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// swagger:operation POST /members postMember
 	//
 	// Create member
@@ -38,7 +40,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.POST("/members", handler.postMember)
+	app.Post("/members", handler.postMember)
 	// swagger:operation POST /members/search searchMember
 	//
 	// Search member
@@ -69,7 +71,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/GraphQLErrorResponse"
-	r.POST("/members/search", handler.searchMember)
+	app.Post("/members/search", handler.searchMember)
 	// swagger:operation GET /members/{id} getMember
 	//
 	// Get member
@@ -101,7 +103,7 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.GET("/members/:id", handler.getMember)
+	app.Get("/members/:id", handler.getMember)
 	// swagger:operation PUT /members/{id}/status putMemberStatus
 	//
 	// Put member status
@@ -137,10 +139,10 @@ func (handler *MemberHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.PUT("/members/:id/status", handler.putStatus)
+	app.Put("/members/:id/status", handler.putStatus)
 }
 
-func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
+func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// swagger:operation PUT /reports/members/birthday generateBirthDayReport
 	//
 	// Birthday report
@@ -157,7 +159,7 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.GET("/reports/members/birthday", handler.generateBirthDayReport)
+	app.Get("/reports/members/birthday", handler.generateBirthDayReport)
 	// swagger:operation PUT /reports/members/marriage generateMarriageReport
 	//
 	// Marriage report
@@ -174,7 +176,7 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.GET("/reports/members/marriage", handler.generateMarriageReport)
+	app.Get("/reports/members/marriage", handler.generateMarriageReport)
 	// swagger:operation PUT /reports/members/legal generateLegalReport
 	//
 	// Legal report
@@ -191,7 +193,7 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.GET("/reports/members/legal", handler.generateLegalReport)
+	app.Get("/reports/members/legal", handler.generateLegalReport)
 	// swagger:operation PUT /reports/members/classification/{classification} generateClassificationReport
 	//
 	// Member report
@@ -213,7 +215,7 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.GET("/reports/members/classification/:classification", handler.generateClassificationReport)
+	app.Get("/reports/members/classification/:classification", handler.generateClassificationReport)
 	// swagger:operation PUT /reports/members generateMembersReport
 	//
 	// Member report
@@ -230,5 +232,5 @@ func (handler *ReportHandler) SetUpRoutes(r *gin.Engine) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	r.GET("/reports/members", handler.generateMembersReport)
+	app.Get("/reports/members", handler.generateMembersReport)
 }

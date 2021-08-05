@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
+	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -33,7 +33,7 @@ func TestGetMember(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().FindMembersByID(id).Return(nil, member.NotFound)
+		service.EXPECT().FindMembersByID(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildGet("/members/" + id)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
@@ -66,11 +66,11 @@ func TestPostMember(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().FindMembersByID(id).Return(nil, member.NotFound)
+		service.EXPECT().FindMembersByID(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildGet("/members/" + id)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
-		runTest(app, buildPost("/members", "")).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildPost("/members", "{}")).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
@@ -135,7 +135,7 @@ func TestPutStatus(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		body := `{"active":false, "reason": "Not Found"}`
-		service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("Not Found"), gomock.Any()).Return(member.NotFound)
+		service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("Not Found"), gomock.Any()).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {

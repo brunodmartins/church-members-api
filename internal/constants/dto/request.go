@@ -8,8 +8,8 @@ import (
 //PutMemberStatusRequest for HTTP calls to put member status
 // swagger:model PutMemberStatusRequest
 type PutMemberStatusRequest struct {
-	Active *bool     `json:"active" binding:"required"`
-	Reason string    `json:"reason" binding:"required"`
+	Active *bool     `json:"active" validate:"required"`
+	Reason string    `json:"reason" validate:"required"`
 	Date   time.Time `json:"date"`
 }
 

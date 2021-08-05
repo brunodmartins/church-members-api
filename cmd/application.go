@@ -15,6 +15,6 @@ func ProvideRunner() Application {
 	if config2.IsAWS() {
 		return LambdaApplication{}
 	} else {
-		return GinApplication{}
+		return FiberApplication{}
 	}
 }

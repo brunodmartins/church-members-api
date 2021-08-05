@@ -3,16 +3,15 @@ package api
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	"io/ioutil"
+	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
-	"github.com/gin-gonic/gin"
 )
 
 //MemberHandler is a REST controller
@@ -28,86 +27,63 @@ func NewMemberHandler(service member2.Service) *MemberHandler {
 	}
 }
 
-func (handler *MemberHandler) postMember(c *gin.Context) {
-	var requestBody dto.CreateMemberRequest
-	if err := c.ShouldBindWith(&requestBody, binding.JSON); err != nil {
-		c.JSON(http.StatusBadRequest, err)
-		return
+func (handler *MemberHandler) postMember(ctx *fiber.Ctx) error {
+	memberRequestDTO := new(dto.CreateMemberRequest)
+	ctx.BodyParser(&memberRequestDTO)
+	if memberRequestDTO.Member == nil {
+		return apierrors.NewApiError("Invalid body received", http.StatusBadRequest)
 	}
-	id, err := handler.service.SaveMember(requestBody.Member)
+	id, err := handler.service.SaveMember(memberRequestDTO.Member)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"msg": "Error saving member", "err": err.Error()})
-		return
+		return err
 	}
-	c.JSON(http.StatusCreated, dto.CreateMemberResponse{ID: id})
+	return ctx.Status(http.StatusCreated).JSON(dto.CreateMemberResponse{ID: id})
 }
 
-func (handler *MemberHandler) getMember(c *gin.Context) {
-	id, _ := c.Params.Get("id")
+func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
 	if !domain.IsValidID(id) {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
-		return
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	m, err := handler.service.GetMember(id)
+	member, err := handler.service.GetMember(id)
 	if err != nil {
-		code := http.StatusInternalServerError
-		if err == member2.NotFound {
-			code = http.StatusNotFound
-		}
-		c.JSON(code, dto.ErrorResponse{Message: err.Error()})
-		return
+		return err
 	} else {
-		c.JSON(http.StatusOK, m)
+		return ctx.Status(http.StatusOK).JSON(member)
 	}
-	return
 }
 
-func (handler *MemberHandler) searchMember(c *gin.Context) {
+func (handler *MemberHandler) searchMember(ctx *fiber.Ctx) error {
 	schema := gql.CreateSchema(handler.service)
-	body, _ := ioutil.ReadAll(c.Request.Body)
 	result := graphql.Do(graphql.Params{
 		Schema:        schema,
-		RequestString: string(body),
-		Context:       c.Request.Context(),
+		RequestString: string(ctx.Body()),
+		Context:       ctx.Context(),
 	})
 	if result.HasErrors() {
-		c.JSON(http.StatusInternalServerError, dto.GraphQLErrorResponse{Errors: result.Errors})
-		return
+		return ctx.Status(http.StatusInternalServerError).JSON(dto.GraphQLErrorResponse{Errors: result.Errors})
 	}
-	c.JSON(http.StatusOK, result)
+	return ctx.Status(http.StatusOK).JSON(result)
 }
 
-func (handler *MemberHandler) putStatus(c *gin.Context) {
-	id, _ := c.Params.Get("id")
+func (handler *MemberHandler) putStatus(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
 	if !domain.IsValidID(id) {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
-		return
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	var body = &dto.PutMemberStatusRequest{}
-	c.ShouldBindJSON(body)
-	if body.Reason == "" {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Reason required"})
-		return
+	putMemberStatusCommand := new(dto.PutMemberStatusRequest)
+	ctx.BodyParser(&putMemberStatusCommand)
+	if err := Validate(putMemberStatusCommand); err != nil {
+		return err
 	}
-	if body.Active == nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Active required"})
-		return
+	if putMemberStatusCommand.Date.IsZero() {
+		putMemberStatusCommand.Date = time.Now()
 	}
 
-	if body.Date.IsZero() {
-		body.Date = time.Now()
-	}
-
-	err := handler.service.ChangeStatus(id, *body.Active, body.Reason, body.Date)
+	err := handler.service.ChangeStatus(id, *putMemberStatusCommand.Active, putMemberStatusCommand.Reason, putMemberStatusCommand.Date)
 
 	if err != nil {
-		code := http.StatusInternalServerError
-		if err == member2.NotFound {
-			code = http.StatusNotFound
-		}
-		c.JSON(code, dto.ErrorResponse{Message: "Error changing status", Error: err})
-		return
+		return err
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Member status changed"})
-
+	return ctx.SendStatus(http.StatusOK)
 }

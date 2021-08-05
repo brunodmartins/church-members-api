@@ -3,8 +3,11 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gin-gonic/gin"
+	"github.com/BrunoDM2943/church-members-api/internal/handler/api/middleware"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -31,16 +34,26 @@ func (result httpResult) assert(t *testing.T, expected int, dto interface{}, ass
 	}
 }
 
-func newApp() *gin.Engine {
-	return gin.Default()
+func newApp() *fiber.App {
+	app := fiber.New(fiber.Config{
+		ErrorHandler: middleware.ApiErrorMiddleWare,
+	})
+	app.Use(recover.New())
+	return app
 }
 
-func runTest(app *gin.Engine, req *http.Request) httpResult {
-	writer := httptest.NewRecorder()
-	app.ServeHTTP(writer, req)
+func runTest(app *fiber.App, req *http.Request) httpResult {
+	resp, err := app.Test(req, -1)
+	if err != nil {
+		panic(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		panic(err)
+	}
 	return httpResult{
-		status: writer.Code,
-		body:   writer.Body.Bytes(),
+		status: resp.StatusCode,
+		body:   body,
 	}
 }
 

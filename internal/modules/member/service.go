@@ -1,7 +1,8 @@
 package member
 
 import (
-	"errors"
+	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"net/http"
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -31,7 +32,7 @@ func (s *memberService) SearchMembers(specification Specification) ([]*domain.Me
 
 func (s *memberService) GetMember(id string) (*domain.Member, error) {
 	if !domain.IsValidID(id) {
-		return nil, errors.New("invalid id received")
+		return nil, apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
 	return s.repo.FindByID(id)
 }

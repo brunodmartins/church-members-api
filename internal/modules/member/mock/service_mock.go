@@ -50,22 +50,7 @@ func (mr *MockServiceMockRecorder) ChangeStatus(id, status, reason, date interfa
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeStatus", reflect.TypeOf((*MockService)(nil).ChangeStatus), id, status, reason, date)
 }
 
-// FindMembers mocks base method.
-func (m *MockService) SearchMembers(specification member.Specification) ([]*domain.Member, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchMembers", specification)
-	ret0, _ := ret[0].([]*domain.Member)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// FindMembers indicates an expected call of FindMembers.
-func (mr *MockServiceMockRecorder) FindMembers(specification interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), specification)
-}
-
-// FindMembersByID mocks base method.
+// GetMember mocks base method.
 func (m *MockService) GetMember(id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetMember", id)
@@ -74,8 +59,8 @@ func (m *MockService) GetMember(id string) (*domain.Member, error) {
 	return ret0, ret1
 }
 
-// FindMembersByID indicates an expected call of FindMembersByID.
-func (mr *MockServiceMockRecorder) FindMembersByID(id interface{}) *gomock.Call {
+// GetMember indicates an expected call of GetMember.
+func (mr *MockServiceMockRecorder) GetMember(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMember", reflect.TypeOf((*MockService)(nil).GetMember), id)
 }
@@ -93,4 +78,19 @@ func (m *MockService) SaveMember(member *domain.Member) (string, error) {
 func (mr *MockServiceMockRecorder) SaveMember(member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveMember", reflect.TypeOf((*MockService)(nil).SaveMember), member)
+}
+
+// SearchMembers mocks base method.
+func (m *MockService) SearchMembers(specification member.Specification) ([]*domain.Member, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchMembers", specification)
+	ret0, _ := ret[0].([]*domain.Member)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchMembers indicates an expected call of SearchMembers.
+func (mr *MockServiceMockRecorder) SearchMembers(specification interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), specification)
 }

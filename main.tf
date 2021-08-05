@@ -151,8 +151,10 @@ resource "aws_lambda_function" "lambda" {
     variables = {
       "SERVER" : "AWS",
       "SCOPE" : "prod"
-      "APP_LANG" : "pt-BR"
-      "VPR_CHURCH_NAME" : ""
+      "APP_LANG" : "pt-BR",
+      "CHURCH_NAME" : "",
+      "TABLES_MEMBER": aws_dynamodb_table.member-table.name,
+      "TABLES_MEMBER_HISTORY": aws_dynamodb_table.member-history-table.name,
     }
   }
 }

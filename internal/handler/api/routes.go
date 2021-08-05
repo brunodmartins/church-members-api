@@ -11,7 +11,7 @@ type Routable interface {
 }
 
 func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
-	// swagger:operation POST /members postMember
+	// swagger:operation POST members postMember
 	//
 	// Create member
 	//
@@ -41,7 +41,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/members", handler.postMember)
-	// swagger:operation POST /members/search searchMember
+	// swagger:operation POST members/search searchMember
 	//
 	// Search member
 	//
@@ -72,7 +72,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/GraphQLErrorResponse"
 	app.Post("/members/search", handler.searchMember)
-	// swagger:operation GET /members/{id} getMember
+	// swagger:operation GET members/{id} getMember
 	//
 	// Get member
 	//
@@ -104,7 +104,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/members/:id", handler.getMember)
-	// swagger:operation PUT /members/{id}/status putMemberStatus
+	// swagger:operation PUT members/{id}/status putMemberStatus
 	//
 	// Put member status
 	//
@@ -143,7 +143,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 }
 
 func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
-	// swagger:operation PUT /reports/members/birthday generateBirthDayReport
+	// swagger:operation GET reports/members/birthday generateBirthDayReport
 	//
 	// Birthday report
 	//
@@ -160,7 +160,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports/members/birthday", handler.generateBirthDayReport)
-	// swagger:operation PUT /reports/members/marriage generateMarriageReport
+	// swagger:operation GET reports/members/marriage generateMarriageReport
 	//
 	// Marriage report
 	//
@@ -177,7 +177,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports/members/marriage", handler.generateMarriageReport)
-	// swagger:operation PUT /reports/members/legal generateLegalReport
+	// swagger:operation GET reports/members/legal generateLegalReport
 	//
 	// Legal report
 	//
@@ -194,7 +194,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports/members/legal", handler.generateLegalReport)
-	// swagger:operation PUT /reports/members/classification/{classification} generateClassificationReport
+	// swagger:operation GET reports/members/classification/{classification} generateClassificationReport
 	//
 	// Member report
 	//
@@ -216,7 +216,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports/members/classification/:classification", handler.generateClassificationReport)
-	// swagger:operation PUT /reports/members generateMembersReport
+	// swagger:operation GET reports/members generateMembersReport
 	//
 	// Member report
 	//

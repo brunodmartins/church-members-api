@@ -4,4 +4,7 @@ coverage:
 ignore:
   - "platform"
   - "cmd"
+  - "handler/graphql/graph_config.go"
+  - "handler/graphql/graph_fields.go"
+  - "handler/graphql/member_resolver.go"
   - "main.go"

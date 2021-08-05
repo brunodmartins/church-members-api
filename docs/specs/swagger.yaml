@@ -1,4 +1,3 @@
-basePath: /
 consumes:
 - application/json
 definitions:
@@ -328,7 +327,200 @@ info:
   description: This API manages the members of a church.
   title: church-members-api
   version: 1.0.0
-paths: {}
+paths:
+  /members:
+    post:
+      description: Register the receiving member
+      operationId: postMember
+      parameters:
+      - description: The member to be registered
+        in: body
+        name: member
+        required: true
+        schema:
+          $ref: '#/definitions/CreateMemberRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Member registered
+          schema:
+            $ref: '#/definitions/CreateMemberResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create member
+  /members/{id}:
+    get:
+      description: Returns the member information
+      operationId: getMember
+      parameters:
+      - description: The member id
+        in: path
+        name: id
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: The member information
+          schema:
+            $ref: '#/definitions/GetMemberResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Member not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get member
+  /members/{id}/status:
+    put:
+      description: Changes the member status
+      operationId: putMemberStatus
+      parameters:
+      - description: The member id
+        in: path
+        name: id
+        required: true
+      - description: The status information
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/PutMemberStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Status change successfully
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        "404":
+          description: Member not found
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Put member status
+  /members/search:
+    post:
+      description: |-
+        A GraphQL endpoint to search for members data
+        {
+        member(name:"Bruno", active:true, gender:"M"){
+        id
+        person{
+        firstName,
+        lastName
+        }
+        }
+        }
+      operationId: searchMember
+      parameters:
+      - description: The GraphQL query
+        in: body
+        name: query
+        required: true
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Members found
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/GraphQLErrorResponse'
+      summary: Search member
+  /reports/members:
+    get:
+      description: Generates a PDF member report
+      operationId: generateMembersReport
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: PDF report
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Member report
+  /reports/members/birthday:
+    get:
+      description: Generates a CSV birthday report
+      operationId: generateBirthDayReport
+      produces:
+      - application/csv
+      responses:
+        "200":
+          description: CSV report
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Birthday report
+  /reports/members/classification/{classification}:
+    get:
+      description: Generates a PDF member report by classification
+      operationId: generateClassificationReport
+      parameters:
+      - description: The member classification [adult, teen, young, children]
+        in: path
+        name: classification
+        required: true
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: PDF report
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Member report
+  /reports/members/legal:
+    get:
+      description: Generates a PDF legal report
+      operationId: generateLegalReport
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: PDF report
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Legal report
+  /reports/members/marriage:
+    get:
+      description: Generates a CSV Marriage report
+      operationId: generateMarriageReport
+      produces:
+      - application/csv
+      responses:
+        "200":
+          description: CSV report
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Marriage report
 produces:
 - application/json
 - application/csv

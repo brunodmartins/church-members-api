@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"time"
 )
 
@@ -16,5 +16,5 @@ type PutMemberStatusRequest struct {
 //CreateMemberRequest for HTTP calls to post member
 // swagger:model CreateMemberRequest
 type CreateMemberRequest struct {
-	*entity.Member
+	*domain.Member
 }

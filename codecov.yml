@@ -2,8 +2,9 @@ coverage:
   status:
     patch: no
 ignore:
-  - "entity/bson.go"
-  - "infra"
-  - "internal/repository"
+  - "platform"
   - "cmd"
+  - "internal/handler/graphql/graph_config.go"
+  - "internal/handler/graphql/graph_fields.go"
+  - "internal/handler/graphql/member_resolver.go"
   - "main.go"

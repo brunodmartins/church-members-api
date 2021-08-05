@@ -3,20 +3,19 @@ package gin
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	"net/http"
-
-	"github.com/BrunoDM2943/church-members-api/internal/service/report"
 
 	"github.com/gin-gonic/gin"
 )
 
 //ReportHandler is a REST controller
 type ReportHandler struct {
-	reportGenerator report.Service
+	reportGenerator report2.Service
 }
 
 //NewReportHandler builds a new ReportHandler
-func NewReportHandler(reportGenerator report.Service) *ReportHandler {
+func NewReportHandler(reportGenerator report2.Service) *ReportHandler {
 	return &ReportHandler{reportGenerator}
 }
 

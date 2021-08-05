@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/infra/cdi"
+	cdi2 "github.com/BrunoDM2943/church-members-api/platform/cdi"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -13,8 +13,8 @@ type GinApplication struct{}
 //Run starts a web server with Gin-Gonic
 func (GinApplication) Run() {
 	router := provideGinGonic()
-	memberHandler := cdi.ProvideMemberHandler()
-	reportHandler := cdi.ProvideReportHandler()
+	memberHandler := cdi2.ProvideMemberHandler()
+	reportHandler := cdi2.ProvideReportHandler()
 
 	memberHandler.SetUpRoutes(router)
 	reportHandler.SetUpRoutes(router)

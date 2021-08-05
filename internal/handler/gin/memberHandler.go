@@ -2,28 +2,27 @@ package gin
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
+	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"io/ioutil"
 	"net/http"
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/repository"
-	"github.com/BrunoDM2943/church-members-api/internal/service/member"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/graphql-go/graphql"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
 	"github.com/gin-gonic/gin"
 )
 
 //MemberHandler is a REST controller
 type MemberHandler struct {
-	service member.Service
+	service member2.Service
 }
 
 
 //NewMemberHandler builds a new MemberHandler
-func NewMemberHandler(service member.Service) *MemberHandler {
+func NewMemberHandler(service member2.Service) *MemberHandler {
 	return &MemberHandler{
 		service: service,
 	}
@@ -45,14 +44,14 @@ func (handler *MemberHandler) postMember(c *gin.Context) {
 
 func (handler *MemberHandler) getMember(c *gin.Context) {
 	id, _ := c.Params.Get("id")
-	if !entity.IsValidID(id) {
+	if !domain.IsValidID(id) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}
-	m, err := handler.service.FindMembersByID(id)
+	m, err := handler.service.GetMember(id)
 	if err != nil {
 		code := http.StatusInternalServerError
-		if err == repository.MemberNotFound {
+		if err == member2.NotFound {
 			code = http.StatusNotFound
 		}
 		c.JSON(code, dto.ErrorResponse{Message: err.Error()})
@@ -80,7 +79,7 @@ func (handler *MemberHandler) searchMember(c *gin.Context) {
 
 func (handler *MemberHandler) putStatus(c *gin.Context) {
 	id, _ := c.Params.Get("id")
-	if !entity.IsValidID(id) {
+	if !domain.IsValidID(id) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Message: "Invalid ID"})
 		return
 	}
@@ -103,7 +102,7 @@ func (handler *MemberHandler) putStatus(c *gin.Context) {
 
 	if err != nil {
 		code := http.StatusInternalServerError
-		if err == repository.MemberNotFound {
+		if err == member2.NotFound {
 			code = http.StatusNotFound
 		}
 		c.JSON(code, dto.ErrorResponse{Message: "Error changing status", Error: err})

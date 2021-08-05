@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/entity"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/graphql-go/graphql/gqlerrors"
 )
 
@@ -27,5 +27,5 @@ type CreateMemberResponse struct {
 //GetMemberResponse for HTTP get member responses
 // swagger:model GetMemberResponse
 type GetMemberResponse struct {
-	*entity.Member
+	*domain.Member
 }

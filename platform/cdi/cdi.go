@@ -1,7 +1,7 @@
 package cdi
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/handler/gin"
+	"github.com/BrunoDM2943/church-members-api/internal/handler/api"
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
@@ -13,12 +13,12 @@ var reportGenerator report2.Service
 
 var memberRepository member2.Repository
 
-func ProvideMemberHandler() *gin.MemberHandler {
-	return gin.NewMemberHandler(provideMemberService())
+func ProvideMemberHandler() *api.MemberHandler {
+	return api.NewMemberHandler(provideMemberService())
 }
 
-func ProvideReportHandler() *gin.ReportHandler {
-	return gin.NewReportHandler(provideReportGenerator())
+func ProvideReportHandler() *api.ReportHandler {
+	return api.NewReportHandler(provideReportGenerator())
 }
 
 func provideMemberService() member2.Service {

@@ -1,4 +1,4 @@
-package gin
+package api
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"

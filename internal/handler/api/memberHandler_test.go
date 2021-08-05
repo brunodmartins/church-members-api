@@ -25,7 +25,7 @@ func TestGetMember(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().FindMembersByID(id).Return(buildMember(id), nil)
+		service.EXPECT().GetMember(id).Return(buildMember(id), nil)
 		runTest(app, buildGet("/members/" + id)).assert(t, http.StatusOK, new(domain.Member), func(parsedBody interface{}) {
 			member := parsedBody.(*domain.Member)
 			assert.Equal(t, id, member.ID)
@@ -33,7 +33,7 @@ func TestGetMember(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().FindMembersByID(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
+		service.EXPECT().GetMember(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildGet("/members/" + id)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
@@ -41,7 +41,7 @@ func TestGetMember(t *testing.T) {
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().FindMembersByID(id).Return(nil, genericError)
+		service.EXPECT().GetMember(id).Return(nil, genericError)
 		runTest(app, buildGet("/members/" + id)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -66,7 +66,7 @@ func TestPostMember(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().FindMembersByID(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
+		service.EXPECT().GetMember(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildGet("/members/" + id)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
@@ -99,7 +99,7 @@ func TestPostMemberSearch(t *testing.T) {
 					}
 			}
 		}`
-		service.EXPECT().FindMembers(gomock.Any()).Return([]*domain.Member{}, nil)
+		service.EXPECT().SearchMembers(gomock.Any()).Return([]*domain.Member{}, nil)
 		runTest(app, buildPost("/members/search", body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {

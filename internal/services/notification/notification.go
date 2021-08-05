@@ -21,6 +21,7 @@ type snsService struct {
 	topic string
 }
 
+//NewService builds a new notification service
 func NewService(api wrapper.SNSAPI, topic string) Service {
 	return &snsService{
 		api:   api,

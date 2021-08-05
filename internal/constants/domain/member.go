@@ -32,3 +32,8 @@ func (member Member) Classification() enum.Classification {
 		return enum.ADULT
 	}
 }
+
+//IsLegal validate if a member is legal only if it's not a children
+func (member Member) IsLegal() bool {
+	return member.Classification() != enum.CHILDREN
+}

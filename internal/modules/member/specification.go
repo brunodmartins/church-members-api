@@ -1,17 +1,21 @@
 package member
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 )
 
-//QuerySpecification allows a client to add dynamic filters to a Query
-type QuerySpecification struct {
+//QuerySpecificationBuilder allows a client to add dynamic filters to a Query
+type QuerySpecificationBuilder struct {
 	values map[string]interface{}
 }
 
-type Specification func(builderExpression expression.Builder) expression.Builder
+type QuerySpecification func(builderExpression expression.Builder) expression.Builder
 
-func (spec *QuerySpecification) AddFilter(key string, value interface{}) {
+type Specification func(member *domain.Member) bool
+
+func (spec *QuerySpecificationBuilder) AddFilter(key string, value interface{}) {
 	if spec.values == nil {
 		spec.values = make(map[string]interface{})
 	}
@@ -19,7 +23,7 @@ func (spec *QuerySpecification) AddFilter(key string, value interface{}) {
 }
 
 //ToSpecification apply filters to a search on the repo
-func (spec *QuerySpecification) ToSpecification() Specification {
+func (spec *QuerySpecificationBuilder) ToSpecification() QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		var conditions []expression.ConditionBuilder
 		if spec.values["gender"] != nil {
@@ -46,12 +50,45 @@ func (spec *QuerySpecification) ToSpecification() Specification {
 
 }
 
-func CreateActiveFilter() Specification {
+func OnlyActive() QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(activeCondition(true))
 	}
 }
 
+func OnlyMarriage() QuerySpecification {
+	return func(builderExpression expression.Builder) expression.Builder {
+		return builderExpression.WithFilter(expression.Name("marriageDate").AttributeExists().And(activeCondition(true)))
+	}
+}
+
 func activeCondition(value bool) expression.ConditionBuilder {
 	return expression.Name("active").Equal(expression.Value(value))
+}
+
+func OnlyLegalMembers() Specification {
+	return func(member *domain.Member) bool {
+		return member.IsLegal()
+	}
+}
+
+func OnlyByClassification(value enum.Classification) Specification {
+	return func(member *domain.Member) bool {
+		return member.Classification() == value
+	}
+}
+
+
+func applySpecifications(members []*domain.Member, specification []Specification) []*domain.Member {
+	var filtered []*domain.Member
+	for _, member := range members {
+		allSpecTrue := true
+		for _, spec := range specification {
+			allSpecTrue = allSpecTrue && spec(member)
+		}
+		if allSpecTrue {
+			filtered = append(filtered, member)
+		}
+	}
+	return filtered
 }

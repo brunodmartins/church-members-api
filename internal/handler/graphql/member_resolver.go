@@ -16,7 +16,7 @@ func newMemberResolver(service member.Service) memberResolver {
 }
 
 func (resolver memberResolver) memberResolver(params graphql.ResolveParams) (interface{}, error) {
-	queryFilters := member.QuerySpecification{}
+	queryFilters := member.QuerySpecificationBuilder{}
 	for key, value := range params.Args {
 		queryFilters.AddFilter(key, value)
 	}

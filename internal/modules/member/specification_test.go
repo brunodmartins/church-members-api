@@ -82,6 +82,38 @@ func TestOnlyByClassification(t *testing.T) {
 	assert.False(t, OnlyByClassification(enum.ADULT)(BuildChildren()))
 }
 
+func TestLastMarriages(t *testing.T) {
+	builder := expression.NewBuilder()
+	spec := LastMarriages(time.Now(), time.Now())
+	builder = spec(builder)
+	expression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, expression.Names(), 1)
+}
+
+func TestLastBirths(t *testing.T) {
+	builder := expression.NewBuilder()
+	spec := LastBirths(time.Now(), time.Now())
+	builder = spec(builder)
+	expression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, expression.Names(), 1)
+}
+
+func TestBirthDay(t *testing.T) {
+	builder := expression.NewBuilder()
+	spec := WithBirthday(time.Now())
+	builder = spec(builder)
+	expression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, expression.Names(), 1)
+}
+
+func TestConvertDate(t *testing.T) {
+	assert.Equal(t, "01-01", convertDate(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)))
+	assert.Equal(t, "12-24", convertDate(time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC)))
+}
+
 func BuildChildren() *domain.Member {
 	return &domain.Member{
 		Person: domain.Person{
@@ -93,8 +125,7 @@ func BuildChildren() *domain.Member {
 func BuildAdult() *domain.Member {
 	return &domain.Member{
 		Person: domain.Person{
-			BirthDate: time.Now().AddDate(-20,0,0),
+			BirthDate: time.Now().AddDate(-20, 0, 0),
 		},
 	}
 }
-

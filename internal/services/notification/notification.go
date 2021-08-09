@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+//go:generate mockgen -source=./notification.go -destination=./mock/notification_mock.go
 //Service provide operations for notification
 type Service interface {
 	//NotifyTopic send a notification to a defined topic
@@ -17,7 +18,7 @@ type Service interface {
 }
 
 type snsService struct {
-	api wrapper.SNSAPI
+	api   wrapper.SNSAPI
 	topic string
 }
 
@@ -31,7 +32,7 @@ func NewService(api wrapper.SNSAPI, topic string) Service {
 
 func (service *snsService) NotifyTopic(text string) error {
 	input := &sns.PublishInput{
-		Message: aws.String(text),
+		Message:  aws.String(text),
 		TopicArn: aws.String(service.topic),
 	}
 	logrus.Info("Send notification to topic")
@@ -44,7 +45,7 @@ func (service *snsService) NotifyTopic(text string) error {
 
 func (service *snsService) NotifyMobile(text string, phone string) error {
 	input := &sns.PublishInput{
-		Message: aws.String(text),
+		Message:     aws.String(text),
 		PhoneNumber: aws.String(phone),
 	}
 	logrus.Info("Send notification to phone")

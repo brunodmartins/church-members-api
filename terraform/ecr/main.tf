@@ -13,5 +13,5 @@ data "aws_ecr_image" "lambda_image" {
 }
 
 output "image_id" {
-  value = "${aws_ecr_repository.repo.repository_url}:latest"
+  value = "${aws_ecr_repository.repo.repository_url}@${data.aws_ecr_image.lambda_image.id}"
 }

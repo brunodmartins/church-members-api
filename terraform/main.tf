@@ -34,7 +34,7 @@ module "dynamodb" {
 
 module "iam" {
   source          = "./iam"
-  dynamodb_tables = [module.dynamodb.tables_arn]
+  dynamodb_tables = module.dynamodb.tables_arn
 }
 
 module "ecr" {

@@ -19,7 +19,7 @@ variable "lambda_arn" {
 }
 
 data "template_file" "aws_api_swagger" {
-  template = file("./swagger-terraform.json")
+  template = file("${path.module}/swagger-terraform.json")
   vars = {
     aws_region     = var.region
     aws_account_id = var.account_id

@@ -17,6 +17,5 @@ church-members-api
 .vscode
 debug
 .terraform*
-terraform*
 cmd.zip
 internal.zip

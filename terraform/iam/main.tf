@@ -48,7 +48,7 @@ resource "aws_iam_role" "church_members_api_role" {
 }
 
 
-resource "aws_iam_role_policy_attachment" "attach-policy" {
+resource "aws_iam_role_policy_attachment" "attach_policy" {
   role       = aws_iam_role.church_members_api_role.name
   policy_arn = aws_iam_policy.church_members_api_policy.arn
 }

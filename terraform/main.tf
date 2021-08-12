@@ -62,6 +62,6 @@ module "gateway" {
   lambda_arn            = module.lambda.lambda_arn
 }
 
-output "gateway-id" {
-  value = module.gateway.gateway-id
+output "gateway_id" {
+  value = module.gateway.gateway_id
 }

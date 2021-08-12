@@ -28,7 +28,7 @@ data "template_file" "aws_api_swagger" {
   }
 }
 
-resource "aws_api_gateway_rest_api" "api-gateway" {
+resource "aws_api_gateway_rest_api" "api_gateway" {
   name        = "church-members-api-gw"
   description = "church-members-api API gateway"
   body        = data.template_file.aws_api_swagger.rendered
@@ -38,11 +38,11 @@ resource "aws_api_gateway_rest_api" "api-gateway" {
   }
 }
 
-resource "aws_api_gateway_deployment" "api-deployment" {
-  rest_api_id = aws_api_gateway_rest_api.api-gateway.id
+resource "aws_api_gateway_deployment" "api_deployment" {
+  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
 
   triggers = {
-    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.api-gateway.body))
+    redeployment = sha1(jsonencode(aws_api_gateway_rest_api.api_gateway.body))
   }
 
   lifecycle {
@@ -50,18 +50,18 @@ resource "aws_api_gateway_deployment" "api-deployment" {
   }
 }
 
-resource "aws_api_gateway_stage" "api-stage" {
+resource "aws_api_gateway_stage" "api_stage" {
   depends_on = [
-    aws_api_gateway_deployment.api-deployment
+    aws_api_gateway_deployment.api_deployment
   ]
-  deployment_id = aws_api_gateway_deployment.api-deployment.id
-  rest_api_id   = aws_api_gateway_rest_api.api-gateway.id
+  deployment_id = aws_api_gateway_deployment.api_deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.api_gateway.id
   stage_name    = "prod"
 }
 
 resource "aws_api_gateway_authorizer" "authorizer" {
   name        = "authorizer"
-  rest_api_id = aws_api_gateway_rest_api.api-gateway.id
+  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
   type        = "COGNITO_USER_POOLS"
   provider_arns = [
     var.cognito_user_pool_arn
@@ -69,6 +69,6 @@ resource "aws_api_gateway_authorizer" "authorizer" {
 }
 
 
-output "gateway-id" {
-  value = aws_api_gateway_rest_api.api-gateway.id
+output "gateway_id" {
+  value = aws_api_gateway_rest_api.api_gateway.id
 }

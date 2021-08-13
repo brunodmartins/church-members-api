@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"encoding/json"
+	"context"
 	"errors"
 
 	"github.com/BrunoDM2943/church-members-api/internal/modules/jobs"
@@ -11,15 +11,14 @@ import (
 
 type JobApplication struct{}
 
+type JobEvent struct {
+	Name string `json:"name"`
+}
+
 func (JobApplication) Run() {
-	lambda.Start(func(payload []byte) error {
-		var input map[string]interface{}
-		logrus.Infof("Received event: %s", string(payload))
-		err := json.Unmarshal(payload, &input)
-		if err != nil {
-			return err
-		}
-		jobType, err := new(jobs.JobType).From(input["name"].(string))
+	lambda.Start(func(ctx context.Context, event JobEvent) error {
+		logrus.Infof("Received event: %v", event)
+		jobType, err := new(jobs.JobType).From(event.Name)
 		if err != nil {
 			return err
 		}

@@ -3,8 +3,10 @@ package cmd
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/BrunoDM2943/church-members-api/internal/modules/jobs"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/sirupsen/logrus"
 )
 
 type JobApplication struct{}
@@ -12,7 +14,8 @@ type JobApplication struct{}
 func (JobApplication) Run() {
 	lambda.Start(func(payload []byte) error {
 		var input map[string]interface{}
-		err := json.Unmarshal(payload, input)
+		logrus.Infof("Received event: %s", string(payload))
+		err := json.Unmarshal(payload, &input)
 		if err != nil {
 			return err
 		}

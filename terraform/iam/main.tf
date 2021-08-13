@@ -27,6 +27,13 @@ resource "aws_iam_policy" "church_members_api_policy" {
           "logs:PutLogEvents",
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sns:Publish",
+        ]
+        Resource = "*"
       }
     ]
   })

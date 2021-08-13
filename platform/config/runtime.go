@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"os"
+
+	"github.com/spf13/viper"
 )
 
 //InitConfiguration loads global configuration variables on Viper
@@ -13,10 +14,11 @@ func InitConfiguration() {
 	viper.Set("church.shortname", os.Getenv("CHURCH_NAME_SHORT"))
 	viper.Set("lang", os.Getenv("APP_LANG"))
 	viper.Set("bundles.location", "bundles")
-	viper.Set("tables.member", os.Getenv("TABLES_MEMBER"))
-	viper.Set("tables.member_history", os.Getenv("TABLES_MEMBER_HISTORY"))
+	viper.Set("tables.member", os.Getenv("TABLE_MEMBER"))
+	viper.Set("tables.member_history", os.Getenv("TABLE_MEMBER_HISTORY"))
 	viper.Set("pdf.font.path", "./fonts/Arial.ttf")
 	viper.Set("jobs.daily.phones", os.Getenv("JOBS_DAILY_PHONE"))
+	viper.Set("reports.topic", os.Getenv("REPORTS_TOPIC"))
 }
 
 func IsAWS() bool {

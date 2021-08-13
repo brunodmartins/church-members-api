@@ -30,7 +30,7 @@ func ProvideMemberService() member2.Service {
 }
 
 func ProvideNotificationService() notification.Service {
-	return notification.NewService(provideSNS(), viper.GetString("sns.topic"))
+	return notification.NewService(provideSNS(), viper.GetString("reports.topic"))
 }
 
 func provideMemberRepository() member2.Repository {

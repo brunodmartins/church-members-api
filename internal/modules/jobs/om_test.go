@@ -2,17 +2,18 @@ package jobs
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 )
 
 var genericError = errors.New("generic error")
 
-func BuildBirthDaysMembers() []*domain.Member {
+func BuildBirthDaysMembers(date time.Time) []*domain.Member {
 	return []*domain.Member{
 		{
 			Person: domain.Person{
-				BirthDate: time.Now(),
+				BirthDate: date,
 				FirstName: "foo",
 				LastName:  "bar",
 			},
@@ -20,12 +21,12 @@ func BuildBirthDaysMembers() []*domain.Member {
 	}
 }
 
-func BuildMarriageMembers() []*domain.Member {
-	now := time.Now()
+func BuildMarriageMembers(date *time.Time) []*domain.Member {
+
 	return []*domain.Member{
 		{
 			Person: domain.Person{
-				MarriageDate: &now,
+				MarriageDate: date,
 				FirstName:    "foo",
 				LastName:     "bar",
 				SpousesName:  "foo2 bar2",

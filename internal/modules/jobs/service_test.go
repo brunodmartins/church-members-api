@@ -1,6 +1,10 @@
 package jobs
 
 import (
+	"fmt"
+	"testing"
+	"time"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	mock_member "github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
@@ -8,8 +12,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func init() {
@@ -30,17 +32,19 @@ func TestFmtDate(t *testing.T) {
 
 func TestWeeklyBuildMessage(t *testing.T) {
 	job := newWeeklyBirthDaysJob(nil, nil)
+	time := time.Now()
+	fmtDate := fmtDate(time)
 	t.Run("With both birth and marriage", func(t *testing.T) {
-		expected := "Weekly birthdays\nBirth\n- foo bar - 09-Aug\nMarriage\n- foo bar & foo2 bar2 - 09-Aug\n"
-		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(), BuildMarriageMembers()))
+		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate, fmtDate)
+		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(time), BuildMarriageMembers(&time)))
 	})
 	t.Run("Only birth", func(t *testing.T) {
-		expected := "Weekly birthdays\nBirth\n- foo bar - 09-Aug\nMarriage\n---------\n"
-		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(), []*domain.Member{}))
+		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n---------\n", fmtDate)
+		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(time), []*domain.Member{}))
 	})
 	t.Run("Only marriage", func(t *testing.T) {
-		expected := "Weekly birthdays\nBirth\n---------\nMarriage\n- foo bar & foo2 bar2 - 09-Aug\n"
-		assert.Equal(t, expected, job.buildMessage([]*domain.Member{}, BuildMarriageMembers()))
+		expected := fmt.Sprintf("Weekly birthdays\nBirth\n---------\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate)
+		assert.Equal(t, expected, job.buildMessage([]*domain.Member{}, BuildMarriageMembers(&time)))
 	})
 	t.Run("None", func(t *testing.T) {
 		expected := "Weekly birthdays\nBirth\n---------\nMarriage\n---------\n"
@@ -50,8 +54,10 @@ func TestWeeklyBuildMessage(t *testing.T) {
 
 func TestDailyBuildMessage(t *testing.T) {
 	job := newDailyBirthDaysJob(nil, nil)
-	expected := "SHORTNAME:Birthdays-foo bar-09-Aug,"
-	assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers()))
+	time := time.Now()
+	fmtDate := fmtDate(time)
+	expected := fmt.Sprintf("SHORTNAME:Birthdays-foo bar-%s,", fmtDate)
+	assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(time)))
 }
 
 func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
@@ -61,15 +67,16 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	memberService := mock_member.NewMockService(ctrl)
 	notificationService := mock_notification.NewMockService(ctrl)
 	job := newWeeklyBirthDaysJob(memberService, notificationService)
+	now := time.Now()
 
 	t.Run("Success", func(t *testing.T) {
 		alreadyCalled := false
 		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
-				return BuildBirthDaysMembers(), nil
+				return BuildBirthDaysMembers(now), nil
 			}
-			return BuildMarriageMembers(), nil
+			return BuildMarriageMembers(&now), nil
 		}).Times(2)
 		notificationService.EXPECT().NotifyTopic(gomock.Any()).Return(nil)
 		assert.Nil(t, job.RunJob())
@@ -79,9 +86,9 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
-				return BuildBirthDaysMembers(), nil
+				return BuildBirthDaysMembers(now), nil
 			}
-			return BuildMarriageMembers(), nil
+			return BuildMarriageMembers(&now), nil
 		}).Times(2)
 		notificationService.EXPECT().NotifyTopic(gomock.Any()).Return(genericError)
 		assert.NotNil(t, job.RunJob())
@@ -91,9 +98,9 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
-				return BuildBirthDaysMembers(), nil
+				return BuildBirthDaysMembers(now), nil
 			}
-			return BuildMarriageMembers(), genericError
+			return BuildMarriageMembers(&now), genericError
 		}).Times(2)
 		assert.NotNil(t, job.RunJob())
 	})
@@ -106,18 +113,18 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 func TestDailyBirthDaysJob_RunJob(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
+	now := time.Now()
 	memberService := mock_member.NewMockService(ctrl)
 	notificationService := mock_notification.NewMockService(ctrl)
 	job := newDailyBirthDaysJob(memberService, notificationService)
 
 	t.Run("Success", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		notificationService.EXPECT().NotifyMobile(gomock.Any(), gomock.Any()).Return(nil).Times(2)
 		assert.Nil(t, job.RunJob())
 	})
 	t.Run("Fail notify", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		notificationService.EXPECT().NotifyMobile(gomock.Any(), gomock.Any()).Return(genericError)
 		assert.NotNil(t, job.RunJob())
 	})

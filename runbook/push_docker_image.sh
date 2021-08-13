@@ -6,8 +6,9 @@ region=$3
 
 cd ../
 aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $account_id.dkr.ecr.$region.amazonaws.com
+image=$account_id.dkr.ecr.$region.amazonaws.com/church-members-api-container:$image_tag
 
-if test -z "$(docker images -q $image_tag)"; then
-  docker build -t $image_tag .
+if test -z "$(docker images -q $image)"; then
+  docker build -t $image .
 fi
-docker push $image_tag
+docker push $image

@@ -10,7 +10,7 @@ import (
 
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Service interface {
-	SearchMembers(specification Specification) ([]*domain.Member, error)
+	SearchMembers(querySpecification QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error)
 	GetMember(id string) (*domain.Member, error)
 	SaveMember(member *domain.Member) (string, error)
 	ChangeStatus(id string, status bool, reason string, date time.Time) error
@@ -26,8 +26,15 @@ func NewMemberService(r Repository) *memberService {
 	}
 }
 
-func (s *memberService) SearchMembers(specification Specification) ([]*domain.Member, error) {
-	return s.repo.FindAll(specification)
+func (s *memberService) SearchMembers(querySpecification QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error) {
+	members, err := s.repo.FindAll(querySpecification)
+	if err != nil {
+		return nil,err
+	}
+	if len(postSpecification) != 0 {
+		return applySpecifications(members, postSpecification), nil
+	}
+	return members, nil
 }
 
 func (s *memberService) GetMember(id string) (*domain.Member, error) {

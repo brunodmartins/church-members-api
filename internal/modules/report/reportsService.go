@@ -37,7 +37,7 @@ func NewReportService(memberService member.Service, fileBuilder file.Builder) Se
 }
 
 func (report reportService) BirthdayReport() ([]byte, error) {
-	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.OnlyActive())
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func writeData(data [][]string) []byte {
 
 func (report reportService) MarriageReport() ([]byte, error) {
 
-	members, err := report.memberService.SearchMembers(createMarriageFilter())
+	members, err := report.memberService.SearchMembers(member.OnlyMarriage())
 
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (report reportService) MarriageReport() ([]byte, error) {
 }
 
 func (report reportService) MemberReport() ([]byte, error) {
-	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.OnlyActive())
 	if err != nil {
 		return nil, err
 	}
@@ -92,22 +92,20 @@ func (report reportService) MemberReport() ([]byte, error) {
 }
 
 func (report reportService) ClassificationReport(classification enum.Classification) ([]byte, error) {
-	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.OnlyActive(), member.OnlyByClassification(classification))
 	if err != nil {
 		return nil, err
 	}
-	members = selectByClassification(classification, members)
 	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
 
 func (report reportService) LegalReport() ([]byte, error) {
-	members, err := report.memberService.SearchMembers(member.CreateActiveFilter())
+	members, err := report.memberService.SearchMembers(member.OnlyActive(), member.OnlyLegalMembers())
 	if err != nil {
 		return nil, err
 	}
-	members = selectByNotInClassification(enum.CHILDREN, members)
 	sort.Sort(domain.SortByName(members))
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), members)
 }

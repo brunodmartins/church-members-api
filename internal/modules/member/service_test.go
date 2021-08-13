@@ -16,16 +16,22 @@ func TestListAllMembers(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	service := member.NewMemberService(repo)
-	spec := member.Specification(nil)
+	spec := member.QuerySpecification(nil)
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(2), nil)
-		members, err := service.SearchMembers(member.CreateActiveFilter())
+		members, err := service.SearchMembers(member.OnlyActive())
+		assert.Nil(t, err)
+		assert.Len(t, members, 2)
+	})
+	t.Run("Success with post specification", func(t *testing.T) {
+		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(BuildMembers(2), nil)
+		members, err := service.SearchMembers(member.OnlyActive(), member.OnlyLegalMembers())
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)
 	})
 	t.Run("Fail", func(t *testing.T) {
 		repo.EXPECT().FindAll(gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
-		_, err := service.SearchMembers(member.CreateActiveFilter())
+		_, err := service.SearchMembers(member.OnlyActive())
 		assert.NotNil(t, err)
 	})
 

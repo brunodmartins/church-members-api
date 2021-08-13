@@ -41,12 +41,17 @@ module "ecr" {
   source = "./ecr"
 }
 
+module "sns" {
+  source = "./sns"
+}
+
 module "lambda" {
-  source                     = "./lambda"
+  source                    = "./lambda"
   member_table_name         = module.dynamodb.member_table_name
   member_history_table_name = module.dynamodb.member_history_table_name
-  image_uri                  = module.ecr.image_id
-  lambda_role_arn            = module.iam.lambda_role_arn
+  image_uri                 = module.ecr.image_id
+  lambda_role_arn           = module.iam.lambda_role_arn
+  topic_arn                 = module.sns.topic_arn
 }
 
 module "cognito" {
@@ -60,6 +65,11 @@ module "gateway" {
   cognito_user_pool_arn = module.cognito.user_pool_arn
   lambda_name           = module.lambda.lambda_name
   lambda_arn            = module.lambda.lambda_arn
+}
+
+module "eventbridge" {
+  source     = "./eventbridge"
+  lambda_arn = module.lambda.lambda_job_arn
 }
 
 output "gateway_id" {

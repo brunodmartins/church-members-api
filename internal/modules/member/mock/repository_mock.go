@@ -37,7 +37,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // FindAll mocks base method.
-func (m *MockRepository) FindAll(specification member.Specification) ([]*domain.Member, error) {
+func (m *MockRepository) FindAll(specification member.QuerySpecification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", specification)
 	ret0, _ := ret[0].([]*domain.Member)

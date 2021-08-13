@@ -157,7 +157,7 @@ func TestDynamoRepository_GenerateStatusHistory(t *testing.T) {
 	})
 }
 
-func buildMockSpecification(t *testing.T) member.Specification {
+func buildMockSpecification(t *testing.T) member.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		assert.NotNil(t, builderExpression)
 		return builderExpression

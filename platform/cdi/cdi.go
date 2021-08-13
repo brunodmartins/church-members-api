@@ -5,6 +5,7 @@ import (
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
+	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
 	"github.com/spf13/viper"
 )
 
@@ -14,18 +15,22 @@ var reportGenerator report2.Service
 var memberRepository member2.Repository
 
 func ProvideMemberHandler() *api.MemberHandler {
-	return api.NewMemberHandler(provideMemberService())
+	return api.NewMemberHandler(ProvideMemberService())
 }
 
 func ProvideReportHandler() *api.ReportHandler {
 	return api.NewReportHandler(provideReportGenerator())
 }
 
-func provideMemberService() member2.Service {
+func ProvideMemberService() member2.Service {
 	if memberService == nil {
 		memberService = member2.NewMemberService(provideMemberRepository())
 	}
 	return memberService
+}
+
+func ProvideNotificationService() notification.Service {
+	return notification.NewService(provideSNS(), viper.GetString("reports.topic"))
 }
 
 func provideMemberRepository() member2.Repository {
@@ -37,7 +42,7 @@ func provideMemberRepository() member2.Repository {
 
 func provideReportGenerator() report2.Service {
 	if reportGenerator == nil {
-		reportGenerator = report2.NewReportService(provideMemberService(), file2.NewPDFBuilder())
+		reportGenerator = report2.NewReportService(ProvideMemberService(), file2.NewPDFBuilder())
 	}
 	return reportGenerator
 }

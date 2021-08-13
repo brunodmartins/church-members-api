@@ -14,3 +14,7 @@
 "Domain.Phone" = "Telefone"
 "Reports.Title.Default" = "Relatório de Membros"
 "Reports.Title.Legal" = "Relatório de Membros - Jurídico"
+"Jobs.Daily.Title"="Aniversários"
+"Jobs.Weekly.Title"="Aniversariantes da semana"
+"Jobs.Weekly.Birth"="Nascimento"
+"Jobs.Weekly.Marriage"="Casamento"

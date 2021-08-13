@@ -14,3 +14,7 @@
 "Domain.Phone" = "Phone"
 "Reports.Title.Default" = "Member's report"
 "Reports.Title.Legal" = "Member's report - Legal"
+"Jobs.Daily.Title"="Birthdays"
+"Jobs.Weekly.Title"="Weekly birthdays"
+"Jobs.Weekly.Birth"="Birth"
+"Jobs.Weekly.Marriage"="Marriage"

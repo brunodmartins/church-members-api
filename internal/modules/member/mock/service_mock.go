@@ -81,16 +81,21 @@ func (mr *MockServiceMockRecorder) SaveMember(member interface{}) *gomock.Call {
 }
 
 // SearchMembers mocks base method.
-func (m *MockService) SearchMembers(specification member.Specification) ([]*domain.Member, error) {
+func (m *MockService) SearchMembers(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchMembers", specification)
+	varargs := []interface{}{querySpecification}
+	for _, a := range postSpecification {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "SearchMembers", varargs...)
 	ret0, _ := ret[0].([]*domain.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SearchMembers indicates an expected call of SearchMembers.
-func (mr *MockServiceMockRecorder) SearchMembers(specification interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SearchMembers(querySpecification interface{}, postSpecification ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), specification)
+	varargs := append([]interface{}{querySpecification}, postSpecification...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), varargs...)
 }

@@ -81,3 +81,25 @@ func TestGetFullName(t *testing.T) {
 		LastName:  "Doe",
 	}.GetFullName(), "John Doe")
 }
+
+func TestIsLegal(t *testing.T) {
+	assert.True(t, BuildAdult().IsLegal())
+	assert.False(t, BuildChildren().IsLegal())
+}
+
+
+func BuildChildren() *Member {
+	return &Member{
+		Person: Person{
+			BirthDate: time.Now(),
+		},
+	}
+}
+
+func BuildAdult() *Member {
+	return &Member{
+		Person: Person{
+			BirthDate: time.Now().AddDate(-20, 0, 0),
+		},
+	}
+}

@@ -18,6 +18,23 @@ variable "topic_arn" {
   type = string
 }
 
+variable "app_lang" {
+  type = string
+}
+
+variable "church_name" {
+  type = string
+}
+
+variable "church_name_short" {
+  type = string
+}
+
+variable "jobs_daily_phone" {
+  type = string
+}
+
+
 resource "aws_lambda_function" "lambda_api" {
   function_name = "church-members-api-lambda"
   role          = var.lambda_role_arn
@@ -28,12 +45,12 @@ resource "aws_lambda_function" "lambda_api" {
     variables = {
       "SERVER" : "AWS",
       "APPLICATION" : "API"
-      "CHURCH_NAME" : "",
-      "CHURCH_NAME_SHORT" : "",
-      "APP_LANG" : "pt-BR",
+      "CHURCH_NAME" : var.church_name,
+      "CHURCH_NAME_SHORT" : var.church_name_short,
+      "APP_LANG" : var.app_lang,
+      "JOBS_DAILY_PHONE" : var.jobs_daily_phone,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
-      "JOBS_DAILY_PHONE" : "",
       "REPORTS_TOPIC" : var.topic_arn,
     }
   }
@@ -49,12 +66,12 @@ resource "aws_lambda_function" "lambda_job" {
     variables = {
       "SERVER" : "AWS",
       "APPLICATION" : "JOB"
-      "CHURCH_NAME" : "",
-      "CHURCH_NAME_SHORT" : "",
-      "APP_LANG" : "pt-BR",
+      "CHURCH_NAME" : var.church_name,
+      "CHURCH_NAME_SHORT" : var.church_name_short,
+      "APP_LANG" : var.app_lang,
+      "JOBS_DAILY_PHONE" : var.jobs_daily_phone,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
-      "JOBS_DAILY_PHONE" : "",
       "REPORTS_TOPIC" : var.topic_arn,
     }
   }

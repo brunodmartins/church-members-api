@@ -19,6 +19,22 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "app_lang" {
+  type = string
+}
+
+variable "church_name" {
+  type = string
+}
+
+variable "church_name_short" {
+  type = string
+}
+
+variable "jobs_daily_phone" {
+  type = string
+}
+
 provider "aws" {
   profile = "default"
   region  = var.region
@@ -52,7 +68,13 @@ module "lambda" {
   image_uri                 = module.ecr.image_id
   lambda_role_arn           = module.iam.lambda_role_arn
   topic_arn                 = module.sns.topic_arn
+  app_lang                  = var.app_lang
+  church_name               = var.church_name
+  church_name_short         = var.church_name_short
+  jobs_daily_phone          = var.jobs_daily_phone
+
 }
+
 
 module "cognito" {
   source = "./cognito"

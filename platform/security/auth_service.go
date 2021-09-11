@@ -1,10 +1,11 @@
 package security
 
 import (
+	"net/http"
+
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"golang.org/x/crypto/bcrypt"
-	"net/http"
 )
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go
@@ -21,7 +22,7 @@ func NewAuthService(userRepository UserRepository) Service {
 }
 
 func (s *authService) GenerateToken(username, password string) (string, error) {
-	user, err := s.userRepository.FindUser(username, password)
+	user, err := s.userRepository.FindUser(username)
 	if err != nil {
 		return "", err
 	}

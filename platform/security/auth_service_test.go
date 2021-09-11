@@ -1,12 +1,14 @@
 package security
 
 import (
+	"net/http"
+	"testing"
+
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	mock_security "github.com/BrunoDM2943/church-members-api/platform/security/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"testing"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestAuthService_GenerateToken(t *testing.T) {
@@ -16,19 +18,25 @@ func TestAuthService_GenerateToken(t *testing.T) {
 	service := NewAuthService(repo)
 
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName, gomock.Any()).Return(buildUser(""), nil)
+		repo.EXPECT().FindUser(userName).Return(buildUser("", generatePassword(password)), nil)
 		token, err := service.GenerateToken(userName, password)
 		assert.NotEmpty(t, token)
 		assert.Nil(t, err)
 	})
-	t.Run("Fail", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName, gomock.Any()).Return(buildUser(""), genericError)
+	t.Run("Fail - Not same password", func(t *testing.T) {
+		repo.EXPECT().FindUser(userName).Return(buildUser("", generatePassword(password)), nil)
+		token, err := service.GenerateToken(userName, password+"123")
+		assert.Empty(t, token)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Error on Repo", func(t *testing.T) {
+		repo.EXPECT().FindUser(userName).Return(nil, genericError)
 		token, err := service.GenerateToken(userName, password)
 		assert.Empty(t, token)
 		assert.NotNil(t, err)
 	})
 	t.Run("Not found", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName, gomock.Any()).Return(nil, nil)
+		repo.EXPECT().FindUser(userName).Return(nil, nil)
 		token, err := service.GenerateToken(userName, password)
 		assert.Empty(t, token)
 		assert.NotNil(t, err)
@@ -36,8 +44,12 @@ func TestAuthService_GenerateToken(t *testing.T) {
 	})
 }
 
-
 func TestAuthService_IsValidToken(t *testing.T) {
 	assert.False(t, IsValidToken(""))
 	assert.True(t, IsValidToken(buildToken(buildClaim())))
+}
+
+func generatePassword(password string) string {
+	encrypted, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	return string(encrypted)
 }

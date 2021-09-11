@@ -47,17 +47,3 @@ func (mr *MockServiceMockRecorder) GenerateToken(username, password interface{})
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockService)(nil).GenerateToken), username, password)
 }
-
-// IsValidToken mocks base method.
-func (m *MockService) IsValidToken(token string) bool {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsValidToken", token)
-	ret0, _ := ret[0].(bool)
-	return ret0
-}
-
-// IsValidToken indicates an expected call of IsValidToken.
-func (mr *MockServiceMockRecorder) IsValidToken(token interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsValidToken", reflect.TypeOf((*MockService)(nil).IsValidToken), token)
-}

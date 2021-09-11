@@ -2,6 +2,7 @@ package security
 
 import (
 	"context"
+
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -12,7 +13,7 @@ import (
 
 //go:generate mockgen -source=./auth_repository.go -destination=./mock/auth_repository_mock.go
 type UserRepository interface {
-	FindUser(username, password string) (*domain.User, error)
+	FindUser(username string) (*domain.User, error)
 }
 
 type dynamoRepository struct {
@@ -24,8 +25,8 @@ func NewUserRepository(api wrapper.DynamoDBAPI, userTable string) *dynamoReposit
 	return &dynamoRepository{api: api, userTable: userTable}
 }
 
-func (repo dynamoRepository) FindUser(username, password string) (*domain.User, error) {
-	expr := repo.createExpression(username, password)
+func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
+	expr := repo.createExpression(username)
 	resp, err := repo.api.Scan(context.TODO(), buildScanInput(repo.userTable, expr))
 	if err != nil {
 		return nil, err
@@ -50,11 +51,10 @@ func buildScanInput(table string, expr expression.Expression) *dynamodb.ScanInpu
 	}
 }
 
-func (repo dynamoRepository) createExpression(username string, password string) expression.Expression {
+func (repo dynamoRepository) createExpression(username string) expression.Expression {
 	builderExpression := expression.NewBuilder()
 	userExpr := expression.Name("username").Equal(expression.Value(username))
-	passwordExpr := expression.Name("password").Equal(expression.Value(password))
-	builderExpression.WithCondition(userExpr.And(passwordExpr))
+	builderExpression.WithCondition(userExpr)
 	result, _ := builderExpression.Build()
 	return result
 }

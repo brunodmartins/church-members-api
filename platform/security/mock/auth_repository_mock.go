@@ -35,16 +35,16 @@ func (m *MockUserRepository) EXPECT() *MockUserRepositoryMockRecorder {
 }
 
 // FindUser mocks base method.
-func (m *MockUserRepository) FindUser(username, password string) (*domain.User, error) {
+func (m *MockUserRepository) FindUser(username string) (*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindUser", username, password)
+	ret := m.ctrl.Call(m, "FindUser", username)
 	ret0, _ := ret[0].(*domain.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindUser indicates an expected call of FindUser.
-func (mr *MockUserRepositoryMockRecorder) FindUser(username, password interface{}) *gomock.Call {
+func (mr *MockUserRepositoryMockRecorder) FindUser(username interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUser", reflect.TypeOf((*MockUserRepository)(nil).FindUser), username, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUser", reflect.TypeOf((*MockUserRepository)(nil).FindUser), username)
 }

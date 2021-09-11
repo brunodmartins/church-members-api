@@ -19,13 +19,17 @@ func (FiberApplication) Run() {
 
 	memberHandler := cdi.ProvideMemberHandler()
 	reportHandler := cdi.ProvideReportHandler()
-
-	memberHandler.SetUpRoutes(app)
-	reportHandler.SetUpRoutes(app)
+	authHandler := cdi.ProvideAuthHandler()
 
 	app.Get("/ping", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("/pong")
 	})
+
+	authHandler.SetUpRoutes(app)
+	app.Use(middleware.AuthMiddlewareMiddleWare)
+
+	memberHandler.SetUpRoutes(app)
+	reportHandler.SetUpRoutes(app)
 
 	logrus.Info("Application initialized")
 	log.Fatal(app.Listen(":8080"))

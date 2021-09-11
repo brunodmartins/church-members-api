@@ -14,6 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sns v1.7.1
 	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.1.0
 	github.com/golang/mock v1.3.1-0.20190508161146-9fa652df1129
@@ -25,5 +26,6 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.6.1
+	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/text v0.3.3
 )

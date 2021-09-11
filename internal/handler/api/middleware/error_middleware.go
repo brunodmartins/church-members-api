@@ -11,18 +11,17 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var ApiErrorMiddleWare = func(c *fiber.Ctx, err error) error {
+var ApiErrorMiddleWare = func(ctx *fiber.Ctx, err error) error {
 	log.WithError(err).Errorf("There was a error")
 	if apiError, ok := err.(apierrors.Error); ok {
-		return c.Status(apiError.StatusCode()).JSON(dto.ErrorResponse{
+		return ctx.Status(apiError.StatusCode()).JSON(dto.ErrorResponse{
 			Message: apiError.Error(),
 			Error:   apiError,
 		})
 	} else {
-		return c.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{
+		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{
 			Message: fmt.Sprintf("Unexpected error: %s", err.Error()),
 			Error:   err,
 		})
 	}
-
 }

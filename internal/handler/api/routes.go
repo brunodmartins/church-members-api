@@ -234,3 +234,23 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports/members", handler.generateMembersReport)
 }
+
+func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
+	// swagger:operation GET /users/token getToken
+	//
+	// Get a user Token
+	//
+	// Generates a token for a given user
+	//
+	// ---
+	// produces:
+	// - application/csv
+	// responses:
+	//   '201':
+	//     description: Token generated
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/users/token", handler.getToken)
+}

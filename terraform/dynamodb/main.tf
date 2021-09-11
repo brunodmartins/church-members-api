@@ -24,6 +24,19 @@ resource "aws_dynamodb_table" "member_history_table" {
   }
 }
 
+resource "aws_dynamodb_table" "user_table" {
+  name           = "user"
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 5
+  write_capacity = 5
+  hash_key       = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
 output "member_table_name" {
   value = aws_dynamodb_table.member_table.name
 }
@@ -32,7 +45,11 @@ output "member_history_table_name" {
   value = aws_dynamodb_table.member_history_table.name
 }
 
+output "user_table_name" {
+  value = aws_dynamodb_table.user_table.name
+}
+
 output "tables_arn" {
-  value = [aws_dynamodb_table.member_table.arn, aws_dynamodb_table.member_history_table.arn]
+  value = [aws_dynamodb_table.member_table.arn, aws_dynamodb_table.member_history_table.arn, aws_dynamodb_table.user_table.arn]
 }
 

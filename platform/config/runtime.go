@@ -16,13 +16,12 @@ func InitConfiguration() {
 	viper.Set("bundles.location", "bundles")
 	viper.Set("tables.member", os.Getenv("TABLE_MEMBER"))
 	viper.Set("tables.member_history", os.Getenv("TABLE_MEMBER_HISTORY"))
-	viper.Set("tables.user", os.Getenv("TABLE_USERS"))
+	viper.Set("tables.user", os.Getenv("TABLE_USER"))
 	viper.Set("pdf.font.path", "./fonts/Arial.ttf")
 	viper.Set("jobs.daily.phones", os.Getenv("JOBS_DAILY_PHONE"))
 	viper.Set("reports.topic", os.Getenv("REPORTS_TOPIC"))
 	viper.Set("security.token.secret", os.Getenv("TOKEN_SECRET"))
 	viper.Set("security.token.expiration", os.Getenv("TOKEN_EXPIRATION"))
-	viper.Set("security.password.secret", os.Getenv("PASSWORD_SECRET"))
 }
 
 func IsAWS() bool {

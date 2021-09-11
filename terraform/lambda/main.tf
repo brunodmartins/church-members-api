@@ -14,6 +14,10 @@ variable "member_history_table_name" {
   type = string
 }
 
+variable "user_table_name" {
+  type = string
+}
+
 variable "topic_arn" {
   type = string
 }
@@ -34,6 +38,14 @@ variable "jobs_daily_phone" {
   type = string
 }
 
+variable "security_token_secret" {
+  type = string
+}
+
+variable "security_token_expiration" {
+  type = string
+}
+
 
 resource "aws_lambda_function" "lambda_api" {
   function_name = "church-members-api-lambda"
@@ -51,7 +63,10 @@ resource "aws_lambda_function" "lambda_api" {
       "JOBS_DAILY_PHONE" : var.jobs_daily_phone,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
+      "TABLE_USER": var.user_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
+      "TOKEN_SECRET": var.security_token_secret,
+      "TOKEN_EXPIRATION": var.security_token_expiration,
     }
   }
 }

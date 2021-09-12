@@ -2,7 +2,6 @@ package security
 
 import (
 	"context"
-
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -54,7 +53,6 @@ func buildScanInput(table string, expr expression.Expression) *dynamodb.ScanInpu
 func (repo dynamoRepository) createExpression(username string) expression.Expression {
 	builderExpression := expression.NewBuilder()
 	userExpr := expression.Name("username").Equal(expression.Value(username))
-	builderExpression.WithCondition(userExpr)
-	result, _ := builderExpression.Build()
+	result, _ := builderExpression.WithFilter(userExpr).Build()
 	return result
 }

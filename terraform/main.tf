@@ -86,18 +86,12 @@ module "lambda" {
 
 }
 
-
-module "cognito" {
-  source = "./cognito"
-}
-
 module "gateway" {
-  source                = "./gateway"
-  region                = data.aws_region.current.name
-  account_id            = data.aws_caller_identity.current.account_id
-  cognito_user_pool_arn = module.cognito.user_pool_arn
-  lambda_name           = module.lambda.lambda_name
-  lambda_arn            = module.lambda.lambda_arn
+  source      = "./gateway"
+  region      = data.aws_region.current.name
+  account_id  = data.aws_caller_identity.current.account_id
+  lambda_name = module.lambda.lambda_name
+  lambda_arn  = module.lambda.lambda_arn
 }
 
 module "eventbridge" {

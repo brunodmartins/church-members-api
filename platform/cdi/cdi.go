@@ -6,6 +6,7 @@ import (
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
 	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
+	"github.com/BrunoDM2943/church-members-api/platform/security"
 	"github.com/spf13/viper"
 )
 
@@ -21,6 +22,17 @@ func ProvideMemberHandler() *api.MemberHandler {
 func ProvideReportHandler() *api.ReportHandler {
 	return api.NewReportHandler(provideReportGenerator())
 }
+
+func ProvideAuthHandler() *api.AuthHandler {
+	return api.NewAuthHandler(provideAuthService())
+}
+
+func provideAuthService() security.Service {
+	return security.NewAuthService(
+			security.NewUserRepository(provideDynamoDB(), viper.GetString("tables.user")),
+		)
+}
+
 
 func ProvideMemberService() member2.Service {
 	if memberService == nil {

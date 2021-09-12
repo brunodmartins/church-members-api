@@ -6,10 +6,6 @@ variable "account_id" {
   type = string
 }
 
-variable "cognito_user_pool_arn" {
-  type = string
-}
-
 variable "lambda_name" {
   type = string
 }
@@ -24,7 +20,6 @@ data "template_file" "aws_api_swagger" {
     aws_region     = var.region
     aws_account_id = var.account_id
     lambda_id      = var.lambda_name
-    cognito_pool   = var.cognito_user_pool_arn
   }
 }
 
@@ -57,15 +52,6 @@ resource "aws_api_gateway_stage" "api_stage" {
   deployment_id = aws_api_gateway_deployment.api_deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api_gateway.id
   stage_name    = "prod"
-}
-
-resource "aws_api_gateway_authorizer" "authorizer" {
-  name        = "authorizer"
-  rest_api_id = aws_api_gateway_rest_api.api_gateway.id
-  type        = "COGNITO_USER_POOLS"
-  provider_arns = [
-    var.cognito_user_pool_arn
-  ]
 }
 
 

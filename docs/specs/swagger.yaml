@@ -521,6 +521,20 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Marriage report
+  /users/token:
+    get:
+      description: Generates a token for a given user
+      operationId: getToken
+      produces:
+      - application/csv
+      responses:
+        "201":
+          description: Token generated
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get a user Token
 produces:
 - application/json
 - application/csv

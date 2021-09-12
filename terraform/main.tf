@@ -35,6 +35,14 @@ variable "jobs_daily_phone" {
   type = string
 }
 
+variable "security_token_secret" {
+  type = string
+}
+
+variable "security_token_expiration" {
+  type = string
+}
+
 provider "aws" {
   profile = "default"
   region  = var.region
@@ -65,6 +73,7 @@ module "lambda" {
   source                    = "./lambda"
   member_table_name         = module.dynamodb.member_table_name
   member_history_table_name = module.dynamodb.member_history_table_name
+  user_table_name           = module.dynamodb.user_table_name
   image_uri                 = module.ecr.image_id
   lambda_role_arn           = module.iam.lambda_role_arn
   topic_arn                 = module.sns.topic_arn
@@ -72,21 +81,17 @@ module "lambda" {
   church_name               = var.church_name
   church_name_short         = var.church_name_short
   jobs_daily_phone          = var.jobs_daily_phone
+  security_token_secret     = var.security_token_secret
+  security_token_expiration = var.security_token_expiration
 
-}
-
-
-module "cognito" {
-  source = "./cognito"
 }
 
 module "gateway" {
-  source                = "./gateway"
-  region                = data.aws_region.current.name
-  account_id            = data.aws_caller_identity.current.account_id
-  cognito_user_pool_arn = module.cognito.user_pool_arn
-  lambda_name           = module.lambda.lambda_name
-  lambda_arn            = module.lambda.lambda_arn
+  source      = "./gateway"
+  region      = data.aws_region.current.name
+  account_id  = data.aws_caller_identity.current.account_id
+  lambda_name = module.lambda.lambda_name
+  lambda_arn  = module.lambda.lambda_arn
 }
 
 module "eventbridge" {

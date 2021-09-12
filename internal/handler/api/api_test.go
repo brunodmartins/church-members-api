@@ -16,6 +16,7 @@ import (
 type httpResult struct {
 	status int
 	body   []byte
+	cookies []*http.Cookie
 }
 
 type mapAssert func(parsedBody interface{})
@@ -54,6 +55,7 @@ func runTest(app *fiber.App, req *http.Request) httpResult {
 	return httpResult{
 		status: resp.StatusCode,
 		body:   body,
+		cookies: resp.Cookies(),
 	}
 }
 

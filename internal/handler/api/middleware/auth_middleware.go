@@ -18,5 +18,5 @@ var AuthMiddlewareMiddleWare = func(ctx *fiber.Ctx) error {
 	if !security.IsValidToken(token) {
 		return apierrors.NewApiError("Invalid authorization token", http.StatusForbidden)
 	}
-	return nil
+	return ctx.Next()
 }

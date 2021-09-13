@@ -22,7 +22,7 @@ func init() {
 
 func TestLastDayRange(t *testing.T) {
 	start, end := lastDaysRange()
-	assert.Equal(t, start.Add(7*24*time.Hour), end)
+	assert.Equal(t, start.Add(6*24*time.Hour), end)
 }
 
 func TestFmtDate(t *testing.T) {

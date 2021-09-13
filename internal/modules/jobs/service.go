@@ -2,14 +2,15 @@ package jobs
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+	"time"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
 	"github.com/BrunoDM2943/church-members-api/platform/i18n"
 	"github.com/spf13/viper"
-	"sort"
-	"strings"
-	"time"
 )
 
 //Job exposing jobs operations
@@ -106,5 +107,5 @@ func fmtDate(date time.Time) string {
 
 func lastDaysRange() (time.Time, time.Time) {
 	now := time.Now()
-	return now.Add(-7 * 24 * time.Hour), now
+	return now.Add(-6 * 24 * time.Hour), now
 }

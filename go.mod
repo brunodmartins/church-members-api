@@ -1,6 +1,6 @@
 module github.com/BrunoDM2943/church-members-api
 
-go 1.13
+go 1.16
 
 require (
 	github.com/BurntSushi/toml v0.3.1
@@ -14,9 +14,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sns v1.7.1
 	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.1.0
+	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/golang/mock v1.3.1-0.20190508161146-9fa652df1129
 	github.com/google/uuid v1.2.0
 	github.com/graphql-go/graphql v0.7.8

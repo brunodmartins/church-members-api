@@ -6,6 +6,7 @@ import (
 	"github.com/BrunoDM2943/church-members-api/platform/security"
 	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -13,6 +14,7 @@ import (
 )
 
 func TestAuthMiddleware(t *testing.T) {
+	viper.Set("security.token.expiration", 1)
 	app := fiber.New(fiber.Config{
 		ErrorHandler: ApiErrorMiddleWare,
 	})

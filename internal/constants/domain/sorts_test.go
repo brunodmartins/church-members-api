@@ -1,11 +1,11 @@
 package domain
 
 import (
+	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
 	"time"
 
-	"github.com/magiconair/properties/assert"
 )
 
 func TestSortByBirth(t *testing.T) {
@@ -88,4 +88,11 @@ func TestSortByName(t *testing.T) {
 	sort.Sort(SortByName(members))
 	assert.Equal(t, members[0].Person.GetFullName(), "John Doe")
 	assert.Equal(t, members[1].Person.GetFullName(), "John Mclane")
+}
+
+func TestLessByDay(t *testing.T) {
+	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0,1,0)))
+	assert.False(t, lessByDay(time.Now().AddDate(0,1,0), time.Now()))
+	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0,0,1)))
+	assert.False(t, lessByDay(time.Now().AddDate(0,0,1), time.Now()))
 }

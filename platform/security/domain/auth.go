@@ -1,9 +1,10 @@
 package domain
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"github.com/spf13/viper"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/spf13/viper"
 )
 
 type User struct {
@@ -16,21 +17,21 @@ type User struct {
 type Claim struct {
 	ID       string `json:"id"`
 	UserName string `json:"username"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 func NewClaim(user *User) *Claim {
 	return &Claim{
-		ID: user.ID,
+		ID:       user.ID,
 		UserName: user.UserName,
-		StandardClaims: jwt.StandardClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: GetExpirationTime(),
 			Issuer:    "church-members-api",
 		},
 	}
 }
 
-func GetExpirationTime() int64 {
+func GetExpirationTime() *jwt.NumericDate {
 	hoursToExpire := viper.GetInt("security.token.expiration")
-	return time.Now().UTC().Add(time.Duration(hoursToExpire) * time.Hour).Unix()
+	return jwt.NewNumericDate(time.Now().Add(time.Duration(hoursToExpire) * time.Hour))
 }

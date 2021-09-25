@@ -2,12 +2,13 @@ package api
 
 import (
 	"encoding/base64"
+	"net/http"
+	"strings"
+
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
 	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strings"
 )
 
 type AuthHandler struct {
@@ -41,9 +42,9 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 
 func (handler *AuthHandler) buildCookie(token string) *fiber.Cookie {
 	return &fiber.Cookie{
-		Name:  "token",
-		Value: token,
-		MaxAge: int(domain.GetExpirationTime()),
+		Name:   "token",
+		Value:  token,
+		MaxAge: int(domain.GetExpirationTime().Time.Unix()),
 	}
 }
 

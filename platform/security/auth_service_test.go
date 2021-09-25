@@ -1,6 +1,7 @@
 package security
 
 import (
+	"github.com/spf13/viper"
 	"net/http"
 	"testing"
 
@@ -45,6 +46,7 @@ func TestAuthService_GenerateToken(t *testing.T) {
 }
 
 func TestAuthService_IsValidToken(t *testing.T) {
+	viper.Set("security.token.expiration", 1)
 	assert.False(t, IsValidToken(""))
 	assert.True(t, IsValidToken(buildToken(buildClaim())))
 }

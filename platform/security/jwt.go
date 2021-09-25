@@ -2,7 +2,7 @@ package security
 
 import (
 	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
-	"github.com/dgrijalva/jwt-go"
+	jwt "github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )

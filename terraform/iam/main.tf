@@ -2,10 +2,6 @@ variable "dynamodb_tables" {
   type = list(string)
 }
 
-variable "email_sender_arn" {
-  type = string
-}
-
 resource "aws_iam_policy" "church_members_api_policy" {
   name        = "church-members-api-policy"
   description = "This policy allow church-members-api full execution"
@@ -45,7 +41,7 @@ resource "aws_iam_policy" "church_members_api_policy" {
           "SES:SendEmail",
           "SES:SendRawEmail"
         ]
-        Resource = var.email_sender_arn
+        Resource = "*"
       }
     ]
   })

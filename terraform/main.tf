@@ -70,8 +70,9 @@ module "dynamodb" {
 }
 
 module "iam" {
-  source          = "./iam"
-  dynamodb_tables = module.dynamodb.tables_arn
+  source            = "./iam"
+  dynamodb_tables   = module.dynamodb.tables_arn
+  email_sender_arn  = module.ses.email_sender_arn
 }
 
 module "ecr" {

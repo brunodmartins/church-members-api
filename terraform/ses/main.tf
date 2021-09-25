@@ -23,3 +23,7 @@ resource "aws_ses_identity_policy" "policy" {
   name     = "church-members-ses-policy"
   policy   = data.aws_iam_policy_document.policy.json
 }
+
+output "email_sender_arn" {
+  value = aws_ses_email_identity.email.arn
+}

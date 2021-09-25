@@ -77,16 +77,22 @@ func (job weeklyBirthDaysJob) RunJob() error {
 		return err
 	}
 	sort.Sort(domain.SortByMarriageDay(marriageMembers))
-	return job.emailService.SendEmail(buildEmailCommand(job.buildMessage(birthMembers, marriageMembers)))
+	emailBody := job.buildMessage(birthMembers, marriageMembers)
+	for _, emailTO := range strings.Split(viper.GetString("jobs.weekly.emails"), ",") {
+		if err := job.emailService.SendEmail(buildEmailCommand(emailBody, emailTO)); err != nil {
+			return err
+		}
+		time.Sleep(2 * time.Second) //For SES Sandbox
+	}
+	return nil
 }
 
-func buildEmailCommand(message string) email.Command {
+func buildEmailCommand(message, emailTO string) email.Command {
 	tr := i18n.GetMessageService()
-
 	return email.Command{
 		Body: message,
 		Subject: tr.GetMessage("Jobs.Weekly.Title", "Weekly birthdays"),
-		Recipients: strings.Split(viper.GetString("jobs.weekly.emails"), ","),
+		Recipients: []string{emailTO},
 	}
 }
 

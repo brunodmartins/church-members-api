@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"fmt"
+	mock_email "github.com/BrunoDM2943/church-members-api/internal/services/email/mock"
 	"testing"
 	"time"
 
@@ -65,8 +66,8 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	defer ctrl.Finish()
 
 	memberService := mock_member.NewMockService(ctrl)
-	notificationService := mock_notification.NewMockService(ctrl)
-	job := newWeeklyBirthDaysJob(memberService, notificationService)
+	emailService := mock_email.NewMockService(ctrl)
+	job := newWeeklyBirthDaysJob(memberService, emailService)
 	now := time.Now()
 
 	t.Run("Success", func(t *testing.T) {
@@ -78,7 +79,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 			}
 			return BuildMarriageMembers(&now), nil
 		}).Times(2)
-		notificationService.EXPECT().NotifyTopic(gomock.Any()).Return(nil)
+		emailService.EXPECT().SendEmail(gomock.Any()).Return(nil)
 		assert.Nil(t, job.RunJob())
 	})
 	t.Run("Fail Notification", func(t *testing.T) {
@@ -90,7 +91,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 			}
 			return BuildMarriageMembers(&now), nil
 		}).Times(2)
-		notificationService.EXPECT().NotifyTopic(gomock.Any()).Return(genericError)
+		emailService.EXPECT().SendEmail(gomock.Any()).Return(genericError)
 		assert.NotNil(t, job.RunJob())
 	})
 	t.Run("Fail Search marriage members", func(t *testing.T) {

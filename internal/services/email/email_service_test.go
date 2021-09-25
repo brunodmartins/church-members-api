@@ -33,8 +33,8 @@ func TestEmailSender_buildEmailInput(t *testing.T) {
 
 func buildCommand() Command {
 	return Command{
-		recipients: []string{"test.com", "test1.com"},
-		body:       "test email",
-		subject:    "test subject",
+		Recipients: []string{"test.com", "test1.com"},
+		Body:       "test email",
+		Subject:    "test Subject",
 	}
 }

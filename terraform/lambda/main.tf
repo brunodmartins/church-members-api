@@ -38,11 +38,19 @@ variable "jobs_daily_phone" {
   type = string
 }
 
+variable "jobs_weekly_email" {
+  type = string
+}
+
 variable "security_token_secret" {
   type = string
 }
 
 variable "security_token_expiration" {
+  type = string
+}
+
+variable "email_sender" {
   type = string
 }
 
@@ -61,6 +69,8 @@ resource "aws_lambda_function" "lambda_api" {
       "CHURCH_NAME_SHORT" : var.church_name_short,
       "APP_LANG" : var.app_lang,
       "JOBS_DAILY_PHONE" : var.jobs_daily_phone,
+      "JOBS_WEEKLY_EMAIL" : var.jobs_weekly_email,
+      "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "TABLE_USER" : var.user_table_name,
@@ -85,6 +95,8 @@ resource "aws_lambda_function" "lambda_job" {
       "CHURCH_NAME_SHORT" : var.church_name_short,
       "APP_LANG" : var.app_lang,
       "JOBS_DAILY_PHONE" : var.jobs_daily_phone,
+      "JOBS_WEEKLY_EMAIL" : var.jobs_weekly_email,
+      "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "REPORTS_TOPIC" : var.topic_arn,

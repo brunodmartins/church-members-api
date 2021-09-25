@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"fmt"
+	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 	"sort"
 	"strings"
 	"time"
@@ -58,11 +59,11 @@ func (job dailyBirthDaysJob) buildMessage(members []*domain.Member) string {
 
 type weeklyBirthDaysJob struct {
 	memberService       member.Service
-	notificationService notification.Service
+	emailService 		email.Service
 }
 
-func newWeeklyBirthDaysJob(memberService member.Service, notificationService notification.Service) *weeklyBirthDaysJob {
-	return &weeklyBirthDaysJob{memberService: memberService, notificationService: notificationService}
+func newWeeklyBirthDaysJob(memberService member.Service, emailService email.Service) *weeklyBirthDaysJob {
+	return &weeklyBirthDaysJob{memberService: memberService, emailService: emailService}
 }
 
 func (job weeklyBirthDaysJob) RunJob() error {
@@ -76,7 +77,17 @@ func (job weeklyBirthDaysJob) RunJob() error {
 		return err
 	}
 	sort.Sort(domain.SortByMarriageDay(marriageMembers))
-	return job.notificationService.NotifyTopic(job.buildMessage(birthMembers, marriageMembers))
+	return job.emailService.SendEmail(buildEmailCommand(job.buildMessage(birthMembers, marriageMembers)))
+}
+
+func buildEmailCommand(message string) email.Command {
+	tr := i18n.GetMessageService()
+
+	return email.Command{
+		Body: message,
+		Subject: tr.GetMessage("Jobs.Weekly.Title", "Weekly birthdays"),
+		Recipients: strings.Split(viper.GetString("jobs.weekly.emails"), ","),
+	}
 }
 
 func (job weeklyBirthDaysJob) buildMessage(birthMembers, marriageMembers []*domain.Member) string {

@@ -5,6 +5,7 @@ import (
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
+	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
 	"github.com/spf13/viper"
@@ -43,6 +44,10 @@ func ProvideMemberService() member2.Service {
 
 func ProvideNotificationService() notification.Service {
 	return notification.NewService(provideSNS(), viper.GetString("reports.topic"))
+}
+
+func ProvideEmailService() email.Service {
+	return email.NewEmailService(provideSES(), viper.GetString("email.sender"))
 }
 
 func provideMemberRepository() member2.Repository {

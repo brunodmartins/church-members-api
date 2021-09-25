@@ -5,6 +5,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/sesv2"
 )
 
 func provideDynamoDB() *dynamodb.Client {
@@ -22,3 +24,9 @@ func provideSNS() *sns.Client {
 	}
 	return sns.NewFromConfig(cfg)
 }
+
+func provideSES() *sesv2.SESV2 {
+	mySession := session.Must(session.NewSession())
+	return sesv2.New(mySession)
+}
+

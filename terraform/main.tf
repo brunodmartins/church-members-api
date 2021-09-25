@@ -35,11 +35,20 @@ variable "jobs_daily_phone" {
   type = string
 }
 
+variable "jobs_weekly_email" {
+  type = string
+}
+
+
 variable "security_token_secret" {
   type = string
 }
 
 variable "security_token_expiration" {
+  type = string
+}
+
+variable "email_sender" {
   type = string
 }
 
@@ -51,6 +60,10 @@ provider "aws" {
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
+module "ses" {
+  source = "./ses"
+  email = var.email_sender
+}
 
 module "dynamodb" {
   source = "./dynamodb"
@@ -81,9 +94,10 @@ module "lambda" {
   church_name               = var.church_name
   church_name_short         = var.church_name_short
   jobs_daily_phone          = var.jobs_daily_phone
+  jobs_weekly_email          = var.jobs_weekly_email
   security_token_secret     = var.security_token_secret
   security_token_expiration = var.security_token_expiration
-
+  email_sender = var.email_sender
 }
 
 module "gateway" {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	mock_security "github.com/BrunoDM2943/church-members-api/platform/security/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -27,9 +28,10 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		service.EXPECT().GenerateToken(userName, password).Return("token", nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)))
-		result := runTest(app, request)
-		result.assertStatus(t, http.StatusCreated)
-		assert.NotEmpty(t, result.cookies[0].Value)
+		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
+		})
+
 	})
 	t.Run("Fail - Error on service - 500", func(t *testing.T) {
 		service.EXPECT().GenerateToken(userName, password).Return("", genericError)

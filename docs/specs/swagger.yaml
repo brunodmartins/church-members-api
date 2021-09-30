@@ -159,6 +159,14 @@ definitions:
         $ref: '#/definitions/Religion'
     type: object
     x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+  GetTokenResponse:
+    description: GetTokenResponse for HTTP get token responses
+    properties:
+      token:
+        type: string
+        x-go-name: Token
+    type: object
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
   GraphQLErrorResponse:
     description: GraphQLErrorResponse for HTTP error responses
     properties:

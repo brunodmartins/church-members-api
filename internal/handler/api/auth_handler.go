@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/base64"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"net/http"
 	"strings"
 
@@ -36,8 +37,7 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	ctx.Cookie(handler.buildCookie(token))
-	return ctx.SendStatus(http.StatusCreated)
+	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{Token: token})
 }
 
 func (handler *AuthHandler) buildCookie(token string) *fiber.Cookie {

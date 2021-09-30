@@ -29,3 +29,9 @@ type CreateMemberResponse struct {
 type GetMemberResponse struct {
 	*domain.Member
 }
+
+//GetTokenResponse for HTTP get token responses
+// swagger:model GetTokenResponse
+type GetTokenResponse struct {
+	Token	string `json:"token"`
+}

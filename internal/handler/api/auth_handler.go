@@ -45,6 +45,7 @@ func (handler *AuthHandler) buildCookie(token string) *fiber.Cookie {
 		Name:   "token",
 		Value:  token,
 		MaxAge: int(domain.GetExpirationTime().Time.Unix()),
+		SameSite: "None",
 	}
 }
 

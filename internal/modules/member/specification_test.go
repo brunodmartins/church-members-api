@@ -3,6 +3,7 @@ package member
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/platform/utils"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"testing"
 	"time"
@@ -110,8 +111,8 @@ func TestBirthDay(t *testing.T) {
 }
 
 func TestConvertDate(t *testing.T) {
-	assert.Equal(t, "01-01", convertDate(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)))
-	assert.Equal(t, "12-24", convertDate(time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC)))
+	assert.Equal(t, "01-01", utils.ConvertDate(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)))
+	assert.Equal(t, "12-24", utils.ConvertDate(time.Date(2020, 12, 24, 0, 0, 0, 0, time.UTC)))
 }
 
 func BuildChildren() *domain.Member {

@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"github.com/BrunoDM2943/church-members-api/platform/utils"
 	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -52,6 +53,8 @@ type MemberItem struct {
 	AcceptedJesusDate      *time.Time `dynamodbav:"acceptedJesusDate"`
 	BaptismDate            *time.Time `dynamodbav:"baptismDate"`
 	Active                 bool       `dynamodbav:"active,omitempty"`
+	BirthDateShort            string `dynamodbav:"birthDateShort"`
+	MarriageDateShort            string `dynamodbav:"marriageDateShort"`
 }
 
 //NewMemberItem creates a MemberItem from a domain.Member
@@ -101,7 +104,16 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		AcceptedJesusDate: member.Religion.AcceptedJesusDate,
 		BaptismDate:       member.Religion.BaptismDate,
 		Active:            member.Active,
+		BirthDateShort:    utils.ConvertDate(member.Person.BirthDate),
+		MarriageDateShort:    convertMarriageDate(member.Person.MarriageDate),
 	}
+}
+
+func convertMarriageDate(marriageDate *time.Time) string {
+	if marriageDate != nil {
+		return utils.ConvertDate(*marriageDate)
+	}
+	return ""
 }
 
 //ToMember converts a MemberItem into a domain.Member

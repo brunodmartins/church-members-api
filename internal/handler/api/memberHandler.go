@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
@@ -29,7 +30,7 @@ func NewMemberHandler(service member2.Service) *MemberHandler {
 
 func (handler *MemberHandler) postMember(ctx *fiber.Ctx) error {
 	memberRequestDTO := new(dto.CreateMemberRequest)
-	ctx.BodyParser(&memberRequestDTO)
+	_ = json.Unmarshal(ctx.Body(), &memberRequestDTO)
 	if memberRequestDTO.Member == nil {
 		return apierrors.NewApiError("Invalid body received", http.StatusBadRequest)
 	}

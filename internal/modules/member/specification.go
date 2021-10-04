@@ -1,9 +1,9 @@
 package member
 
 import (
-	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/platform/utils"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"time"
 )
@@ -96,32 +96,19 @@ func applySpecifications(members []*domain.Member, specification []Specification
 
 func LastMarriages(startDate, endDate time.Time) QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(convertDate(startDate)), expression.Value(convertDate(endDate))))
+		return builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))))
 	}
 }
 
 func LastBirths(startDate, endDate time.Time) QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("birthDateShort").Between(expression.Value(convertDate(startDate)), expression.Value(convertDate(endDate))))
+		return builderExpression.WithFilter(expression.Name("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))))
 	}
 }
 
 func WithBirthday(date time.Time) QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("birthDateShort").Equal(expression.Value(convertDate(date))))
+		return builderExpression.WithFilter(expression.Name("birthDateShort").Equal(expression.Value(utils.ConvertDate(date))))
 	}
 }
 
-func convertDate(date time.Time) string {
-	month := date.Month()
-	day := date.Day()
-	fmtMonth := fmt.Sprintf("%d", month)
-	fmtDay := fmt.Sprintf("%d", day)
-	if month < 10 {
-		fmtMonth = fmt.Sprintf("0%d", month)
-	}
-	if day < 10 {
-		fmtDay = fmt.Sprintf("0%d", day)
-	}
-	return fmt.Sprintf("%s-%s", fmtMonth, fmtDay)
-}

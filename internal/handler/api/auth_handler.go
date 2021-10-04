@@ -8,7 +8,6 @@ import (
 
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
-	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -38,15 +37,6 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 		return err
 	}
 	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{Token: token})
-}
-
-func (handler *AuthHandler) buildCookie(token string) *fiber.Cookie {
-	return &fiber.Cookie{
-		Name:   "token",
-		Value:  token,
-		MaxAge: int(domain.GetExpirationTime().Time.Unix()),
-		SameSite: "None",
-	}
 }
 
 func (handler *AuthHandler) getUser(header string) (string, string) {

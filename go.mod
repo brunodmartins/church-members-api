@@ -13,7 +13,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.2.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.2.1
 	github.com/aws/aws-sdk-go-v2/service/sns v1.7.1
-	github.com/awslabs/aws-lambda-go-api-proxy v0.9.0
+	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.1.0

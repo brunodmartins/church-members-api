@@ -73,7 +73,7 @@ func (handler *MemberHandler) putStatus(ctx *fiber.Ctx) error {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
 	putMemberStatusCommand := new(dto.PutMemberStatusRequest)
-	ctx.BodyParser(&putMemberStatusCommand)
+	_ = json.Unmarshal(ctx.Body(), &putMemberStatusCommand)
 	if err := Validate(putMemberStatusCommand); err != nil {
 		return err
 	}

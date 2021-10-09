@@ -254,3 +254,34 @@ func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/users/token", handler.getToken)
 }
+
+func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
+	// swagger:operation POST /users postUser
+	//
+	// Create a user
+	//
+	// Register the receiving user
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: user
+	//   in: body
+	//   description: The user to be registered
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/CreateUserRequest"
+	// responses:
+	//   '201':
+	//     description: User registered
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Post("/users", handler.PostUser)
+}

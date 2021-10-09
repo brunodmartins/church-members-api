@@ -19,7 +19,6 @@ func buildUser(id string, password string) *domain.User {
 		UserName: userName,
 		Email:    "",
 		Password: []byte(password),
-		Role:     role.READ_ONLY,
+		Role:     role.USER,
 	}
 }
-

@@ -8,7 +8,7 @@ import (
 
 func Test_generateToken(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
-		jwtToken := GenerateJWTToken(buildClaim())
+		jwtToken := GenerateJWTToken(buildUser("test_user", "id"))
 		assert.NotEmpty(t, jwtToken)
 	})
 }
@@ -16,7 +16,7 @@ func Test_generateToken(t *testing.T) {
 func Test_getClaim(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		viper.Set("security.token.expiration", 1)
-		claim, err := getClaim(buildToken(buildClaim()))
+		claim, err := getClaim(buildToken())
 		assert.NotNil(t, claim)
 		assert.Nil(t, err)
 	})
@@ -28,7 +28,7 @@ func Test_getClaim(t *testing.T) {
 	})
 	t.Run("Fail - expired", func(t *testing.T) {
 		viper.Set("security.token.expiration", -1)
-		claim, err := getClaim(buildToken(buildClaim()))
+		claim, err := getClaim(buildToken())
 		assert.Nil(t, claim)
 		assert.NotNil(t, err)
 	})

@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"errors"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
-	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
@@ -64,10 +64,10 @@ func TestErrorMiddleware(t *testing.T) {
 }
 
 func buildToken() string {
-	return security.GenerateJWTToken(domain.NewClaim(&domain.User{
+	return security.GenerateJWTToken(&domain.User{
 		ID:       "id",
 		UserName: "test",
-	}))
+	})
 }
 
 func buildRequest() *http.Request {

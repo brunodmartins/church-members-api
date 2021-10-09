@@ -5,6 +5,7 @@ import (
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
@@ -30,7 +31,7 @@ func ProvideAuthHandler() *api.AuthHandler {
 
 func provideAuthService() security.Service {
 	return security.NewAuthService(
-			security.NewUserRepository(provideDynamoDB(), viper.GetString("tables.user")),
+			user.NewRepository(provideDynamoDB(), viper.GetString("tables.user")),
 		)
 }
 

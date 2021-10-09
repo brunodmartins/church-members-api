@@ -1,12 +1,12 @@
 package security
 
 import (
+	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
 	"github.com/spf13/viper"
 	"net/http"
 	"testing"
 
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
-	mock_security "github.com/BrunoDM2943/church-members-api/platform/security/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
@@ -15,7 +15,7 @@ import (
 func TestAuthService_GenerateToken(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	repo := mock_security.NewMockUserRepository(ctrl)
+	repo := mock_user.NewMockRepository(ctrl)
 	service := NewAuthService(repo)
 
 	t.Run("Success", func(t *testing.T) {
@@ -48,7 +48,7 @@ func TestAuthService_GenerateToken(t *testing.T) {
 func TestAuthService_IsValidToken(t *testing.T) {
 	viper.Set("security.token.expiration", 1)
 	assert.False(t, IsValidToken(""))
-	assert.True(t, IsValidToken(buildToken(buildClaim())))
+	assert.True(t, IsValidToken(buildToken()))
 }
 
 func generatePassword(password string) string {

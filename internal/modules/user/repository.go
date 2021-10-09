@@ -1,17 +1,17 @@
-package security
+package user
 
 import (
 	"context"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
-	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-//go:generate mockgen -source=./auth_repository.go -destination=./mock/auth_repository_mock.go
-type UserRepository interface {
+//go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
+type Repository interface {
 	FindUser(username string) (*domain.User, error)
 }
 
@@ -20,7 +20,7 @@ type dynamoRepository struct {
 	userTable string
 }
 
-func NewUserRepository(api wrapper.DynamoDBAPI, userTable string) *dynamoRepository {
+func NewRepository(api wrapper.DynamoDBAPI, userTable string) *dynamoRepository {
 	return &dynamoRepository{api: api, userTable: userTable}
 }
 

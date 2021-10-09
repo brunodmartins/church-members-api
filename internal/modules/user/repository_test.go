@@ -1,4 +1,4 @@
-package security
+package user
 
 import (
 	"testing"
@@ -12,13 +12,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const userTable = "User-table"
+const (
+	userTable = "User-table"
+)
 
 func TestDynamoRepository_FindUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewUserRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, userTable)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems()}, nil)
 		user, err := repo.FindUser(userName)

@@ -1,10 +1,10 @@
 package security
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"net/http"
 
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
-	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -14,10 +14,10 @@ type Service interface {
 }
 
 type authService struct {
-	userRepository UserRepository
+	userRepository user.Repository
 }
 
-func NewAuthService(userRepository UserRepository) Service {
+func NewAuthService(userRepository user.Repository) Service {
 	return &authService{userRepository: userRepository}
 }
 
@@ -33,7 +33,7 @@ func (s *authService) GenerateToken(username, password string) (string, error) {
 	if err != nil {
 		return "", s.buildAuthError()
 	}
-	return GenerateJWTToken(domain.NewClaim(user)), nil
+	return GenerateJWTToken(user), nil
 }
 
 func (s *authService) buildAuthError() apierrors.Error {

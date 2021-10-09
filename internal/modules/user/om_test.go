@@ -1,4 +1,4 @@
-package security
+package user
 
 import (
 	"errors"
@@ -21,6 +21,3 @@ func buildUser(id string, password string) *domain.User {
 	}
 }
 
-func buildToken() string {
-	return GenerateJWTToken(&domain.User{UserName: "test_user", ID: "id"})
-}

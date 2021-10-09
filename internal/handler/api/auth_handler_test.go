@@ -64,10 +64,6 @@ func buildAuthorizationHeader(request *http.Request, value string) {
 	request.Header.Set("Authorization", value)
 }
 
-func TestBuildCookie(t *testing.T) {
-
-}
-
 func encodeValue(value string) string {
 	return base64.StdEncoding.EncodeToString(bytes.NewBufferString(value).Bytes())
 }

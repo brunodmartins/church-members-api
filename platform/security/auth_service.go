@@ -2,10 +2,10 @@ package security
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
+	"github.com/BrunoDM2943/church-members-api/platform/crypto"
 	"net/http"
 
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
-	"golang.org/x/crypto/bcrypt"
 )
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go
@@ -29,7 +29,7 @@ func (s *authService) GenerateToken(username, password string) (string, error) {
 	if user == nil {
 		return "", s.buildAuthError()
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err = crypto.IsSamePassword(user.Password, password)
 	if err != nil {
 		return "", s.buildAuthError()
 	}

@@ -1,7 +1,7 @@
 package report_test
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/report"
@@ -98,7 +98,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
-		out, err := service.ClassificationReport(enum.ADULT)
+		out, err := service.ClassificationReport(classification.ADULT)
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
 	})
@@ -106,7 +106,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		querySpec := member.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
-		_, err := service.ClassificationReport(enum.ADULT)
+		_, err := service.ClassificationReport(classification.ADULT)
 		assert.NotNil(t, err)
 	})
 

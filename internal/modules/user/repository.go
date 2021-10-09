@@ -8,11 +8,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/google/uuid"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
 	FindUser(username string) (*domain.User, error)
+	SaveUser(user *domain.User) error
 }
 
 type dynamoRepository struct {
@@ -20,7 +22,7 @@ type dynamoRepository struct {
 	userTable string
 }
 
-func NewRepository(api wrapper.DynamoDBAPI, userTable string) *dynamoRepository {
+func NewRepository(api wrapper.DynamoDBAPI, userTable string) Repository {
 	return &dynamoRepository{api: api, userTable: userTable}
 }
 
@@ -38,6 +40,16 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 		}
 	}
 	return nil, nil
+}
+
+func (repo dynamoRepository) SaveUser(user *domain.User) error {
+	user.ID = uuid.NewString()
+	av, _ := attributevalue.MarshalMap(user)
+	_, err := repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
+		Item:      av,
+		TableName: aws.String(repo.userTable),
+	})
+	return err
 }
 
 func buildScanInput(table string, expr expression.Expression) *dynamodb.ScanInput {

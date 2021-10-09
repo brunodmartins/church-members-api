@@ -48,3 +48,17 @@ func (mr *MockRepositoryMockRecorder) FindUser(username interface{}) *gomock.Cal
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUser", reflect.TypeOf((*MockRepository)(nil).FindUser), username)
 }
+
+// SaveUser mocks base method.
+func (m *MockRepository) SaveUser(user *domain.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveUser", user)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveUser indicates an expected call of SaveUser.
+func (mr *MockRepositoryMockRecorder) SaveUser(user interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUser", reflect.TypeOf((*MockRepository)(nil).SaveUser), user)
+}

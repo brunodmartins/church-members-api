@@ -17,7 +17,7 @@ func buildUser(id string, password string) *domain.User {
 		ID:       id,
 		UserName: userName,
 		Email:    "",
-		Password: password,
+		Password: []byte(password),
 	}
 }
 

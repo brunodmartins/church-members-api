@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
@@ -20,7 +20,7 @@ func NewReportHandler(reportGenerator report2.Service) *ReportHandler {
 }
 
 func (handler *ReportHandler) generateClassificationReport(ctx *fiber.Ctx) error {
-	classification, err := new(enum.Classification).From(ctx.Params("classification"))
+	classification, err := classification.From(ctx.Params("classification"))
 	if err != nil {
 		return apierrors.NewApiError("Invalid classification: " + err.Error(), http.StatusBadRequest)
 	}

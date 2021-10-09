@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	mock_report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/mock"
 	"net/http"
 	"testing"
@@ -90,26 +90,26 @@ func TestClassificationReport(t *testing.T) {
 	reportHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200 - CHILDREN", func(t *testing.T) {
-		reports.EXPECT().ClassificationReport(gomock.Eq(enum.CHILDREN))
+		reports.EXPECT().ClassificationReport(gomock.Eq(classification.CHILDREN))
 		runTest(app, buildGet("/reports/members/classification/children")).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Success - 200 - TEEN", func(t *testing.T) {
-		reports.EXPECT().ClassificationReport(gomock.Eq(enum.TEEN))
+		reports.EXPECT().ClassificationReport(gomock.Eq(classification.TEEN))
 		runTest(app, buildGet("/reports/members/classification/teen")).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Success - 200 - ADULT", func(t *testing.T) {
-		reports.EXPECT().ClassificationReport(gomock.Eq(enum.ADULT))
+		reports.EXPECT().ClassificationReport(gomock.Eq(classification.ADULT))
 		runTest(app, buildGet("/reports/members/classification/adult")).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Success - 200 - YOUNG", func(t *testing.T) {
-		reports.EXPECT().ClassificationReport(gomock.Eq(enum.YOUNG))
+		reports.EXPECT().ClassificationReport(gomock.Eq(classification.YOUNG))
 		runTest(app, buildGet("/reports/members/classification/young")).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
 		runTest(app, buildGet("/reports/members/classification/X")).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().ClassificationReport(gomock.Eq(enum.YOUNG)).Return([]byte{}, genericError)
+		reports.EXPECT().ClassificationReport(gomock.Eq(classification.YOUNG)).Return([]byte{}, genericError)
 		runTest(app, buildGet("/reports/members/classification/young")).assertStatus(t, http.StatusInternalServerError)
 	})
 

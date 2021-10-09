@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"testing"
 	"time"
 
@@ -28,28 +28,28 @@ func TestFormattedContact(t *testing.T) {
 
 func TestClassification(t *testing.T) {
 	t.Run("Children", func(t *testing.T) {
-		assert.Equal(t, enum.CHILDREN, Member{
+		assert.Equal(t, classification.CHILDREN, Member{
 			Person: Person{
 				BirthDate: time.Now(),
 			},
 		}.Classification())
 	})
 	t.Run("Teen", func(t *testing.T) {
-		assert.Equal(t, enum.TEEN, Member{
+		assert.Equal(t, classification.TEEN, Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-17, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Young", func(t *testing.T) {
-		assert.Equal(t, enum.YOUNG, Member{
+		assert.Equal(t, classification.YOUNG, Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-29, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Adult Single", func(t *testing.T) {
-		assert.Equal(t, enum.ADULT, Member{
+		assert.Equal(t, classification.ADULT, Member{
 			Person: Person{
 				BirthDate: time.Now().AddDate(-33, 0, 0),
 			},
@@ -57,7 +57,7 @@ func TestClassification(t *testing.T) {
 	})
 	t.Run("Adult Married", func(t *testing.T) {
 		now := time.Now()
-		assert.Equal(t, enum.ADULT, Member{
+		assert.Equal(t, classification.ADULT, Member{
 			Person: Person{
 				BirthDate:    time.Now().AddDate(-25, 0, 0),
 				MarriageDate: &now,

@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/role"
 	"github.com/BrunoDM2943/church-members-api/platform/utils"
 	"time"
 
@@ -171,5 +172,35 @@ func (item *MemberItem) ToMember() *domain.Member {
 			BaptismDate:       item.BaptismDate,
 		},
 		Active: item.Active,
+	}
+}
+
+type UserItem struct {
+	ID       string    `dynamodbav:"id"`
+	UserName string    `dynamodbav:"username"`
+	Email    string    `dynamodbav:"email"`
+	Role     string 	`dynamodbav:"role"`
+	Password string    `dynamodbav:"password"`
+}
+
+//NewUserItem creates a UserItem from a domain.User
+func NewUserItem(user *domain.User) *UserItem {
+	return &UserItem{
+		ID: user.ID,
+		UserName: user.UserName,
+		Email: user.Email,
+		Role: user.Role.String(),
+		Password: string(user.Password),
+	}
+}
+
+//ToItem converts a UserItem into a domain.User
+func (item *UserItem) ToItem() *domain.User {
+	return &domain.User{
+		ID:       item.ID,
+		UserName: item.UserName,
+		Email:    item.Email,
+		Role:     role.From(item.Role),
+		Password: []byte(item.Password),
 	}
 }

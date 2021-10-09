@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -34,9 +35,11 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 	}
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
-			record := &domain.User{}
-			attributevalue.UnmarshalMap(item, record)
-			return record, nil
+			record := &dto.UserItem{}
+			if err = attributevalue.UnmarshalMap(item, record); err != nil{
+				return nil, err
+			}
+			return record.ToItem(), nil
 		}
 	}
 	return nil, nil
@@ -44,7 +47,7 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 
 func (repo dynamoRepository) SaveUser(user *domain.User) error {
 	user.ID = uuid.NewString()
-	av, _ := attributevalue.MarshalMap(user)
+	av, _ := attributevalue.MarshalMap(dto.NewUserItem(user))
 	_, err := repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String(repo.userTable),

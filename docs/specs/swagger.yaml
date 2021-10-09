@@ -93,6 +93,23 @@ definitions:
         x-go-name: ID
     type: object
     x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+  CreateUserRequest:
+    description: CreateUserRequest for HTTP calls to post user
+    properties:
+      email:
+        type: string
+        x-go-name: Email
+      password:
+        type: string
+        x-go-name: Password
+      role:
+        type: string
+        x-go-name: Role
+      username:
+        type: string
+        x-go-name: UserName
+    type: object
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
   ErrorResponse:
     description: ErrorResponse for HTTP error responses
     properties:
@@ -529,6 +546,31 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
       summary: Marriage report
+  /users:
+    post:
+      description: Register the receiving user
+      operationId: postUser
+      parameters:
+      - description: The user to be registered
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Create a user
   /users/token:
     get:
       description: Generates a token for a given user

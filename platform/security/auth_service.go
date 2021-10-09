@@ -1,11 +1,11 @@
 package security
 
 import (
+	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
+	"github.com/BrunoDM2943/church-members-api/platform/crypto"
 	"net/http"
 
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
-	"github.com/BrunoDM2943/church-members-api/platform/security/domain"
-	"golang.org/x/crypto/bcrypt"
 )
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go
@@ -14,10 +14,10 @@ type Service interface {
 }
 
 type authService struct {
-	userRepository UserRepository
+	userRepository user.Repository
 }
 
-func NewAuthService(userRepository UserRepository) Service {
+func NewAuthService(userRepository user.Repository) Service {
 	return &authService{userRepository: userRepository}
 }
 
@@ -29,11 +29,11 @@ func (s *authService) GenerateToken(username, password string) (string, error) {
 	if user == nil {
 		return "", s.buildAuthError()
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err = crypto.IsSamePassword(user.Password, password)
 	if err != nil {
 		return "", s.buildAuthError()
 	}
-	return GenerateJWTToken(domain.NewClaim(user)), nil
+	return GenerateJWTToken(user), nil
 }
 
 func (s *authService) buildAuthError() apierrors.Error {

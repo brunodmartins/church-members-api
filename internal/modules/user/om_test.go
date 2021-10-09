@@ -1,8 +1,9 @@
-package security
+package user
 
 import (
 	"errors"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/role"
 )
 
 const (
@@ -18,9 +19,6 @@ func buildUser(id string, password string) *domain.User {
 		UserName: userName,
 		Email:    "",
 		Password: []byte(password),
+		Role:     role.USER,
 	}
-}
-
-func buildToken() string {
-	return GenerateJWTToken(&domain.User{UserName: "test_user", ID: "id"})
 }

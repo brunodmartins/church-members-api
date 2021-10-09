@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/handler/api/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -14,10 +15,12 @@ import (
 )
 
 type httpResult struct {
-	status int
-	body   []byte
+	status  int
+	body    []byte
 	cookies []*http.Cookie
 }
+
+var emptyJson = []byte("{}")
 
 type mapAssert func(parsedBody interface{})
 
@@ -53,27 +56,31 @@ func runTest(app *fiber.App, req *http.Request) httpResult {
 		panic(err)
 	}
 	return httpResult{
-		status: resp.StatusCode,
-		body:   body,
+		status:  resp.StatusCode,
+		body:    body,
 		cookies: resp.Cookies(),
 	}
 }
 
-func buildPost(target, body string) *http.Request {
+func buildPost(target string, body []byte) *http.Request {
 	return buildRequest("POST", target, body)
 }
 
-func buildPut(target, body string) *http.Request {
+func buildPut(target string, body []byte) *http.Request {
 	return buildRequest("PUT", target, body)
 }
 
-
 func buildGet(target string) *http.Request {
-	return buildRequest("GET", target, "")
+	return buildRequest("GET", target, []byte(""))
 }
 
-func buildRequest(method, target, body string) *http.Request {
-	req := httptest.NewRequest(method, target, bytes.NewBufferString(body))
+func buildRequest(method, target string, body []byte) *http.Request {
+	req := httptest.NewRequest(method, target, bytes.NewBuffer(body))
 	req.Header.Set("Content-Type", "application/json")
 	return req
+}
+
+func getMock(filename string) []byte {
+	result, _ := ioutil.ReadFile(fmt.Sprintf("./resources/%s", filename))
+	return result
 }

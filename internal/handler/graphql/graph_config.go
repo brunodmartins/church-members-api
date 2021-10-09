@@ -1,12 +1,12 @@
 package graphql
 
 import (
-	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/graphql-go/graphql"
 )
 
 //CreateSchema builds a GraphQL schema
-func CreateSchema(service member2.Service) graphql.Schema {
+func CreateSchema(service member.Service) graphql.Schema {
 	schema, _ := graphql.NewSchema(graphql.SchemaConfig{
 		Query: graphql.NewObject(graphql.ObjectConfig{
 			Name: "Query",
@@ -24,7 +24,13 @@ func CreateSchema(service member2.Service) graphql.Schema {
 							Type: graphql.String,
 						},
 					},
-					Resolve: newMemberResolver(service).memberResolver,
+					Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+						queryFilters := member.QuerySpecificationBuilder{}
+						for key, value := range params.Args {
+							queryFilters.AddFilter(key, value)
+						}
+						return service.SearchMembers(queryFilters.ToSpecification())
+					},
 				},
 			},
 		}),

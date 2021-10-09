@@ -1,6 +1,7 @@
-package security
+package user
 
 import (
+	"context"
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -12,13 +13,15 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const userTable = "User-table"
+const (
+	userTable = "User-table"
+)
 
 func TestDynamoRepository_FindUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewUserRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, userTable)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems()}, nil)
 		user, err := repo.FindUser(userName)
@@ -38,6 +41,29 @@ func TestDynamoRepository_FindUser(t *testing.T) {
 		user, err := repo.FindUser(userName)
 		assert.NotNil(t, err)
 		assert.Nil(t, user)
+	})
+}
+
+func TestDynamoRepository_SaveUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	repo := NewRepository(dynamoMock, userTable)
+	user := buildUser("", "123")
+	t.Run("Success", func(t *testing.T) {
+		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
+			assert.Equal(t, userTable, *params.TableName)
+			assert.NotNil(t, params.Item)
+			return nil, nil
+		})
+		err := repo.SaveUser(user)
+		assert.Nil(t, err)
+		assert.NotEmpty(t, user.ID)
+	})
+	t.Run("Fail", func(t *testing.T) {
+		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, genericError)
+		err := repo.SaveUser(user)
+		assert.NotNil(t, err)
 	})
 }
 

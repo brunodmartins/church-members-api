@@ -1,22 +1,36 @@
 package api
 
 import (
-	"fmt"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/go-playground/validator/v10"
-	"net/http"
-	"strings"
+	"unicode"
 )
 
-func Validate(dto interface{}) error {
+func ValidateStruct(data interface{}) error {
 	validate := validator.New()
-	err := validate.Struct(dto)
-	if err != nil {
-		builder := strings.Builder{}
-		for _, err := range err.(validator.ValidationErrors) {
-			builder.WriteString(fmt.Sprintf("Field:%s, Tag:%s,Value:%s\n", err.StructNamespace(), err.Tag(), err.Param()))
-		}
-		return apierrors.NewApiError(builder.String(), http.StatusBadRequest)
+	validate.RegisterValidation("password", func(fl validator.FieldLevel) bool {
+		password := fl.Field().String()
+		return isValidPassword(password)
+	})
+	err := validate.Struct(data)
+	return err
+}
+
+func isValidPassword(password string) bool {
+	if len(password) < 6 {
+		return false
 	}
-	return nil
+	var hasNumber, hasUpper, hasSpecial, hasLetter bool
+	for _, c := range password {
+		switch {
+		case unicode.IsNumber(c):
+			hasNumber = true
+		case unicode.IsUpper(c):
+			hasUpper = true
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			hasSpecial = true
+		case unicode.IsLetter(c) || c == ' ':
+			hasLetter = true
+		}
+	}
+	return hasNumber && hasSpecial && hasUpper && hasLetter
 }

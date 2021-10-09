@@ -20,7 +20,6 @@ type MemberHandler struct {
 	service member2.Service
 }
 
-
 //NewMemberHandler builds a new MemberHandler
 func NewMemberHandler(service member2.Service) *MemberHandler {
 	return &MemberHandler{
@@ -74,8 +73,11 @@ func (handler *MemberHandler) putStatus(ctx *fiber.Ctx) error {
 	}
 	putMemberStatusCommand := new(dto.PutMemberStatusRequest)
 	_ = json.Unmarshal(ctx.Body(), &putMemberStatusCommand)
-	if err := Validate(putMemberStatusCommand); err != nil {
-		return err
+	if err := ValidateStruct(putMemberStatusCommand); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: "Invalid body received",
+			Error:   err,
+		})
 	}
 	if putMemberStatusCommand.Date.IsZero() {
 		putMemberStatusCommand.Date = time.Now()

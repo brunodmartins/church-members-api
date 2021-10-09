@@ -2,7 +2,7 @@ package member
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"testing"
 	"time"
@@ -78,8 +78,8 @@ func TestOnlyLegalMembers(t *testing.T) {
 }
 
 func TestOnlyByClassification(t *testing.T) {
-	assert.True(t, OnlyByClassification(enum.YOUNG)(BuildAdult()))
-	assert.False(t, OnlyByClassification(enum.ADULT)(BuildChildren()))
+	assert.True(t, OnlyByClassification(classification.YOUNG)(BuildAdult()))
+	assert.False(t, OnlyByClassification(classification.ADULT)(BuildChildren()))
 }
 
 func TestLastMarriages(t *testing.T) {

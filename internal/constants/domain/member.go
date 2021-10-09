@@ -2,6 +2,7 @@ package domain
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/bearbin/go-age"
 )
 
@@ -23,17 +24,17 @@ type Member struct {
 func (member Member) Classification() enum.Classification {
 	age := age.Age(member.Person.BirthDate)
 	if age < 15 {
-		return enum.CHILDREN
+		return classification.CHILDREN
 	} else if age < 18 {
-		return enum.TEEN
+		return classification.TEEN
 	} else if age < 30 && member.Person.MarriageDate == nil {
-		return enum.YOUNG
+		return classification.YOUNG
 	} else {
-		return enum.ADULT
+		return classification.ADULT
 	}
 }
 
 //IsLegal validate if a member is legal only if it's not a children
 func (member Member) IsLegal() bool {
-	return member.Classification() != enum.CHILDREN
+	return member.Classification() != classification.CHILDREN
 }

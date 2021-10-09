@@ -16,10 +16,19 @@ func (FiberApplication) Run() {
 	logrus.Info("Init Fiber application")
 
 	app := provideFiberApplication()
+	logrus.Info("Application initialized")
+	log.Fatal(app.Listen(":8080"))
+}
 
+func provideFiberApplication() *fiber.App {
+	app := fiber.New(fiber.Config{
+		ErrorHandler: middleware.ApiErrorMiddleWare,
+	})
+	app.Use(recover.New())
 	memberHandler := cdi.ProvideMemberHandler()
 	reportHandler := cdi.ProvideReportHandler()
 	authHandler := cdi.ProvideAuthHandler()
+	userHandler := cdi.ProvideUserHandler()
 
 	app.Get("/ping", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("/pong")
@@ -30,15 +39,6 @@ func (FiberApplication) Run() {
 
 	memberHandler.SetUpRoutes(app)
 	reportHandler.SetUpRoutes(app)
-
-	logrus.Info("Application initialized")
-	log.Fatal(app.Listen(":8080"))
-}
-
-func provideFiberApplication() *fiber.App {
-	app := fiber.New(fiber.Config{
-		ErrorHandler: middleware.ApiErrorMiddleWare,
-	})
-	app.Use(recover.New())
+	userHandler.SetUpRoutes(app)
 	return app
 }

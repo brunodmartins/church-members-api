@@ -29,10 +29,20 @@ func ProvideAuthHandler() *api.AuthHandler {
 	return api.NewAuthHandler(provideAuthService())
 }
 
+func ProvideUserHandler() *api.UserHandler {
+	return api.NewUserHandler(provideUserService())
+}
+
 func provideAuthService() security.Service {
 	return security.NewAuthService(
 			user.NewRepository(provideDynamoDB(), viper.GetString("tables.user")),
 		)
+}
+
+func provideUserService() user.Service {
+	return user.NewService(
+		user.NewRepository(provideDynamoDB(), viper.GetString("tables.user")),
+	)
 }
 
 

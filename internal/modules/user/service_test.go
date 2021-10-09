@@ -14,11 +14,21 @@ func TestService_SaveUser(t *testing.T) {
 	service := NewService(repository)
 	user := buildUser("id", "")
 	t.Run("Success", func(t *testing.T) {
+		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(nil, nil)
 		repository.EXPECT().SaveUser(gomock.Eq(user)).Return(nil)
 		assert.Nil(t, service.SaveUser(user))
 	})
 	t.Run("Fail", func(t *testing.T) {
+		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(nil, nil)
 		repository.EXPECT().SaveUser(gomock.Eq(user)).Return(genericError)
+		assert.NotNil(t, service.SaveUser(user))
+	})
+	t.Run("Fail - checking user - error", func(t *testing.T) {
+		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(nil, genericError)
+		assert.NotNil(t, service.SaveUser(user))
+	})
+	t.Run("Fail - checking user - already exist", func(t *testing.T) {
+		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(user, nil)
 		assert.NotNil(t, service.SaveUser(user))
 	})
 }

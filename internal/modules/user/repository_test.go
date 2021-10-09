@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -75,6 +76,6 @@ func buildItems() []map[string]types.AttributeValue {
 }
 
 func buildItem(id string) map[string]types.AttributeValue {
-	item, _ := attributevalue.MarshalMap(buildUser(id, ""))
+	item, _ := attributevalue.MarshalMap(dto.NewUserItem(buildUser(id, "")))
 	return item
 }

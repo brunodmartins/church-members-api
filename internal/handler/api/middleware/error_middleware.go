@@ -16,12 +16,10 @@ var ApiErrorMiddleWare = func(ctx *fiber.Ctx, err error) error {
 	if apiError, ok := err.(apierrors.Error); ok {
 		return ctx.Status(apiError.StatusCode()).JSON(dto.ErrorResponse{
 			Message: apiError.Error(),
-			Error:   apiError,
 		})
 	} else {
 		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{
 			Message: fmt.Sprintf("Unexpected error: %s", err.Error()),
-			Error:   err,
 		})
 	}
 }

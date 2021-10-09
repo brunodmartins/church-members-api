@@ -22,7 +22,7 @@ func (handler *UserHandler) PostUser(ctx *fiber.Ctx) error {
 	if err := ValidateStruct(requestBody); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: "Invalid body received",
-			Error:   err,
+			Error:   err.Error(),
 		})
 	}
 	if err := handler.service.SaveUser(requestBody.ToUser()); err != nil {

@@ -76,7 +76,7 @@ func (handler *MemberHandler) putStatus(ctx *fiber.Ctx) error {
 	if err := ValidateStruct(putMemberStatusCommand); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: "Invalid body received",
-			Error:   err,
+			Error:   err.Error(),
 		})
 	}
 	if putMemberStatusCommand.Date.IsZero() {

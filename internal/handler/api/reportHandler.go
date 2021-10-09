@@ -50,7 +50,7 @@ func (handler *ReportHandler) generateLegalReport(ctx *fiber.Ctx) error {
 
 func (handler *ReportHandler) buildResponse(ctx *fiber.Ctx, data []byte, fileName string, contentType string, err error) error{
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{ Message: "Error generating report", Error: err})
+		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{ Message: "Error generating report", Error: err.Error()})
 	} else {
 		ctx.Response().Header.Add("Content-Type", contentType)
 		ctx.Response().Header.Add("Content-Disposition", "attachment")

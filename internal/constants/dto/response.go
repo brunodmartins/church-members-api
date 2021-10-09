@@ -9,7 +9,7 @@ import (
 // swagger:model ErrorResponse
 type ErrorResponse struct {
 	Message string `json:"message"`
-	Error   error `json:"error"`
+	Error   string `json:"error"`
 }
 
 //GraphQLErrorResponse for HTTP error responses

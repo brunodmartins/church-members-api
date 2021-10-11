@@ -37,9 +37,7 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
 			record := &dto.UserItem{}
-			if err = attributevalue.UnmarshalMap(item, record); err != nil{
-				return nil, err
-			}
+			attributevalue.UnmarshalMap(item, record)
 			return record.ToUser(), nil
 		}
 	}

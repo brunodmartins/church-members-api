@@ -5,13 +5,13 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 )
 
-func AllowSMSNotifications() wrapper.QuerySpecification {
+func WithSMSNotifications() wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(expression.Name("send_daily_sms").Equal(expression.Value(true)))
 	}
 }
 
-func AllowEmailNotifications() wrapper.QuerySpecification {
+func WithEmailNotifications() wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(expression.Name("send_weekly_email").Equal(expression.Value(true)))
 	}

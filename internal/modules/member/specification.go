@@ -3,21 +3,20 @@ package member
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/BrunoDM2943/church-members-api/platform/utils"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"time"
 )
 
-//QuerySpecificationBuilder allows a client to add dynamic filters to a Query
-type QuerySpecificationBuilder struct {
+//QueryBuilder allows a client to add dynamic filters to a Query
+type QueryBuilder struct {
 	values map[string]interface{}
 }
 
-type QuerySpecification func(builderExpression expression.Builder) expression.Builder
-
 type Specification func(member *domain.Member) bool
 
-func (spec *QuerySpecificationBuilder) AddFilter(key string, value interface{}) {
+func (spec *QueryBuilder) AddFilter(key string, value interface{}) {
 	if spec.values == nil {
 		spec.values = make(map[string]interface{})
 	}
@@ -25,7 +24,7 @@ func (spec *QuerySpecificationBuilder) AddFilter(key string, value interface{}) 
 }
 
 //ToSpecification apply filters to a search on the repo
-func (spec *QuerySpecificationBuilder) ToSpecification() QuerySpecification {
+func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		var conditions []expression.ConditionBuilder
 		if spec.values["gender"] != nil {
@@ -52,13 +51,13 @@ func (spec *QuerySpecificationBuilder) ToSpecification() QuerySpecification {
 
 }
 
-func OnlyActive() QuerySpecification {
+func OnlyActive() wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(activeCondition(true))
 	}
 }
 
-func OnlyMarriage() QuerySpecification {
+func OnlyMarriage() wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(expression.Name("marriageDate").AttributeExists().And(activeCondition(true)))
 	}
@@ -94,19 +93,19 @@ func applySpecifications(members []*domain.Member, specification []Specification
 	return filtered
 }
 
-func LastMarriages(startDate, endDate time.Time) QuerySpecification {
+func LastMarriages(startDate, endDate time.Time) wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))))
 	}
 }
 
-func LastBirths(startDate, endDate time.Time) QuerySpecification {
+func LastBirths(startDate, endDate time.Time) wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(expression.Name("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))))
 	}
 }
 
-func WithBirthday(date time.Time) QuerySpecification {
+func WithBirthday(date time.Time) wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		return builderExpression.WithFilter(expression.Name("birthDateShort").Equal(expression.Value(utils.ConvertDate(date))))
 	}

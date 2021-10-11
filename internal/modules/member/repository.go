@@ -19,7 +19,7 @@ import (
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
-	FindAll(specification QuerySpecification) ([]*domain.Member, error)
+	FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error)
 	FindByID(id string) (*domain.Member, error)
 	Insert(member *domain.Member) error
 	UpdateStatus(member *domain.Member) error
@@ -45,7 +45,7 @@ func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable stri
 	}
 }
 
-func (repo dynamoRepository) FindAll(specification QuerySpecification) ([]*domain.Member, error) {
+func (repo dynamoRepository) FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	var members = make([]*domain.Member, 0)
 
 	builderExpression := expression.NewBuilder()

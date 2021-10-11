@@ -3,6 +3,7 @@ package jobs
 import (
 	"fmt"
 	mock_email "github.com/BrunoDM2943/church-members-api/internal/services/email/mock"
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"testing"
 	"time"
 
@@ -72,7 +73,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil
@@ -84,7 +85,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	})
 	t.Run("Fail Notification", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil
@@ -96,7 +97,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	})
 	t.Run("Fail Search marriage members", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil

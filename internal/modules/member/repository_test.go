@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper/mock"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
@@ -157,7 +158,7 @@ func TestDynamoRepository_GenerateStatusHistory(t *testing.T) {
 	})
 }
 
-func buildMockSpecification(t *testing.T) member.QuerySpecification {
+func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
 	return func(builderExpression expression.Builder) expression.Builder {
 		assert.NotNil(t, builderExpression)
 		return builderExpression

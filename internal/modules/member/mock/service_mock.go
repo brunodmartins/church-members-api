@@ -5,6 +5,7 @@
 package mock_member
 
 import (
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	reflect "reflect"
 	time "time"
 
@@ -81,7 +82,7 @@ func (mr *MockServiceMockRecorder) SaveMember(member interface{}) *gomock.Call {
 }
 
 // SearchMembers mocks base method.
-func (m *MockService) SearchMembers(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+func (m *MockService) SearchMembers(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{querySpecification}
 	for _, a := range postSpecification {

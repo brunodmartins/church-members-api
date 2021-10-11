@@ -16,6 +16,7 @@ import (
 type Repository interface {
 	FindUser(username string) (*domain.User, error)
 	SaveUser(user *domain.User) error
+	SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error)
 }
 
 type dynamoRepository struct {
@@ -39,7 +40,7 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 			if err = attributevalue.UnmarshalMap(item, record); err != nil{
 				return nil, err
 			}
-			return record.ToItem(), nil
+			return record.ToUser(), nil
 		}
 	}
 	return nil, nil
@@ -53,6 +54,22 @@ func (repo dynamoRepository) SaveUser(user *domain.User) error {
 		TableName: aws.String(repo.userTable),
 	})
 	return err
+}
+
+func (repo dynamoRepository) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
+	var users = make([]*domain.User, 0)
+	resp, err := wrapper.ScanDynamoDB(repo.api, specification, repo.userTable)
+	if err != nil {
+		return nil, err
+	}
+	if len(resp.Items) != 0 {
+		for _, item := range resp.Items {
+			record := &dto.UserItem{}
+			attributevalue.UnmarshalMap(item, record)
+			users = append(users, record.ToUser())
+		}
+	}
+	return users, nil
 }
 
 func buildScanInput(table string, expr expression.Expression) *dynamodb.ScanInput {
@@ -71,3 +88,4 @@ func (repo dynamoRepository) createExpression(username string) expression.Expres
 	result, _ := builderExpression.WithFilter(userExpr).Build()
 	return result
 }
+

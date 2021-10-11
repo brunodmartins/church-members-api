@@ -200,8 +200,8 @@ func NewUserItem(user *domain.User) *UserItem {
 	}
 }
 
-//ToItem converts a UserItem into a domain.User
-func (item *UserItem) ToItem() *domain.User {
+//ToUser converts a UserItem into a domain.User
+func (item *UserItem) ToUser() *domain.User {
 	return &domain.User{
 		ID:       item.ID,
 		UserName: item.UserName,

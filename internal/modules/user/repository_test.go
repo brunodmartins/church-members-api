@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -24,7 +26,7 @@ func TestDynamoRepository_FindUser(t *testing.T) {
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
 	repo := NewRepository(dynamoMock, userTable)
 	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems()}, nil)
+		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(1)}, nil)
 		user, err := repo.FindUser(userName)
 		assert.Nil(t, err)
 		assert.NotNil(t, user)
@@ -68,14 +70,48 @@ func TestDynamoRepository_SaveUser(t *testing.T) {
 	})
 }
 
-func buildItems() []map[string]types.AttributeValue {
+func TestDynamoRepository_FindAll(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	repo := NewRepository(dynamoMock, userTable)
+	t.Run("Success", func(t *testing.T) {
+		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(2)}, nil)
+		members, err := repo.SearchUser(buildMockSpecification(t))
+		assert.Nil(t, err)
+		assert.Len(t, members, 2)
+	})
+	t.Run("Empty", func(t *testing.T) {
+		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, nil)
+		members, err := repo.SearchUser(buildMockSpecification(t))
+		assert.Nil(t, err)
+		assert.Len(t, members, 0)
+	})
+	t.Run("Error", func(t *testing.T) {
+		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, genericError)
+		members, err := repo.SearchUser(buildMockSpecification(t))
+		assert.NotNil(t, err)
+		assert.Len(t, members, 0)
+	})
+}
+
+func buildItems(length int) []map[string]types.AttributeValue {
 	var items []map[string]types.AttributeValue
-	id := domain.NewID()
-	items = append(items, buildItem(id))
+	for i:=0;i<length;i++ {
+		id := domain.NewID()
+		items = append(items, buildItem(id))
+	}
 	return items
 }
 
 func buildItem(id string) map[string]types.AttributeValue {
 	item, _ := attributevalue.MarshalMap(dto.NewUserItem(buildUser(id, "")))
 	return item
+}
+
+func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
+	return func(builderExpression expression.Builder) expression.Builder {
+		assert.NotNil(t, builderExpression)
+		return builderExpression
+	}
 }

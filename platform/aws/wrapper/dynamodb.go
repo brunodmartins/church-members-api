@@ -2,6 +2,7 @@ package wrapper
 
 import (
 	"context"
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
@@ -15,4 +16,18 @@ type DynamoDBAPI interface {
 }
 
 type QuerySpecification func(builderExpression expression.Builder) expression.Builder
+
+func ScanDynamoDB(api DynamoDBAPI, specification QuerySpecification, table string) (*dynamodb.ScanOutput, error) {
+	builderExpression := expression.NewBuilder()
+	builderExpression = specification(builderExpression)
+
+	expr, _ := builderExpression.Build()
+	return api.Scan(context.TODO(), &dynamodb.ScanInput{
+		TableName:                 aws.String(table),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		FilterExpression:          expr.Filter(),
+		ProjectionExpression:      expr.Projection(),
+	})
+}
 

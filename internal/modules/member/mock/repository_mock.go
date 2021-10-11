@@ -9,7 +9,7 @@ import (
 	time "time"
 
 	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	member "github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -37,7 +37,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // FindAll mocks base method.
-func (m *MockRepository) FindAll(specification member.QuerySpecification) ([]*domain.Member, error) {
+func (m *MockRepository) FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", specification)
 	ret0, _ := ret[0].([]*domain.Member)

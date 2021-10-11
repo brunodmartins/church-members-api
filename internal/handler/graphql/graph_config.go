@@ -25,7 +25,7 @@ func CreateSchema(service member.Service) graphql.Schema {
 						},
 					},
 					Resolve: func(params graphql.ResolveParams) (interface{}, error) {
-						queryFilters := member.QuerySpecificationBuilder{}
+						queryFilters := member.QueryBuilder{}
 						for key, value := range params.Args {
 							queryFilters.AddFilter(key, value)
 						}

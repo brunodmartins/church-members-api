@@ -4,7 +4,7 @@ type Role int
 type Classification int
 
 func (r Role) String() string {
-	return []string{"ADMIN", "READ_ONLY"}[r]
+	return []string{"ADMIN", "USER"}[r]
 }
 
 func (c Classification) String() string {

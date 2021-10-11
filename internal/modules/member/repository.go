@@ -10,7 +10,6 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/google/uuid"
@@ -19,7 +18,7 @@ import (
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
-	FindAll(specification QuerySpecification) ([]*domain.Member, error)
+	FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error)
 	FindByID(id string) (*domain.Member, error)
 	Insert(member *domain.Member) error
 	UpdateStatus(member *domain.Member) error
@@ -45,20 +44,9 @@ func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable stri
 	}
 }
 
-func (repo dynamoRepository) FindAll(specification QuerySpecification) ([]*domain.Member, error) {
+func (repo dynamoRepository) FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	var members = make([]*domain.Member, 0)
-
-	builderExpression := expression.NewBuilder()
-	builderExpression = specification(builderExpression)
-
-	expr, _ := builderExpression.Build()
-	resp, err := repo.api.Scan(context.TODO(), &dynamodb.ScanInput{
-		TableName:                 aws.String(repo.memberTable),
-		ExpressionAttributeNames:  expr.Names(),
-		ExpressionAttributeValues: expr.Values(),
-		FilterExpression:          expr.Filter(),
-		ProjectionExpression:      expr.Projection(),
-	})
+	resp, err := wrapper.ScanDynamoDB(repo.api, specification, repo.memberTable)
 	if err != nil {
 		return nil, err
 	}

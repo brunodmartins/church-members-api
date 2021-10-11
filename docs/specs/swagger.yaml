@@ -102,9 +102,18 @@ definitions:
       password:
         type: string
         x-go-name: Password
+      phone:
+        type: string
+        x-go-name: Phone
       role:
         type: string
         x-go-name: Role
+      send_daily_sms:
+        type: boolean
+        x-go-name: SendDailySMS
+      send_weekly_email:
+        type: boolean
+        x-go-name: SendWeeklyEmail
       username:
         type: string
         x-go-name: UserName
@@ -225,6 +234,16 @@ definitions:
         $ref: '#/definitions/Person'
       religion:
         $ref: '#/definitions/Religion'
+    type: object
+    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+  NotificationPreferences:
+    properties:
+      send_daily_sms:
+        type: boolean
+        x-go-name: SendDailySMS
+      send_weekly_email:
+        type: boolean
+        x-go-name: SendWeeklyEmail
     type: object
     x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
   Person:

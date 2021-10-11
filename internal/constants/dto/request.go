@@ -27,8 +27,10 @@ type CreateUserRequest struct {
 	Email    string `json:"email" validate:"required,email,min=3,max=32"`
 	Role     string `json:"role" validate:"required,eq=ADMIN|eq=USER"`
 	Password string `json:"password" validate:"required,password"`
+	Phone string 	`json:"phone" validate:"required"`
+	domain.NotificationPreferences `json:"preferences"`
 }
 
 func (r CreateUserRequest) ToUser() *domain.User {
-	return domain.NewUser(r.UserName, r.Email, r.Password, role.From(r.Role))
+	return domain.NewUser(r.UserName, r.Email, r.Password,  r.Phone, role.From(r.Role), r.NotificationPreferences)
 }

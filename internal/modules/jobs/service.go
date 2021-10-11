@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"fmt"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 	"sort"
 	"strings"
@@ -21,11 +22,19 @@ type Job interface {
 
 type dailyBirthDaysJob struct {
 	memberService       member.Service
+	userService			user.Service
 	notificationService notification.Service
 }
 
-func newDailyBirthDaysJob(memberService member.Service, notificationService notification.Service) *dailyBirthDaysJob {
-	return &dailyBirthDaysJob{memberService: memberService, notificationService: notificationService}
+func newDailyBirthDaysJob(
+	memberService member.Service,
+	notificationService notification.Service,
+	userService user.Service) *dailyBirthDaysJob {
+	return &dailyBirthDaysJob{
+		memberService: memberService,
+		notificationService: notificationService,
+		userService: userService,
+	}
 }
 
 func (job dailyBirthDaysJob) RunJob() error {
@@ -37,13 +46,16 @@ func (job dailyBirthDaysJob) RunJob() error {
 		return nil
 	}
 	message := job.buildMessage(members)
-	for _, phone := range strings.Split(viper.GetString("jobs.daily.phones"), ",") {
+	users, err := job.userService.SearchUser(user.WithSMSNotifications())
+	if err != nil {
+		return err
+	}
+	for _, phone := range mapToSlice(users, getPhone) {
 		if err := job.notificationService.NotifyMobile(message, phone); err != nil {
 			return err
 		}
 	}
 	return nil
-
 }
 
 func (job dailyBirthDaysJob) buildMessage(members []*domain.Member) string {
@@ -60,10 +72,17 @@ func (job dailyBirthDaysJob) buildMessage(members []*domain.Member) string {
 type weeklyBirthDaysJob struct {
 	memberService       member.Service
 	emailService 		email.Service
+	userService 		user.Service
 }
 
-func newWeeklyBirthDaysJob(memberService member.Service, emailService email.Service) *weeklyBirthDaysJob {
-	return &weeklyBirthDaysJob{memberService: memberService, emailService: emailService}
+func newWeeklyBirthDaysJob(
+	memberService member.Service,
+	emailService email.Service,
+	userService user.Service) *weeklyBirthDaysJob {
+	return &weeklyBirthDaysJob{
+		memberService: memberService,
+		emailService: emailService,
+		userService: userService}
 }
 
 func (job weeklyBirthDaysJob) RunJob() error {
@@ -78,11 +97,14 @@ func (job weeklyBirthDaysJob) RunJob() error {
 	}
 	sort.Sort(domain.SortByMarriageDay(marriageMembers))
 	emailBody := job.buildMessage(birthMembers, marriageMembers)
-	for _, emailTO := range strings.Split(viper.GetString("jobs.weekly.emails"), ",") {
+	users, err := job.userService.SearchUser(user.WithEmailNotifications())
+	if err != nil {
+		return err
+	}
+	for _, emailTO := range mapToSlice(users, getEmail) {
 		if err := job.emailService.SendEmail(buildEmailCommand(emailBody, emailTO)); err != nil {
 			return err
 		}
-		time.Sleep(2 * time.Second) //For SES Sandbox
 	}
 	return nil
 }
@@ -125,4 +147,20 @@ func fmtDate(date time.Time) string {
 func lastDaysRange() (time.Time, time.Time) {
 	now := time.Now()
 	return now.Add(-6 * 24 * time.Hour), now
+}
+
+func getEmail(user *domain.User) string {
+	return user.Email
+}
+
+func getPhone(user *domain.User) string {
+	return user.Phone
+}
+
+func mapToSlice(users []*domain.User, mapper func(user *domain.User) string) []string {
+	var result []string
+	for _, user := range users {
+		result = append(result, mapper(user))
+	}
+	return result
 }

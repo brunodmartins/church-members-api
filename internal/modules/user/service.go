@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"net/http"
 )
@@ -9,6 +10,7 @@ import (
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Service interface {
 	SaveUser(user *domain.User) error
+	SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error)
 }
 
 type userService struct {
@@ -24,6 +26,10 @@ func (s userService) SaveUser(user *domain.User) error {
 		return err
 	}
 	return s.repository.SaveUser(user)
+}
+
+func (s userService) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
+	return s.repository.SearchUser(specification)
 }
 
 func (s userService) checkUserExist(userName string) error {

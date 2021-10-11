@@ -8,6 +8,7 @@ import (
 	reflect "reflect"
 
 	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -61,4 +62,19 @@ func (m *MockRepository) SaveUser(user *domain.User) error {
 func (mr *MockRepositoryMockRecorder) SaveUser(user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUser", reflect.TypeOf((*MockRepository)(nil).SaveUser), user)
+}
+
+// SearchUser mocks base method.
+func (m *MockRepository) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SearchUser", specification)
+	ret0, _ := ret[0].([]*domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SearchUser indicates an expected call of SearchUser.
+func (mr *MockRepositoryMockRecorder) SearchUser(specification interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockRepository)(nil).SearchUser), specification)
 }

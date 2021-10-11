@@ -34,3 +34,16 @@ func BuildMarriageMembers(date *time.Time) []*domain.Member {
 		},
 	}
 }
+
+func BuildUsers() []*domain.User {
+	return []*domain.User{
+		{
+			Email: "test@test.com",
+			Phone: "123",
+		},
+		{
+			Email: "test@test.com",
+			Phone: "123",
+		},
+	}
+}

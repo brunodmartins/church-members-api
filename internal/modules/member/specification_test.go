@@ -12,12 +12,12 @@ import (
 
 func TestQuerySpecification(t *testing.T) {
 	t.Run("Contains Name filter", func(t *testing.T) {
-		filter := new(QuerySpecificationBuilder)
+		filter := new(QueryBuilder)
 		filter.AddFilter("Name", "Bruno")
 		assert.Equal(t, "Bruno", filter.values["Name"].(string))
 	})
 	t.Run("Contains no Name filter", func(t *testing.T) {
-		filter := new(QuerySpecificationBuilder)
+		filter := new(QueryBuilder)
 		assert.Nil(t, filter.values["Name"])
 	})
 }
@@ -32,7 +32,7 @@ func TestCreateActiveFilter(t *testing.T) {
 }
 
 func TestQuerySpecification_ApplyFilters(t *testing.T) {
-	assertFilters := func(querySpec *QuerySpecificationBuilder, length int) {
+	assertFilters := func(querySpec *QueryBuilder, length int) {
 		builder := expression.NewBuilder()
 		spec := querySpec.ToSpecification()
 		builder = spec(builder)
@@ -40,22 +40,22 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 		assert.Len(t, expression.Names(), length)
 	}
 	t.Run("Without filters", func(t *testing.T) {
-		spec := new(QuerySpecificationBuilder)
+		spec := new(QueryBuilder)
 		assertFilters(spec, 0)
 	})
 	t.Run("With one filter", func(t *testing.T) {
-		spec := new(QuerySpecificationBuilder)
+		spec := new(QueryBuilder)
 		spec.AddFilter("name", "test")
 		assertFilters(spec, 1)
 	})
 	t.Run("With two filter", func(t *testing.T) {
-		spec := new(QuerySpecificationBuilder)
+		spec := new(QueryBuilder)
 		spec.AddFilter("name", "test")
 		spec.AddFilter("active", true)
 		assertFilters(spec, 2)
 	})
 	t.Run("With three filter", func(t *testing.T) {
-		spec := new(QuerySpecificationBuilder)
+		spec := new(QueryBuilder)
 		spec.AddFilter("name", "test")
 		spec.AddFilter("active", true)
 		spec.AddFilter("gender", "M")

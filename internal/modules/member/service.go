@@ -1,6 +1,7 @@
 package member
 
 import (
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"net/http"
 	"time"
@@ -10,7 +11,7 @@ import (
 
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Service interface {
-	SearchMembers(querySpecification QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error)
+	SearchMembers(querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error)
 	GetMember(id string) (*domain.Member, error)
 	SaveMember(member *domain.Member) (string, error)
 	ChangeStatus(id string, status bool, reason string, date time.Time) error
@@ -26,7 +27,7 @@ func NewMemberService(r Repository) *memberService {
 	}
 }
 
-func (s *memberService) SearchMembers(querySpecification QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error) {
+func (s *memberService) SearchMembers(querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error) {
 	members, err := s.repo.FindAll(querySpecification)
 	if err != nil {
 		return nil,err

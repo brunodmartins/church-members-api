@@ -10,6 +10,7 @@ import (
 
 	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	member "github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -81,7 +82,7 @@ func (mr *MockServiceMockRecorder) SaveMember(member interface{}) *gomock.Call {
 }
 
 // SearchMembers mocks base method.
-func (m *MockService) SearchMembers(querySpecification member.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+func (m *MockService) SearchMembers(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{querySpecification}
 	for _, a := range postSpecification {

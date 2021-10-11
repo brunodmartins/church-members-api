@@ -84,8 +84,6 @@ module "lambda" {
   app_lang                  = var.app_lang
   church_name               = var.church_name
   church_name_short         = var.church_name_short
-  jobs_daily_phone          = var.jobs_daily_phone
-  jobs_weekly_email          = var.jobs_weekly_email
   security_token_secret     = var.security_token_secret
   security_token_expiration = var.security_token_expiration
   email_sender = var.email_sender

@@ -2,5 +2,6 @@
   "username": "test",
   "email": "test",
   "password": "123@Ab&",
-  "role":"ADMIN"
+  "role":"ADMIN",
+  "phone": "12345"
 }

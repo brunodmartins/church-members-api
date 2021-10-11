@@ -176,11 +176,14 @@ func (item *MemberItem) ToMember() *domain.Member {
 }
 
 type UserItem struct {
-	ID       string    `dynamodbav:"id"`
-	UserName string    `dynamodbav:"username"`
-	Email    string    `dynamodbav:"email"`
+	ID       string     `dynamodbav:"id"`
+	UserName string     `dynamodbav:"username"`
+	Email    string     `dynamodbav:"email"`
 	Role     string 	`dynamodbav:"role"`
-	Password string    `dynamodbav:"password"`
+	Password string     `dynamodbav:"password"`
+	Phone    string		`dynamodbav:"phone"`
+	SendDailySMS    bool      `dynamodbav:"send_daily_sms"`
+	SendWeeklyEmail bool      `dynamodbav:"send_weekly_email"`
 }
 
 //NewUserItem creates a UserItem from a domain.User
@@ -191,6 +194,9 @@ func NewUserItem(user *domain.User) *UserItem {
 		Email: user.Email,
 		Role: user.Role.String(),
 		Password: string(user.Password),
+		Phone: user.Phone,
+		SendDailySMS: user.Preferences.SendDailySMS,
+		SendWeeklyEmail: user.Preferences.SendWeeklyEmail,
 	}
 }
 
@@ -202,5 +208,10 @@ func (item *UserItem) ToItem() *domain.User {
 		Email:    item.Email,
 		Role:     role.From(item.Role),
 		Password: []byte(item.Password),
+		Phone: item.Phone,
+		Preferences: domain.NotificationPreferences{
+			SendDailySMS:    item.SendDailySMS,
+			SendWeeklyEmail: item.SendWeeklyEmail,
+		},
 	}
 }

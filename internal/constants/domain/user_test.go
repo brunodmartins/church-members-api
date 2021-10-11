@@ -8,6 +8,6 @@ import (
 
 func TestNewUser(t *testing.T) {
 	const password = "123"
-	user := NewUser("", "", password, role.USER)
+	user := NewUser("", "", "", password, role.USER, NotificationPreferences{})
 	assert.NotEqual(t, password, string(user.Password))
 }

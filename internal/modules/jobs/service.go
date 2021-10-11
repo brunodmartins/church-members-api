@@ -105,7 +105,6 @@ func (job weeklyBirthDaysJob) RunJob() error {
 		if err := job.emailService.SendEmail(buildEmailCommand(emailBody, emailTO)); err != nil {
 			return err
 		}
-		time.Sleep(2 * time.Second) //For SES Sandbox
 	}
 	return nil
 }

@@ -20,7 +20,6 @@ import (
 func init() {
 	viper.Set("bundles.location", "../../../bundles")
 	viper.Set("church.shortname", "SHORTNAME")
-	viper.Set("jobs.daily.phones", "1,2")
 }
 
 func TestLastDayRange(t *testing.T) {

@@ -31,15 +31,6 @@ variable "church_name_short" {
   type = string
 }
 
-variable "jobs_daily_phone" {
-  type = string
-}
-
-variable "jobs_weekly_email" {
-  type = string
-}
-
-
 variable "security_token_secret" {
   type = string
 }

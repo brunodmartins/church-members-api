@@ -86,6 +86,7 @@ resource "aws_lambda_function" "lambda_job" {
       "APP_LANG" : var.app_lang,
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
+      "TABLE_USER" : var.user_table_name,
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
     }

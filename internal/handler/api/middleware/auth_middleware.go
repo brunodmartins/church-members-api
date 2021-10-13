@@ -15,8 +15,10 @@ var AuthMiddlewareMiddleWare = func(ctx *fiber.Ctx) error {
 	if token == "" {
 		return apierrors.NewApiError("Missing authorization token", http.StatusUnauthorized)
 	}
-	if !security.IsValidToken(token) {
+	valid, claim := security.GetClaim(token)
+	if !valid {
 		return apierrors.NewApiError("Invalid authorization token", http.StatusForbidden)
 	}
+	ctx.SetUserContext(security.AddClaimToContext(claim, ctx.UserContext()))
 	return ctx.Next()
 }

@@ -19,6 +19,10 @@ func TestAuthMiddleware(t *testing.T) {
 		ErrorHandler: ApiErrorMiddleWare,
 	})
 	app.Use(AuthMiddlewareMiddleWare)
+	app.Use(func(ctx *fiber.Ctx) error {
+		assert.NotNil(t, ctx.UserContext().Value("user"))
+		return ctx.Next()
+	})
 	app.Get("/test", func(ctx *fiber.Ctx) error {
 		return nil
 	})

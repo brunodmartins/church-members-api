@@ -1,6 +1,7 @@
 package security
 
 import (
+	"context"
 	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
 	"github.com/BrunoDM2943/church-members-api/platform/crypto"
 	"github.com/spf13/viper"
@@ -47,6 +48,17 @@ func TestAuthService_GenerateToken(t *testing.T) {
 
 func TestAuthService_IsValidToken(t *testing.T) {
 	viper.Set("security.token.expiration", 1)
-	assert.False(t, IsValidToken(""))
-	assert.True(t, IsValidToken(buildToken()))
+	valid, _ := GetClaim("")
+	assert.False(t, valid)
+	valid, _ = GetClaim(buildToken())
+	assert.True(t, valid)
+}
+
+func TestAddClaimToContext(t *testing.T) {
+	viper.Set("security.token.expiration", 1)
+	ctx := context.Background()
+	_, claim := GetClaim(buildToken())
+	assert.Nil(t, ctx.Value("user"))
+	ctx = AddClaimToContext(claim, ctx)
+	assert.NotNil(t, ctx.Value("user"))
 }

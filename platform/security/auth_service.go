@@ -1,6 +1,8 @@
 package security
 
 import (
+	"context"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"github.com/BrunoDM2943/church-members-api/platform/crypto"
 	"net/http"
@@ -40,10 +42,17 @@ func (s *authService) buildAuthError() apierrors.Error {
 	return apierrors.NewApiError("User not found. Check information.", http.StatusNotFound)
 }
 
-func IsValidToken(token string) bool {
-	_, err := getClaim(token)
+func GetClaim(token string) (bool, *Claim) {
+	claim, err := getClaim(token)
 	if err != nil {
-		return false
+		return false, claim
 	}
-	return true
+	return true, claim
+}
+
+func AddClaimToContext(claim *Claim, ctx context.Context) context.Context {
+	return context.WithValue(ctx, "user", &domain.User{
+		ID:       claim.ID,
+		UserName: claim.UserName,
+	})
 }

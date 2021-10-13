@@ -4,18 +4,18 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"time"
 
-	jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/viper"
 )
 
-type claim struct {
+type Claim struct {
 	ID       string `json:"id"`
 	UserName string `json:"username"`
 	jwt.RegisteredClaims
 }
 
-func newClaim(user *domain.User) *claim {
-	return &claim{
+func newClaim(user *domain.User) *Claim {
+	return &Claim{
 		ID:       user.ID,
 		UserName: user.UserName,
 		RegisteredClaims: jwt.RegisteredClaims{

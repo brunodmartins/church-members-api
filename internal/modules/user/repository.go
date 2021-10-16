@@ -1,14 +1,10 @@
 package user
 
 import (
-	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
-	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/google/uuid"
 )
 
@@ -20,17 +16,17 @@ type Repository interface {
 }
 
 type dynamoRepository struct {
-	api       wrapper.DynamoDBAPI
-	userTable string
+	*wrapper.DynamoDBWrapper
 }
 
 func NewRepository(api wrapper.DynamoDBAPI, userTable string) Repository {
-	return &dynamoRepository{api: api, userTable: userTable}
+	return &dynamoRepository{
+		wrapper.NewDynamoDBWrapper(api, userTable),
+	}
 }
 
 func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
-	expr := repo.createExpression(username)
-	resp, err := repo.api.Scan(context.TODO(), buildScanInput(repo.userTable, expr))
+	resp, err := repo.ScanDynamoDB(WithUserName(username))
 	if err != nil {
 		return nil, err
 	}
@@ -46,17 +42,12 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 
 func (repo dynamoRepository) SaveUser(user *domain.User) error {
 	user.ID = uuid.NewString()
-	av, _ := attributevalue.MarshalMap(dto.NewUserItem(user))
-	_, err := repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String(repo.userTable),
-	})
-	return err
+	return repo.SaveItem(dto.NewUserItem(user))
 }
 
 func (repo dynamoRepository) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
 	var users = make([]*domain.User, 0)
-	resp, err := wrapper.ScanDynamoDB(repo.api, specification, repo.userTable)
+	resp, err := repo.ScanDynamoDB(specification)
 	if err != nil {
 		return nil, err
 	}
@@ -69,21 +60,3 @@ func (repo dynamoRepository) SearchUser(specification wrapper.QuerySpecification
 	}
 	return users, nil
 }
-
-func buildScanInput(table string, expr expression.Expression) *dynamodb.ScanInput {
-	return &dynamodb.ScanInput{
-		TableName:                 aws.String(table),
-		ExpressionAttributeNames:  expr.Names(),
-		ExpressionAttributeValues: expr.Values(),
-		FilterExpression:          expr.Filter(),
-		ProjectionExpression:      expr.Projection(),
-	}
-}
-
-func (repo dynamoRepository) createExpression(username string) expression.Expression {
-	builderExpression := expression.NewBuilder()
-	userExpr := expression.Name("username").Equal(expression.Value(username))
-	result, _ := builderExpression.WithFilter(userExpr).Build()
-	return result
-}
-

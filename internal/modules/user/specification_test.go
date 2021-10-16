@@ -23,3 +23,12 @@ func TestWithEmailNotifications(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 1)
 }
+
+func TestWithUserName(t *testing.T) {
+	builder := expression.NewBuilder()
+	spec := WithUserName("test")
+	builder = spec(builder)
+	expression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, expression.Names(), 1)
+}

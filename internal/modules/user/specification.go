@@ -16,3 +16,10 @@ func WithEmailNotifications() wrapper.QuerySpecification {
 		return builderExpression.WithFilter(expression.Name("send_weekly_email").Equal(expression.Value(true)))
 	}
 }
+
+func WithUserName(username string) wrapper.QuerySpecification {
+	return func(builderExpression expression.Builder) expression.Builder {
+		userExpr := expression.Name("username").Equal(expression.Value(username))
+		return builderExpression.WithFilter(userExpr)
+	}
+}

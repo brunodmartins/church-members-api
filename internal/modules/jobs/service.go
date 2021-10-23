@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"context"
 	"fmt"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"github.com/BrunoDM2943/church-members-api/internal/services/email"
@@ -38,7 +39,8 @@ func newDailyBirthDaysJob(
 }
 
 func (job dailyBirthDaysJob) RunJob() error {
-	members, err := job.memberService.SearchMembers(nil, member.WithBirthday(time.Now()))
+	ctx := context.Background()
+	members, err := job.memberService.SearchMembers(ctx, member.WithBirthday(time.Now()))
 	if err != nil {
 		return err
 	}
@@ -46,7 +48,7 @@ func (job dailyBirthDaysJob) RunJob() error {
 		return nil
 	}
 	message := job.buildMessage(members)
-	users, err := job.userService.SearchUser(user.WithSMSNotifications())
+	users, err := job.userService.SearchUser(ctx, user.WithSMSNotifications())
 	if err != nil {
 		return err
 	}
@@ -86,18 +88,19 @@ func newWeeklyBirthDaysJob(
 }
 
 func (job weeklyBirthDaysJob) RunJob() error {
-	birthMembers, err := job.memberService.SearchMembers(nil, member.LastBirths(lastDaysRange()))
+	ctx := context.Background()
+	birthMembers, err := job.memberService.SearchMembers(ctx, member.LastBirths(lastDaysRange()))
 	if err != nil {
 		return err
 	}
 	sort.Sort(domain.SortByBirthDay(birthMembers))
-	marriageMembers, err := job.memberService.SearchMembers(nil, member.LastMarriages(lastDaysRange()))
+	marriageMembers, err := job.memberService.SearchMembers(ctx, member.LastMarriages(lastDaysRange()))
 	if err != nil {
 		return err
 	}
 	sort.Sort(domain.SortByMarriageDay(marriageMembers))
 	emailBody := job.buildMessage(birthMembers, marriageMembers)
-	users, err := job.userService.SearchUser(user.WithEmailNotifications())
+	users, err := job.userService.SearchUser(ctx, user.WithEmailNotifications())
 	if err != nil {
 		return err
 	}

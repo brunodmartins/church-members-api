@@ -17,12 +17,12 @@ func TestUserHandler_PostUser(t *testing.T) {
 	NewUserHandler(service).SetUpRoutes(app)
 
 	t.Run("Success", func(t *testing.T) {
-		service.EXPECT().SaveUser(gomock.AssignableToTypeOf(new(domain.User))).Return(nil)
+		service.EXPECT().SaveUser(gomock.Any(), gomock.AssignableToTypeOf(new(domain.User))).Return(nil)
 		body := getMock("create_user_valid.json")
 		runTest(app, buildPost("/users", body)).assertStatus(t, http.StatusCreated)
 	})
 	t.Run("Fail - Service error - 500", func(t *testing.T) {
-		service.EXPECT().SaveUser(gomock.AssignableToTypeOf(new(domain.User))).Return(genericError)
+		service.EXPECT().SaveUser(gomock.Any(), gomock.AssignableToTypeOf(new(domain.User))).Return(genericError)
 		body := getMock("create_user_valid.json")
 		runTest(app, buildPost("/users", body)).assertStatus(t, http.StatusInternalServerError)
 	})

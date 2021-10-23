@@ -5,6 +5,7 @@
 package mock_user
 
 import (
+	context "context"
 	reflect "reflect"
 
 	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -36,30 +37,30 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // SaveUser mocks base method.
-func (m *MockService) SaveUser(user *domain.User) error {
+func (m *MockService) SaveUser(ctx context.Context, user *domain.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveUser", user)
+	ret := m.ctrl.Call(m, "SaveUser", ctx, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveUser indicates an expected call of SaveUser.
-func (mr *MockServiceMockRecorder) SaveUser(user interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SaveUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUser", reflect.TypeOf((*MockService)(nil).SaveUser), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUser", reflect.TypeOf((*MockService)(nil).SaveUser), ctx, user)
 }
 
 // SearchUser mocks base method.
-func (m *MockService) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
+func (m *MockService) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchUser", specification)
+	ret := m.ctrl.Call(m, "SearchUser", ctx, specification)
 	ret0, _ := ret[0].([]*domain.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SearchUser indicates an expected call of SearchUser.
-func (mr *MockServiceMockRecorder) SearchUser(specification interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SearchUser(ctx, specification interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockService)(nil).SearchUser), specification)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockService)(nil).SearchUser), ctx, specification)
 }

@@ -25,7 +25,7 @@ func (handler *UserHandler) PostUser(ctx *fiber.Ctx) error {
 			Error:   err.Error(),
 		})
 	}
-	if err := handler.service.SaveUser(requestBody.ToUser()); err != nil {
+	if err := handler.service.SaveUser(ctx.UserContext(), requestBody.ToUser()); err != nil {
 		return err
 	}
 	return ctx.SendStatus(http.StatusCreated)

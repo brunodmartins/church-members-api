@@ -22,7 +22,7 @@ type Job interface {
 
 type dailyBirthDaysJob struct {
 	memberService       member.Service
-	userService			user.Service
+	userService         user.Service
 	notificationService notification.Service
 }
 
@@ -31,14 +31,14 @@ func newDailyBirthDaysJob(
 	notificationService notification.Service,
 	userService user.Service) *dailyBirthDaysJob {
 	return &dailyBirthDaysJob{
-		memberService: memberService,
+		memberService:       memberService,
 		notificationService: notificationService,
-		userService: userService,
+		userService:         userService,
 	}
 }
 
 func (job dailyBirthDaysJob) RunJob() error {
-	members, err := job.memberService.SearchMembers(member.WithBirthday(time.Now()))
+	members, err := job.memberService.SearchMembers(nil, member.WithBirthday(time.Now()))
 	if err != nil {
 		return err
 	}
@@ -70,9 +70,9 @@ func (job dailyBirthDaysJob) buildMessage(members []*domain.Member) string {
 }
 
 type weeklyBirthDaysJob struct {
-	memberService       member.Service
-	emailService 		email.Service
-	userService 		user.Service
+	memberService member.Service
+	emailService  email.Service
+	userService   user.Service
 }
 
 func newWeeklyBirthDaysJob(
@@ -81,17 +81,17 @@ func newWeeklyBirthDaysJob(
 	userService user.Service) *weeklyBirthDaysJob {
 	return &weeklyBirthDaysJob{
 		memberService: memberService,
-		emailService: emailService,
-		userService: userService}
+		emailService:  emailService,
+		userService:   userService}
 }
 
 func (job weeklyBirthDaysJob) RunJob() error {
-	birthMembers, err := job.memberService.SearchMembers(member.LastBirths(lastDaysRange()))
+	birthMembers, err := job.memberService.SearchMembers(nil, member.LastBirths(lastDaysRange()))
 	if err != nil {
 		return err
 	}
 	sort.Sort(domain.SortByBirthDay(birthMembers))
-	marriageMembers, err := job.memberService.SearchMembers(member.LastMarriages(lastDaysRange()))
+	marriageMembers, err := job.memberService.SearchMembers(nil, member.LastMarriages(lastDaysRange()))
 	if err != nil {
 		return err
 	}
@@ -112,8 +112,8 @@ func (job weeklyBirthDaysJob) RunJob() error {
 func buildEmailCommand(message, emailTO string) email.Command {
 	tr := i18n.GetMessageService()
 	return email.Command{
-		Body: message,
-		Subject: tr.GetMessage("Jobs.Weekly.Title", "Weekly birthdays"),
+		Body:       message,
+		Subject:    tr.GetMessage("Jobs.Weekly.Title", "Weekly birthdays"),
 		Recipients: []string{emailTO},
 	}
 }

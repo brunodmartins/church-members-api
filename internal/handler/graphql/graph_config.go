@@ -29,7 +29,7 @@ func CreateSchema(service member.Service) graphql.Schema {
 						for key, value := range params.Args {
 							queryFilters.AddFilter(key, value)
 						}
-						return service.SearchMembers(queryFilters.ToSpecification())
+						return service.SearchMembers(nil, queryFilters.ToSpecification())
 					},
 				},
 			},

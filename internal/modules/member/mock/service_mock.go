@@ -5,6 +5,7 @@
 package mock_member
 
 import (
+	context "context"
 	reflect "reflect"
 	time "time"
 
@@ -38,53 +39,53 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // ChangeStatus mocks base method.
-func (m *MockService) ChangeStatus(id string, status bool, reason string, date time.Time) error {
+func (m *MockService) ChangeStatus(ctx context.Context, id string, status bool, reason string, date time.Time) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ChangeStatus", id, status, reason, date)
+	ret := m.ctrl.Call(m, "ChangeStatus", ctx, id, status, reason, date)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // ChangeStatus indicates an expected call of ChangeStatus.
-func (mr *MockServiceMockRecorder) ChangeStatus(id, status, reason, date interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ChangeStatus(ctx, id, status, reason, date interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeStatus", reflect.TypeOf((*MockService)(nil).ChangeStatus), id, status, reason, date)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeStatus", reflect.TypeOf((*MockService)(nil).ChangeStatus), ctx, id, status, reason, date)
 }
 
 // GetMember mocks base method.
-func (m *MockService) GetMember(id string) (*domain.Member, error) {
+func (m *MockService) GetMember(ctx context.Context, id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetMember", id)
+	ret := m.ctrl.Call(m, "GetMember", ctx, id)
 	ret0, _ := ret[0].(*domain.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetMember indicates an expected call of GetMember.
-func (mr *MockServiceMockRecorder) GetMember(id interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetMember(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMember", reflect.TypeOf((*MockService)(nil).GetMember), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMember", reflect.TypeOf((*MockService)(nil).GetMember), ctx, id)
 }
 
 // SaveMember mocks base method.
-func (m *MockService) SaveMember(member *domain.Member) (string, error) {
+func (m *MockService) SaveMember(ctx context.Context, member *domain.Member) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveMember", member)
+	ret := m.ctrl.Call(m, "SaveMember", ctx, member)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SaveMember indicates an expected call of SaveMember.
-func (mr *MockServiceMockRecorder) SaveMember(member interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SaveMember(ctx, member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveMember", reflect.TypeOf((*MockService)(nil).SaveMember), member)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveMember", reflect.TypeOf((*MockService)(nil).SaveMember), ctx, member)
 }
 
 // SearchMembers mocks base method.
-func (m *MockService) SearchMembers(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+func (m *MockService) SearchMembers(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
-	varargs := []interface{}{querySpecification}
+	varargs := []interface{}{ctx, querySpecification}
 	for _, a := range postSpecification {
 		varargs = append(varargs, a)
 	}
@@ -95,8 +96,8 @@ func (m *MockService) SearchMembers(querySpecification wrapper.QuerySpecificatio
 }
 
 // SearchMembers indicates an expected call of SearchMembers.
-func (mr *MockServiceMockRecorder) SearchMembers(querySpecification interface{}, postSpecification ...interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) SearchMembers(ctx, querySpecification interface{}, postSpecification ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{querySpecification}, postSpecification...)
+	varargs := append([]interface{}{ctx, querySpecification}, postSpecification...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), varargs...)
 }

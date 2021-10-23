@@ -13,10 +13,9 @@ import (
 	"testing"
 )
 
-func init(){
+func init() {
 	viper.Set("bundles.location", "../../../bundles")
 }
-
 
 func TestBirthdayReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -26,7 +25,7 @@ func TestBirthdayReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder)
 	t.Run("Success", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
 		out, err := service.BirthdayReport()
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
@@ -34,14 +33,13 @@ func TestBirthdayReport(t *testing.T) {
 
 	t.Run("Fail - search members", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
 		out, err := service.BirthdayReport()
 		assert.Nil(t, out)
 		assert.NotNil(t, err)
 	})
 
 }
-
 
 func TestMarriageReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -51,14 +49,14 @@ func TestMarriageReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder)
 	t.Run("Success", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
 		out, err := service.MarriageReport()
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail - search members", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
 		out, err := service.MarriageReport()
 		assert.Nil(t, out)
 		assert.NotNil(t, err)
@@ -74,14 +72,14 @@ func TestGenerateMemberReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder)
 	t.Run("Success", func(t *testing.T) {
 		members := BuildMembers(0)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), members).Return([]byte{}, nil)
 		out, err := service.MemberReport()
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(nil, genericError)
 		_, err := service.MemberReport()
 		assert.NotNil(t, err)
 	})
@@ -97,7 +95,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		members := BuildMembers(0)
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
 		out, err := service.ClassificationReport(classification.ADULT)
 		assert.NotNil(t, out)
@@ -106,7 +104,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 	t.Run("Fail", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
 		_, err := service.ClassificationReport(classification.ADULT)
 		assert.NotNil(t, err)
 	})
@@ -122,7 +120,7 @@ func TestGenerateLegalReport(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any()).Return([]byte{}, nil)
 		out, err := service.LegalReport()
 		assert.NotNil(t, out)
@@ -131,7 +129,7 @@ func TestGenerateLegalReport(t *testing.T) {
 	t.Run("Fail", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
-		memberService.EXPECT().SearchMembers(gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
 		_, err := service.LegalReport()
 		assert.NotNil(t, err)
 	})

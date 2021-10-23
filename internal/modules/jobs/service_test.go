@@ -1,6 +1,7 @@
 package jobs
 
 import (
+	"context"
 	"fmt"
 	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
 	mock_email "github.com/BrunoDM2943/church-members-api/internal/services/email/mock"
@@ -74,7 +75,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil
@@ -87,7 +88,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	})
 	t.Run("Fail users search", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil
@@ -99,7 +100,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	})
 	t.Run("Fail Notification", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil
@@ -112,7 +113,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 	})
 	t.Run("Fail Search marriage members", func(t *testing.T) {
 		alreadyCalled := false
-		memberService.EXPECT().SearchMembers(gomock.Any()).DoAndReturn(func(querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...member.Specification) ([]*domain.Member, error) {
 			if !alreadyCalled {
 				alreadyCalled = true
 				return BuildBirthDaysMembers(now), nil
@@ -122,7 +123,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		assert.NotNil(t, job.RunJob())
 	})
 	t.Run("Fail Search birth members", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(nil, genericError)
 		assert.NotNil(t, job.RunJob())
 	})
 }
@@ -137,28 +138,28 @@ func TestDailyBirthDaysJob_RunJob(t *testing.T) {
 	job := newDailyBirthDaysJob(memberService, notificationService, userService)
 
 	t.Run("Success", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		userService.EXPECT().SearchUser(gomock.Any()).Return(BuildUsers(), nil)
 		notificationService.EXPECT().NotifyMobile(gomock.Any(), gomock.Any()).Return(nil).Times(2)
 		assert.Nil(t, job.RunJob())
 	})
 	t.Run("Fail users search", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		userService.EXPECT().SearchUser(gomock.Any()).Return(BuildUsers(), genericError)
 		assert.NotNil(t, job.RunJob())
 	})
 	t.Run("Fail notify", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		userService.EXPECT().SearchUser(gomock.Any()).Return(BuildUsers(), nil)
 		notificationService.EXPECT().NotifyMobile(gomock.Any(), gomock.Any()).Return(genericError)
 		assert.NotNil(t, job.RunJob())
 	})
 	t.Run("Success - No member", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return([]*domain.Member{}, nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, nil)
 		assert.Nil(t, job.RunJob())
 	})
 	t.Run("Fail - search members", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any()).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(nil, genericError)
 		assert.NotNil(t, job.RunJob())
 	})
 }

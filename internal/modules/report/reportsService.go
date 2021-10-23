@@ -3,6 +3,7 @@ package report
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/csv"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
@@ -15,11 +16,11 @@ import (
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
 type Service interface {
-	LegalReport() ([]byte, error)
-	MemberReport() ([]byte, error)
-	BirthdayReport() ([]byte, error)
-	MarriageReport() ([]byte, error)
-	ClassificationReport(classification enum.Classification) ([]byte, error)
+	LegalReport(ctx context.Context) ([]byte, error)
+	MemberReport(ctx context.Context) ([]byte, error)
+	BirthdayReport(ctx context.Context) ([]byte, error)
+	MarriageReport(ctx context.Context) ([]byte, error)
+	ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error)
 }
 
 type reportService struct {
@@ -36,8 +37,8 @@ func NewReportService(memberService member.Service, fileBuilder file.Builder) Se
 	}
 }
 
-func (report reportService) BirthdayReport() ([]byte, error) {
-	members, err := report.memberService.SearchMembers(nil, member.OnlyActive())
+func (report reportService) BirthdayReport(ctx context.Context) ([]byte, error) {
+	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
 	if err != nil {
 		return nil, err
 	}
@@ -61,9 +62,9 @@ func writeData(data [][]string) []byte {
 	return byteArr.Bytes()
 }
 
-func (report reportService) MarriageReport() ([]byte, error) {
+func (report reportService) MarriageReport(ctx context.Context) ([]byte, error) {
 
-	members, err := report.memberService.SearchMembers(nil, member.OnlyMarriage())
+	members, err := report.memberService.SearchMembers(ctx, member.OnlyMarriage())
 
 	if err != nil {
 		return nil, err
@@ -82,8 +83,8 @@ func (report reportService) MarriageReport() ([]byte, error) {
 	return writeData(csvOut), nil
 }
 
-func (report reportService) MemberReport() ([]byte, error) {
-	members, err := report.memberService.SearchMembers(nil, member.OnlyActive())
+func (report reportService) MemberReport(ctx context.Context) ([]byte, error) {
+	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +92,8 @@ func (report reportService) MemberReport() ([]byte, error) {
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
-func (report reportService) ClassificationReport(classification enum.Classification) ([]byte, error) {
-	members, err := report.memberService.SearchMembers(nil, member.OnlyActive(), member.OnlyByClassification(classification))
+func (report reportService) ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error) {
+	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyByClassification(classification))
 	if err != nil {
 		return nil, err
 	}
@@ -100,8 +101,8 @@ func (report reportService) ClassificationReport(classification enum.Classificat
 	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), members)
 }
 
-func (report reportService) LegalReport() ([]byte, error) {
-	members, err := report.memberService.SearchMembers(nil, member.OnlyActive(), member.OnlyLegalMembers())
+func (report reportService) LegalReport(ctx context.Context) ([]byte, error) {
+	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyLegalMembers())
 	if err != nil {
 		return nil, err
 	}

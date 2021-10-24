@@ -27,6 +27,7 @@ resource "aws_api_gateway_rest_api" "api_gateway" {
   name        = "church-members-api-gw"
   description = "church-members-api API gateway"
   body        = data.template_file.aws_api_swagger.rendered
+  binary_media_types = ["*/*"]
 
   endpoint_configuration {
     types = ["REGIONAL"]

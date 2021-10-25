@@ -41,7 +41,7 @@ func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable stri
 
 func (repo dynamoRepository) FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	var members = make([]*domain.Member, 0)
-	resp, err := repo.wrapper.ScanDynamoDB(specification)
+	resp, err := repo.wrapper.ScanDynamoDB(ctx, specification)
 	if err != nil {
 		return nil, err
 	}

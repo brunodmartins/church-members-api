@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
@@ -10,9 +11,9 @@ import (
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
-	FindUser(username string) (*domain.User, error)
-	SaveUser(user *domain.User) error
-	SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error)
+	FindUser(ctx context.Context, username string) (*domain.User, error)
+	SaveUser(ctx context.Context, user *domain.User) error
+	SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error)
 }
 
 type dynamoRepository struct {
@@ -25,8 +26,8 @@ func NewRepository(api wrapper.DynamoDBAPI, userTable string) Repository {
 	}
 }
 
-func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
-	resp, err := repo.ScanDynamoDB(WithUserName(username))
+func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*domain.User, error) {
+	resp, err := repo.ScanDynamoDB(ctx, WithUserName(username))
 	if err != nil {
 		return nil, err
 	}
@@ -40,14 +41,14 @@ func (repo dynamoRepository) FindUser(username string) (*domain.User, error) {
 	return nil, nil
 }
 
-func (repo dynamoRepository) SaveUser(user *domain.User) error {
+func (repo dynamoRepository) SaveUser(ctx context.Context, user *domain.User) error {
 	user.ID = uuid.NewString()
 	return repo.SaveItem(dto.NewUserItem(user))
 }
 
-func (repo dynamoRepository) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
+func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
 	var users = make([]*domain.User, 0)
-	resp, err := repo.ScanDynamoDB(specification)
+	resp, err := repo.ScanDynamoDB(ctx, specification)
 	if err != nil {
 		return nil, err
 	}

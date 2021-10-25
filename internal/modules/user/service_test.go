@@ -17,21 +17,21 @@ func TestService_SaveUser(t *testing.T) {
 	service := NewService(repository)
 	user := buildUser("id", "")
 	t.Run("Success", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(nil, nil)
-		repository.EXPECT().SaveUser(gomock.Eq(user)).Return(nil)
+		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
+		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(nil)
 		assert.Nil(t, service.SaveUser(context.Background(), user))
 	})
 	t.Run("Fail", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(nil, nil)
-		repository.EXPECT().SaveUser(gomock.Eq(user)).Return(genericError)
+		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
+		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(genericError)
 		assert.NotNil(t, service.SaveUser(context.Background(), user))
 	})
 	t.Run("Fail - checking user - error", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(nil, genericError)
+		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, genericError)
 		assert.NotNil(t, service.SaveUser(context.Background(), user))
 	})
 	t.Run("Fail - checking user - already exist", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Eq(user.UserName)).Return(user, nil)
+		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(user, nil)
 		assert.NotNil(t, service.SaveUser(context.Background(), user))
 	})
 }
@@ -44,13 +44,13 @@ func TestService_SearchUser(t *testing.T) {
 	user := buildUser("id", "")
 	spec := wrapper.QuerySpecification(nil)
 	t.Run("Success", func(t *testing.T) {
-		repository.EXPECT().SearchUser(gomock.AssignableToTypeOf(spec)).Return([]*domain.User{user}, nil)
+		repository.EXPECT().SearchUser(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return([]*domain.User{user}, nil)
 		result, err := service.SearchUser(context.Background(), spec)
 		assert.Nil(t, err)
 		assert.NotNil(t, result)
 	})
 	t.Run("Fail", func(t *testing.T) {
-		repository.EXPECT().SearchUser(gomock.AssignableToTypeOf(spec)).Return([]*domain.User{}, genericError)
+		repository.EXPECT().SearchUser(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return([]*domain.User{}, genericError)
 		_, err := service.SearchUser(context.Background(), spec)
 		assert.NotNil(t, err)
 	})

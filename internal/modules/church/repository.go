@@ -1,6 +1,7 @@
 package church
 
 import (
+	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -29,7 +30,7 @@ func (d dynamoRepository) GetByID(id string) (*domain.Church, error) {
 
 func (d dynamoRepository) List() ([]*domain.Church, error) {
 	var result = make([]*domain.Church, 0)
-	resp, err := d.ScanDynamoDB(d.EmptySpecification())
+	resp, err := d.ScanDynamoDB(context.Background(), d.EmptySpecification())
 	if err != nil {
 		return nil, err
 	}

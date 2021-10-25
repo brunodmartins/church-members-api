@@ -23,18 +23,18 @@ func NewService(repository Repository) Service {
 }
 
 func (s userService) SaveUser(ctx context.Context, user *domain.User) error {
-	if err := s.checkUserExist(user.UserName); err != nil {
+	if err := s.checkUserExist(ctx, user.UserName); err != nil {
 		return err
 	}
-	return s.repository.SaveUser(user)
+	return s.repository.SaveUser(ctx, user)
 }
 
 func (s userService) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
-	return s.repository.SearchUser(specification)
+	return s.repository.SearchUser(ctx, specification)
 }
 
-func (s userService) checkUserExist(userName string) error {
-	user, err := s.repository.FindUser(userName)
+func (s userService) checkUserExist(ctx context.Context, userName string) error {
+	user, err := s.repository.FindUser(ctx, userName)
 	if err != nil {
 		return err
 	}

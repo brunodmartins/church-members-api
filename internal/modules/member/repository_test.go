@@ -149,7 +149,7 @@ func TestDynamoRepository_GenerateStatusHistory(t *testing.T) {
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
-	return func(builderExpression expression.Builder) expression.Builder {
+	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
 		assert.NotNil(t, builderExpression)
 		return builderExpression
 	}

@@ -20,25 +20,25 @@ func TestAuthService_GenerateToken(t *testing.T) {
 	service := NewAuthService(repo)
 
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName).Return(buildUser("", string(crypto.EncryptPassword(password))), nil)
+		repo.EXPECT().FindUser(gomock.Any(), userName).Return(buildUser("", string(crypto.EncryptPassword(password))), nil)
 		token, err := service.GenerateToken(userName, password)
 		assert.NotEmpty(t, token)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail - Not same password", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName).Return(buildUser("", string(crypto.EncryptPassword(password))), nil)
+		repo.EXPECT().FindUser(gomock.Any(), userName).Return(buildUser("", string(crypto.EncryptPassword(password))), nil)
 		token, err := service.GenerateToken(userName, password+"123")
 		assert.Empty(t, token)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Error on Repo", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName).Return(nil, genericError)
+		repo.EXPECT().FindUser(gomock.Any(), userName).Return(nil, genericError)
 		token, err := service.GenerateToken(userName, password)
 		assert.Empty(t, token)
 		assert.NotNil(t, err)
 	})
 	t.Run("Not found", func(t *testing.T) {
-		repo.EXPECT().FindUser(userName).Return(nil, nil)
+		repo.EXPECT().FindUser(gomock.Any(), userName).Return(nil, nil)
 		token, err := service.GenerateToken(userName, password)
 		assert.Empty(t, token)
 		assert.NotNil(t, err)

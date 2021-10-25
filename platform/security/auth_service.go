@@ -24,7 +24,7 @@ func NewAuthService(userRepository user.Repository) Service {
 }
 
 func (s *authService) GenerateToken(username, password string) (string, error) {
-	user, err := s.userRepository.FindUser(username)
+	user, err := s.userRepository.FindUser(context.Background(), username)
 	if err != nil {
 		return "", err
 	}

@@ -5,6 +5,7 @@
 package mock_user
 
 import (
+	context "context"
 	reflect "reflect"
 
 	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -36,45 +37,45 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // FindUser mocks base method.
-func (m *MockRepository) FindUser(username string) (*domain.User, error) {
+func (m *MockRepository) FindUser(ctx context.Context, username string) (*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindUser", username)
+	ret := m.ctrl.Call(m, "FindUser", ctx, username)
 	ret0, _ := ret[0].(*domain.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindUser indicates an expected call of FindUser.
-func (mr *MockRepositoryMockRecorder) FindUser(username interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) FindUser(ctx, username interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUser", reflect.TypeOf((*MockRepository)(nil).FindUser), username)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUser", reflect.TypeOf((*MockRepository)(nil).FindUser), ctx, username)
 }
 
 // SaveUser mocks base method.
-func (m *MockRepository) SaveUser(user *domain.User) error {
+func (m *MockRepository) SaveUser(ctx context.Context, user *domain.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveUser", user)
+	ret := m.ctrl.Call(m, "SaveUser", ctx, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveUser indicates an expected call of SaveUser.
-func (mr *MockRepositoryMockRecorder) SaveUser(user interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) SaveUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUser", reflect.TypeOf((*MockRepository)(nil).SaveUser), user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveUser", reflect.TypeOf((*MockRepository)(nil).SaveUser), ctx, user)
 }
 
 // SearchUser mocks base method.
-func (m *MockRepository) SearchUser(specification wrapper.QuerySpecification) ([]*domain.User, error) {
+func (m *MockRepository) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SearchUser", specification)
+	ret := m.ctrl.Call(m, "SearchUser", ctx, specification)
 	ret0, _ := ret[0].([]*domain.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SearchUser indicates an expected call of SearchUser.
-func (mr *MockRepositoryMockRecorder) SearchUser(specification interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) SearchUser(ctx, specification interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockRepository)(nil).SearchUser), specification)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockRepository)(nil).SearchUser), ctx, specification)
 }

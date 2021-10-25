@@ -5,7 +5,7 @@
 package mock_member
 
 import (
-	"context"
+	context "context"
 	reflect "reflect"
 	time "time"
 
@@ -40,31 +40,31 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 // FindAll mocks base method.
 func (m *MockRepository) FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindAll", specification)
+	ret := m.ctrl.Call(m, "FindAll", ctx, specification)
 	ret0, _ := ret[0].([]*domain.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindAll indicates an expected call of FindAll.
-func (mr *MockRepositoryMockRecorder) FindAll(specification interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) FindAll(ctx, specification interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockRepository)(nil).FindAll), specification)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockRepository)(nil).FindAll), ctx, specification)
 }
 
 // FindByID mocks base method.
 func (m *MockRepository) FindByID(ctx context.Context, id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindByID", id)
+	ret := m.ctrl.Call(m, "FindByID", ctx, id)
 	ret0, _ := ret[0].(*domain.Member)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindByID indicates an expected call of FindByID.
-func (mr *MockRepositoryMockRecorder) FindByID(id interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) FindByID(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockRepository)(nil).FindByID), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockRepository)(nil).FindByID), ctx, id)
 }
 
 // GenerateStatusHistory mocks base method.
@@ -84,27 +84,27 @@ func (mr *MockRepositoryMockRecorder) GenerateStatusHistory(id, status, reason, 
 // Insert mocks base method.
 func (m *MockRepository) Insert(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Insert", member)
+	ret := m.ctrl.Call(m, "Insert", ctx, member)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Insert indicates an expected call of Insert.
-func (mr *MockRepositoryMockRecorder) Insert(member interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) Insert(ctx, member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), member)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), ctx, member)
 }
 
 // UpdateStatus mocks base method.
 func (m *MockRepository) UpdateStatus(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateStatus", member)
+	ret := m.ctrl.Call(m, "UpdateStatus", ctx, member)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // UpdateStatus indicates an expected call of UpdateStatus.
-func (mr *MockRepositoryMockRecorder) UpdateStatus(member interface{}) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) UpdateStatus(ctx, member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockRepository)(nil).UpdateStatus), member)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockRepository)(nil).UpdateStatus), ctx, member)
 }

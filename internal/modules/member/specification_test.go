@@ -1,6 +1,7 @@
 package member
 
 import (
+	"context"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
@@ -25,7 +26,7 @@ func TestQuerySpecification(t *testing.T) {
 func TestCreateActiveFilter(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := OnlyActive()
-	builder = spec(builder)
+	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 1)
@@ -35,7 +36,7 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 	assertFilters := func(querySpec *QueryBuilder, length int) {
 		builder := expression.NewBuilder()
 		spec := querySpec.ToSpecification()
-		builder = spec(builder)
+		builder = spec(BuildContext(), builder)
 		expression, _ := builder.Build()
 		assert.Len(t, expression.Names(), length)
 	}
@@ -66,7 +67,7 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 func TestCreateMarriageFilter(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := OnlyMarriage()
-	builder = spec(builder)
+	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 2)
@@ -85,7 +86,7 @@ func TestOnlyByClassification(t *testing.T) {
 func TestLastMarriages(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := LastMarriages(time.Now(), time.Now())
-	builder = spec(builder)
+	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 1)
@@ -94,7 +95,7 @@ func TestLastMarriages(t *testing.T) {
 func TestLastBirths(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := LastBirths(time.Now(), time.Now())
-	builder = spec(builder)
+	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 1)
@@ -103,12 +104,11 @@ func TestLastBirths(t *testing.T) {
 func TestBirthDay(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := WithBirthday(time.Now())
-	builder = spec(builder)
+	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 1)
 }
-
 
 func BuildChildren() *domain.Member {
 	return &domain.Member{
@@ -124,4 +124,8 @@ func BuildAdult() *domain.Member {
 			BirthDate: time.Now().AddDate(-20, 0, 0),
 		},
 	}
+}
+
+func BuildContext() context.Context {
+	return context.TODO()
 }

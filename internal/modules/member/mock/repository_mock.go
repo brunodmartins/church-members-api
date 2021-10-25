@@ -5,6 +5,7 @@
 package mock_member
 
 import (
+	"context"
 	reflect "reflect"
 	time "time"
 
@@ -37,7 +38,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // FindAll mocks base method.
-func (m *MockRepository) FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error) {
+func (m *MockRepository) FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindAll", specification)
 	ret0, _ := ret[0].([]*domain.Member)
@@ -52,7 +53,7 @@ func (mr *MockRepositoryMockRecorder) FindAll(specification interface{}) *gomock
 }
 
 // FindByID mocks base method.
-func (m *MockRepository) FindByID(id string) (*domain.Member, error) {
+func (m *MockRepository) FindByID(ctx context.Context, id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindByID", id)
 	ret0, _ := ret[0].(*domain.Member)
@@ -81,7 +82,7 @@ func (mr *MockRepositoryMockRecorder) GenerateStatusHistory(id, status, reason, 
 }
 
 // Insert mocks base method.
-func (m *MockRepository) Insert(member *domain.Member) error {
+func (m *MockRepository) Insert(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Insert", member)
 	ret0, _ := ret[0].(error)
@@ -95,7 +96,7 @@ func (mr *MockRepositoryMockRecorder) Insert(member interface{}) *gomock.Call {
 }
 
 // UpdateStatus mocks base method.
-func (m *MockRepository) UpdateStatus(member *domain.Member) error {
+func (m *MockRepository) UpdateStatus(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateStatus", member)
 	ret0, _ := ret[0].(error)

@@ -16,10 +16,10 @@ import (
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
-	FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error)
-	FindByID(id string) (*domain.Member, error)
-	Insert(member *domain.Member) error
-	UpdateStatus(member *domain.Member) error
+	FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error)
+	FindByID(ctx context.Context, id string) (*domain.Member, error)
+	Insert(ctx context.Context, member *domain.Member) error
+	UpdateStatus(ctx context.Context, member *domain.Member) error
 	GenerateStatusHistory(id string, status bool, reason string, date time.Time) error
 }
 
@@ -39,7 +39,7 @@ func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable stri
 	}
 }
 
-func (repo dynamoRepository) FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error) {
+func (repo dynamoRepository) FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	var members = make([]*domain.Member, 0)
 	resp, err := repo.wrapper.ScanDynamoDB(specification)
 	if err != nil {
@@ -55,7 +55,7 @@ func (repo dynamoRepository) FindAll(specification wrapper.QuerySpecification) (
 	return members, nil
 }
 
-func (repo dynamoRepository) FindByID(id string) (*domain.Member, error) {
+func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.Member, error) {
 	record := &dto.MemberItem{}
 	err := repo.wrapper.GetItem(id, record)
 	if err != nil {
@@ -64,12 +64,12 @@ func (repo dynamoRepository) FindByID(id string) (*domain.Member, error) {
 	return record.ToMember(), nil
 }
 
-func (repo dynamoRepository) Insert(member *domain.Member) error {
+func (repo dynamoRepository) Insert(ctx context.Context, member *domain.Member) error {
 	member.ID = uuid.NewString()
 	return repo.wrapper.SaveItem(dto.NewMemberItem(member))
 }
 
-func (repo dynamoRepository) UpdateStatus(member *domain.Member) error {
+func (repo dynamoRepository) UpdateStatus(ctx context.Context, member *domain.Member) error {
 	_, err := repo.api.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{

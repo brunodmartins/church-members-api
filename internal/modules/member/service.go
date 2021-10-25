@@ -29,7 +29,7 @@ func NewMemberService(r Repository) Service {
 }
 
 func (s *memberService) SearchMembers(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error) {
-	members, err := s.repo.FindAll(querySpecification)
+	members, err := s.repo.FindAll(ctx, querySpecification)
 	if err != nil {
 		return nil, err
 	}
@@ -43,12 +43,12 @@ func (s *memberService) GetMember(ctx context.Context, id string) (*domain.Membe
 	if !domain.IsValidID(id) {
 		return nil, apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	return s.repo.FindByID(id)
+	return s.repo.FindByID(ctx, id)
 }
 
 func (s *memberService) SaveMember(ctx context.Context, member *domain.Member) (string, error) {
 	member.Active = true
-	err := s.repo.Insert(member)
+	err := s.repo.Insert(ctx, member)
 	return member.ID, err
 }
 
@@ -58,7 +58,7 @@ func (s *memberService) ChangeStatus(ctx context.Context, ID string, status bool
 		return err
 	}
 	member.Active = status
-	err = s.repo.UpdateStatus(member)
+	err = s.repo.UpdateStatus(ctx, member)
 	if err == nil {
 		return s.repo.GenerateStatusHistory(ID, status, reason, date)
 	}

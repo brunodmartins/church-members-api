@@ -42,25 +42,25 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 	}
 	t.Run("Without filters", func(t *testing.T) {
 		spec := new(QueryBuilder)
-		assertFilters(spec, 0)
+		assertFilters(spec, 1)
 	})
 	t.Run("With one filter", func(t *testing.T) {
 		spec := new(QueryBuilder)
 		spec.AddFilter("name", "test")
-		assertFilters(spec, 1)
+		assertFilters(spec, 2)
 	})
 	t.Run("With two filter", func(t *testing.T) {
 		spec := new(QueryBuilder)
 		spec.AddFilter("name", "test")
 		spec.AddFilter("active", true)
-		assertFilters(spec, 2)
+		assertFilters(spec, 3)
 	})
 	t.Run("With three filter", func(t *testing.T) {
 		spec := new(QueryBuilder)
 		spec.AddFilter("name", "test")
 		spec.AddFilter("active", true)
 		spec.AddFilter("gender", "M")
-		assertFilters(spec, 3)
+		assertFilters(spec, 4)
 	})
 }
 
@@ -70,7 +70,7 @@ func TestCreateMarriageFilter(t *testing.T) {
 	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 2)
+	assert.Len(t, expression.Names(), 3)
 }
 
 func TestOnlyLegalMembers(t *testing.T) {
@@ -89,7 +89,7 @@ func TestLastMarriages(t *testing.T) {
 	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 1)
+	assert.Len(t, expression.Names(), 3)
 }
 
 func TestLastBirths(t *testing.T) {
@@ -98,7 +98,7 @@ func TestLastBirths(t *testing.T) {
 	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 1)
+	assert.Len(t, expression.Names(), 3)
 }
 
 func TestBirthDay(t *testing.T) {
@@ -107,7 +107,7 @@ func TestBirthDay(t *testing.T) {
 	builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 1)
+	assert.Len(t, expression.Names(), 3)
 }
 
 func BuildChildren() *domain.Member {

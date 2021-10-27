@@ -37,10 +37,9 @@ func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 		if spec.values["name"] != nil {
 			conditions = append(conditions, expression.Name("name").Contains(spec.values["name"].(string)))
 		}
+		conditions = append(conditions, withChurchId(ctx))
 		conditionsSize := len(conditions)
 		switch conditionsSize {
-		case 0:
-			return builderExpression
 		case 1:
 			return builderExpression.WithFilter(conditions[0])
 		case 2:
@@ -60,7 +59,7 @@ func OnlyActive() wrapper.QuerySpecification {
 
 func OnlyMarriage() wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("marriageDate").AttributeExists().And(activeCondition(true)))
+		return builderExpression.WithFilter(expression.Name("marriageDate").AttributeExists().And(activeCondition(true)).And(withChurchId(ctx)))
 	}
 }
 
@@ -96,18 +95,22 @@ func applySpecifications(members []*domain.Member, specification []Specification
 
 func LastMarriages(startDate, endDate time.Time) wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))))
+		return builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))).And(withChurchId(ctx)).And(activeCondition(true)))
 	}
 }
 
 func LastBirths(startDate, endDate time.Time) wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))))
+		return builderExpression.WithFilter(expression.Name("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))).And(withChurchId(ctx)).And(activeCondition(true)))
 	}
 }
 
 func WithBirthday(date time.Time) wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
-		return builderExpression.WithFilter(expression.Name("birthDateShort").Equal(expression.Value(utils.ConvertDate(date))))
+		return builderExpression.WithFilter(expression.Name("birthDateShort").Equal(expression.Value(utils.ConvertDate(date))).And(withChurchId(ctx)).And(activeCondition(true)))
 	}
+}
+
+func withChurchId(ctx context.Context) expression.ConditionBuilder {
+	return expression.Name("church_id").Equal(expression.Value(ctx.Value("church_id")))
 }

@@ -23,6 +23,7 @@ func NewService(repository Repository) Service {
 }
 
 func (s userService) SaveUser(ctx context.Context, user *domain.User) error {
+	user.ChurchID = domain.GetChurchID(ctx)
 	if err := s.checkUserExist(ctx, user.UserName); err != nil {
 		return err
 	}

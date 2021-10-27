@@ -112,5 +112,5 @@ func WithBirthday(date time.Time) wrapper.QuerySpecification {
 }
 
 func withChurchId(ctx context.Context) expression.ConditionBuilder {
-	return expression.Name("church_id").Equal(expression.Value(ctx.Value("church_id")))
+	return expression.Name("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }

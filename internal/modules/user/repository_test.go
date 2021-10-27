@@ -117,5 +117,5 @@ func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
 }
 
 func buildContext() context.Context {
-	return context.TODO()
+	return context.WithValue(context.TODO(), "user", &domain.User{ChurchID: "church_id_test"})
 }

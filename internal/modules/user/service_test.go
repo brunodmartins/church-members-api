@@ -19,20 +19,20 @@ func TestService_SaveUser(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
 		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(nil)
-		assert.Nil(t, service.SaveUser(context.Background(), user))
+		assert.Nil(t, service.SaveUser(BuildContext(), user))
 	})
 	t.Run("Fail", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
 		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(genericError)
-		assert.NotNil(t, service.SaveUser(context.Background(), user))
+		assert.NotNil(t, service.SaveUser(BuildContext(), user))
 	})
 	t.Run("Fail - checking user - error", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, genericError)
-		assert.NotNil(t, service.SaveUser(context.Background(), user))
+		assert.NotNil(t, service.SaveUser(BuildContext(), user))
 	})
 	t.Run("Fail - checking user - already exist", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(user, nil)
-		assert.NotNil(t, service.SaveUser(context.Background(), user))
+		assert.NotNil(t, service.SaveUser(BuildContext(), user))
 	})
 }
 
@@ -45,13 +45,17 @@ func TestService_SearchUser(t *testing.T) {
 	spec := wrapper.QuerySpecification(nil)
 	t.Run("Success", func(t *testing.T) {
 		repository.EXPECT().SearchUser(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return([]*domain.User{user}, nil)
-		result, err := service.SearchUser(context.Background(), spec)
+		result, err := service.SearchUser(BuildContext(), spec)
 		assert.Nil(t, err)
 		assert.NotNil(t, result)
 	})
 	t.Run("Fail", func(t *testing.T) {
 		repository.EXPECT().SearchUser(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return([]*domain.User{}, genericError)
-		_, err := service.SearchUser(context.Background(), spec)
+		_, err := service.SearchUser(BuildContext(), spec)
 		assert.NotNil(t, err)
 	})
+}
+
+func BuildContext() context.Context {
+	return context.WithValue(context.TODO(), "user", &domain.User{ChurchID: "church_id_test"})
 }

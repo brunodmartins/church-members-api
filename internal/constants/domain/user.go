@@ -36,5 +36,9 @@ func NewUser(userName, email, password, phone string, role enum.Role, preference
 }
 
 func GetChurchID(ctx context.Context) string {
-	return ctx.Value("user").(*User).ChurchID
+	return GetChurch(ctx).ID
+}
+
+func GetChurch(ctx context.Context) *Church {
+	return ctx.Value("user").(*User).Church
 }

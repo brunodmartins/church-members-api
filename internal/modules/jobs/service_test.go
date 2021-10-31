@@ -166,5 +166,9 @@ func TestDailyBirthDaysJob_RunJob(t *testing.T) {
 }
 
 func buildContext() context.Context {
-	return context.WithValue(context.TODO(), "user", &domain.User{ChurchID: "church_id_test"})
+	return context.WithValue(context.TODO(), "user", &domain.User{
+		Church: &domain.Church{
+			ID: "church_id_test",
+		},
+	})
 }

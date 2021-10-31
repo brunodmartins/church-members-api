@@ -2,11 +2,12 @@ package member
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
-	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -127,5 +128,9 @@ func BuildAdult() *domain.Member {
 }
 
 func BuildContext() context.Context {
-	return context.WithValue(context.TODO(), "user", &domain.User{ChurchID: "church_id_test"})
+	return context.WithValue(context.TODO(), "user", &domain.User{
+		Church: &domain.Church{
+			ID: "church_id_test",
+		},
+	})
 }

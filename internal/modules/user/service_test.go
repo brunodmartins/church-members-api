@@ -2,12 +2,13 @@ package user
 
 import (
 	"context"
+	"testing"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestService_SaveUser(t *testing.T) {
@@ -57,5 +58,9 @@ func TestService_SearchUser(t *testing.T) {
 }
 
 func BuildContext() context.Context {
-	return context.WithValue(context.TODO(), "user", &domain.User{ChurchID: "church_id_test"})
+	return context.WithValue(context.TODO(), "user", &domain.User{
+		Church: &domain.Church{
+			ID: "church_id_test",
+		},
+	})
 }

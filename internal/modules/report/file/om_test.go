@@ -2,8 +2,9 @@ package file_test
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 )
 
 var (
@@ -12,22 +13,22 @@ var (
 
 func BuildMembers(size int) []*domain.Member {
 	var members []*domain.Member
-	for i:=0;i<size;i++ {
+	for i := 0; i < size; i++ {
 		members = append(members, buildMember(domain.NewID()))
 	}
 	return members
 }
 
-func buildMember(id string) *domain.Member{
+func buildMember(id string) *domain.Member {
 	now := time.Now()
 	return &domain.Member{
 		ID: id,
 		Person: domain.Person{
-			FirstName: "First Name",
-			LastName:  "Last Name",
-			BirthDate: now,
+			FirstName:    "First Name",
+			LastName:     "Last Name",
+			BirthDate:    now,
 			MarriageDate: &now,
-			SpousesName: "Spouses name",
+			SpousesName:  "Spouses name",
 			Contact: domain.Contact{
 				CellPhoneArea: 99,
 				CellPhone:     1234567890,
@@ -43,5 +44,11 @@ func buildMember(id string) *domain.Member{
 				Number:   9,
 			},
 		},
+	}
+}
+
+func buildChurch() *domain.Church {
+	return &domain.Church{
+		Name: "teste",
 	}
 }

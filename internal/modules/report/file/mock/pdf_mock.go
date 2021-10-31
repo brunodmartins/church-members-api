@@ -35,16 +35,16 @@ func (m *MockBuilder) EXPECT() *MockBuilderMockRecorder {
 }
 
 // BuildFile mocks base method.
-func (m *MockBuilder) BuildFile(title string, data []*domain.Member) ([]byte, error) {
+func (m *MockBuilder) BuildFile(title string, church *domain.Church, members []*domain.Member) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BuildFile", title, data)
+	ret := m.ctrl.Call(m, "BuildFile", title, church, members)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // BuildFile indicates an expected call of BuildFile.
-func (mr *MockBuilderMockRecorder) BuildFile(title, data interface{}) *gomock.Call {
+func (mr *MockBuilderMockRecorder) BuildFile(title, church, members interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildFile", reflect.TypeOf((*MockBuilder)(nil).BuildFile), title, data)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildFile", reflect.TypeOf((*MockBuilder)(nil).BuildFile), title, church, members)
 }

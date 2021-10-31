@@ -2,10 +2,12 @@ package security
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/church"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"github.com/BrunoDM2943/church-members-api/platform/crypto"
-	"net/http"
 
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 )
@@ -16,11 +18,15 @@ type Service interface {
 }
 
 type authService struct {
-	userRepository user.Repository
+	userRepository   user.Repository
+	churchRepository church.Repository
 }
 
-func NewAuthService(userRepository user.Repository) Service {
-	return &authService{userRepository: userRepository}
+func NewAuthService(userRepository user.Repository, churchRepository church.Repository) Service {
+	return &authService{
+		userRepository:   userRepository,
+		churchRepository: churchRepository,
+	}
 }
 
 func (s *authService) GenerateToken(username, password string) (string, error) {
@@ -35,6 +41,11 @@ func (s *authService) GenerateToken(username, password string) (string, error) {
 	if err != nil {
 		return "", s.buildAuthError()
 	}
+	church, err := s.churchRepository.GetByID(user.ChurchID)
+	if err != nil {
+		return "", s.buildAuthError()
+	}
+	user.Church = church
 	return GenerateJWTToken(user), nil
 }
 

@@ -1,8 +1,9 @@
 package security
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/viper"
@@ -11,6 +12,7 @@ import (
 type Claim struct {
 	ID       string `json:"id"`
 	UserName string `json:"username"`
+	Church   *domain.Church
 	jwt.RegisteredClaims
 }
 
@@ -18,6 +20,7 @@ func newClaim(user *domain.User) *Claim {
 	return &Claim{
 		ID:       user.ID,
 		UserName: user.UserName,
+		Church:   user.Church,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: getExpirationTime(),
 			Issuer:    "church-members-api",

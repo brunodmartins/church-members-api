@@ -3,11 +3,12 @@ package jobs
 import (
 	"context"
 	"fmt"
+	"testing"
+	"time"
+
 	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
 	mock_email "github.com/BrunoDM2943/church-members-api/internal/services/email/mock"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
-	"testing"
-	"time"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
@@ -84,7 +85,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		}).Times(2)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
 		emailService.EXPECT().SendEmail(gomock.Any()).Return(nil).Times(2)
-		assert.Nil(t, job.RunJob())
+		assert.Nil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail users search", func(t *testing.T) {
 		alreadyCalled := false
@@ -96,7 +97,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 			return BuildMarriageMembers(&now), nil
 		}).Times(2)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), genericError)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail Notification", func(t *testing.T) {
 		alreadyCalled := false
@@ -109,7 +110,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		}).Times(2)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
 		emailService.EXPECT().SendEmail(gomock.Any()).Return(genericError)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail Search marriage members", func(t *testing.T) {
 		alreadyCalled := false
@@ -120,11 +121,11 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 			}
 			return BuildMarriageMembers(&now), genericError
 		}).Times(2)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail Search birth members", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(nil, genericError)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 }
 
@@ -141,25 +142,29 @@ func TestDailyBirthDaysJob_RunJob(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
 		notificationService.EXPECT().NotifyMobile(gomock.Any(), gomock.Any()).Return(nil).Times(2)
-		assert.Nil(t, job.RunJob())
+		assert.Nil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail users search", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), genericError)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail notify", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
 		notificationService.EXPECT().NotifyMobile(gomock.Any(), gomock.Any()).Return(genericError)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Success - No member", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, nil)
-		assert.Nil(t, job.RunJob())
+		assert.Nil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail - search members", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return(nil, genericError)
-		assert.NotNil(t, job.RunJob())
+		assert.NotNil(t, job.RunJob(buildContext()))
 	})
+}
+
+func buildContext() context.Context {
+	return context.WithValue(context.TODO(), "user", &domain.User{ChurchID: "church_id_test"})
 }

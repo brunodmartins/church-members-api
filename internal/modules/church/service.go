@@ -2,6 +2,7 @@ package church
 
 import "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 
+//go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Service interface {
 	List() ([]*domain.Church, error)
 	GetChurch(id string) (*domain.Church, error)

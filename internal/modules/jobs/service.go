@@ -3,11 +3,12 @@ package jobs
 import (
 	"context"
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
-	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
+	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
@@ -17,8 +18,9 @@ import (
 )
 
 //Job exposing jobs operations
+//go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Job interface {
-	RunJob() error
+	RunJob(ctx context.Context) error
 }
 
 type dailyBirthDaysJob struct {
@@ -38,8 +40,7 @@ func newDailyBirthDaysJob(
 	}
 }
 
-func (job dailyBirthDaysJob) RunJob() error {
-	ctx := context.Background()
+func (job dailyBirthDaysJob) RunJob(ctx context.Context) error {
 	members, err := job.memberService.SearchMembers(ctx, member.WithBirthday(time.Now()))
 	if err != nil {
 		return err
@@ -87,8 +88,7 @@ func newWeeklyBirthDaysJob(
 		userService:   userService}
 }
 
-func (job weeklyBirthDaysJob) RunJob() error {
-	ctx := context.Background()
+func (job weeklyBirthDaysJob) RunJob(ctx context.Context) error {
 	birthMembers, err := job.memberService.SearchMembers(ctx, member.LastBirths(lastDaysRange()))
 	if err != nil {
 		return err

@@ -1,11 +1,11 @@
 package domain
 
 import (
-	"github.com/stretchr/testify/assert"
 	"sort"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSortByBirth(t *testing.T) {
@@ -13,29 +13,30 @@ func TestSortByBirth(t *testing.T) {
 	secondId := NewID()
 	thirdId := NewID()
 	fourthId := NewID()
+	time, _ := time.Parse(time.RFC3339, "2020-01-01")
 	members := []*Member{
 		{
 			ID: thirdId,
 			Person: Person{
-				BirthDate: time.Now().AddDate(0, 1, 10),
+				BirthDate: time.AddDate(0, 1, 10),
 			},
 		},
 		{
 			ID: fourthId,
 			Person: Person{
-				BirthDate: time.Now().AddDate(0, 2, 2),
+				BirthDate: time.AddDate(0, 2, 2),
 			},
 		},
 		{
 			ID: secondId,
 			Person: Person{
-				BirthDate: time.Now().AddDate(0, 0, 2),
+				BirthDate: time.AddDate(0, 0, 2),
 			},
 		},
 		{
 			ID: firstId,
 			Person: Person{
-				BirthDate: time.Now().AddDate(0, 0, 1),
+				BirthDate: time.AddDate(0, 0, 1),
 			},
 		},
 	}
@@ -91,8 +92,8 @@ func TestSortByName(t *testing.T) {
 }
 
 func TestLessByDay(t *testing.T) {
-	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0,1,0)))
-	assert.False(t, lessByDay(time.Now().AddDate(0,1,0), time.Now()))
-	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0,0,1)))
-	assert.False(t, lessByDay(time.Now().AddDate(0,0,1), time.Now()))
+	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0, 1, 0)))
+	assert.False(t, lessByDay(time.Now().AddDate(0, 1, 0), time.Now()))
+	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0, 0, 1)))
+	assert.False(t, lessByDay(time.Now().AddDate(0, 0, 1), time.Now()))
 }

@@ -28,7 +28,7 @@ func (wrapper *churchWrapperJob) RunJob(ctx context.Context) error {
 	}
 	for _, church := range churchs {
 		err := wrapper.job.RunJob(context.WithValue(ctx, "user", &domain.User{
-			ChurchID: church.ID,
+			Church: church,
 		}))
 		if err != nil {
 			logrus.WithField("church_id", church.ID).Error("Job failed.", err)

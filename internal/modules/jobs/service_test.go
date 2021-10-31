@@ -21,7 +21,6 @@ import (
 
 func init() {
 	viper.Set("bundles.location", "../../../bundles")
-	viper.Set("church.shortname", "SHORTNAME")
 }
 
 func TestLastDayRange(t *testing.T) {
@@ -60,8 +59,8 @@ func TestDailyBuildMessage(t *testing.T) {
 	job := newDailyBirthDaysJob(nil, nil, nil)
 	time := time.Now()
 	fmtDate := fmtDate(time)
-	expected := fmt.Sprintf("SHORTNAME:Birthdays-foo bar-%s,", fmtDate)
-	assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(time)))
+	expected := fmt.Sprintf("church_short_name:Birthdays-foo bar-%s,", fmtDate)
+	assert.Equal(t, expected, job.buildMessage(buildContext(), BuildBirthDaysMembers(time)))
 }
 
 func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
@@ -168,7 +167,8 @@ func TestDailyBirthDaysJob_RunJob(t *testing.T) {
 func buildContext() context.Context {
 	return context.WithValue(context.TODO(), "user", &domain.User{
 		Church: &domain.Church{
-			ID: "church_id_test",
+			ID:           "church_id_test",
+			Abbreviation: "church_short_name",
 		},
 	})
 }

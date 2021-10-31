@@ -14,7 +14,6 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
 	"github.com/BrunoDM2943/church-members-api/platform/i18n"
-	"github.com/spf13/viper"
 )
 
 //Job exposing jobs operations
@@ -48,7 +47,7 @@ func (job dailyBirthDaysJob) RunJob(ctx context.Context) error {
 	if len(members) == 0 {
 		return nil
 	}
-	message := job.buildMessage(members)
+	message := job.buildMessage(ctx, members)
 	users, err := job.userService.SearchUser(ctx, user.WithSMSNotifications())
 	if err != nil {
 		return err
@@ -61,15 +60,14 @@ func (job dailyBirthDaysJob) RunJob(ctx context.Context) error {
 	return nil
 }
 
-func (job dailyBirthDaysJob) buildMessage(members []*domain.Member) string {
+func (job dailyBirthDaysJob) buildMessage(ctx context.Context, members []*domain.Member) string {
 	tr := i18n.GetMessageService()
 	title := tr.GetMessage("Jobs.Daily.Title", "Birthdays")
-	churchName := viper.GetString("church.shortname")
 	builder := strings.Builder{}
 	for _, member := range members {
 		builder.WriteString(fmt.Sprintf("%s-%s,", member.Person.GetFullName(), fmtDate(member.Person.BirthDate)))
 	}
-	return fmt.Sprintf("%s:%s-%s", churchName, title, builder.String())
+	return fmt.Sprintf("%s:%s-%s", domain.GetChurch(ctx).Abbreviation, title, builder.String())
 }
 
 type weeklyBirthDaysJob struct {

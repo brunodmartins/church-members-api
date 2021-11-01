@@ -9,6 +9,7 @@ import (
 //Member struct
 type Member struct {
 	ID                     string   `json:"id"`
+	ChurchID               string   `json:"church_id"`
 	OldChurch              string   `json:"oldChurch,omitempty"`
 	AttendsFridayWorship   bool     `json:"attendsFridayWorship"`
 	AttendsSaturdayWorship bool     `json:"attendsSaturdayWorship"`

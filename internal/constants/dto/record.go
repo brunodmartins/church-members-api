@@ -11,6 +11,7 @@ import (
 //MemberItem for dynamoDB struct
 type MemberItem struct {
 	ID                     string     `dynamodbav:"id,omitempty"`
+	ChurchID               string     `dynamodbav:"church_id"`
 	OldChurch              string     `dynamodbav:"oldChurch,omitempty"`
 	AttendsFridayWorship   bool       `dynamodbav:"attendsFridayWorship"`
 	AttendsSaturdayWorship bool       `dynamodbav:"attendsSaturdayWorship"`
@@ -62,6 +63,7 @@ type MemberItem struct {
 func NewMemberItem(member *domain.Member) *MemberItem {
 	return &MemberItem{
 		ID:                     member.ID,
+		ChurchID:               member.ChurchID,
 		OldChurch:              member.OldChurch,
 		AttendsFridayWorship:   member.AttendsFridayWorship,
 		AttendsSaturdayWorship: member.AttendsSaturdayWorship,
@@ -121,6 +123,7 @@ func convertMarriageDate(marriageDate *time.Time) string {
 func (item *MemberItem) ToMember() *domain.Member {
 	return &domain.Member{
 		ID:                     item.ID,
+		ChurchID:               item.ChurchID,
 		OldChurch:              item.OldChurch,
 		AttendsFridayWorship:   item.AttendsFridayWorship,
 		AttendsSaturdayWorship: item.AttendsSaturdayWorship,

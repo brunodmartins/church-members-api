@@ -25,7 +25,7 @@ func TestGetMember(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetMember(id).Return(buildMember(id), nil)
+		service.EXPECT().GetMember(gomock.Any(), id).Return(buildMember(id), nil)
 		runTest(app, buildGet("/members/"+id)).assert(t, http.StatusOK, new(domain.Member), func(parsedBody interface{}) {
 			member := parsedBody.(*domain.Member)
 			assert.Equal(t, id, member.ID)
@@ -33,7 +33,7 @@ func TestGetMember(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetMember(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
+		service.EXPECT().GetMember(gomock.Any(), id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildGet("/members/"+id)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
@@ -41,7 +41,7 @@ func TestGetMember(t *testing.T) {
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetMember(id).Return(nil, genericError)
+		service.EXPECT().GetMember(gomock.Any(), id).Return(nil, genericError)
 		runTest(app, buildGet("/members/"+id)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -58,7 +58,7 @@ func TestPostMember(t *testing.T) {
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
 		body := getMock("create_member.json")
-		service.EXPECT().SaveMember(gomock.AssignableToTypeOf(&domain.Member{})).Return(id, nil)
+		service.EXPECT().SaveMember(gomock.Any(), gomock.AssignableToTypeOf(&domain.Member{})).Return(id, nil)
 		runTest(app, buildPost("/members", body)).assert(t, http.StatusCreated, new(dto.CreateMemberResponse), func(parsedBody interface{}) {
 			response := parsedBody.(*dto.CreateMemberResponse)
 			assert.Equal(t, id, response.ID)
@@ -66,7 +66,7 @@ func TestPostMember(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetMember(id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
+		service.EXPECT().GetMember(gomock.Any(), id).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildGet("/members/"+id)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
@@ -75,7 +75,7 @@ func TestPostMember(t *testing.T) {
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
 		body, _ := ioutil.ReadFile("./resources/create_member.json")
-		service.EXPECT().SaveMember(gomock.AssignableToTypeOf(&domain.Member{})).Return(id, genericError)
+		service.EXPECT().SaveMember(gomock.Any(), gomock.AssignableToTypeOf(&domain.Member{})).Return(id, genericError)
 		runTest(app, buildPost("/members", body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -99,7 +99,7 @@ func TestPostMemberSearch(t *testing.T) {
 					}
 			}
 		}`)
-		service.EXPECT().SearchMembers(gomock.Any()).Return([]*domain.Member{}, nil)
+		service.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, nil)
 		runTest(app, buildPost("/members/search", body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
@@ -119,7 +119,7 @@ func TestPutStatus(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		body := []byte(`{"active":true, "reason": "Came back"}`)
-		service.EXPECT().ChangeStatus(id, gomock.Eq(true), gomock.Eq("Came back"), gomock.Any()).Return(nil)
+		service.EXPECT().ChangeStatus(gomock.Any(), id, gomock.Eq(true), gomock.Eq("Came back"), gomock.Any()).Return(nil)
 		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 400 - ID", func(t *testing.T) {
@@ -135,12 +135,12 @@ func TestPutStatus(t *testing.T) {
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		body := []byte(`{"active":false, "reason": "Not Found"}`)
-		service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("Not Found"), gomock.Any()).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
+		service.EXPECT().ChangeStatus(gomock.Any(), id, gomock.Eq(false), gomock.Eq("Not Found"), gomock.Any()).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
 		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		body := []byte(`{"active":false, "reason": "exited"}`)
-		service.EXPECT().ChangeStatus(id, gomock.Eq(false), gomock.Eq("exited"), gomock.Any()).Return(genericError)
+		service.EXPECT().ChangeStatus(gomock.Any(), id, gomock.Eq(false), gomock.Eq("exited"), gomock.Any()).Return(genericError)
 		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

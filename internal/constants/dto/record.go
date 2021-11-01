@@ -11,6 +11,7 @@ import (
 //MemberItem for dynamoDB struct
 type MemberItem struct {
 	ID                     string     `dynamodbav:"id,omitempty"`
+	ChurchID               string     `dynamodbav:"church_id"`
 	OldChurch              string     `dynamodbav:"oldChurch,omitempty"`
 	AttendsFridayWorship   bool       `dynamodbav:"attendsFridayWorship"`
 	AttendsSaturdayWorship bool       `dynamodbav:"attendsSaturdayWorship"`
@@ -20,7 +21,7 @@ type MemberItem struct {
 	Name                   string     `dynamodbav:"name"`
 	FirstName              string     `dynamodbav:"firstName"`
 	LastName               string     `dynamodbav:"lastName"`
-	BirthDate              time.Time `dynamodbav:"birthDate"`
+	BirthDate              time.Time  `dynamodbav:"birthDate"`
 	MarriageDate           *time.Time `dynamodbav:"marriageDate,omitempty"`
 	PlaceOfBirth           string     `dynamodbav:"placeOfBirth"`
 	FathersName            string     `dynamodbav:"fathersName"`
@@ -54,14 +55,15 @@ type MemberItem struct {
 	AcceptedJesusDate      *time.Time `dynamodbav:"acceptedJesusDate"`
 	BaptismDate            *time.Time `dynamodbav:"baptismDate"`
 	Active                 bool       `dynamodbav:"active,omitempty"`
-	BirthDateShort            string `dynamodbav:"birthDateShort"`
-	MarriageDateShort            string `dynamodbav:"marriageDateShort"`
+	BirthDateShort         string     `dynamodbav:"birthDateShort"`
+	MarriageDateShort      string     `dynamodbav:"marriageDateShort"`
 }
 
 //NewMemberItem creates a MemberItem from a domain.Member
 func NewMemberItem(member *domain.Member) *MemberItem {
 	return &MemberItem{
 		ID:                     member.ID,
+		ChurchID:               member.ChurchID,
 		OldChurch:              member.OldChurch,
 		AttendsFridayWorship:   member.AttendsFridayWorship,
 		AttendsSaturdayWorship: member.AttendsSaturdayWorship,
@@ -93,20 +95,20 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		District:               member.Person.Address.District,
 		AddressNumber:          member.Person.Address.Number,
 		MoreInfo:               member.Person.Address.MoreInfo,
-		FathersReligion:   member.Religion.FathersReligion,
-		BaptismPlace:      member.Religion.BaptismPlace,
-		LearnedGospelAge:  member.Religion.LearnedGospelAge,
-		AcceptedJesus:     member.Religion.AcceptedJesus,
-		Baptized:          member.Religion.Baptized,
-		CatholicBaptized:  member.Religion.CatholicBaptized,
-		KnowsTithe:        member.Religion.KnowsTithe,
-		AgreesTithe:       member.Religion.AgreesTithe,
-		Tithe:             member.Religion.Tithe,
-		AcceptedJesusDate: member.Religion.AcceptedJesusDate,
-		BaptismDate:       member.Religion.BaptismDate,
-		Active:            member.Active,
-		BirthDateShort:    utils.ConvertDate(member.Person.BirthDate),
-		MarriageDateShort:    convertMarriageDate(member.Person.MarriageDate),
+		FathersReligion:        member.Religion.FathersReligion,
+		BaptismPlace:           member.Religion.BaptismPlace,
+		LearnedGospelAge:       member.Religion.LearnedGospelAge,
+		AcceptedJesus:          member.Religion.AcceptedJesus,
+		Baptized:               member.Religion.Baptized,
+		CatholicBaptized:       member.Religion.CatholicBaptized,
+		KnowsTithe:             member.Religion.KnowsTithe,
+		AgreesTithe:            member.Religion.AgreesTithe,
+		Tithe:                  member.Religion.Tithe,
+		AcceptedJesusDate:      member.Religion.AcceptedJesusDate,
+		BaptismDate:            member.Religion.BaptismDate,
+		Active:                 member.Active,
+		BirthDateShort:         utils.ConvertDate(member.Person.BirthDate),
+		MarriageDateShort:      convertMarriageDate(member.Person.MarriageDate),
 	}
 }
 
@@ -121,6 +123,7 @@ func convertMarriageDate(marriageDate *time.Time) string {
 func (item *MemberItem) ToMember() *domain.Member {
 	return &domain.Member{
 		ID:                     item.ID,
+		ChurchID:               item.ChurchID,
 		OldChurch:              item.OldChurch,
 		AttendsFridayWorship:   item.AttendsFridayWorship,
 		AttendsSaturdayWorship: item.AttendsSaturdayWorship,
@@ -176,26 +179,27 @@ func (item *MemberItem) ToMember() *domain.Member {
 }
 
 type UserItem struct {
-	ID       string     `dynamodbav:"id"`
-	UserName string     `dynamodbav:"username"`
-	Email    string     `dynamodbav:"email"`
-	Role     string 	`dynamodbav:"role"`
-	Password string     `dynamodbav:"password"`
-	Phone    string		`dynamodbav:"phone"`
-	SendDailySMS    bool      `dynamodbav:"send_daily_sms"`
-	SendWeeklyEmail bool      `dynamodbav:"send_weekly_email"`
+	ID              string `dynamodbav:"id"`
+	ChurchID        string `dynamodbav:"church_id"`
+	UserName        string `dynamodbav:"username"`
+	Email           string `dynamodbav:"email"`
+	Role            string `dynamodbav:"role"`
+	Password        string `dynamodbav:"password"`
+	Phone           string `dynamodbav:"phone"`
+	SendDailySMS    bool   `dynamodbav:"send_daily_sms"`
+	SendWeeklyEmail bool   `dynamodbav:"send_weekly_email"`
 }
 
 //NewUserItem creates a UserItem from a domain.User
 func NewUserItem(user *domain.User) *UserItem {
 	return &UserItem{
-		ID: user.ID,
-		UserName: user.UserName,
-		Email: user.Email,
-		Role: user.Role.String(),
-		Password: string(user.Password),
-		Phone: user.Phone,
-		SendDailySMS: user.Preferences.SendDailySMS,
+		ID:              user.ID,
+		UserName:        user.UserName,
+		Email:           user.Email,
+		Role:            user.Role.String(),
+		Password:        string(user.Password),
+		Phone:           user.Phone,
+		SendDailySMS:    user.Preferences.SendDailySMS,
 		SendWeeklyEmail: user.Preferences.SendWeeklyEmail,
 	}
 }
@@ -204,11 +208,12 @@ func NewUserItem(user *domain.User) *UserItem {
 func (item *UserItem) ToUser() *domain.User {
 	return &domain.User{
 		ID:       item.ID,
+		ChurchID: item.ChurchID,
 		UserName: item.UserName,
 		Email:    item.Email,
 		Role:     role.From(item.Role),
 		Password: []byte(item.Password),
-		Phone: item.Phone,
+		Phone:    item.Phone,
 		Preferences: domain.NotificationPreferences{
 			SendDailySMS:    item.SendDailySMS,
 			SendWeeklyEmail: item.SendWeeklyEmail,

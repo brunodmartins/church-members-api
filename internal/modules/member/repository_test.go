@@ -6,18 +6,20 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper/mock"
+	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"net/http"
 	"testing"
 	"time"
 )
 
 const (
-	memberTable = "member-test"
+	memberTable        = "member-test"
 	memberHistoryTable = "member-history-test"
 )
 
@@ -28,19 +30,19 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(2)}, nil)
-		members, err := repo.FindAll(buildMockSpecification(t))
+		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)
 	})
 	t.Run("Empty", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, nil)
-		members, err := repo.FindAll(buildMockSpecification(t))
+		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 0)
 	})
 	t.Run("Error", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, genericError)
-		members, err := repo.FindAll(buildMockSpecification(t))
+		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
 		assert.NotNil(t, err)
 		assert.Len(t, members, 0)
 	})
@@ -53,32 +55,20 @@ func TestDynamoRepository_FindByID(t *testing.T) {
 	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
 	id := domain.NewID()
 	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().GetItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error) {
-			assert.Equal(t, memberTable, *params.TableName)
-			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
-			return &dynamodb.GetItemOutput{Item: buildItem(id)}, nil
-		})
-		member, err := repo.FindByID(id)
+		wrapper.MockGetItem(t, dynamoMock, memberTable, id, buildItem(id), nil)
+		member, err := repo.FindByID(context.Background(), id)
 		assert.Nil(t, err)
 		assert.Equal(t, id, member.ID)
 	})
 	t.Run("Not Found", func(t *testing.T) {
-		dynamoMock.EXPECT().GetItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error) {
-			assert.Equal(t, memberTable, *params.TableName)
-			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
-			return &dynamodb.GetItemOutput{Item: nil}, nil
-		})
-		memberFound, err := repo.FindByID(id)
-		assert.Equal(t, member.NotFound, err)
+		wrapper.MockGetItem(t, dynamoMock, memberTable, id, nil, nil)
+		memberFound, err := repo.FindByID(context.Background(), id)
+		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 		assert.Nil(t, memberFound)
 	})
 	t.Run("Error", func(t *testing.T) {
-		dynamoMock.EXPECT().GetItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error) {
-			assert.Equal(t, memberTable, *params.TableName)
-			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
-			return &dynamodb.GetItemOutput{Item: nil}, genericError
-		})
-		memberFound, err := repo.FindByID(id)
+		wrapper.MockGetItem(t, dynamoMock, memberTable, id, nil, genericError)
+		memberFound, err := repo.FindByID(context.Background(), id)
 		assert.NotNil(t, err)
 		assert.Nil(t, memberFound)
 	})
@@ -96,13 +86,13 @@ func TestDynamoRepository_Insert(t *testing.T) {
 			assert.NotNil(t, params.Item)
 			return nil, nil
 		})
-		err := repo.Insert(member)
+		err := repo.Insert(context.Background(), member)
 		assert.Nil(t, err)
 		assert.NotEmpty(t, member.ID)
 	})
 	t.Run("Fail", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, genericError)
-		err := repo.Insert(member)
+		err := repo.Insert(context.Background(), member)
 		assert.NotNil(t, err)
 	})
 }
@@ -120,7 +110,7 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
 			return nil, nil
 		})
-		err := repo.UpdateStatus(member)
+		err := repo.UpdateStatus(context.Background(), member)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail", func(t *testing.T) {
@@ -129,7 +119,7 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
 			return nil, genericError
 		})
-		err := repo.UpdateStatus(member)
+		err := repo.UpdateStatus(context.Background(), member)
 		assert.NotNil(t, err)
 	})
 }
@@ -159,7 +149,7 @@ func TestDynamoRepository_GenerateStatusHistory(t *testing.T) {
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
-	return func(builderExpression expression.Builder) expression.Builder {
+	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
 		assert.NotNil(t, builderExpression)
 		return builderExpression
 	}
@@ -167,7 +157,7 @@ func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
 
 func buildItems(length int) []map[string]types.AttributeValue {
 	var items []map[string]types.AttributeValue
-	for i:=0;i<length;i++ {
+	for i := 0; i < length; i++ {
 		id := domain.NewID()
 		items = append(items, buildItem(id))
 	}

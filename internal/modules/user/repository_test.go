@@ -2,10 +2,11 @@ package user
 
 import (
 	"context"
+	"testing"
+
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
-	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	mock_wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper/mock"
@@ -27,7 +28,7 @@ func TestDynamoRepository_FindUser(t *testing.T) {
 	repo := NewRepository(dynamoMock, userTable)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(1)}, nil)
-		user, err := repo.FindUser(userName)
+		user, err := repo.FindUser(buildContext(), userName)
 		assert.Nil(t, err)
 		assert.NotNil(t, user)
 		assert.Equal(t, userName, user.UserName)
@@ -35,13 +36,13 @@ func TestDynamoRepository_FindUser(t *testing.T) {
 	})
 	t.Run("Empty", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: []map[string]types.AttributeValue{}}, nil)
-		user, err := repo.FindUser(userName)
+		user, err := repo.FindUser(buildContext(), userName)
 		assert.Nil(t, err)
 		assert.Nil(t, user)
 	})
 	t.Run("Error", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: []map[string]types.AttributeValue{}}, genericError)
-		user, err := repo.FindUser(userName)
+		user, err := repo.FindUser(buildContext(), userName)
 		assert.NotNil(t, err)
 		assert.Nil(t, user)
 	})
@@ -59,13 +60,13 @@ func TestDynamoRepository_SaveUser(t *testing.T) {
 			assert.NotNil(t, params.Item)
 			return nil, nil
 		})
-		err := repo.SaveUser(user)
+		err := repo.SaveUser(buildContext(), user)
 		assert.Nil(t, err)
 		assert.NotEmpty(t, user.ID)
 	})
 	t.Run("Fail", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, genericError)
-		err := repo.SaveUser(user)
+		err := repo.SaveUser(buildContext(), user)
 		assert.NotNil(t, err)
 	})
 }
@@ -77,19 +78,19 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 	repo := NewRepository(dynamoMock, userTable)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(2)}, nil)
-		members, err := repo.SearchUser(buildMockSpecification(t))
+		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)
 	})
 	t.Run("Empty", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, nil)
-		members, err := repo.SearchUser(buildMockSpecification(t))
+		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 0)
 	})
 	t.Run("Error", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, genericError)
-		members, err := repo.SearchUser(buildMockSpecification(t))
+		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
 		assert.NotNil(t, err)
 		assert.Len(t, members, 0)
 	})
@@ -97,7 +98,7 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 
 func buildItems(length int) []map[string]types.AttributeValue {
 	var items []map[string]types.AttributeValue
-	for i:=0;i<length;i++ {
+	for i := 0; i < length; i++ {
 		id := domain.NewID()
 		items = append(items, buildItem(id))
 	}
@@ -110,8 +111,16 @@ func buildItem(id string) map[string]types.AttributeValue {
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
-	return func(builderExpression expression.Builder) expression.Builder {
+	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
 		assert.NotNil(t, builderExpression)
 		return builderExpression
 	}
+}
+
+func buildContext() context.Context {
+	return context.WithValue(context.TODO(), "user", &domain.User{
+		Church: &domain.Church{
+			ID: "church_id_test",
+		},
+	})
 }

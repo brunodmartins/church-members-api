@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+
 	i18n2 "github.com/BrunoDM2943/church-members-api/platform/i18n"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -14,7 +15,7 @@ import (
 //Builder interface
 //go:generate mockgen -source=./pdf.go -destination=./mock/pdf_mock.go
 type Builder interface {
-	BuildFile(title string, data []*domain.Member) ([]byte, error)
+	BuildFile(title string, church *domain.Church, members []*domain.Member) ([]byte, error)
 }
 
 type pdfBuilder struct {
@@ -27,7 +28,7 @@ func NewPDFBuilder() *pdfBuilder {
 	}
 }
 
-func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, builder *gopdf.GoPdf) {
+func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, church *domain.Church, builder *gopdf.GoPdf) {
 	builder.AddPage()
 	builder.SetMargins(30, 30, 30, 30)
 	rect := &gopdf.Rect{H: gopdf.PageSizeA4.H, W: gopdf.PageSizeA4.W}
@@ -37,7 +38,7 @@ func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, builder *gopdf
 
 	builder.SetX(0)
 	builder.SetY(100)
-	builder.CellWithOption(rect, viper.GetString("church.name"), options)
+	builder.CellWithOption(rect, church.Name, options)
 	builder.SetY(120)
 	builder.SetX(0)
 	builder.CellWithOption(rect, title, options)
@@ -76,7 +77,7 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *domain.Member, builder *gopd
 	builder.Br(15)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification", "Classification"), builder)
 	classification := data.Classification()
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification.String(), classification.String()), builder)
+	pdfBuilder.setValue(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification.String(), classification.String()), builder)
 	builder.Br(15)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Address", "Address"), builder)
 	pdfBuilder.setValue(data.Person.Address.String(), builder)
@@ -125,20 +126,20 @@ func (pdfBuilder *pdfBuilder) buildSummarySection(data []*domain.Member, builder
 	}
 
 	for key, value := range summary {
-		pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification." + key, key), builder)
+		pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+key, key), builder)
 		pdfBuilder.setValue(fmt.Sprintf("%d", value), builder)
 		builder.Br(15)
 	}
 
 }
 
-func (pdfBuilder *pdfBuilder) BuildFile(title string, data []*domain.Member) ([]byte, error) {
+func (pdfBuilder *pdfBuilder) BuildFile(title string, church *domain.Church, data []*domain.Member) ([]byte, error) {
 	pdf := &gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	if err := pdfBuilder.setFont(pdf); err != nil {
 		return nil, err
 	}
-	pdfBuilder.buildFirstPageSection(title, pdf)
+	pdfBuilder.buildFirstPageSection(title, church, pdf)
 	pdf.AddPage()
 	const maxPerPage int = 7
 	count := 0

@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	member "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
@@ -17,11 +17,11 @@ import (
 
 //MemberHandler is a REST controller
 type MemberHandler struct {
-	service member2.Service
+	service member.Service
 }
 
 //NewMemberHandler builds a new MemberHandler
-func NewMemberHandler(service member2.Service) *MemberHandler {
+func NewMemberHandler(service member.Service) *MemberHandler {
 	return &MemberHandler{
 		service: service,
 	}
@@ -33,7 +33,7 @@ func (handler *MemberHandler) postMember(ctx *fiber.Ctx) error {
 	if memberRequestDTO.Member == nil {
 		return apierrors.NewApiError("Invalid body received", http.StatusBadRequest)
 	}
-	id, err := handler.service.SaveMember(memberRequestDTO.Member)
+	id, err := handler.service.SaveMember(ctx.UserContext(), memberRequestDTO.Member)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
 	if !domain.IsValidID(id) {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	member, err := handler.service.GetMember(id)
+	member, err := handler.service.GetMember(ctx.UserContext(), id)
 	if err != nil {
 		return err
 	} else {
@@ -58,7 +58,7 @@ func (handler *MemberHandler) searchMember(ctx *fiber.Ctx) error {
 	result := graphql.Do(graphql.Params{
 		Schema:        schema,
 		RequestString: string(ctx.Body()),
-		Context:       ctx.Context(),
+		Context:       ctx.UserContext(),
 	})
 	if result.HasErrors() {
 		return ctx.Status(http.StatusInternalServerError).JSON(dto.GraphQLErrorResponse{Errors: result.Errors})
@@ -83,7 +83,7 @@ func (handler *MemberHandler) putStatus(ctx *fiber.Ctx) error {
 		putMemberStatusCommand.Date = time.Now()
 	}
 
-	err := handler.service.ChangeStatus(id, *putMemberStatusCommand.Active, putMemberStatusCommand.Reason, putMemberStatusCommand.Date)
+	err := handler.service.ChangeStatus(ctx.UserContext(), id, *putMemberStatusCommand.Active, putMemberStatusCommand.Reason, putMemberStatusCommand.Date)
 
 	if err != nil {
 		return err

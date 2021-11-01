@@ -5,6 +5,7 @@
 package mock_report
 
 import (
+	context "context"
 	reflect "reflect"
 
 	enum "github.com/BrunoDM2943/church-members-api/internal/constants/enum"
@@ -35,76 +36,76 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // BirthdayReport mocks base method.
-func (m *MockService) BirthdayReport() ([]byte, error) {
+func (m *MockService) BirthdayReport(ctx context.Context) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "BirthdayReport")
+	ret := m.ctrl.Call(m, "BirthdayReport", ctx)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // BirthdayReport indicates an expected call of BirthdayReport.
-func (mr *MockServiceMockRecorder) BirthdayReport() *gomock.Call {
+func (mr *MockServiceMockRecorder) BirthdayReport(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BirthdayReport", reflect.TypeOf((*MockService)(nil).BirthdayReport))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BirthdayReport", reflect.TypeOf((*MockService)(nil).BirthdayReport), ctx)
 }
 
 // ClassificationReport mocks base method.
-func (m *MockService) ClassificationReport(classification enum.Classification) ([]byte, error) {
+func (m *MockService) ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ClassificationReport", classification)
+	ret := m.ctrl.Call(m, "ClassificationReport", ctx, classification)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ClassificationReport indicates an expected call of ClassificationReport.
-func (mr *MockServiceMockRecorder) ClassificationReport(classification interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) ClassificationReport(ctx, classification interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClassificationReport", reflect.TypeOf((*MockService)(nil).ClassificationReport), classification)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClassificationReport", reflect.TypeOf((*MockService)(nil).ClassificationReport), ctx, classification)
 }
 
 // LegalReport mocks base method.
-func (m *MockService) LegalReport() ([]byte, error) {
+func (m *MockService) LegalReport(ctx context.Context) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LegalReport")
+	ret := m.ctrl.Call(m, "LegalReport", ctx)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // LegalReport indicates an expected call of LegalReport.
-func (mr *MockServiceMockRecorder) LegalReport() *gomock.Call {
+func (mr *MockServiceMockRecorder) LegalReport(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LegalReport", reflect.TypeOf((*MockService)(nil).LegalReport))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LegalReport", reflect.TypeOf((*MockService)(nil).LegalReport), ctx)
 }
 
 // MarriageReport mocks base method.
-func (m *MockService) MarriageReport() ([]byte, error) {
+func (m *MockService) MarriageReport(ctx context.Context) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MarriageReport")
+	ret := m.ctrl.Call(m, "MarriageReport", ctx)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // MarriageReport indicates an expected call of MarriageReport.
-func (mr *MockServiceMockRecorder) MarriageReport() *gomock.Call {
+func (mr *MockServiceMockRecorder) MarriageReport(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarriageReport", reflect.TypeOf((*MockService)(nil).MarriageReport))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MarriageReport", reflect.TypeOf((*MockService)(nil).MarriageReport), ctx)
 }
 
 // MemberReport mocks base method.
-func (m *MockService) MemberReport() ([]byte, error) {
+func (m *MockService) MemberReport(ctx context.Context) ([]byte, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MemberReport")
+	ret := m.ctrl.Call(m, "MemberReport", ctx)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // MemberReport indicates an expected call of MemberReport.
-func (mr *MockServiceMockRecorder) MemberReport() *gomock.Call {
+func (mr *MockServiceMockRecorder) MemberReport(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MemberReport", reflect.TypeOf((*MockService)(nil).MemberReport))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MemberReport", reflect.TypeOf((*MockService)(nil).MemberReport), ctx)
 }

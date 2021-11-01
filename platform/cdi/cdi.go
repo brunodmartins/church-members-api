@@ -2,6 +2,7 @@ package cdi
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/handler/api"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/church"
 	member2 "github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	report2 "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	file2 "github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
@@ -35,8 +36,9 @@ func ProvideUserHandler() *api.UserHandler {
 
 func provideAuthService() security.Service {
 	return security.NewAuthService(
-			user.NewRepository(provideDynamoDB(), viper.GetString("tables.user")),
-		)
+		user.NewRepository(provideDynamoDB(), viper.GetString("tables.user")),
+		church.NewRepository(provideDynamoDB(), viper.GetString("tables.church")),
+	)
 }
 
 func ProvideUserService() user.Service {
@@ -45,12 +47,15 @@ func ProvideUserService() user.Service {
 	)
 }
 
-
 func ProvideMemberService() member2.Service {
 	if memberService == nil {
 		memberService = member2.NewMemberService(provideMemberRepository())
 	}
 	return memberService
+}
+
+func ProvideChurchService() church.Service {
+	return church.NewService(church.NewRepository(provideDynamoDB(), viper.GetString("tables.church")))
 }
 
 func ProvideNotificationService() notification.Service {

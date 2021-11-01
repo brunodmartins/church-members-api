@@ -2,7 +2,7 @@ package security
 
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	jwt "github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -17,20 +17,20 @@ func getSecret() []byte {
 	return []byte(viper.GetString("security.token.secret"))
 }
 
-func getClaim(jwtToken string) (*claim, error) {
+func getClaim(jwtToken string) (*Claim, error) {
 	token, err := parseJWT(jwtToken)
 	if err != nil {
 		logrus.Error("Error decrypting jwt token: ", err)
 		return nil, err
 	}
-	result, _ := token.Claims.(*claim)
+	result, _ := token.Claims.(*Claim)
 	return result, nil
 }
 
 func parseJWT(jwtToken string) (*jwt.Token, error) {
 	return jwt.ParseWithClaims(
 		jwtToken,
-		&claim{},
+		&Claim{},
 		func(token *jwt.Token) (interface{}, error) {
 			return getSecret(), nil
 		},

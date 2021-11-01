@@ -62,10 +62,16 @@ output "user_table_name" {
   value = aws_dynamodb_table.user_table.name
 }
 
+output "church_table_name" {
+  value = aws_dynamodb_table.church_table.name
+}
+
 output "tables_arn" {
   value = [
     aws_dynamodb_table.member_table.arn,
     aws_dynamodb_table.member_history_table.arn,
-  aws_dynamodb_table.user_table.arn]
+    aws_dynamodb_table.user_table.arn,
+    aws_dynamodb_table.church_table.arn
+  ]
 }
 

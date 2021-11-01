@@ -2,7 +2,6 @@ package member
 
 import (
 	"context"
-	"errors"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"time"
 
@@ -15,25 +14,20 @@ import (
 	"github.com/google/uuid"
 )
 
-
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
-	FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error)
-	FindByID(id string) (*domain.Member, error)
-	Insert(member *domain.Member) error
-	UpdateStatus(member *domain.Member) error
+	FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error)
+	FindByID(ctx context.Context, id string) (*domain.Member, error)
+	Insert(ctx context.Context, member *domain.Member) error
+	UpdateStatus(ctx context.Context, member *domain.Member) error
 	GenerateStatusHistory(id string, status bool, reason string, date time.Time) error
 }
 
-var (
-	NotFound = errors.New("member not found")
-)
-
-
 type dynamoRepository struct {
-	api wrapper.DynamoDBAPI
-	memberTable string
+	api                wrapper.DynamoDBAPI
+	memberTable        string
 	memberHistoryTable string
+	wrapper            *wrapper.DynamoDBWrapper
 }
 
 func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable string) Repository {
@@ -41,12 +35,13 @@ func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable stri
 		api,
 		memberTable,
 		memberHistoryTable,
+		wrapper.NewDynamoDBWrapper(api, memberTable),
 	}
 }
 
-func (repo dynamoRepository) FindAll(specification wrapper.QuerySpecification) ([]*domain.Member, error) {
+func (repo dynamoRepository) FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error) {
 	var members = make([]*domain.Member, 0)
-	resp, err := wrapper.ScanDynamoDB(repo.api, specification, repo.memberTable)
+	resp, err := repo.wrapper.ScanDynamoDB(ctx, specification)
 	if err != nil {
 		return nil, err
 	}
@@ -60,38 +55,21 @@ func (repo dynamoRepository) FindAll(specification wrapper.QuerySpecification) (
 	return members, nil
 }
 
-func (repo dynamoRepository) FindByID(id string) (*domain.Member, error) {
-	output, err := repo.api.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		Key: map[string]types.AttributeValue{
-			"id": &types.AttributeValueMemberS{
-				Value: id,
-			},
-		},
-		TableName:      aws.String(repo.memberTable),
-		ConsistentRead: aws.Bool(true),
-	})
+func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.Member, error) {
+	record := &dto.MemberItem{}
+	err := repo.wrapper.GetItem(id, record)
 	if err != nil {
 		return nil, err
 	}
-	if output.Item == nil {
-		return nil, NotFound
-	}
-	record := &dto.MemberItem{}
-	attributevalue.UnmarshalMap(output.Item, record)
 	return record.ToMember(), nil
 }
 
-func (repo dynamoRepository) Insert(member *domain.Member) error {
+func (repo dynamoRepository) Insert(ctx context.Context, member *domain.Member) error {
 	member.ID = uuid.NewString()
-	av, _ := attributevalue.MarshalMap(dto.NewMemberItem(member))
-	_, err := repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		Item:      av,
-		TableName: aws.String(repo.memberTable),
-	})
-	return err
+	return repo.wrapper.SaveItem(dto.NewMemberItem(member))
 }
 
-func (repo dynamoRepository) UpdateStatus(member *domain.Member) error {
+func (repo dynamoRepository) UpdateStatus(ctx context.Context, member *domain.Member) error {
 	_, err := repo.api.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{

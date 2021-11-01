@@ -26,6 +26,6 @@ func (JobApplication) Run() {
 		if job == nil {
 			return errors.New("job not found")
 		}
-		return job.RunJob()
+		return job.RunJob(context.TODO())
 	})
 }

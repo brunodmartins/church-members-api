@@ -77,7 +77,7 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *domain.Member, builder *gopd
 	builder.Br(15)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification", "Classification"), builder)
 	classification := data.Classification()
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification.String(), classification.String()), builder)
+	pdfBuilder.setValue(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification.String(), classification.String()), builder)
 	builder.Br(15)
 	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Address", "Address"), builder)
 	pdfBuilder.setValue(data.Person.Address.String(), builder)

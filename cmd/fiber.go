@@ -10,7 +10,7 @@ import (
 )
 
 //FiberApplication to use as HTTP API
-type FiberApplication struct {}
+type FiberApplication struct{}
 
 func (FiberApplication) Run() {
 	logrus.Info("Init Fiber application")
@@ -24,7 +24,9 @@ func provideFiberApplication() *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: middleware.ApiErrorMiddleWare,
 	})
-	app.Use(recover.New())
+	app.Use(recover.New(recover.Config{
+		EnableStackTrace: true,
+	}))
 	memberHandler := cdi.ProvideMemberHandler()
 	reportHandler := cdi.ProvideReportHandler()
 	authHandler := cdi.ProvideAuthHandler()

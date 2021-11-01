@@ -30,5 +30,5 @@ func TestWithUserName(t *testing.T) {
 	builder = spec(buildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 2)
+	assert.Len(t, expression.Names(), 1)
 }

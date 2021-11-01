@@ -65,5 +65,6 @@ func AddClaimToContext(claim *Claim, ctx context.Context) context.Context {
 	return context.WithValue(ctx, "user", &domain.User{
 		ID:       claim.ID,
 		UserName: claim.UserName,
+		Church:   claim.Church,
 	})
 }

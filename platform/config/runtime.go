@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/sirupsen/logrus"
 	"os"
 
 	"github.com/spf13/viper"
@@ -8,6 +9,10 @@ import (
 
 //InitConfiguration loads global configuration variables on Viper
 func InitConfiguration() {
+	logrus.SetFormatter(&logrus.JSONFormatter{})
+	logrus.SetOutput(os.Stdout)
+	logrus.SetLevel(logrus.DebugLevel)
+
 	viper.Set("cloud", os.Getenv("SERVER"))
 	viper.Set("application", os.Getenv("APPLICATION"))
 	viper.Set("lang", os.Getenv("APP_LANG"))

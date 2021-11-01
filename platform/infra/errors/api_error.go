@@ -1,7 +1,5 @@
 package apierrors
 
-import "fmt"
-
 type Error struct {
 	message      string
 	statusCode   int
@@ -12,14 +10,6 @@ type Error struct {
 func NewApiError(message string, statusCode int) Error {
 	return Error{
 		message:    message,
-		statusCode: statusCode,
-	}
-}
-
-//NewApiErrorf creates a custom error
-func NewApiErrorf(message string, statusCode int, args ...string) Error {
-	return Error{
-		message:    fmt.Sprintf(message, args),
 		statusCode: statusCode,
 	}
 }

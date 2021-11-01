@@ -22,7 +22,7 @@ func WithEmailNotifications() wrapper.QuerySpecification {
 func WithUserName(username string) wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
 		userExpr := expression.Name("username").Equal(expression.Value(username))
-		return builderExpression.WithFilter(userExpr.And(withChurchId(ctx)))
+		return builderExpression.WithFilter(userExpr)
 	}
 }
 

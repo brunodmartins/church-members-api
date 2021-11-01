@@ -30,14 +30,6 @@ variable "app_lang" {
   type = string
 }
 
-variable "church_name" {
-  type = string
-}
-
-variable "church_name_short" {
-  type = string
-}
-
 variable "security_token_secret" {
   type = string
 }
@@ -53,10 +45,10 @@ variable "email_sender" {
 
 resource "aws_lambda_function" "lambda_api" {
   function_name = "church-members-api-lambda"
-  role          = var.lambda_role_arn
-  timeout       = 500
-  image_uri     = var.image_uri
-  package_type  = "Image"
+  role = var.lambda_role_arn
+  timeout = 500
+  image_uri = var.image_uri
+  package_type = "Image"
   environment {
     variables = {
       "SERVER" : "AWS",
@@ -76,10 +68,10 @@ resource "aws_lambda_function" "lambda_api" {
 
 resource "aws_lambda_function" "lambda_job" {
   function_name = "church-members-job-lambda"
-  role          = var.lambda_role_arn
-  timeout       = 500
-  image_uri     = var.image_uri
-  package_type  = "Image"
+  role = var.lambda_role_arn
+  timeout = 500
+  image_uri = var.image_uri
+  package_type = "Image"
   environment {
     variables = {
       "SERVER" : "AWS",

@@ -108,7 +108,7 @@ resource "aws_dynamodb_table" "users_v2" {
   read_capacity  = 5
   write_capacity = 5
   hash_key       = "church_id"
-  range_key      = "id"
+  range_key      = "username"
 
   attribute {
     name = "church_id"
@@ -116,7 +116,7 @@ resource "aws_dynamodb_table" "users_v2" {
   }
 
   attribute {
-    name = "id"
+    name = "username"
     type = "S"
   }
 }

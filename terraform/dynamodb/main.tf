@@ -28,6 +28,52 @@ resource "aws_dynamodb_table" "member_v2" {
     name = "id"
     type = "S"
   }
+  
+  attribute {
+    name = "birthDateShort"
+    type = "S"
+  }
+  
+  attribute {
+    name = "marriageDateShort"
+    type = "S"
+  }
+
+  attribute {
+    name = "name"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name               = "birthDateIndex"
+    hash_key           = "church_id"
+    range_key          = "birthDateShort"
+    write_capacity     = 5
+    read_capacity      = 5
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate"]
+  }
+
+  global_secondary_index {
+    name               = "marriageDateIndex"
+    hash_key           = "church_id"
+    range_key          = "marriageDateShort"
+    write_capacity     = 5
+    read_capacity      = 5
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate"]
+  }
+
+  global_secondary_index {
+    name               = "nameIndex"
+    hash_key           = "church_id"
+    range_key          = "name"
+    write_capacity     = 5
+    read_capacity      = 5
+    projection_type    = "INCLUDE"
+    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate"]
+  }
+
 }
 
 resource "aws_dynamodb_table" "member_history_table" {

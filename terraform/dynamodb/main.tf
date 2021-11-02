@@ -28,6 +28,21 @@ resource "aws_dynamodb_table" "member_v2" {
     name = "id"
     type = "S"
   }
+  
+  attribute {
+    name = "birthDateShort"
+    type = "S"
+  }
+  
+  attribute {
+    name = "marriageDateShort"
+    type = "S"
+  }
+
+  attribute {
+    name = "name"
+    type = "S"
+  }
 
   global_secondary_index {
     name               = "birthDateIndex"

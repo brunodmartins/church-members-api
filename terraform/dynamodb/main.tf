@@ -35,7 +35,7 @@ resource "aws_dynamodb_table" "member_v2" {
   }
   
   attribute {
-    name = "marriageDateShort"
+    name = "maritalStatus"
     type = "S"
   }
 
@@ -55,13 +55,13 @@ resource "aws_dynamodb_table" "member_v2" {
   }
 
   global_secondary_index {
-    name               = "marriageDateIndex"
+    name               = "maritalStatusIndex"
     hash_key           = "church_id"
-    range_key          = "marriageDateShort"
+    range_key          = "maritalStatus"
     write_capacity     = 5
     read_capacity      = 5
     projection_type    = "INCLUDE"
-    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate"]
+    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate", "marriageDateShort"]
   }
 
   global_secondary_index {

@@ -28,21 +28,21 @@ func NewDynamoDBWrapper(api DynamoDBAPI, table string) *DynamoDBWrapper {
 	return &DynamoDBWrapper{api: api, table: table}
 }
 
-type QuerySpecification func(ctx context.Context, builderExpression expression.Builder) expression.Builder
+type QuerySpecification func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder)
 
-func (wrapper *DynamoDBWrapper) EmptySpecification() QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
-		return builderExpression
+func (wrapper *DynamoDBWrapper) EmptySpecification(table string) QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
+		return table, builderExpression
 	}
 }
 
 func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.ScanOutput, error) {
 	builderExpression := expression.NewBuilder()
-	builderExpression = specification(ctx, builderExpression)
+	table, builderExpression := specification(ctx, builderExpression)
 
 	expr, _ := builderExpression.Build()
 	return wrapper.api.Scan(ctx, &dynamodb.ScanInput{
-		TableName:                 aws.String(wrapper.table),
+		TableName:                 aws.String(table),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),

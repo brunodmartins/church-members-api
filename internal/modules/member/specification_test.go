@@ -27,7 +27,7 @@ func TestQuerySpecification(t *testing.T) {
 func TestCreateActiveFilter(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := OnlyActive()
-	builder = spec(BuildContext(), builder)
+	_, builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 1)
@@ -37,7 +37,7 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 	assertFilters := func(querySpec *QueryBuilder, length int) {
 		builder := expression.NewBuilder()
 		spec := querySpec.ToSpecification()
-		builder = spec(BuildContext(), builder)
+		_, builder = spec(BuildContext(), builder)
 		expression, _ := builder.Build()
 		assert.Len(t, expression.Names(), length)
 	}
@@ -68,7 +68,7 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 func TestCreateMarriageFilter(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := OnlyMarriage()
-	builder = spec(BuildContext(), builder)
+	_, builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)
@@ -87,7 +87,7 @@ func TestOnlyByClassification(t *testing.T) {
 func TestLastMarriages(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := LastMarriages(time.Now(), time.Now())
-	builder = spec(BuildContext(), builder)
+	_, builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)
@@ -96,7 +96,7 @@ func TestLastMarriages(t *testing.T) {
 func TestLastBirths(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := LastBirths(time.Now(), time.Now())
-	builder = spec(BuildContext(), builder)
+	_, builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)
@@ -105,7 +105,7 @@ func TestLastBirths(t *testing.T) {
 func TestBirthDay(t *testing.T) {
 	builder := expression.NewBuilder()
 	spec := WithBirthday(time.Now())
-	builder = spec(BuildContext(), builder)
+	_, builder = spec(BuildContext(), builder)
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)

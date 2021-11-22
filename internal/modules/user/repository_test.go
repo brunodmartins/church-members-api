@@ -18,14 +18,14 @@ import (
 )
 
 const (
-	userTable = "User-table"
+	tableUser = "User-table"
 )
 
 func TestDynamoRepository_FindUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, tableUser)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(1)}, nil)
 		user, err := repo.FindUser(buildContext(), userName)
@@ -52,11 +52,11 @@ func TestDynamoRepository_SaveUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, tableUser)
 	user := buildUser("", "123")
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
-			assert.Equal(t, userTable, *params.TableName)
+			assert.Equal(t, tableUser, *params.TableName)
 			assert.NotNil(t, params.Item)
 			return nil, nil
 		})
@@ -75,7 +75,7 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, tableUser)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(2)}, nil)
 		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
@@ -111,9 +111,9 @@ func buildItem(id string) map[string]types.AttributeValue {
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
+	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
 		assert.NotNil(t, builderExpression)
-		return builderExpression
+		return "", builderExpression
 	}
 }
 

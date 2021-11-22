@@ -5,6 +5,7 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/spf13/viper"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
@@ -30,7 +31,7 @@ func (d dynamoRepository) GetByID(id string) (*domain.Church, error) {
 
 func (d dynamoRepository) List() ([]*domain.Church, error) {
 	var result = make([]*domain.Church, 0)
-	resp, err := d.ScanDynamoDB(context.Background(), d.EmptySpecification())
+	resp, err := d.ScanDynamoDB(context.Background(), d.EmptySpecification(viper.GetString("tables.church")))
 	if err != nil {
 		return nil, err
 	}

@@ -1,9 +1,7 @@
 resource "aws_dynamodb_table" "member_table" {
-  name           = "member"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "id"
+  name = "member"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key = "id"
 
   attribute {
     name = "id"
@@ -12,12 +10,10 @@ resource "aws_dynamodb_table" "member_table" {
 }
 
 resource "aws_dynamodb_table" "member_v2" {
-  name           = "member_v2"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "church_id"
-  range_key      = "id"
+  name = "member_v2"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key = "church_id"
+  range_key = "id"
 
   attribute {
     name = "church_id"
@@ -28,12 +24,12 @@ resource "aws_dynamodb_table" "member_v2" {
     name = "id"
     type = "S"
   }
-  
+
   attribute {
     name = "birthDateShort"
     type = "S"
   }
-  
+
   attribute {
     name = "maritalStatus"
     type = "S"
@@ -45,43 +41,63 @@ resource "aws_dynamodb_table" "member_v2" {
   }
 
   global_secondary_index {
-    name               = "birthDateIndex"
-    hash_key           = "church_id"
-    range_key          = "birthDateShort"
-    write_capacity     = 5
-    read_capacity      = 5
-    projection_type    = "INCLUDE"
-    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate"]
+    name = "birthDateIndex"
+    hash_key = "church_id"
+    range_key = "birthDateShort"
+    projection_type = "INCLUDE"
+    non_key_attributes = [
+      "id",
+      "church_id",
+      "active",
+      "birthDate",
+      "firstName",
+      "lastName",
+      "name",
+      "gender",
+      "marriageDate"]
   }
 
   global_secondary_index {
-    name               = "maritalStatusIndex"
-    hash_key           = "church_id"
-    range_key          = "maritalStatus"
-    write_capacity     = 5
-    read_capacity      = 5
-    projection_type    = "INCLUDE"
-    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate", "marriageDateShort"]
+    name = "maritalStatusIndex"
+    hash_key = "church_id"
+    range_key = "maritalStatus"
+    projection_type = "INCLUDE"
+    non_key_attributes = [
+      "id",
+      "church_id",
+      "active",
+      "birthDate",
+      "firstName",
+      "lastName",
+      "name",
+      "gender",
+      "marriageDate",
+      "marriageDateShort"]
   }
 
   global_secondary_index {
-    name               = "nameIndex"
-    hash_key           = "church_id"
-    range_key          = "name"
-    write_capacity     = 5
-    read_capacity      = 5
-    projection_type    = "INCLUDE"
-    non_key_attributes = ["id","church_id","active","birthDate", "firstName", "lastName", "name", "gender", "marriageDate"]
+    name = "nameIndex"
+    hash_key = "church_id"
+    range_key = "name"
+    projection_type = "INCLUDE"
+    non_key_attributes = [
+      "id",
+      "church_id",
+      "active",
+      "birthDate",
+      "firstName",
+      "lastName",
+      "name",
+      "gender",
+      "marriageDate"]
   }
 
 }
 
 resource "aws_dynamodb_table" "member_history_table" {
-  name           = "member_history"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "id"
+  name = "member_history"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key = "id"
 
   attribute {
     name = "id"
@@ -90,11 +106,9 @@ resource "aws_dynamodb_table" "member_history_table" {
 }
 
 resource "aws_dynamodb_table" "user_table" {
-  name           = "user"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "id"
+  name = "user"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key = "id"
 
   attribute {
     name = "id"
@@ -103,12 +117,10 @@ resource "aws_dynamodb_table" "user_table" {
 }
 
 resource "aws_dynamodb_table" "users_v2" {
-  name           = "user_v2"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "church_id"
-  range_key      = "username"
+  name = "user_v2"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key = "church_id"
+  range_key = "username"
 
   attribute {
     name = "church_id"
@@ -123,11 +135,9 @@ resource "aws_dynamodb_table" "users_v2" {
 
 
 resource "aws_dynamodb_table" "church_table" {
-  name           = "church"
-  billing_mode   = "PROVISIONED"
-  read_capacity  = 5
-  write_capacity = 5
-  hash_key       = "id"
+  name = "church"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key = "id"
 
   attribute {
     name = "id"

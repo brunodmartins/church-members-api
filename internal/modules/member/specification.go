@@ -48,7 +48,7 @@ func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 			index = nameIndex()
 		}
 		if withCondition {
-			builderExpression = builderExpression.WithKeyCondition(keyCondition).WithCondition(conditionBuilder)
+			builderExpression = builderExpression.WithKeyCondition(keyCondition).WithFilter(conditionBuilder)
 		} else {
 			builderExpression = builderExpression.WithKeyCondition(keyCondition)
 		}

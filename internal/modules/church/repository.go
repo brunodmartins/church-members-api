@@ -31,7 +31,7 @@ func (d dynamoRepository) GetByID(id string) (*domain.Church, error) {
 func (d dynamoRepository) buildKey(id string) wrapper.PrimaryKey {
 	return wrapper.PrimaryKey{
 		Key: wrapper.Key{
-			Id:    "church_id",
+			Id:    "id",
 			Value: id,
 		}}
 }

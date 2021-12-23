@@ -44,7 +44,7 @@ func (wrapper *DynamoDBWrapper) EmptySpecification() QuerySpecification {
 	}
 }
 
-func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.QueryOutput, error) {
+func (wrapper *DynamoDBWrapper) QueryDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.QueryOutput, error) {
 	builderExpression := specification(ctx, expression.NewBuilder())
 
 	expr, _ := builderExpression.Build()

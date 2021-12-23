@@ -10,10 +10,10 @@ import (
 	"testing"
 )
 
-func MockGetItem(t *testing.T, dynamoMock *mock_wrapper.MockDynamoDBAPI, table string, id string, item map[string]types.AttributeValue, err error) {
+func MockGetItem(t *testing.T, dynamoMock *mock_wrapper.MockDynamoDBAPI, table string, key KeyAttribute, item map[string]types.AttributeValue, err error) {
 	dynamoMock.EXPECT().GetItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error) {
 		assert.Equal(t, table, *params.TableName)
-		assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
+		assert.Equal(t, key.toKeyAttribute(), params.Key)
 		return &dynamodb.GetItemOutput{Item: item}, err
 	})
 }

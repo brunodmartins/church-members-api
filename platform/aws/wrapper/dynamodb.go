@@ -59,13 +59,9 @@ func (wrapper *DynamoDBWrapper) SaveItem(item interface{}) error {
 	return err
 }
 
-func (wrapper *DynamoDBWrapper) GetItem(id string, value interface{}) error {
+func (wrapper *DynamoDBWrapper) GetItem(key KeyAttribute, value interface{}) error {
 	result, err := wrapper.api.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		Key: map[string]types.AttributeValue{
-			"id": &types.AttributeValueMemberS{
-				Value: id,
-			},
-		},
+		Key:       key.toKeyAttribute(),
 		TableName: aws.String(wrapper.table),
 	})
 	if err != nil {
@@ -76,4 +72,35 @@ func (wrapper *DynamoDBWrapper) GetItem(id string, value interface{}) error {
 	}
 
 	return attributevalue.UnmarshalMap(result.Item, value)
+}
+
+type Key struct {
+	Id    string
+	Value string
+}
+
+type CompositeKey struct {
+	PartitionKey Key
+	SortKey      Key
+}
+
+func (key CompositeKey) toKeyAttribute() map[string]types.AttributeValue {
+	return map[string]types.AttributeValue{
+		key.PartitionKey.Id: &types.AttributeValueMemberS{Value: key.PartitionKey.Value},
+		key.SortKey.Id:      &types.AttributeValueMemberS{Value: key.SortKey.Value},
+	}
+}
+
+type PrimaryKey struct {
+	Key
+}
+
+func (key PrimaryKey) toKeyAttribute() map[string]types.AttributeValue {
+	return map[string]types.AttributeValue{
+		key.Id: &types.AttributeValueMemberS{Value: key.Value},
+	}
+}
+
+type KeyAttribute interface {
+	toKeyAttribute() map[string]types.AttributeValue
 }

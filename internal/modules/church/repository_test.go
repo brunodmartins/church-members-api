@@ -21,20 +21,21 @@ func TestDynamoRepository_GetByID(t *testing.T) {
 	const table = "church"
 	id := uuid.NewString()
 	repo := NewRepository(dynamoMock, table)
+	key := repo.(*dynamoRepository).buildKey(id)
 	t.Run("Success", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, table, id, buildItem(id), nil)
+		wrapper.MockGetItem(t, dynamoMock, table, key, buildItem(id), nil)
 		result, err := repo.GetByID(id)
 		assert.NotNil(t, result)
 		assert.Equal(t, id, result.ID)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, table, id, nil, genericError)
+		wrapper.MockGetItem(t, dynamoMock, table, key, nil, genericError)
 		_, err := repo.GetByID(id)
 		assert.NotNil(t, err)
 	})
 	t.Run("Not found", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, table, id, nil, nil)
+		wrapper.MockGetItem(t, dynamoMock, table, key, nil, nil)
 		_, err := repo.GetByID(id)
 		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 	})

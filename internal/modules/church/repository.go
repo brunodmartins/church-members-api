@@ -26,7 +26,15 @@ func NewRepository(api wrapper.DynamoDBAPI, table string) Repository {
 
 func (d dynamoRepository) GetByID(id string) (*domain.Church, error) {
 	result := &domain.Church{}
-	return result, d.GetItem(id, result)
+	return result, d.GetItem(d.buildKey(id), result)
+}
+
+func (d dynamoRepository) buildKey(id string) wrapper.PrimaryKey {
+	return wrapper.PrimaryKey{
+		Key: wrapper.Key{
+			Id:    "church_id",
+			Value: id,
+		}}
 }
 
 func (d dynamoRepository) List() ([]*domain.Church, error) {

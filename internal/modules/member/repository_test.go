@@ -54,21 +54,22 @@ func TestDynamoRepository_FindByID(t *testing.T) {
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
 	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
 	id := domain.NewID()
+	ctx := BuildContext()
 	t.Run("Success", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, memberTable, id, buildItem(id), nil)
-		member, err := repo.FindByID(context.Background(), id)
+		wrapper.MockGetItem(t, dynamoMock, memberTable, buildKey(ctx, id), buildItem(id), nil)
+		member, err := repo.FindByID(ctx, id)
 		assert.Nil(t, err)
 		assert.Equal(t, id, member.ID)
 	})
 	t.Run("Not Found", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, memberTable, id, nil, nil)
-		memberFound, err := repo.FindByID(context.Background(), id)
+		wrapper.MockGetItem(t, dynamoMock, memberTable, buildKey(ctx, id), nil, nil)
+		memberFound, err := repo.FindByID(ctx, id)
 		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 		assert.Nil(t, memberFound)
 	})
 	t.Run("Error", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, memberTable, id, nil, genericError)
-		memberFound, err := repo.FindByID(context.Background(), id)
+		wrapper.MockGetItem(t, dynamoMock, memberTable, buildKey(ctx, id), nil, genericError)
+		memberFound, err := repo.FindByID(ctx, id)
 		assert.NotNil(t, err)
 		assert.Nil(t, memberFound)
 	})
@@ -167,4 +168,17 @@ func buildItems(length int) []map[string]types.AttributeValue {
 func buildItem(id string) map[string]types.AttributeValue {
 	item, _ := attributevalue.MarshalMap(buildMember(id))
 	return item
+}
+
+func buildKey(ctx context.Context, id string) wrapper.CompositeKey {
+	return wrapper.CompositeKey{
+		PartitionKey: wrapper.Key{
+			Id:    "church_id",
+			Value: domain.GetChurchID(ctx),
+		},
+		SortKey: wrapper.Key{
+			Id:    "id",
+			Value: id,
+		},
+	}
 }

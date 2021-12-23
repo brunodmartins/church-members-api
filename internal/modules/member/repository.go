@@ -57,11 +57,24 @@ func (repo dynamoRepository) FindAll(ctx context.Context, specification wrapper.
 
 func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.Member, error) {
 	record := &dto.MemberItem{}
-	err := repo.wrapper.GetItem(id, record)
+	err := repo.wrapper.GetItem(repo.buildKey(ctx, id), record)
 	if err != nil {
 		return nil, err
 	}
 	return record.ToMember(), nil
+}
+
+func (repo dynamoRepository) buildKey(ctx context.Context, id string) wrapper.CompositeKey {
+	return wrapper.CompositeKey{
+		PartitionKey: wrapper.Key{
+			Id:    "church_id",
+			Value: domain.GetChurchID(ctx),
+		},
+		SortKey: wrapper.Key{
+			Id:    "id",
+			Value: id,
+		},
+	}
 }
 
 func (repo dynamoRepository) Insert(ctx context.Context, member *domain.Member) error {

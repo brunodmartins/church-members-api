@@ -92,8 +92,9 @@ func TestSortByName(t *testing.T) {
 }
 
 func TestLessByDay(t *testing.T) {
-	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0, 1, 0)))
-	assert.False(t, lessByDay(time.Now().AddDate(0, 1, 0), time.Now()))
-	assert.True(t, lessByDay(time.Now(), time.Now().AddDate(0, 0, 1)))
-	assert.False(t, lessByDay(time.Now().AddDate(0, 0, 1), time.Now()))
+	now, _ := time.Parse(time.RFC3339, "2021-01-01T00:00:00Z")
+	assert.True(t, lessByDay(now, now.AddDate(0, 1, 0)))
+	assert.False(t, lessByDay(now.AddDate(0, 1, 0), now))
+	assert.True(t, lessByDay(now, now.AddDate(0, 0, 1)))
+	assert.False(t, lessByDay(now.AddDate(0, 0, 1), now))
 }

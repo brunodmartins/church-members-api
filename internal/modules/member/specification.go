@@ -27,28 +27,21 @@ func (spec *QueryBuilder) AddFilter(key string, value interface{}) {
 //ToSpecification apply filters to a search on the repo
 func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		var filters []expression.ConditionBuilder
 		index := ""
 		keyCondition := withChurchKey(ctx)
-		withCondition := false
-		var conditionBuilder expression.ConditionBuilder
 		if spec.values["gender"] != nil {
-			withCondition = true
-			conditionBuilder = expression.Name("gender").Equal(expression.Value(spec.values["gender"].(string)))
+			filters = append(filters, expression.Name("gender").Equal(expression.Value(spec.values["gender"].(string))))
 		}
 		if spec.values["active"] != nil {
-			if withCondition {
-				conditionBuilder = conditionBuilder.And(activeCondition(spec.values["active"].(bool)))
-			} else {
-				conditionBuilder = activeCondition(spec.values["active"].(bool))
-			}
-			withCondition = true
+			filters = append(filters, activeCondition(spec.values["active"].(bool)))
 		}
 		if spec.values["name"] != nil {
 			keyCondition = keyCondition.And(expression.Key("name").BeginsWith(spec.values["name"].(string)))
 			index = nameIndex()
 		}
-		if withCondition {
-			builderExpression = builderExpression.WithKeyCondition(keyCondition).WithFilter(conditionBuilder)
+		if len(filters) != 0 {
+			builderExpression = builderExpression.WithKeyCondition(keyCondition).WithFilter(spec.mergeFilters(filters))
 		} else {
 			builderExpression = builderExpression.WithKeyCondition(keyCondition)
 		}
@@ -58,6 +51,18 @@ func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 		}
 	}
 
+}
+
+func (spec *QueryBuilder) mergeFilters(filters []expression.ConditionBuilder) expression.ConditionBuilder {
+	var finalFilter expression.ConditionBuilder
+	for index, filter := range filters {
+		if index == 0 {
+			finalFilter = filter
+		} else {
+			finalFilter = finalFilter.And(filter)
+		}
+	}
+	return finalFilter
 }
 
 func OnlyActive() wrapper.QuerySpecification {

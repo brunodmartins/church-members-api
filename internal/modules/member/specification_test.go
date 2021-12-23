@@ -33,33 +33,55 @@ func TestCreateActiveFilter(t *testing.T) {
 }
 
 func TestQuerySpecification_ApplyFilters(t *testing.T) {
-	assertFilters := func(querySpec *QueryBuilder, length int) {
+	t.Run("Query without filters", func(t *testing.T) {
+		querySpec := new(QueryBuilder)
 		spec := querySpec.ToSpecification()
 		builder := spec(BuildContext(), expression.NewBuilder())
-		expression, _ := builder.Build()
-		assert.Len(t, expression.Names(), length)
-	}
-	t.Run("Without filters", func(t *testing.T) {
-		spec := new(QueryBuilder)
-		assertFilters(spec, 1)
+		expression, err := builder.Build()
+		assert.Nil(t, err)
+		assert.NotNil(t, expression.KeyCondition())
+		assert.Nil(t, expression.Condition())
+		assert.Nil(t, expression.Filter())
+		assert.Len(t, expression.Names(), 1)
 	})
-	t.Run("With one filter", func(t *testing.T) {
-		spec := new(QueryBuilder)
-		spec.AddFilter("name", "test")
-		assertFilters(spec, 2)
+	t.Run("Query with name filter", func(t *testing.T) {
+		querySpec := new(QueryBuilder)
+		querySpec.AddFilter("name", "test")
+		spec := querySpec.ToSpecification()
+		builder := spec(BuildContext(), expression.NewBuilder())
+		expression, err := builder.Build()
+		assert.Nil(t, err)
+		assert.NotNil(t, expression.KeyCondition())
+		assert.Nil(t, expression.Condition())
+		assert.Nil(t, expression.Filter())
+		assert.Len(t, expression.Names(), 2)
 	})
-	t.Run("With two filter", func(t *testing.T) {
-		spec := new(QueryBuilder)
-		spec.AddFilter("name", "test")
-		spec.AddFilter("active", true)
-		assertFilters(spec, 3)
+	t.Run("Query with name and active filter", func(t *testing.T) {
+		querySpec := new(QueryBuilder)
+		querySpec.AddFilter("name", "test")
+		querySpec.AddFilter("active", true)
+		spec := querySpec.ToSpecification()
+		builder := spec(BuildContext(), expression.NewBuilder())
+		expression, err := builder.Build()
+		assert.Nil(t, err)
+		assert.NotNil(t, expression.KeyCondition())
+		assert.Nil(t, expression.Condition())
+		assert.NotNil(t, expression.Filter())
+		assert.Len(t, expression.Names(), 3)
 	})
 	t.Run("With three filter", func(t *testing.T) {
-		spec := new(QueryBuilder)
-		spec.AddFilter("name", "test")
-		spec.AddFilter("active", true)
-		spec.AddFilter("gender", "M")
-		assertFilters(spec, 4)
+		querySpec := new(QueryBuilder)
+		querySpec.AddFilter("name", "test")
+		querySpec.AddFilter("active", true)
+		querySpec.AddFilter("gender", "M")
+		spec := querySpec.ToSpecification()
+		builder := spec(BuildContext(), expression.NewBuilder())
+		expression, err := builder.Build()
+		assert.Nil(t, err)
+		assert.NotNil(t, expression.KeyCondition())
+		assert.Nil(t, expression.Condition())
+		assert.NotNil(t, expression.Filter())
+		assert.Len(t, expression.Names(), 4)
 	})
 }
 

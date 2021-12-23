@@ -9,26 +9,32 @@ import (
 )
 
 func WithSMSNotifications() wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return userTable(), builderExpression.WithFilter(expression.Name("send_daily_sms").Equal(expression.Value(true)).And(withChurchId(ctx)))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(withChurchId(ctx)).WithFilter(expression.Name("send_daily_sms").Equal(expression.Value(true))),
+		}
 	}
 }
 
 func WithEmailNotifications() wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return userTable(), builderExpression.WithFilter(expression.Name("send_weekly_email").Equal(expression.Value(true)).And(withChurchId(ctx)))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(withChurchId(ctx)).WithFilter(expression.Name("send_weekly_email").Equal(expression.Value(true))),
+		}
 	}
 }
 
 func WithUserName(username string) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		userExpr := expression.Name("username").Equal(expression.Value(username))
-		return userTable(), builderExpression.WithFilter(userExpr)
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		userKey := expression.Key("username").Equal(expression.Value(username))
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(withChurchId(ctx).And(userKey)),
+		}
 	}
 }
 
-func withChurchId(ctx context.Context) expression.ConditionBuilder {
-	return expression.Name("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
+func withChurchId(ctx context.Context) expression.KeyConditionBuilder {
+	return expression.Key("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }
 
 func userTable() string {

@@ -7,28 +7,25 @@ import (
 )
 
 func TestWithSMSNotifications(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := WithSMSNotifications()
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 2)
 }
 
 func TestWithEmailNotifications(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := WithEmailNotifications()
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 2)
 }
 
 func TestWithUserName(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := WithUserName("test")
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 1)
+	assert.Len(t, expression.Names(), 2)
 }

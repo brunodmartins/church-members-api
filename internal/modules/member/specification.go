@@ -27,40 +27,56 @@ func (spec *QueryBuilder) AddFilter(key string, value interface{}) {
 
 //ToSpecification apply filters to a search on the repo
 func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		var conditions []expression.ConditionBuilder
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		index := ""
+		keyCondition := withChurchKey(ctx)
+		withCondition := false
+		var conditionBuilder expression.ConditionBuilder
 		if spec.values["gender"] != nil {
-			conditions = append(conditions, expression.Name("gender").Equal(expression.Value(spec.values["gender"].(string))))
+			withCondition = true
+			conditionBuilder = expression.Name("gender").Equal(expression.Value(spec.values["gender"].(string)))
 		}
 		if spec.values["active"] != nil {
-			conditions = append(conditions, activeCondition(spec.values["active"].(bool)))
+			if withCondition {
+				conditionBuilder = conditionBuilder.And(activeCondition(spec.values["active"].(bool)))
+			} else {
+				conditionBuilder = activeCondition(spec.values["active"].(bool))
+			}
+			withCondition = true
 		}
 		if spec.values["name"] != nil {
-			conditions = append(conditions, expression.Name("name").Contains(spec.values["name"].(string)))
+			keyCondition = keyCondition.And(expression.Key("name").BeginsWith(spec.values["name"].(string)))
+			index = nameIndex()
 		}
-		conditions = append(conditions, withChurchId(ctx))
-		conditionsSize := len(conditions)
-		switch conditionsSize {
-		case 1:
-			return memberTable(), builderExpression.WithFilter(conditions[0])
-		case 2:
-			return memberTable(), builderExpression.WithFilter(conditions[0].And(conditions[1]))
-		default:
-			return memberTable(), builderExpression.WithFilter(conditions[0].And(conditions[1], conditions[2:]...))
+		if withCondition {
+			builderExpression = builderExpression.WithKeyCondition(keyCondition).WithCondition(conditionBuilder)
+		} else {
+			builderExpression = builderExpression.WithKeyCondition(keyCondition)
+		}
+		return wrapper.ExpressionBuilder{
+			Index:   index,
+			Builder: builderExpression,
 		}
 	}
 
 }
 
 func OnlyActive() wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return memberTable(), builderExpression.WithFilter(activeCondition(true))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		keyCondition := withChurchKey(ctx)
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(keyCondition).WithFilter(activeCondition(true)),
+		}
 	}
 }
 
 func OnlyMarriage() wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return memberTable(), builderExpression.WithFilter(expression.Name("marriageDate").AttributeExists().And(activeCondition(true)).And(withChurchId(ctx)))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		keyCondition := withChurchKey(ctx).And(expression.Key("maritalStatus").Equal(expression.Value("MARRIED")))
+		return wrapper.ExpressionBuilder{
+			Index:   maritalStatusIndex(),
+			Builder: builderExpression.WithKeyCondition(keyCondition).WithFilter(activeCondition(true)),
+		}
 	}
 }
 
@@ -95,27 +111,54 @@ func applySpecifications(members []*domain.Member, specification []Specification
 }
 
 func LastMarriages(startDate, endDate time.Time) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return memberTable(), builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))).And(withChurchId(ctx)).And(activeCondition(true)))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		maritalStatus := expression.Key("maritalStatus").Equal(expression.Value("MARRIED"))
+		builderExpression = builderExpression.WithKeyCondition(maritalStatus.And(withChurchKey(ctx)))
+		return wrapper.ExpressionBuilder{
+			Index:   maritalStatusIndex(),
+			Builder: builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))).And(activeCondition(true))),
+		}
 	}
 }
 
 func LastBirths(startDate, endDate time.Time) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return memberTable(), builderExpression.WithFilter(expression.Name("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))).And(withChurchId(ctx)).And(activeCondition(true)))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		dateKey := expression.Key("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate)))
+		key := withChurchKey(ctx).And(dateKey)
+		return wrapper.ExpressionBuilder{
+			Index:   birthDateIndex(),
+			Builder: builderExpression.WithKeyCondition(key).WithFilter(activeCondition(true)),
+		}
 	}
 }
 
 func WithBirthday(date time.Time) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return memberTable(), builderExpression.WithFilter(expression.Name("birthDateShort").Equal(expression.Value(utils.ConvertDate(date))).And(withChurchId(ctx)).And(activeCondition(true)))
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		dateKey := expression.Key("birthDateShort").Equal(expression.Value(utils.ConvertDate(date)))
+		builderExpression = builderExpression.WithKeyCondition(dateKey.And(withChurchKey(ctx)))
+		return wrapper.ExpressionBuilder{
+			Index:   birthDateIndex(),
+			Builder: builderExpression.WithFilter(activeCondition(true)),
+		}
 	}
+}
+
+func withChurchKey(ctx context.Context) expression.KeyConditionBuilder {
+	return expression.Key("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }
 
 func withChurchId(ctx context.Context) expression.ConditionBuilder {
 	return expression.Name("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }
 
-func memberTable() string {
-	return viper.GetString("tables.member")
+func nameIndex() string {
+	return viper.GetString("tables.member.indexes.name")
+}
+
+func birthDateIndex() string {
+	return viper.GetString("tables.member.indexes.birthDate")
+}
+
+func maritalStatusIndex() string {
+	return viper.GetString("tables.member.indexes.maritalStatus")
 }

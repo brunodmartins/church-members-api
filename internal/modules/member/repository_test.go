@@ -29,19 +29,19 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
 	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
 	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(2)}, nil)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(2)}, nil)
 		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)
 	})
 	t.Run("Empty", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, nil)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(0)}, nil)
 		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 0)
 	})
 	t.Run("Error", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, genericError)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(0)}, genericError)
 		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
 		assert.NotNil(t, err)
 		assert.Len(t, members, 0)
@@ -150,9 +150,11 @@ func TestDynamoRepository_GenerateStatusHistory(t *testing.T) {
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
 		assert.NotNil(t, builderExpression)
-		return "", builderExpression
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression,
+		}
 	}
 }
 

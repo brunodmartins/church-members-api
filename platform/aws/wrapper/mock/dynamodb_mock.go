@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	dynamodb "github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	types "github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -75,6 +76,26 @@ func (mr *MockDynamoDBAPIMockRecorder) PutItem(ctx, params interface{}, optFns .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutItem", reflect.TypeOf((*MockDynamoDBAPI)(nil).PutItem), varargs...)
 }
 
+// Query mocks base method.
+func (m *MockDynamoDBAPI) Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, params}
+	for _, a := range optFns {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "Query", varargs...)
+	ret0, _ := ret[0].(*dynamodb.QueryOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Query indicates an expected call of Query.
+func (mr *MockDynamoDBAPIMockRecorder) Query(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, params}, optFns...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Query", reflect.TypeOf((*MockDynamoDBAPI)(nil).Query), varargs...)
+}
+
 // Scan mocks base method.
 func (m *MockDynamoDBAPI) Scan(ctx context.Context, params *dynamodb.ScanInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error) {
 	m.ctrl.T.Helper()
@@ -113,4 +134,41 @@ func (mr *MockDynamoDBAPIMockRecorder) UpdateItem(ctx, params interface{}, optFn
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, params}, optFns...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateItem", reflect.TypeOf((*MockDynamoDBAPI)(nil).UpdateItem), varargs...)
+}
+
+// MockKeyAttribute is a mock of KeyAttribute interface.
+type MockKeyAttribute struct {
+	ctrl     *gomock.Controller
+	recorder *MockKeyAttributeMockRecorder
+}
+
+// MockKeyAttributeMockRecorder is the mock recorder for MockKeyAttribute.
+type MockKeyAttributeMockRecorder struct {
+	mock *MockKeyAttribute
+}
+
+// NewMockKeyAttribute creates a new mock instance.
+func NewMockKeyAttribute(ctrl *gomock.Controller) *MockKeyAttribute {
+	mock := &MockKeyAttribute{ctrl: ctrl}
+	mock.recorder = &MockKeyAttributeMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockKeyAttribute) EXPECT() *MockKeyAttributeMockRecorder {
+	return m.recorder
+}
+
+// toKeyAttribute mocks base method.
+func (m *MockKeyAttribute) toKeyAttribute() map[string]types.AttributeValue {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "toKeyAttribute")
+	ret0, _ := ret[0].(map[string]types.AttributeValue)
+	return ret0
+}
+
+// toKeyAttribute indicates an expected call of toKeyAttribute.
+func (mr *MockKeyAttributeMockRecorder) toKeyAttribute() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "toKeyAttribute", reflect.TypeOf((*MockKeyAttribute)(nil).toKeyAttribute))
 }

@@ -73,6 +73,9 @@ definitions:
       attendsSundayWorship:
         type: boolean
         x-go-name: AttendsSundayWorship
+      church_id:
+        type: string
+        x-go-name: ChurchID
       id:
         type: string
         x-go-name: ID
@@ -173,6 +176,9 @@ definitions:
       attendsSundayWorship:
         type: boolean
         x-go-name: AttendsSundayWorship
+      church_id:
+        type: string
+        x-go-name: ChurchID
       id:
         type: string
         x-go-name: ID
@@ -224,6 +230,9 @@ definitions:
       attendsSundayWorship:
         type: boolean
         x-go-name: AttendsSundayWorship
+      church_id:
+        type: string
+        x-go-name: ChurchID
       id:
         type: string
         x-go-name: ID

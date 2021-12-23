@@ -49,19 +49,19 @@ func TestDynamoRepository_List(t *testing.T) {
 	const table = "church"
 	repo := NewRepository(dynamoMock, table)
 	t.Run("Success", func(t *testing.T) {
-		wrapper.MockScan(dynamoMock, buildItems(5), nil)
+		wrapper.MockQuery(dynamoMock, buildItems(5), nil)
 		result, err := repo.List()
 		assert.Nil(t, err)
 		assert.Len(t, result, 5)
 	})
 	t.Run("Empty", func(t *testing.T) {
-		wrapper.MockScan(dynamoMock, buildItems(0), nil)
+		wrapper.MockQuery(dynamoMock, buildItems(0), nil)
 		result, err := repo.List()
 		assert.Nil(t, err)
 		assert.Len(t, result, 0)
 	})
 	t.Run("Error", func(t *testing.T) {
-		wrapper.MockScan(dynamoMock, buildItems(0), genericError)
+		wrapper.MockQuery(dynamoMock, buildItems(0), genericError)
 		result, err := repo.List()
 		assert.NotNil(t, err)
 		assert.Len(t, result, 0)

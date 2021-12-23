@@ -16,6 +16,7 @@ type DynamoDBAPI interface {
 	PutItem(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
 	GetItem(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error)
 	Scan(ctx context.Context, params *dynamodb.ScanInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error)
+	Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error)
 	UpdateItem(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error)
 }
 
@@ -28,26 +29,37 @@ func NewDynamoDBWrapper(api DynamoDBAPI, table string) *DynamoDBWrapper {
 	return &DynamoDBWrapper{api: api, table: table}
 }
 
-type QuerySpecification func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder)
+type QuerySpecification func(ctx context.Context, builderExpression expression.Builder) ExpressionBuilder
 
-func (wrapper *DynamoDBWrapper) EmptySpecification(table string) QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) (string, expression.Builder) {
-		return table, builderExpression
+type ExpressionBuilder struct {
+	Index string
+	expression.Builder
+}
+
+func (wrapper *DynamoDBWrapper) EmptySpecification() QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) ExpressionBuilder {
+		return ExpressionBuilder{
+			Builder: builderExpression,
+		}
 	}
 }
 
-func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.ScanOutput, error) {
-	builderExpression := expression.NewBuilder()
-	table, builderExpression := specification(ctx, builderExpression)
+func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.QueryOutput, error) {
+	builderExpression := specification(ctx, expression.NewBuilder())
 
 	expr, _ := builderExpression.Build()
-	return wrapper.api.Scan(ctx, &dynamodb.ScanInput{
-		TableName:                 aws.String(table),
+	queryInput := &dynamodb.QueryInput{
+		TableName:                 aws.String(wrapper.table),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-	})
+		KeyConditionExpression:    expr.KeyCondition(),
+	}
+	if builderExpression.Index != "" {
+		queryInput.IndexName = aws.String(builderExpression.Index)
+	}
+	return wrapper.api.Query(ctx, queryInput)
 }
 
 func (wrapper *DynamoDBWrapper) SaveItem(item interface{}) error {

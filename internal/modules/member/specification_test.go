@@ -25,19 +25,17 @@ func TestQuerySpecification(t *testing.T) {
 }
 
 func TestCreateActiveFilter(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := OnlyActive()
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 1)
+	assert.Len(t, expression.Names(), 2)
 }
 
 func TestQuerySpecification_ApplyFilters(t *testing.T) {
 	assertFilters := func(querySpec *QueryBuilder, length int) {
-		builder := expression.NewBuilder()
 		spec := querySpec.ToSpecification()
-		_, builder = spec(BuildContext(), builder)
+		builder := spec(BuildContext(), expression.NewBuilder())
 		expression, _ := builder.Build()
 		assert.Len(t, expression.Names(), length)
 	}
@@ -66,9 +64,8 @@ func TestQuerySpecification_ApplyFilters(t *testing.T) {
 }
 
 func TestCreateMarriageFilter(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := OnlyMarriage()
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)
@@ -85,27 +82,24 @@ func TestOnlyByClassification(t *testing.T) {
 }
 
 func TestLastMarriages(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := LastMarriages(time.Now(), time.Now())
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
-	assert.Len(t, expression.Names(), 3)
+	assert.Len(t, expression.Names(), 4)
 }
 
 func TestLastBirths(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := LastBirths(time.Now(), time.Now())
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)
 }
 
 func TestBirthDay(t *testing.T) {
-	builder := expression.NewBuilder()
 	spec := WithBirthday(time.Now())
-	_, builder = spec(BuildContext(), builder)
+	builder := spec(BuildContext(), expression.NewBuilder())
 	expression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, expression.Names(), 3)

@@ -86,11 +86,13 @@ func (wrapper *DynamoDBWrapper) GetItem(key KeyAttribute, value interface{}) err
 	return attributevalue.UnmarshalMap(result.Item, value)
 }
 
+//Key groups the ID and Value of a key
 type Key struct {
 	Id    string
 	Value string
 }
 
+//CompositeKey groups a partition and sort key
 type CompositeKey struct {
 	PartitionKey Key
 	SortKey      Key
@@ -103,6 +105,7 @@ func (key CompositeKey) toKeyAttribute() map[string]types.AttributeValue {
 	}
 }
 
+//PrimaryKey wraps Key for scenarios where exist only the Partition key
 type PrimaryKey struct {
 	Key
 }
@@ -113,6 +116,7 @@ func (key PrimaryKey) toKeyAttribute() map[string]types.AttributeValue {
 	}
 }
 
+//KeyAttribute interface provides a conversion from Key to map[string]types.AttributeValue
 type KeyAttribute interface {
 	toKeyAttribute() map[string]types.AttributeValue
 }

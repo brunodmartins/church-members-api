@@ -14,7 +14,7 @@ import (
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go
 type Service interface {
-	GenerateToken(username, password string) (string, error)
+	GenerateToken(churchID, username, password string) (string, error)
 }
 
 type authService struct {
@@ -29,8 +29,14 @@ func NewAuthService(userRepository user.Repository, churchRepository church.Repo
 	}
 }
 
-func (s *authService) GenerateToken(username, password string) (string, error) {
-	user, err := s.userRepository.FindUser(context.Background(), username)
+func (s *authService) GenerateToken(churchID, username, password string) (string, error) {
+	church, err := s.churchRepository.GetByID(churchID)
+	if err != nil {
+		return "", s.buildAuthError()
+	}
+	user, err := s.userRepository.FindUser(context.WithValue(context.Background(), "user", &domain.User{
+		Church: church,
+	}), username)
 	if err != nil {
 		return "", err
 	}
@@ -38,10 +44,6 @@ func (s *authService) GenerateToken(username, password string) (string, error) {
 		return "", s.buildAuthError()
 	}
 	err = crypto.IsSamePassword(user.Password, password)
-	if err != nil {
-		return "", s.buildAuthError()
-	}
-	church, err := s.churchRepository.GetByID(user.ChurchID)
 	if err != nil {
 		return "", s.buildAuthError()
 	}

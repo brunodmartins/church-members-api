@@ -16,6 +16,7 @@ type DynamoDBAPI interface {
 	PutItem(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error)
 	GetItem(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error)
 	Scan(ctx context.Context, params *dynamodb.ScanInput, optFns ...func(*dynamodb.Options)) (*dynamodb.ScanOutput, error)
+	Query(ctx context.Context, params *dynamodb.QueryInput, optFns ...func(*dynamodb.Options)) (*dynamodb.QueryOutput, error)
 	UpdateItem(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error)
 }
 
@@ -28,26 +29,37 @@ func NewDynamoDBWrapper(api DynamoDBAPI, table string) *DynamoDBWrapper {
 	return &DynamoDBWrapper{api: api, table: table}
 }
 
-type QuerySpecification func(ctx context.Context, builderExpression expression.Builder) expression.Builder
+type QuerySpecification func(ctx context.Context, builderExpression expression.Builder) ExpressionBuilder
+
+type ExpressionBuilder struct {
+	Index string
+	expression.Builder
+}
 
 func (wrapper *DynamoDBWrapper) EmptySpecification() QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
-		return builderExpression
+	return func(ctx context.Context, builderExpression expression.Builder) ExpressionBuilder {
+		return ExpressionBuilder{
+			Builder: builderExpression,
+		}
 	}
 }
 
-func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.ScanOutput, error) {
-	builderExpression := expression.NewBuilder()
-	builderExpression = specification(ctx, builderExpression)
+func (wrapper *DynamoDBWrapper) QueryDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.QueryOutput, error) {
+	builderExpression := specification(ctx, expression.NewBuilder())
 
 	expr, _ := builderExpression.Build()
-	return wrapper.api.Scan(ctx, &dynamodb.ScanInput{
+	queryInput := &dynamodb.QueryInput{
 		TableName:                 aws.String(wrapper.table),
 		ExpressionAttributeNames:  expr.Names(),
 		ExpressionAttributeValues: expr.Values(),
 		FilterExpression:          expr.Filter(),
 		ProjectionExpression:      expr.Projection(),
-	})
+		KeyConditionExpression:    expr.KeyCondition(),
+	}
+	if builderExpression.Index != "" {
+		queryInput.IndexName = aws.String(builderExpression.Index)
+	}
+	return wrapper.api.Query(ctx, queryInput)
 }
 
 func (wrapper *DynamoDBWrapper) SaveItem(item interface{}) error {
@@ -59,13 +71,9 @@ func (wrapper *DynamoDBWrapper) SaveItem(item interface{}) error {
 	return err
 }
 
-func (wrapper *DynamoDBWrapper) GetItem(id string, value interface{}) error {
+func (wrapper *DynamoDBWrapper) GetItem(key KeyAttribute, value interface{}) error {
 	result, err := wrapper.api.GetItem(context.TODO(), &dynamodb.GetItemInput{
-		Key: map[string]types.AttributeValue{
-			"id": &types.AttributeValueMemberS{
-				Value: id,
-			},
-		},
+		Key:       key.toKeyAttribute(),
 		TableName: aws.String(wrapper.table),
 	})
 	if err != nil {
@@ -76,4 +84,39 @@ func (wrapper *DynamoDBWrapper) GetItem(id string, value interface{}) error {
 	}
 
 	return attributevalue.UnmarshalMap(result.Item, value)
+}
+
+//Key groups the ID and Value of a key
+type Key struct {
+	Id    string
+	Value string
+}
+
+//CompositeKey groups a partition and sort key
+type CompositeKey struct {
+	PartitionKey Key
+	SortKey      Key
+}
+
+func (key CompositeKey) toKeyAttribute() map[string]types.AttributeValue {
+	return map[string]types.AttributeValue{
+		key.PartitionKey.Id: &types.AttributeValueMemberS{Value: key.PartitionKey.Value},
+		key.SortKey.Id:      &types.AttributeValueMemberS{Value: key.SortKey.Value},
+	}
+}
+
+//PrimaryKey wraps Key for scenarios where exist only the Partition key
+type PrimaryKey struct {
+	Key
+}
+
+func (key PrimaryKey) toKeyAttribute() map[string]types.AttributeValue {
+	return map[string]types.AttributeValue{
+		key.Id: &types.AttributeValueMemberS{Value: key.Value},
+	}
+}
+
+//KeyAttribute interface provides a conversion from Key to map[string]types.AttributeValue
+type KeyAttribute interface {
+	toKeyAttribute() map[string]types.AttributeValue
 }

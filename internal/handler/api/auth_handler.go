@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/base64"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"net/http"
 	"strings"
@@ -21,7 +22,8 @@ func NewAuthHandler(authService security.Service) *AuthHandler {
 
 func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 	authHeader := ctx.Get("Authorization")
-	if authHeader == "" || len(handler.splitAuthHeader(authHeader)) != 2 {
+	churchID := ctx.Get("church_id")
+	if authHeader == "" || len(handler.splitAuthHeader(authHeader)) != 2 || !domain.IsValidID(churchID) {
 		return handler.builderUnauthorizedError()
 	}
 	decodedHeader, err := handler.decodeHeader(handler.splitAuthHeader(authHeader)[1])
@@ -32,7 +34,7 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 		return handler.builderUnauthorizedError()
 	}
 	userName, password := handler.getUser(decodedHeader)
-	token, err := handler.authService.GenerateToken(userName, password)
+	token, err := handler.authService.GenerateToken(churchID, userName, password)
 	if err != nil {
 		return err
 	}

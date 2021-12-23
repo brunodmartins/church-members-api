@@ -27,7 +27,7 @@ func NewRepository(api wrapper.DynamoDBAPI, userTable string) Repository {
 }
 
 func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*domain.User, error) {
-	resp, err := repo.ScanDynamoDB(ctx, WithUserName(username))
+	resp, err := repo.QueryDynamoDB(ctx, WithUserName(username))
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (repo dynamoRepository) SaveUser(ctx context.Context, user *domain.User) er
 
 func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
 	var users = make([]*domain.User, 0)
-	resp, err := repo.ScanDynamoDB(ctx, specification)
+	resp, err := repo.QueryDynamoDB(ctx, specification)
 	if err != nil {
 		return nil, err
 	}

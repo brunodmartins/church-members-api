@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	mock_security "github.com/BrunoDM2943/church-members-api/platform/security/mock"
 	"github.com/golang/mock/gomock"
@@ -39,9 +40,15 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)))
 		runTest(app, request).assertStatus(t, http.StatusInternalServerError)
 	})
+	t.Run("Fail - church_id empty", func(t *testing.T) {
+		request := buildGet("/users/token")
+		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)))
+		request.Header.Del("church_id")
+		runTest(app, request).assertStatus(t, http.StatusUnauthorized)
+	})
 	t.Run("Fail - Header not encrypted", func(t *testing.T) {
 		request := buildGet("/users/token")
-		buildAuthorizationHeader(request, "Basic "+ buildHeaderValue(userName, password))
+		buildAuthorizationHeader(request, "Basic "+buildHeaderValue(userName, password))
 		runTest(app, request).assertStatus(t, http.StatusUnauthorized)
 	})
 	t.Run("Fail - Header invalid", func(t *testing.T) {
@@ -51,7 +58,7 @@ func TestAuthHandler_GetToken(t *testing.T) {
 	})
 	t.Run("Fail - Header invalid", func(t *testing.T) {
 		request := buildGet("/users/token")
-		buildAuthorizationHeader(request, "Basic " + encodeValue("xxxx"))
+		buildAuthorizationHeader(request, "Basic "+encodeValue("xxxx"))
 		runTest(app, request).assertStatus(t, http.StatusUnauthorized)
 	})
 	t.Run("Fail - Header missing", func(t *testing.T) {
@@ -62,6 +69,7 @@ func TestAuthHandler_GetToken(t *testing.T) {
 
 func buildAuthorizationHeader(request *http.Request, value string) {
 	request.Header.Set("Authorization", value)
+	request.Header.Set("church_id", domain.NewID())
 }
 
 func encodeValue(value string) string {

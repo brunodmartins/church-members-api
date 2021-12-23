@@ -34,7 +34,7 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // GenerateToken mocks base method.
-func (m *MockService) GenerateToken(username, password string) (string, error) {
+func (m *MockService) GenerateToken(churchID, username, password string) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GenerateToken", username, password)
 	ret0, _ := ret[0].(string)

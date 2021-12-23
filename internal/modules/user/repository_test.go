@@ -18,16 +18,16 @@ import (
 )
 
 const (
-	userTable = "User-table"
+	tableUser = "User-table"
 )
 
 func TestDynamoRepository_FindUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, tableUser)
 	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(1)}, nil)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(1)}, nil)
 		user, err := repo.FindUser(buildContext(), userName)
 		assert.Nil(t, err)
 		assert.NotNil(t, user)
@@ -35,13 +35,13 @@ func TestDynamoRepository_FindUser(t *testing.T) {
 		assert.NotNil(t, password, user.Password)
 	})
 	t.Run("Empty", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: []map[string]types.AttributeValue{}}, nil)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: []map[string]types.AttributeValue{}}, nil)
 		user, err := repo.FindUser(buildContext(), userName)
 		assert.Nil(t, err)
 		assert.Nil(t, user)
 	})
 	t.Run("Error", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: []map[string]types.AttributeValue{}}, genericError)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: []map[string]types.AttributeValue{}}, genericError)
 		user, err := repo.FindUser(buildContext(), userName)
 		assert.NotNil(t, err)
 		assert.Nil(t, user)
@@ -52,11 +52,11 @@ func TestDynamoRepository_SaveUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, tableUser)
 	user := buildUser("", "123")
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
-			assert.Equal(t, userTable, *params.TableName)
+			assert.Equal(t, tableUser, *params.TableName)
 			assert.NotNil(t, params.Item)
 			return nil, nil
 		})
@@ -75,21 +75,21 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := NewRepository(dynamoMock, userTable)
+	repo := NewRepository(dynamoMock, tableUser)
 	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(2)}, nil)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(2)}, nil)
 		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)
 	})
 	t.Run("Empty", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, nil)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(0)}, nil)
 		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
 		assert.Nil(t, err)
 		assert.Len(t, members, 0)
 	})
 	t.Run("Error", func(t *testing.T) {
-		dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: buildItems(0)}, genericError)
+		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(0)}, genericError)
 		members, err := repo.SearchUser(buildContext(), buildMockSpecification(t))
 		assert.NotNil(t, err)
 		assert.Len(t, members, 0)
@@ -111,9 +111,11 @@ func buildItem(id string) map[string]types.AttributeValue {
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
-	return func(ctx context.Context, builderExpression expression.Builder) expression.Builder {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
 		assert.NotNil(t, builderExpression)
-		return builderExpression
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression,
+		}
 	}
 }
 

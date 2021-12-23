@@ -70,6 +70,7 @@ resource "aws_dynamodb_table" "member_v2" {
       "firstName",
       "lastName",
       "name",
+      "spousesName",
       "gender",
       "marriageDate",
       "marriageDateShort"]

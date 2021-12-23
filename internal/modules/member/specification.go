@@ -7,7 +7,6 @@ import (
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/BrunoDM2943/church-members-api/platform/utils"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
-	"github.com/spf13/viper"
 	"time"
 )
 
@@ -147,18 +146,14 @@ func withChurchKey(ctx context.Context) expression.KeyConditionBuilder {
 	return expression.Key("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }
 
-func withChurchId(ctx context.Context) expression.ConditionBuilder {
-	return expression.Name("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
-}
-
 func nameIndex() string {
-	return viper.GetString("tables.member.indexes.name")
+	return "nameIndex"
 }
 
 func birthDateIndex() string {
-	return viper.GetString("tables.member.indexes.birthDate")
+	return "birthDateIndex"
 }
 
 func maritalStatusIndex() string {
-	return viper.GetString("tables.member.indexes.maritalStatus")
+	return "maritalStatusIndex"
 }

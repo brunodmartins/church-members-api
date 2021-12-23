@@ -5,7 +5,6 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
-	"github.com/spf13/viper"
 )
 
 func WithSMSNotifications() wrapper.QuerySpecification {
@@ -35,8 +34,4 @@ func WithUserName(username string) wrapper.QuerySpecification {
 
 func withChurchId(ctx context.Context) expression.KeyConditionBuilder {
 	return expression.Key("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
-}
-
-func userTable() string {
-	return viper.GetString("tables.user")
 }

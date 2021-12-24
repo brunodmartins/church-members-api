@@ -15,7 +15,7 @@ resource "aws_iam_policy" "church_members_api_policy" {
           "dynamodb:UpdateItem",
           "dynamodb:DeleteItem",
           "dynamodb:GetItem",
-          "dynamodb:Scan",
+          "dynamodb:Query",
         ]
         Resource = var.dynamodb_tables
       },

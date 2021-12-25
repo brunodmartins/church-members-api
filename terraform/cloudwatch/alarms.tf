@@ -16,7 +16,7 @@ resource "aws_cloudwatch_metric_alarm" "job-error" {
   statistic                 = "SampleCount"
   threshold                 = "1"
   alarm_description         = "This alarm triggers when a single lambda execution fails"
-  treat_missing_data        = "ignore"
+  treat_missing_data        = "notBreaching"
   alarm_actions             = [var.sns_topic]
   dimensions = {
     FunctionName = var.job_function

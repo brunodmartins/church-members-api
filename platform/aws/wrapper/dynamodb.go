@@ -62,6 +62,20 @@ func (wrapper *DynamoDBWrapper) QueryDynamoDB(ctx context.Context, specification
 	return wrapper.api.Query(ctx, queryInput)
 }
 
+func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification QuerySpecification) (*dynamodb.ScanOutput, error) {
+	builderExpression := specification(ctx, expression.NewBuilder())
+
+	expr, _ := builderExpression.Build()
+	queryInput := &dynamodb.ScanInput{
+		TableName:                 aws.String(wrapper.table),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+		FilterExpression:          expr.Filter(),
+		ProjectionExpression:      expr.Projection(),
+	}
+	return wrapper.api.Scan(ctx, queryInput)
+}
+
 func (wrapper *DynamoDBWrapper) SaveItem(item interface{}) error {
 	av, _ := attributevalue.MarshalMap(item)
 	_, err := wrapper.api.PutItem(context.TODO(), &dynamodb.PutItemInput{

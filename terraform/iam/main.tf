@@ -3,7 +3,7 @@ variable "dynamodb_tables" {
 }
 
 resource "aws_iam_policy" "church_members_api_policy" {
-  name        = "church-members-api-policy"
+  name = "church-members-api-policy"
   description = "This policy allow church-members-api full execution"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -16,6 +16,7 @@ resource "aws_iam_policy" "church_members_api_policy" {
           "dynamodb:DeleteItem",
           "dynamodb:GetItem",
           "dynamodb:Query",
+          "dynamodb:Scan",
         ]
         Resource = var.dynamodb_tables
       },
@@ -59,12 +60,13 @@ resource "aws_iam_role" "church_members_api_role" {
           Service = "lambda.amazonaws.com"
         }
       }
-  ] })
+    ]
+  })
 }
 
 
 resource "aws_iam_role_policy_attachment" "attach_policy" {
-  role       = aws_iam_role.church_members_api_role.name
+  role = aws_iam_role.church_members_api_role.name
   policy_arn = aws_iam_policy.church_members_api_policy.arn
 }
 

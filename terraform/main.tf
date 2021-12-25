@@ -95,7 +95,7 @@ module "eventbridge" {
 
 module "cloudwatch" {
   source = "./cloudwatch"
-  job_function = module.lambda.lambda_name
+  job_function = module.lambda.lambda_job_name
   sns_topic = module.sns.alarms_topic
 }
 

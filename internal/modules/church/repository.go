@@ -38,7 +38,7 @@ func (d dynamoRepository) buildKey(id string) wrapper.PrimaryKey {
 
 func (d dynamoRepository) List() ([]*domain.Church, error) {
 	var result = make([]*domain.Church, 0)
-	resp, err := d.QueryDynamoDB(context.Background(), d.EmptySpecification())
+	resp, err := d.ScanDynamoDB(context.Background(), d.EmptySpecification())
 	if err != nil {
 		return nil, err
 	}

@@ -21,3 +21,7 @@ func MockGetItem(t *testing.T, dynamoMock *mock_wrapper.MockDynamoDBAPI, table s
 func MockQuery(dynamoMock *mock_wrapper.MockDynamoDBAPI, items []map[string]types.AttributeValue, err error) {
 	dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: items}, err)
 }
+
+func MockScan(dynamoMock *mock_wrapper.MockDynamoDBAPI, items []map[string]types.AttributeValue, err error) {
+	dynamoMock.EXPECT().Scan(gomock.Any(), gomock.Any()).Return(&dynamodb.ScanOutput{Items: items}, err)
+}

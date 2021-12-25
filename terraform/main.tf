@@ -73,7 +73,7 @@ module "lambda" {
   church_table_name = module.dynamodb.church_table_name
   image_uri = module.ecr.image_id
   lambda_role_arn = module.iam.lambda_role_arn
-  topic_arn = module.sns.topic_arn
+  topic_arn = module.sns.reports_topic
   app_lang = var.app_lang
   security_token_secret = var.security_token_secret
   security_token_expiration = var.security_token_expiration
@@ -91,6 +91,12 @@ module "gateway" {
 module "eventbridge" {
   source = "./eventbridge"
   lambda_arn = module.lambda.lambda_job_arn
+}
+
+module "cloudwatch" {
+  source = "./cloudwatch"
+  job_function = module.lambda.lambda_name
+  sns_topic = module.sns.alarms_topic
 }
 
 output "gateway_id" {

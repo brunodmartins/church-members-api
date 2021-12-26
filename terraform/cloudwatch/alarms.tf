@@ -13,7 +13,7 @@ resource "aws_cloudwatch_metric_alarm" "job-error" {
   metric_name               = "Errors"
   namespace                 = "AWS/Lambda"
   period                    = "3600"
-  statistic                 = "SampleCount"
+  statistic                 = "Sum"
   threshold                 = "1"
   alarm_description         = "This alarm triggers when a single lambda execution fails"
   treat_missing_data        = "notBreaching"

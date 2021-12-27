@@ -1,7 +1,7 @@
-name: Plan - Create Infra
+name: Create Infra
 
 on:
-  pull_request:
+  push:
     branches: [ master ]
     paths:
       - "**.tf"
@@ -18,3 +18,7 @@ jobs:
 
       - name: Terraform Plan
         run: terraform -chdir=./terraform plan
+
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: terraform -chdir=./terraform apply -auto-approve

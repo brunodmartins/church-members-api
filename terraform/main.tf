@@ -55,6 +55,7 @@ module "dynamodb" {
 module "iam" {
   source = "./iam"
   dynamodb_tables = module.dynamodb.tables_arn
+  bucket_arn = module.s3.bucket_arn
 }
 
 module "ecr" {
@@ -78,6 +79,7 @@ module "lambda" {
   security_token_secret = var.security_token_secret
   security_token_expiration = var.security_token_expiration
   email_sender = var.email_sender
+  bucket_name = module.s3.bucket_name
 }
 
 module "gateway" {
@@ -97,6 +99,10 @@ module "cloudwatch" {
   source = "./cloudwatch"
   job_function = module.lambda.lambda_job_name
   sns_topic = module.sns.alarms_topic
+}
+
+module "s3" {
+  source = "./s3"
 }
 
 output "gateway_id" {

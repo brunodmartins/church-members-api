@@ -2,6 +2,10 @@ variable "dynamodb_tables" {
   type = list(string)
 }
 
+variable "bucket_arn" {
+  type = string
+}
+
 resource "aws_iam_policy" "church_members_api_policy" {
   name = "church-members-api-policy"
   description = "This policy allow church-members-api full execution"
@@ -43,7 +47,23 @@ resource "aws_iam_policy" "church_members_api_policy" {
           "SES:SendRawEmail"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetBucketLocation"
+        ]
+        Resource = var.bucket_arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject"
+        ]
+        Resource = "${var.bucket_arn}/*"
       }
+
     ]
   })
 }

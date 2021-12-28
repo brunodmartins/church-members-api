@@ -42,6 +42,9 @@ variable "email_sender" {
   type = string
 }
 
+variable "bucket_name" {
+  type = string
+}
 
 resource "aws_lambda_function" "lambda_api" {
   function_name = "church-members-api-lambda"
@@ -62,6 +65,7 @@ resource "aws_lambda_function" "lambda_api" {
       "REPORTS_TOPIC" : var.topic_arn,
       "TOKEN_SECRET" : var.security_token_secret,
       "TOKEN_EXPIRATION" : var.security_token_expiration,
+      "STORAGE": var.bucket_name,
     }
   }
 }
@@ -83,6 +87,7 @@ resource "aws_lambda_function" "lambda_job" {
       "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "TABLE_CHURCH": var.church_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
+      "STORAGE": var.bucket_name,
     }
   }
 }

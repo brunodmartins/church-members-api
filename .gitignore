@@ -19,3 +19,4 @@ debug
 .terraform*
 cmd.zip
 internal.zip
+.run

@@ -9,6 +9,8 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
 	"github.com/BrunoDM2943/church-members-api/internal/services/email"
 	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
+	"github.com/BrunoDM2943/church-members-api/internal/services/storage"
+	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
 	"github.com/spf13/viper"
 )
@@ -66,6 +68,10 @@ func ProvideEmailService() email.Service {
 	return email.NewEmailService(provideSES(), viper.GetString("email.sender"))
 }
 
+func ProvideStorageService() storage.Service {
+	return storage.NewS3Storage(wrapper.NewS3APIWrapper(provideS3(), viper.GetString("storage.name")))
+}
+
 func provideMemberRepository() member2.Repository {
 	if memberRepository == nil {
 		memberRepository = member2.NewRepository(provideDynamoDB(), viper.GetString("tables.member"), viper.GetString("tables.member_history"))
@@ -75,7 +81,7 @@ func provideMemberRepository() member2.Repository {
 
 func provideReportGenerator() report2.Service {
 	if reportGenerator == nil {
-		reportGenerator = report2.NewReportService(ProvideMemberService(), file2.NewPDFBuilder())
+		reportGenerator = report2.NewReportService(ProvideMemberService(), file2.NewPDFBuilder(), ProvideStorageService())
 	}
 	return reportGenerator
 }

@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"context"
+	mock_storage "github.com/BrunoDM2943/church-members-api/internal/services/storage/mock"
 	"testing"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
@@ -25,19 +26,37 @@ func TestBirthdayReport(t *testing.T) {
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := report.NewReportService(memberService, fileBuilder)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
+
 	t.Run("Success", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
-		out, err := service.BirthdayReport(buildContext())
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("birthday_report.csv"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return nil
+		})
+		out, err := service.BirthdayReport(ctx)
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
+	})
+
+	t.Run("Fail - Save Report", func(t *testing.T) {
+		querySpec := wrapper.QuerySpecification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("birthday_report.csv"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return genericError
+		})
+		_, err := service.BirthdayReport(ctx)
+		assert.NotNil(t, err)
 	})
 
 	t.Run("Fail - search members", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
-		out, err := service.BirthdayReport(buildContext())
+		out, err := service.BirthdayReport(ctx)
 		assert.Nil(t, out)
 		assert.NotNil(t, err)
 	})
@@ -49,18 +68,33 @@ func TestMarriageReport(t *testing.T) {
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := report.NewReportService(memberService, fileBuilder)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
 	t.Run("Success", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
-		out, err := service.MarriageReport(buildContext())
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("marriage_report.csv"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return nil
+		})
+		out, err := service.MarriageReport(ctx)
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
+	})
+	t.Run("Fail - Save report", func(t *testing.T) {
+		querySpec := wrapper.QuerySpecification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(BuildMembers(1), nil)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("marriage_report.csv"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			return genericError
+		})
+		_, err := service.MarriageReport(ctx)
+		assert.NotNil(t, err)
 	})
 	t.Run("Fail - search members", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
-		out, err := service.MarriageReport(buildContext())
+		out, err := service.MarriageReport(ctx)
 		assert.Nil(t, out)
 		assert.NotNil(t, err)
 	})
@@ -72,18 +106,43 @@ func TestGenerateMemberReport(t *testing.T) {
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := report.NewReportService(memberService, fileBuilder)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
+
 	t.Run("Success", func(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
-		out, err := service.MemberReport(buildContext())
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("member_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return nil
+		})
+		out, err := service.MemberReport(ctx)
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
 	})
-	t.Run("Fail", func(t *testing.T) {
+	t.Run("Fail - Save report", func(t *testing.T) {
+		members := BuildMembers(0)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("member_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return genericError
+		})
+		_, err := service.MemberReport(ctx)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - build report", func(t *testing.T) {
+		members := BuildMembers(0)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, genericError)
+		_, err := service.MemberReport(ctx)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Search", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(nil, genericError)
-		_, err := service.MemberReport(buildContext())
+		_, err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})
 }
@@ -93,22 +152,51 @@ func TestGenerateClassificationReport(t *testing.T) {
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := report.NewReportService(memberService, fileBuilder)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
+
 	t.Run("Success", func(t *testing.T) {
 		members := BuildMembers(0)
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
-		out, err := service.ClassificationReport(buildContext(), classification.ADULT)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("classification_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return nil
+		})
+		out, err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
 	})
-	t.Run("Fail", func(t *testing.T) {
+	t.Run("Fail - Save report", func(t *testing.T) {
+		members := BuildMembers(0)
+		querySpec := wrapper.QuerySpecification(nil)
+		spec := member.Specification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("classification_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return genericError
+		})
+		_, err := service.ClassificationReport(ctx, classification.ADULT)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Build report", func(t *testing.T) {
+		members := BuildMembers(0)
+		querySpec := wrapper.QuerySpecification(nil)
+		spec := member.Specification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, genericError)
+		_, err := service.ClassificationReport(ctx, classification.ADULT)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Search", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
-		_, err := service.ClassificationReport(buildContext(), classification.ADULT)
+		_, err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.NotNil(t, err)
 	})
 
@@ -119,21 +207,48 @@ func TestGenerateLegalReport(t *testing.T) {
 	defer ctrl.Finish()
 	memberService := mock_member.NewMockService(ctrl)
 	fileBuilder := mock_file.NewMockBuilder(ctrl)
-	service := report.NewReportService(memberService, fileBuilder)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
+
 	t.Run("Success", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
-		out, err := service.LegalReport(buildContext())
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("legal_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return nil
+		})
+		out, err := service.LegalReport(ctx)
 		assert.NotNil(t, out)
 		assert.Nil(t, err)
 	})
-	t.Run("Fail", func(t *testing.T) {
+	t.Run("Fail - Save report", func(t *testing.T) {
+		querySpec := wrapper.QuerySpecification(nil)
+		spec := member.Specification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("legal_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+			assert.NotNil(t, data)
+			return genericError
+		})
+		_, err := service.LegalReport(ctx)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Build report", func(t *testing.T) {
+		querySpec := wrapper.QuerySpecification(nil)
+		spec := member.Specification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, genericError)
+		_, err := service.LegalReport(ctx)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - Search", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
-		_, err := service.LegalReport(buildContext())
+		_, err := service.LegalReport(ctx)
 		assert.NotNil(t, err)
 	})
 

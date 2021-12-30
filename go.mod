@@ -7,12 +7,13 @@ require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/aws/aws-lambda-go v1.23.0
 	github.com/aws/aws-sdk-go v1.40.49
-	github.com/aws/aws-sdk-go-v2 v1.8.0
+	github.com/aws/aws-sdk-go-v2 v1.11.2
 	github.com/aws/aws-sdk-go-v2/config v1.1.4
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue v1.0.5
 	github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression v1.0.5
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.2.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.2.1
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.22.0
 	github.com/aws/aws-sdk-go-v2/service/sns v1.7.1
 	github.com/awslabs/aws-lambda-go-api-proxy v0.11.0
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1

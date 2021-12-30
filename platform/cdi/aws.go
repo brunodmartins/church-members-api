@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sesv2"
@@ -30,3 +31,10 @@ func provideSES() *sesv2.SESV2 {
 	return sesv2.New(mySession)
 }
 
+func provideS3() *s3.Client {
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		panic("unable to load SDK config, " + err.Error())
+	}
+	return s3.NewFromConfig(cfg)
+}

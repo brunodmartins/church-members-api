@@ -48,10 +48,11 @@ func TestSortByBirth(t *testing.T) {
 }
 
 func TestSortByMarriage(t *testing.T) {
+	now, _ := time.Parse(time.RFC3339, "2021-01-01T00:00:00Z")
 	firstId := NewID()
 	secondId := NewID()
-	birthDateOne := time.Now().AddDate(-2, 0, 2)
-	birthDateTwo := time.Now().AddDate(0, 0, 1)
+	birthDateOne := now.AddDate(-2, 0, 2)
+	birthDateTwo := now.AddDate(0, 0, 1)
 	members := []*Member{
 		{
 			ID: secondId,

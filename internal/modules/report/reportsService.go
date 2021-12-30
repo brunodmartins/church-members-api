@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"github.com/BrunoDM2943/church-members-api/internal/services/storage"
 	"sort"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
@@ -28,13 +29,15 @@ type reportService struct {
 	memberService  member.Service
 	fileBuilder    file.Builder
 	messageService *i18n.MessageService
+	storageService storage.Service
 }
 
-func NewReportService(memberService member.Service, fileBuilder file.Builder) Service {
+func NewReportService(memberService member.Service, fileBuilder file.Builder, storageService storage.Service) Service {
 	return &reportService{
 		memberService,
 		fileBuilder,
 		i18n.GetMessageService(),
+		storageService,
 	}
 }
 
@@ -52,7 +55,8 @@ func (report reportService) BirthdayReport(ctx context.Context) ([]byte, error) 
 			member.Person.BirthDate.Format("02/01"),
 		}
 	})
-	return writeData(csvOut), nil
+	result := writeData(csvOut)
+	return result, report.storageService.SaveFile(ctx, "birthday_report.csv", result)
 }
 
 func writeData(data [][]string) []byte {
@@ -81,7 +85,8 @@ func (report reportService) MarriageReport(ctx context.Context) ([]byte, error) 
 		}
 	})
 
-	return writeData(csvOut), nil
+	result := writeData(csvOut)
+	return result, report.storageService.SaveFile(ctx, "marriage_report.csv", result)
 }
 
 func (report reportService) MemberReport(ctx context.Context) ([]byte, error) {
@@ -90,7 +95,11 @@ func (report reportService) MemberReport(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 	sort.Sort(domain.SortByName(members))
-	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
+	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
+	if err != nil {
+		return nil, err
+	}
+	return result, report.storageService.SaveFile(ctx, "member_report.pdf", result)
 }
 
 func (report reportService) ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error) {
@@ -99,7 +108,11 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 		return nil, err
 	}
 	sort.Sort(domain.SortByName(members))
-	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
+	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
+	if err != nil {
+		return nil, err
+	}
+	return result, report.storageService.SaveFile(ctx, "classification_report.pdf", result)
 }
 
 func (report reportService) LegalReport(ctx context.Context) ([]byte, error) {
@@ -108,7 +121,11 @@ func (report reportService) LegalReport(ctx context.Context) ([]byte, error) {
 		return nil, err
 	}
 	sort.Sort(domain.SortByName(members))
-	return report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), domain.GetChurch(ctx), members)
+	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), domain.GetChurch(ctx), members)
+	if err != nil {
+		return nil, err
+	}
+	return result, report.storageService.SaveFile(ctx, "legal_report.pdf", result)
 }
 
 func (report *reportService) getCSVColumns() []string {

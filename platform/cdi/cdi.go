@@ -12,6 +12,7 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/services/storage"
 	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/BrunoDM2943/church-members-api/platform/security"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/spf13/viper"
 )
 
@@ -69,7 +70,9 @@ func ProvideEmailService() email.Service {
 }
 
 func ProvideStorageService() storage.Service {
-	return storage.NewS3Storage(wrapper.NewS3APIWrapper(provideS3(), viper.GetString("storage.name")))
+	s3API := provideS3()
+	s3SignedAPI := s3.NewPresignClient(s3API)
+	return storage.NewS3Storage(wrapper.NewS3APIWrapper(s3API, viper.GetString("storage.name"), s3SignedAPI))
 }
 
 func provideMemberRepository() member2.Repository {

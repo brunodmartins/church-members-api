@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"context"
+	"errors"
 	mock_storage "github.com/BrunoDM2943/church-members-api/internal/services/storage/mock"
 	"testing"
 
@@ -252,6 +253,31 @@ func TestGenerateLegalReport(t *testing.T) {
 		assert.NotNil(t, err)
 	})
 
+}
+
+func TestReportService_GetReport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	memberService := mock_member.NewMockService(ctrl)
+	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
+
+	const name = "report-name.pdf"
+	const url = "my-url"
+
+	t.Run("Success", func(t *testing.T) {
+		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Eq(name)).Return(url, nil)
+		result, err := service.GetReport(ctx, name)
+		assert.Nil(t, err)
+		assert.Equal(t, url, result)
+	})
+	t.Run("Fail", func(t *testing.T) {
+		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Eq(name)).Return("", errors.New("error"))
+		_, err := service.GetReport(ctx, name)
+		assert.NotNil(t, err)
+	})
 }
 
 func buildContext() context.Context {

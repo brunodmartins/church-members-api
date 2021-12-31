@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/csv"
 	"github.com/BrunoDM2943/church-members-api/internal/services/storage"
+	"github.com/sirupsen/logrus"
 	"sort"
 
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
@@ -23,6 +24,8 @@ type Service interface {
 	BirthdayReport(ctx context.Context) ([]byte, error)
 	MarriageReport(ctx context.Context) ([]byte, error)
 	ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error)
+
+	GetReport(ctx context.Context, name string) (string, error)
 }
 
 type reportService struct {
@@ -133,6 +136,11 @@ func (report *reportService) getCSVColumns() []string {
 		report.messageService.GetMessage("Domain.Name", "Name"),
 		report.messageService.GetMessage("Domain.Date", "Date"),
 	}
+}
+
+func (report reportService) GetReport(ctx context.Context, name string) (string, error) {
+	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", name)
+	return report.storageService.GetFileURL(ctx, name)
 }
 
 func buildCSVData(members []*domain.Member) []file.Data {

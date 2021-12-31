@@ -234,6 +234,27 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/reports/members", handler.generateMembersReport)
 
+	// swagger:operation GET /reports/{reportType} getURLForReport
+	//
+	// Get a report file
+	//
+	// Returns a report file url
+	//
+	// ---
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: reportType
+	//   in: path
+	//   description: The report type [members,legal,classification,birthdate,marriage]
+	//   required: true
+	// responses:
+	//   '307':
+	//     description: S3 url to redirect
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports/:reportType", handler.getURLForReport)
 }
 

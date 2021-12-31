@@ -499,6 +499,25 @@ paths:
           schema:
             $ref: '#/definitions/GraphQLErrorResponse'
       summary: Search member
+  /reports/{reportType}:
+    get:
+      description: Returns a report file url
+      operationId: getURLForReport
+      parameters:
+      - description: The report type [members,legal,classification,birthdate,marriage]
+        in: path
+        name: reportType
+        required: true
+      produces:
+      - application/json
+      responses:
+        "307":
+          description: S3 url to redirect
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get a report file
   /reports/members:
     post:
       description: Generates a PDF member report

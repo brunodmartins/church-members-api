@@ -258,18 +258,21 @@ func TestReportService_GetReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder, storageService)
 	ctx := buildContext()
 
-	const name = reportType.MEMBER
+	var names = []string{reportType.MEMBER, reportType.LEGAL, reportType.BIRTHDATE, reportType.CLASSIFICATION, reportType.MARRIAGE}
 	const url = "my-url"
 
-	t.Run("Success", func(t *testing.T) {
-		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Any()).Return(url, nil)
-		result, err := service.GetReport(ctx, name)
-		assert.Nil(t, err)
-		assert.Equal(t, url, result)
-	})
+	for _, name := range names {
+		t.Run("Success - "+name, func(t *testing.T) {
+			storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Any()).Return(url, nil)
+			result, err := service.GetReport(ctx, name)
+			assert.Nil(t, err)
+			assert.Equal(t, url, result)
+		})
+	}
+
 	t.Run("Fail", func(t *testing.T) {
 		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Any()).Return("", errors.New("error"))
-		_, err := service.GetReport(ctx, name)
+		_, err := service.GetReport(ctx, reportType.MEMBER)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - invalid report type", func(t *testing.T) {

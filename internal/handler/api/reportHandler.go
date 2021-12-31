@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
 	report "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
@@ -46,6 +47,19 @@ func (handler *ReportHandler) generateMembersReport(ctx *fiber.Ctx) error {
 func (handler *ReportHandler) generateLegalReport(ctx *fiber.Ctx) error {
 	output, err := handler.reportGenerator.LegalReport(ctx.UserContext())
 	return handler.buildResponse(ctx, output, "legal_report.pdf", "application/pdf", err)
+}
+
+func (handler *ReportHandler) getURLForReport(ctx *fiber.Ctx) error {
+	reportTypeName := ctx.Params("reportType")
+	if !reportType.IsValidReport(reportTypeName) {
+		return apierrors.NewApiError("Invalid report type", http.StatusBadRequest)
+	}
+	url, err := handler.reportGenerator.GetReport(ctx.UserContext(), reportTypeName)
+	if err != nil {
+		return err
+	}
+	ctx.Response().Header.Add("Location", url)
+	return ctx.SendStatus(http.StatusTemporaryRedirect)
 }
 
 func (handler *ReportHandler) buildResponse(ctx *fiber.Ctx, data []byte, fileName string, contentType string, err error) error {

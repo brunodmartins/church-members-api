@@ -143,7 +143,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 }
 
 func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
-	// swagger:operation GET /reports/members/birthday generateBirthDayReport
+	// swagger:operation POST /reports/members/birthday generateBirthDayReport
 	//
 	// Birthday report
 	//
@@ -159,8 +159,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Get("/reports/members/birthday", handler.generateBirthDayReport)
-	// swagger:operation GET /reports/members/marriage generateMarriageReport
+	app.Post("/reports/members/birthday", handler.generateBirthDayReport)
+	// swagger:operation POST /reports/members/marriage generateMarriageReport
 	//
 	// Marriage report
 	//
@@ -176,8 +176,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Get("/reports/members/marriage", handler.generateMarriageReport)
-	// swagger:operation GET /reports/members/legal generateLegalReport
+	app.Post("/reports/members/marriage", handler.generateMarriageReport)
+	// swagger:operation POST /reports/members/legal generateLegalReport
 	//
 	// Legal report
 	//
@@ -193,8 +193,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Get("/reports/members/legal", handler.generateLegalReport)
-	// swagger:operation GET /reports/members/classification/{classification} generateClassificationReport
+	app.Post("/reports/members/legal", handler.generateLegalReport)
+	// swagger:operation POST /reports/members/classification/{classification} generateClassificationReport
 	//
 	// Member report
 	//
@@ -215,8 +215,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Get("/reports/members/classification/:classification", handler.generateClassificationReport)
-	// swagger:operation GET /reports/members generateMembersReport
+	app.Post("/reports/members/classification/:classification", handler.generateClassificationReport)
+	// swagger:operation POST /reports/members generateMembersReport
 	//
 	// Member report
 	//
@@ -232,7 +232,9 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Get("/reports/members", handler.generateMembersReport)
+	app.Post("/reports/members", handler.generateMembersReport)
+
+	app.Get("/reports/:reportType", handler.getURLForReport)
 }
 
 func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {

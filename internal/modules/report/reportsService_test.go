@@ -116,7 +116,7 @@ func TestGenerateMemberReport(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
-		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("member_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return nil
 		})
@@ -128,7 +128,7 @@ func TestGenerateMemberReport(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
-		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("member_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return genericError
 		})

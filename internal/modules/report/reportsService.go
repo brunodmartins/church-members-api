@@ -40,7 +40,7 @@ type reportService struct {
 const (
 	birthDayReportName       = "birthday_report.csv"
 	marriageReportName       = "marriage_report.csv"
-	memberReportName         = "member_report.pdf"
+	memberReportName         = "members_report.pdf"
 	classificationReportName = "classification_report.pdf"
 	legalReportName          = "legal_report.pdf"
 )

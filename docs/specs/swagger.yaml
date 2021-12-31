@@ -500,7 +500,7 @@ paths:
             $ref: '#/definitions/GraphQLErrorResponse'
       summary: Search member
   /reports/members:
-    get:
+    post:
       description: Generates a PDF member report
       operationId: generateMembersReport
       produces:
@@ -514,7 +514,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Member report
   /reports/members/birthday:
-    get:
+    post:
       description: Generates a CSV birthday report
       operationId: generateBirthDayReport
       produces:
@@ -528,7 +528,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Birthday report
   /reports/members/classification/{classification}:
-    get:
+    post:
       description: Generates a PDF member report by classification
       operationId: generateClassificationReport
       parameters:
@@ -547,7 +547,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Member report
   /reports/members/legal:
-    get:
+    post:
       description: Generates a PDF legal report
       operationId: generateLegalReport
       produces:
@@ -561,7 +561,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Legal report
   /reports/members/marriage:
-    get:
+    post:
       description: Generates a CSV Marriage report
       operationId: generateMarriageReport
       produces:

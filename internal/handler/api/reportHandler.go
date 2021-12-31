@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
 	report "github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
@@ -24,38 +24,34 @@ func (handler *ReportHandler) generateClassificationReport(ctx *fiber.Ctx) error
 	if err != nil {
 		return apierrors.NewApiError("Invalid classification: "+err.Error(), http.StatusBadRequest)
 	}
-	output, err := handler.reportGenerator.ClassificationReport(ctx.UserContext(), classification)
-	return handler.buildResponse(ctx, output, "classification_report.pdf", "application/pdf", err)
+	return handler.reportGenerator.ClassificationReport(ctx.UserContext(), classification)
 }
 
 func (handler *ReportHandler) generateMarriageReport(ctx *fiber.Ctx) error {
-	output, err := handler.reportGenerator.MarriageReport(ctx.UserContext())
-	return handler.buildResponse(ctx, output, "marriage.csv", "application/csv", err)
+	return handler.reportGenerator.MarriageReport(ctx.UserContext())
 }
 
 func (handler *ReportHandler) generateBirthDayReport(ctx *fiber.Ctx) error {
-	output, err := handler.reportGenerator.BirthdayReport(ctx.UserContext())
-	return handler.buildResponse(ctx, output, "birthday.csv", "application/csv", err)
+	return handler.reportGenerator.BirthdayReport(ctx.UserContext())
 }
 
 func (handler *ReportHandler) generateMembersReport(ctx *fiber.Ctx) error {
-	output, err := handler.reportGenerator.MemberReport(ctx.UserContext())
-	return handler.buildResponse(ctx, output, "members_report.pdf", "application/pdf", err)
+	return handler.reportGenerator.MemberReport(ctx.UserContext())
 }
 
 func (handler *ReportHandler) generateLegalReport(ctx *fiber.Ctx) error {
-	output, err := handler.reportGenerator.LegalReport(ctx.UserContext())
-	return handler.buildResponse(ctx, output, "legal_report.pdf", "application/pdf", err)
+	return handler.reportGenerator.LegalReport(ctx.UserContext())
 }
 
-func (handler *ReportHandler) buildResponse(ctx *fiber.Ctx, data []byte, fileName string, contentType string, err error) error {
+func (handler *ReportHandler) getURLForReport(ctx *fiber.Ctx) error {
+	reportTypeName := ctx.Params("reportType")
+	if !reportType.IsValidReport(reportTypeName) {
+		return apierrors.NewApiError("Invalid report type", http.StatusBadRequest)
+	}
+	url, err := handler.reportGenerator.GetReport(ctx.UserContext(), reportTypeName)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{Message: "Error generating report", Error: err.Error()})
-	} else {
-		ctx.Response().Header.Add("Content-Type", contentType)
-		ctx.Response().Header.Add("Content-Disposition", "attachment")
-		ctx.Response().Header.Add("filename", fileName)
-		_, err = ctx.Status(http.StatusOK).Type(contentType).Write(data)
 		return err
 	}
+	ctx.Response().Header.Add("Location", url)
+	return ctx.SendStatus(http.StatusTemporaryRedirect)
 }

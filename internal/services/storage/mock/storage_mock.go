@@ -34,6 +34,21 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// GetFileURL mocks base method.
+func (m *MockService) GetFileURL(ctx context.Context, name string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFileURL", ctx, name)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFileURL indicates an expected call of GetFileURL.
+func (mr *MockServiceMockRecorder) GetFileURL(ctx, name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFileURL", reflect.TypeOf((*MockService)(nil).GetFileURL), ctx, name)
+}
+
 // SaveFile mocks base method.
 func (m *MockService) SaveFile(ctx context.Context, name string, data []byte) error {
 	m.ctrl.T.Helper()

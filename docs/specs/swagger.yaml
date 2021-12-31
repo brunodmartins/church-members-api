@@ -499,8 +499,27 @@ paths:
           schema:
             $ref: '#/definitions/GraphQLErrorResponse'
       summary: Search member
-  /reports/members:
+  /reports/{reportType}:
     get:
+      description: Returns a report file url
+      operationId: getURLForReport
+      parameters:
+      - description: The report type [members,legal,classification,birthdate,marriage]
+        in: path
+        name: reportType
+        required: true
+      produces:
+      - application/json
+      responses:
+        "307":
+          description: S3 url to redirect
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      summary: Get a report file
+  /reports/members:
+    post:
       description: Generates a PDF member report
       operationId: generateMembersReport
       produces:
@@ -514,7 +533,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Member report
   /reports/members/birthday:
-    get:
+    post:
       description: Generates a CSV birthday report
       operationId: generateBirthDayReport
       produces:
@@ -528,7 +547,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Birthday report
   /reports/members/classification/{classification}:
-    get:
+    post:
       description: Generates a PDF member report by classification
       operationId: generateClassificationReport
       parameters:
@@ -547,7 +566,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Member report
   /reports/members/legal:
-    get:
+    post:
       description: Generates a PDF legal report
       operationId: generateLegalReport
       produces:
@@ -561,7 +580,7 @@ paths:
             $ref: '#/definitions/ErrorResponse'
       summary: Legal report
   /reports/members/marriage:
-    get:
+    post:
       description: Generates a CSV Marriage report
       operationId: generateMarriageReport
       produces:

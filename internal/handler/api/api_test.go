@@ -18,6 +18,7 @@ type httpResult struct {
 	status  int
 	body    []byte
 	cookies []*http.Cookie
+	header  http.Header
 }
 
 var emptyJson = []byte("{}")
@@ -57,6 +58,7 @@ func runTest(app *fiber.App, req *http.Request) httpResult {
 	}
 	return httpResult{
 		status:  resp.StatusCode,
+		header:  resp.Header,
 		body:    body,
 		cookies: resp.Cookies(),
 	}

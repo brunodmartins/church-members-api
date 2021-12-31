@@ -8,35 +8,36 @@ import (
 	context "context"
 	reflect "reflect"
 
+	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	gomock "github.com/golang/mock/gomock"
 )
 
-// Mocks3api is a mock of s3api interface.
-type Mocks3api struct {
+// Mocks3API is a mock of s3API interface.
+type Mocks3API struct {
 	ctrl     *gomock.Controller
-	recorder *Mocks3apiMockRecorder
+	recorder *Mocks3APIMockRecorder
 }
 
-// Mocks3apiMockRecorder is the mock recorder for Mocks3api.
-type Mocks3apiMockRecorder struct {
-	mock *Mocks3api
+// Mocks3APIMockRecorder is the mock recorder for Mocks3API.
+type Mocks3APIMockRecorder struct {
+	mock *Mocks3API
 }
 
-// NewMocks3api creates a new mock instance.
-func NewMocks3api(ctrl *gomock.Controller) *Mocks3api {
-	mock := &Mocks3api{ctrl: ctrl}
-	mock.recorder = &Mocks3apiMockRecorder{mock}
+// NewMocks3API creates a new mock instance.
+func NewMocks3API(ctrl *gomock.Controller) *Mocks3API {
+	mock := &Mocks3API{ctrl: ctrl}
+	mock.recorder = &Mocks3APIMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *Mocks3api) EXPECT() *Mocks3apiMockRecorder {
+func (m *Mocks3API) EXPECT() *Mocks3APIMockRecorder {
 	return m.recorder
 }
 
 // PutObject mocks base method.
-func (m *Mocks3api) PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
+func (m *Mocks3API) PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, params}
 	for _, a := range optFns {
@@ -49,10 +50,53 @@ func (m *Mocks3api) PutObject(ctx context.Context, params *s3.PutObjectInput, op
 }
 
 // PutObject indicates an expected call of PutObject.
-func (mr *Mocks3apiMockRecorder) PutObject(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
+func (mr *Mocks3APIMockRecorder) PutObject(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutObject", reflect.TypeOf((*Mocks3api)(nil).PutObject), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PutObject", reflect.TypeOf((*Mocks3API)(nil).PutObject), varargs...)
+}
+
+// Mocks3SignedAPI is a mock of s3SignedAPI interface.
+type Mocks3SignedAPI struct {
+	ctrl     *gomock.Controller
+	recorder *Mocks3SignedAPIMockRecorder
+}
+
+// Mocks3SignedAPIMockRecorder is the mock recorder for Mocks3SignedAPI.
+type Mocks3SignedAPIMockRecorder struct {
+	mock *Mocks3SignedAPI
+}
+
+// NewMocks3SignedAPI creates a new mock instance.
+func NewMocks3SignedAPI(ctrl *gomock.Controller) *Mocks3SignedAPI {
+	mock := &Mocks3SignedAPI{ctrl: ctrl}
+	mock.recorder = &Mocks3SignedAPIMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *Mocks3SignedAPI) EXPECT() *Mocks3SignedAPIMockRecorder {
+	return m.recorder
+}
+
+// PresignGetObject mocks base method.
+func (m *Mocks3SignedAPI) PresignGetObject(ctx context.Context, params *s3.GetObjectInput, optFns ...func(*s3.PresignOptions)) (*v4.PresignedHTTPRequest, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, params}
+	for _, a := range optFns {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "PresignGetObject", varargs...)
+	ret0, _ := ret[0].(*v4.PresignedHTTPRequest)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PresignGetObject indicates an expected call of PresignGetObject.
+func (mr *Mocks3SignedAPIMockRecorder) PresignGetObject(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, params}, optFns...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PresignGetObject", reflect.TypeOf((*Mocks3SignedAPI)(nil).PresignGetObject), varargs...)
 }
 
 // MockS3APIWrapper is a mock of S3APIWrapper interface.
@@ -76,6 +120,21 @@ func NewMockS3APIWrapper(ctrl *gomock.Controller) *MockS3APIWrapper {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockS3APIWrapper) EXPECT() *MockS3APIWrapperMockRecorder {
 	return m.recorder
+}
+
+// PresignGetObject mocks base method.
+func (m *MockS3APIWrapper) PresignGetObject(ctx context.Context, key string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "PresignGetObject", ctx, key)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// PresignGetObject indicates an expected call of PresignGetObject.
+func (mr *MockS3APIWrapperMockRecorder) PresignGetObject(ctx, key interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PresignGetObject", reflect.TypeOf((*MockS3APIWrapper)(nil).PresignGetObject), ctx, key)
 }
 
 // PutObject mocks base method.

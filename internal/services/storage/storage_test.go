@@ -35,6 +35,33 @@ func TestS3Storage_SaveFile(t *testing.T) {
 	})
 }
 
+func TestS3Storage_GetFileURL(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	var churchID = domain.NewID()
+	const fileName = "members_report.pdf"
+	const url = "my-url"
+	var key = fmt.Sprintf("%s/%s", churchID, fileName)
+
+	s3Wrapper := mock_wrapper.NewMockS3APIWrapper(ctrl)
+	storage := NewS3Storage(s3Wrapper)
+
+	t.Run("Get file url successfully", func(t *testing.T) {
+		ctx := BuildContext(churchID)
+		s3Wrapper.EXPECT().PresignGetObject(gomock.Eq(ctx), gomock.Eq(key)).Return(url, nil)
+		result, err := storage.GetFileURL(ctx, fileName)
+		assert.Nil(t, err)
+		assert.Equal(t, url, result)
+	})
+	t.Run("Get file url returns error", func(t *testing.T) {
+		ctx := BuildContext(churchID)
+		s3Wrapper.EXPECT().PresignGetObject(gomock.Eq(ctx), gomock.Eq(key)).Return("", errors.New("error"))
+		_, err := storage.GetFileURL(ctx, fileName)
+		assert.NotNil(t, err)
+	})
+}
+
 func BuildContext(id string) context.Context {
 	return context.WithValue(context.TODO(), "user", &domain.User{
 		Church: &domain.Church{

@@ -21,12 +21,11 @@ import (
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
 type Service interface {
-	LegalReport(ctx context.Context) ([]byte, error)
-	MemberReport(ctx context.Context) ([]byte, error)
-	BirthdayReport(ctx context.Context) ([]byte, error)
-	MarriageReport(ctx context.Context) ([]byte, error)
-	ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error)
-
+	LegalReport(ctx context.Context) error
+	MemberReport(ctx context.Context) error
+	BirthdayReport(ctx context.Context) error
+	MarriageReport(ctx context.Context) error
+	ClassificationReport(ctx context.Context, classification enum.Classification) error
 	GetReport(ctx context.Context, name string) (string, error)
 }
 
@@ -54,10 +53,10 @@ func NewReportService(memberService member.Service, fileBuilder file.Builder, st
 	}
 }
 
-func (report reportService) BirthdayReport(ctx context.Context) ([]byte, error) {
+func (report reportService) BirthdayReport(ctx context.Context) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	sort.Sort(domain.SortByBirthDay(members))
@@ -68,8 +67,7 @@ func (report reportService) BirthdayReport(ctx context.Context) ([]byte, error) 
 			member.Person.BirthDate.Format("02/01"),
 		}
 	})
-	result := writeData(csvOut)
-	return result, report.storageService.SaveFile(ctx, birthDayReportName, result)
+	return report.storageService.SaveFile(ctx, birthDayReportName, writeData(csvOut))
 }
 
 func writeData(data [][]string) []byte {
@@ -80,12 +78,12 @@ func writeData(data [][]string) []byte {
 	return byteArr.Bytes()
 }
 
-func (report reportService) MarriageReport(ctx context.Context) ([]byte, error) {
+func (report reportService) MarriageReport(ctx context.Context) error {
 
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyMarriage())
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	sort.Sort(domain.SortByMarriageDay(members))
@@ -98,47 +96,46 @@ func (report reportService) MarriageReport(ctx context.Context) ([]byte, error) 
 		}
 	})
 
-	result := writeData(csvOut)
-	return result, report.storageService.SaveFile(ctx, marriageReportName, result)
+	return report.storageService.SaveFile(ctx, marriageReportName, writeData(csvOut))
 }
 
-func (report reportService) MemberReport(ctx context.Context) ([]byte, error) {
+func (report reportService) MemberReport(ctx context.Context) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	sort.Sort(domain.SortByName(members))
 	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return result, report.storageService.SaveFile(ctx, memberReportName, result)
+	return report.storageService.SaveFile(ctx, memberReportName, result)
 }
 
-func (report reportService) ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error) {
+func (report reportService) ClassificationReport(ctx context.Context, classification enum.Classification) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyByClassification(classification))
 	if err != nil {
-		return nil, err
+		return err
 	}
 	sort.Sort(domain.SortByName(members))
 	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return result, report.storageService.SaveFile(ctx, classificationReportName, result)
+	return report.storageService.SaveFile(ctx, classificationReportName, result)
 }
 
-func (report reportService) LegalReport(ctx context.Context) ([]byte, error) {
+func (report reportService) LegalReport(ctx context.Context) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyLegalMembers())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	sort.Sort(domain.SortByName(members))
 	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), domain.GetChurch(ctx), members)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return result, report.storageService.SaveFile(ctx, legalReportName, result)
+	return report.storageService.SaveFile(ctx, legalReportName, result)
 }
 
 func (report *reportService) getCSVColumns() []string {

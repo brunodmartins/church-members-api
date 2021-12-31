@@ -19,11 +19,11 @@ func TestBirthDayReport(t *testing.T) {
 	reportHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		reports.EXPECT().BirthdayReport(gomock.Any()).Return([]byte{}, nil)
+		reports.EXPECT().BirthdayReport(gomock.Any()).Return(nil)
 		runTest(app, buildPost("/reports/members/birthday", nil)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().BirthdayReport(gomock.Any()).Return([]byte{}, genericError)
+		reports.EXPECT().BirthdayReport(gomock.Any()).Return(genericError)
 		runTest(app, buildPost("/reports/members/birthday", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -37,11 +37,11 @@ func TestMarriageReport(t *testing.T) {
 	reportHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		reports.EXPECT().MarriageReport(gomock.Any()).Return([]byte{}, nil)
+		reports.EXPECT().MarriageReport(gomock.Any()).Return(nil)
 		runTest(app, buildPost("/reports/members/marriage", nil)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().MarriageReport(gomock.Any()).Return([]byte{}, genericError)
+		reports.EXPECT().MarriageReport(gomock.Any()).Return(genericError)
 		runTest(app, buildPost("/reports/members/marriage", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -55,11 +55,11 @@ func TestLegalReport(t *testing.T) {
 	reportHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		reports.EXPECT().LegalReport(gomock.Any()).Return([]byte{}, nil)
+		reports.EXPECT().LegalReport(gomock.Any()).Return(nil)
 		runTest(app, buildPost("/reports/members/legal", nil)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().LegalReport(gomock.Any()).Return([]byte{}, genericError)
+		reports.EXPECT().LegalReport(gomock.Any()).Return(genericError)
 		runTest(app, buildPost("/reports/members/legal", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -73,11 +73,11 @@ func TestMemberReport(t *testing.T) {
 	reportHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		reports.EXPECT().MemberReport(gomock.Any()).Return([]byte{}, nil)
+		reports.EXPECT().MemberReport(gomock.Any()).Return(nil)
 		runTest(app, buildPost("/reports/members", nil)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().MemberReport(gomock.Any()).Return([]byte{}, genericError)
+		reports.EXPECT().MemberReport(gomock.Any()).Return(genericError)
 		runTest(app, buildPost("/reports/members", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -110,7 +110,7 @@ func TestClassificationReport(t *testing.T) {
 		runTest(app, buildPost("/reports/members/classification/X", nil)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().ClassificationReport(gomock.Any(), gomock.Eq(classification.YOUNG)).Return([]byte{}, genericError)
+		reports.EXPECT().ClassificationReport(gomock.Any(), gomock.Eq(classification.YOUNG)).Return(genericError)
 		runTest(app, buildPost("/reports/members/classification/young", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

@@ -39,8 +39,7 @@ func TestBirthdayReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return nil
 		})
-		out, err := service.BirthdayReport(ctx)
-		assert.NotNil(t, out)
+		err := service.BirthdayReport(ctx)
 		assert.Nil(t, err)
 	})
 
@@ -51,15 +50,14 @@ func TestBirthdayReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return genericError
 		})
-		_, err := service.BirthdayReport(ctx)
+		err := service.BirthdayReport(ctx)
 		assert.NotNil(t, err)
 	})
 
 	t.Run("Fail - search members", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
-		out, err := service.BirthdayReport(ctx)
-		assert.Nil(t, out)
+		err := service.BirthdayReport(ctx)
 		assert.NotNil(t, err)
 	})
 
@@ -80,8 +78,7 @@ func TestMarriageReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return nil
 		})
-		out, err := service.MarriageReport(ctx)
-		assert.NotNil(t, out)
+		err := service.MarriageReport(ctx)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail - Save report", func(t *testing.T) {
@@ -90,14 +87,13 @@ func TestMarriageReport(t *testing.T) {
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("marriage_report.csv"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			return genericError
 		})
-		_, err := service.MarriageReport(ctx)
+		err := service.MarriageReport(ctx)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - search members", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec)).Return(nil, genericError)
-		out, err := service.MarriageReport(ctx)
-		assert.Nil(t, out)
+		err := service.MarriageReport(ctx)
 		assert.NotNil(t, err)
 	})
 
@@ -120,8 +116,7 @@ func TestGenerateMemberReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return nil
 		})
-		out, err := service.MemberReport(ctx)
-		assert.NotNil(t, out)
+		err := service.MemberReport(ctx)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail - Save report", func(t *testing.T) {
@@ -132,19 +127,19 @@ func TestGenerateMemberReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return genericError
 		})
-		_, err := service.MemberReport(ctx)
+		err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - build report", func(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, genericError)
-		_, err := service.MemberReport(ctx)
+		err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Search", func(t *testing.T) {
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(nil, genericError)
-		_, err := service.MemberReport(ctx)
+		err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})
 }
@@ -168,8 +163,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return nil
 		})
-		out, err := service.ClassificationReport(ctx, classification.ADULT)
-		assert.NotNil(t, out)
+		err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail - Save report", func(t *testing.T) {
@@ -182,7 +176,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return genericError
 		})
-		_, err := service.ClassificationReport(ctx, classification.ADULT)
+		err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Build report", func(t *testing.T) {
@@ -191,14 +185,14 @@ func TestGenerateClassificationReport(t *testing.T) {
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, genericError)
-		_, err := service.ClassificationReport(ctx, classification.ADULT)
+		err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Search", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
-		_, err := service.ClassificationReport(ctx, classification.ADULT)
+		err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.NotNil(t, err)
 	})
 
@@ -222,8 +216,7 @@ func TestGenerateLegalReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return nil
 		})
-		out, err := service.LegalReport(ctx)
-		assert.NotNil(t, out)
+		err := service.LegalReport(ctx)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail - Save report", func(t *testing.T) {
@@ -235,7 +228,7 @@ func TestGenerateLegalReport(t *testing.T) {
 			assert.NotNil(t, data)
 			return genericError
 		})
-		_, err := service.LegalReport(ctx)
+		err := service.LegalReport(ctx)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Build report", func(t *testing.T) {
@@ -243,14 +236,14 @@ func TestGenerateLegalReport(t *testing.T) {
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, genericError)
-		_, err := service.LegalReport(ctx)
+		err := service.LegalReport(ctx)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Search", func(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(nil, genericError)
-		_, err := service.LegalReport(ctx)
+		err := service.LegalReport(ctx)
 		assert.NotNil(t, err)
 	})
 

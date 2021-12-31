@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"errors"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
 	"github.com/BrunoDM2943/church-members-api/internal/services/storage"
 	"github.com/sirupsen/logrus"
 	"sort"
@@ -35,6 +37,14 @@ type reportService struct {
 	storageService storage.Service
 }
 
+const (
+	birthDayReportName       = "birthday_report.csv"
+	marriageReportName       = "marriage_report.csv"
+	memberReportName         = "member_report.pdf"
+	classificationReportName = "classification_report.pdf"
+	legalReportName          = "legal_report.pdf"
+)
+
 func NewReportService(memberService member.Service, fileBuilder file.Builder, storageService storage.Service) Service {
 	return &reportService{
 		memberService,
@@ -59,7 +69,7 @@ func (report reportService) BirthdayReport(ctx context.Context) ([]byte, error) 
 		}
 	})
 	result := writeData(csvOut)
-	return result, report.storageService.SaveFile(ctx, "birthday_report.csv", result)
+	return result, report.storageService.SaveFile(ctx, birthDayReportName, result)
 }
 
 func writeData(data [][]string) []byte {
@@ -89,7 +99,7 @@ func (report reportService) MarriageReport(ctx context.Context) ([]byte, error) 
 	})
 
 	result := writeData(csvOut)
-	return result, report.storageService.SaveFile(ctx, "marriage_report.csv", result)
+	return result, report.storageService.SaveFile(ctx, marriageReportName, result)
 }
 
 func (report reportService) MemberReport(ctx context.Context) ([]byte, error) {
@@ -102,7 +112,7 @@ func (report reportService) MemberReport(ctx context.Context) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return result, report.storageService.SaveFile(ctx, "member_report.pdf", result)
+	return result, report.storageService.SaveFile(ctx, memberReportName, result)
 }
 
 func (report reportService) ClassificationReport(ctx context.Context, classification enum.Classification) ([]byte, error) {
@@ -115,7 +125,7 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 	if err != nil {
 		return nil, err
 	}
-	return result, report.storageService.SaveFile(ctx, "classification_report.pdf", result)
+	return result, report.storageService.SaveFile(ctx, classificationReportName, result)
 }
 
 func (report reportService) LegalReport(ctx context.Context) ([]byte, error) {
@@ -128,7 +138,7 @@ func (report reportService) LegalReport(ctx context.Context) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return result, report.storageService.SaveFile(ctx, "legal_report.pdf", result)
+	return result, report.storageService.SaveFile(ctx, legalReportName, result)
 }
 
 func (report *reportService) getCSVColumns() []string {
@@ -138,9 +148,33 @@ func (report *reportService) getCSVColumns() []string {
 	}
 }
 
-func (report reportService) GetReport(ctx context.Context, name string) (string, error) {
-	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", name)
-	return report.storageService.GetFileURL(ctx, name)
+func (report reportService) GetReport(ctx context.Context, reportType string) (string, error) {
+	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", reportType)
+	fileName, err := getFileName(reportType)
+	if err != nil {
+		return "", err
+	}
+	return report.storageService.GetFileURL(ctx, fileName)
+}
+
+func getFileName(reportTypeName string) (string, error) {
+	result := ""
+	switch reportTypeName {
+	case reportType.LEGAL:
+		result = legalReportName
+	case reportType.MEMBER:
+		result = memberReportName
+	case reportType.CLASSIFICATION:
+		result = classificationReportName
+	case reportType.BIRTHDATE:
+		result = birthDayReportName
+	case reportType.MARRIAGE:
+		result = marriageReportName
+	}
+	if result == "" {
+		return "", errors.New("invalid report type: " + reportTypeName)
+	}
+	return result, nil
 }
 
 func buildCSVData(members []*domain.Member) []file.Data {

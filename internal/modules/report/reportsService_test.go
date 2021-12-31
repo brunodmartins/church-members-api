@@ -3,6 +3,7 @@ package report_test
 import (
 	"context"
 	"errors"
+	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
 	mock_storage "github.com/BrunoDM2943/church-members-api/internal/services/storage/mock"
 	"testing"
 
@@ -264,18 +265,22 @@ func TestReportService_GetReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder, storageService)
 	ctx := buildContext()
 
-	const name = "report-name.pdf"
+	const name = reportType.MEMBER
 	const url = "my-url"
 
 	t.Run("Success", func(t *testing.T) {
-		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Eq(name)).Return(url, nil)
+		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Any()).Return(url, nil)
 		result, err := service.GetReport(ctx, name)
 		assert.Nil(t, err)
 		assert.Equal(t, url, result)
 	})
 	t.Run("Fail", func(t *testing.T) {
-		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Eq(name)).Return("", errors.New("error"))
+		storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Any()).Return("", errors.New("error"))
 		_, err := service.GetReport(ctx, name)
+		assert.NotNil(t, err)
+	})
+	t.Run("Fail - invalid report type", func(t *testing.T) {
+		_, err := service.GetReport(ctx, "")
 		assert.NotNil(t, err)
 	})
 }

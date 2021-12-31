@@ -13,6 +13,7 @@ A simple application to manage a church's members.
 - Member's report
   - Legal members (all except children)
   - All members (including children)
+  - By classification
   - Birthdays list
   - Marriage list
 - Notification jobs
@@ -38,13 +39,13 @@ The application was build upon a Docker image, but rely mostly on AWS resources 
 
 The following resources are used on AWS
 
-- **DynamoDB** for store members information
+- **DynamoDB** to store churchs, users and members information
+- **S3** to store report files
 - **Event Bridge** to CRON the jobs
 - **SNS** to send notifications from jobs
 - **ECR** to store a private image of the application
 - **Lambda** to run the serverless application (both API and JOB)
 - **API Gateway** to provide a RESTfull interface and authorize access
-- **Cognito** to authenticate users
 
 ![GitHub Logo](/docs/architecture.png)
 
@@ -56,13 +57,13 @@ The following configuration are required through **Terraform vars**
 |-|-|-|
 |Hard coded on Terraform|SERVER|Used to define the environment where the application will run. Defaults to **AWS**|
 |Hard coded on Terraform|APPLICATION|Used to defined the Lambda type: **API** or **JOB**|
-|church_name|CHURCH_NAME|The church name|
-|church_name_short|CHURCH_NAME_SHORT|The abbreviation of the church name|
 |app_lang|APP_LANG|The application language. See support languages above on features|
 |Terraform takes it from dynamo resource|TABLE_MEMBER|DynamoDB members table|
 |Terraform takes it from dynamo resource|TABLE_MEMBER_HISTORY|DynamoDB members history table|
-|-|JOBS_DAILY_PHONE|A list of phone numbers separated by comma to receive the SMS notification|
+|Terraform takes it from dynamo resource|TABLE_USER|DynamoDB users table|
+|Terraform takes it from dynamo resource|TABLE_CHURCH|DynamoDB churchs table|
 |Terraform takes it from SNS resource|REPORTS_TOPIC|The topic to notify weekly jobs through email|
+|Terraform takes it from S3 resource|STORAGE|The S3 bucket|
 
 ## Support ✉️
 

@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/aws/aws-lambda-go v1.23.0
 	github.com/aws/aws-sdk-go v1.40.49
 	github.com/aws/aws-sdk-go-v2 v1.11.2
@@ -23,14 +22,13 @@ require (
 	github.com/golang/mock v1.3.1-0.20190508161146-9fa652df1129
 	github.com/google/uuid v1.2.0
 	github.com/graphql-go/graphql v0.7.8
-	github.com/klauspost/compress v1.13.6 // indirect
+	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.0.3
 	github.com/signintech/gopdf v0.9.7
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.6.1
-	github.com/valyala/fasthttp v1.31.0 // indirect
-	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
-	golang.org/x/sys v0.0.0-20211007075335-d3039528d8ac // indirect
-	golang.org/x/text v0.3.6
+	github.com/valyala/fasthttp v1.34.0 // indirect
+	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
+	golang.org/x/text v0.3.7
 )

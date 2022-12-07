@@ -88,6 +88,9 @@ func (repo dynamoRepository) UpdateStatus(ctx context.Context, member *domain.Me
 			"id": &types.AttributeValueMemberS{
 				Value: member.ID,
 			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: member.ChurchID,
+			},
 		},
 		TableName: aws.String(repo.memberTable),
 		ExpressionAttributeValues: map[string]types.AttributeValue{

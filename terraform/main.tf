@@ -36,7 +36,6 @@ variable "email_sender" {
 }
 
 provider "aws" {
-  profile = "default"
   region = var.region
 }
 

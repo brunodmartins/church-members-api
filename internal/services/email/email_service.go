@@ -13,8 +13,8 @@ type Service interface {
 
 type Command struct {
 	Recipients []string
-	Body    string
-	Subject string
+	Body       string
+	Subject    string
 }
 
 type emailService struct {

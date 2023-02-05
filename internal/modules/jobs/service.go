@@ -16,7 +16,8 @@ import (
 	"github.com/BrunoDM2943/church-members-api/platform/i18n"
 )
 
-//Job exposing jobs operations
+// Job exposing jobs operations
+//
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Job interface {
 	RunJob(ctx context.Context) error

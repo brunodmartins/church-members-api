@@ -2,7 +2,7 @@ package domain
 
 import "fmt"
 
-//Address struct
+// Address struct
 type Address struct {
 	ZipCode  string `json:"zipCode"`
 	State    string `json:"state"`
@@ -13,7 +13,7 @@ type Address struct {
 	MoreInfo string `json:"moreInfo"`
 }
 
-//String address
+// String address
 func (address Address) String() string {
 	return fmt.Sprintf("%s, %d - %s", address.Address, address.Number, address.District)
 }

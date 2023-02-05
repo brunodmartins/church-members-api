@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//QueryBuilder allows a client to add dynamic filters to a Query
+// QueryBuilder allows a client to add dynamic filters to a Query
 type QueryBuilder struct {
 	values map[string]interface{}
 }
@@ -24,7 +24,7 @@ func (spec *QueryBuilder) AddFilter(key string, value interface{}) {
 	spec.values[key] = value
 }
 
-//ToSpecification apply filters to a search on the repo
+// ToSpecification apply filters to a search on the repo
 func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
 		var filters []expression.ConditionBuilder

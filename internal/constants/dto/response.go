@@ -5,33 +5,33 @@ import (
 	"github.com/graphql-go/graphql/gqlerrors"
 )
 
-//ErrorResponse for HTTP error responses
+// ErrorResponse for HTTP error responses
 // swagger:model ErrorResponse
 type ErrorResponse struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
 }
 
-//GraphQLErrorResponse for HTTP error responses
+// GraphQLErrorResponse for HTTP error responses
 // swagger:model GraphQLErrorResponse
 type GraphQLErrorResponse struct {
 	Errors []gqlerrors.FormattedError `json:"errors"`
 }
 
-//CreateMemberResponse for HTTP create member responses
+// CreateMemberResponse for HTTP create member responses
 // swagger:model CreateMemberResponse
 type CreateMemberResponse struct {
-	ID		string `json:"id"`
+	ID string `json:"id"`
 }
 
-//GetMemberResponse for HTTP get member responses
+// GetMemberResponse for HTTP get member responses
 // swagger:model GetMemberResponse
 type GetMemberResponse struct {
 	*domain.Member
 }
 
-//GetTokenResponse for HTTP get token responses
+// GetTokenResponse for HTTP get token responses
 // swagger:model GetTokenResponse
 type GetTokenResponse struct {
-	Token	string `json:"token"`
+	Token string `json:"token"`
 }

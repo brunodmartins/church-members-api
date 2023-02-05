@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-//Routable defines a way to builds a REST Controller routes
+// Routable defines a way to builds a REST Controller routes
 type Routable interface {
 	//SetUpRoutes build the REST controller routes
 	SetUpRoutes(app *fiber.App)

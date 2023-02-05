@@ -11,7 +11,6 @@ import (
 	"golang.org/x/text/language"
 )
 
-
 type MessageService struct {
 	localize *i18n.Localizer
 }
@@ -26,11 +25,11 @@ func (service *MessageService) GetMessage(key, defaultValue string) string {
 }
 
 var (
-	service *MessageService
+	service     *MessageService
 	serviceOnce sync.Once
 )
 
-//GetMessageService builds a singleton instance for MessageService
+// GetMessageService builds a singleton instance for MessageService
 func GetMessageService() *MessageService {
 	serviceOnce.Do(func() {
 		buildMessageService()

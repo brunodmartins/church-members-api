@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	member "github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
@@ -15,12 +15,12 @@ import (
 	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
 )
 
-//MemberHandler is a REST controller
+// MemberHandler is a REST controller
 type MemberHandler struct {
 	service member.Service
 }
 
-//NewMemberHandler builds a new MemberHandler
+// NewMemberHandler builds a new MemberHandler
 func NewMemberHandler(service member.Service) *MemberHandler {
 	return &MemberHandler{
 		service: service,

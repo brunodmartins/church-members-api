@@ -6,7 +6,7 @@ type Error struct {
 	customFields map[string]interface{}
 }
 
-//NewApiError creates a custom error
+// NewApiError creates a custom error
 func NewApiError(message string, statusCode int) Error {
 	return Error{
 		message:    message,

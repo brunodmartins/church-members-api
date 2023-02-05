@@ -8,7 +8,7 @@ import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 )
 
-//MemberItem for dynamoDB struct
+// MemberItem for dynamoDB struct
 type MemberItem struct {
 	ID                     string     `dynamodbav:"id,omitempty"`
 	ChurchID               string     `dynamodbav:"church_id"`
@@ -59,7 +59,7 @@ type MemberItem struct {
 	MarriageDateShort      string     `dynamodbav:"marriageDateShort"`
 }
 
-//NewMemberItem creates a MemberItem from a domain.Member
+// NewMemberItem creates a MemberItem from a domain.Member
 func NewMemberItem(member *domain.Member) *MemberItem {
 	return &MemberItem{
 		ID:                     member.ID,
@@ -119,7 +119,7 @@ func convertMarriageDate(marriageDate *time.Time) string {
 	return ""
 }
 
-//ToMember converts a MemberItem into a domain.Member
+// ToMember converts a MemberItem into a domain.Member
 func (item *MemberItem) ToMember() *domain.Member {
 	return &domain.Member{
 		ID:                     item.ID,
@@ -190,7 +190,7 @@ type UserItem struct {
 	SendWeeklyEmail bool   `dynamodbav:"send_weekly_email"`
 }
 
-//NewUserItem creates a UserItem from a domain.User
+// NewUserItem creates a UserItem from a domain.User
 func NewUserItem(user *domain.User) *UserItem {
 	return &UserItem{
 		ID:              user.ID,
@@ -204,7 +204,7 @@ func NewUserItem(user *domain.User) *UserItem {
 	}
 }
 
-//ToUser converts a UserItem into a domain.User
+// ToUser converts a UserItem into a domain.User
 func (item *UserItem) ToUser() *domain.User {
 	return &domain.User{
 		ID:       item.ID,

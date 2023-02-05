@@ -87,7 +87,6 @@ func TestIsLegal(t *testing.T) {
 	assert.False(t, BuildChildren().IsLegal())
 }
 
-
 func BuildChildren() *Member {
 	return &Member{
 		Person: Person{

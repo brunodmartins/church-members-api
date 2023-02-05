@@ -4,12 +4,12 @@ import (
 	"time"
 )
 
-//Person type
+// Person type
 type Person struct {
 	Name             string     `json:"name"`
 	FirstName        string     `json:"firstName"`
 	LastName         string     `json:"lastName"`
-	BirthDate        time.Time `json:"birthDate"`
+	BirthDate        time.Time  `json:"birthDate"`
 	MarriageDate     *time.Time `json:"marriageDate,omitempty"`
 	PlaceOfBirth     string     `json:"placeOfBirth"`
 	FathersName      string     `json:"fathersName"`
@@ -23,7 +23,7 @@ type Person struct {
 	Address          Address    `json:"address"`
 }
 
-//GetFullName of a person
+// GetFullName of a person
 func (person Person) GetFullName() string {
 	return person.FirstName + " " + person.LastName
 }

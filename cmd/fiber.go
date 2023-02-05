@@ -9,7 +9,7 @@ import (
 	"log"
 )
 
-//FiberApplication to use as HTTP API
+// FiberApplication to use as HTTP API
 type FiberApplication struct{}
 
 func (FiberApplication) Run() {

@@ -51,7 +51,7 @@ func TestSnsService_NotifyMobile(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		input := &sns.PublishInput{
-			Message:  aws.String(message),
+			Message:     aws.String(message),
 			PhoneNumber: aws.String(phone),
 		}
 		snsMock.EXPECT().Publish(gomock.Any(), gomock.Eq(input), gomock.Any()).Return(nil, nil)
@@ -59,7 +59,7 @@ func TestSnsService_NotifyMobile(t *testing.T) {
 	})
 	t.Run("Fail", func(t *testing.T) {
 		input := &sns.PublishInput{
-			Message:  aws.String(message),
+			Message:     aws.String(message),
 			PhoneNumber: aws.String(phone),
 		}
 		snsMock.EXPECT().Publish(gomock.Any(), gomock.Eq(input), gomock.Any()).Return(nil, errors.New("generic error"))

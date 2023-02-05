@@ -8,8 +8,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+// Service provide operations for notification
+//
 //go:generate mockgen -source=./notification.go -destination=./mock/notification_mock.go
-//Service provide operations for notification
 type Service interface {
 	//NotifyTopic send a notification to a defined topic
 	NotifyTopic(text string) error
@@ -22,7 +23,7 @@ type snsService struct {
 	topic string
 }
 
-//NewService builds a new notification service
+// NewService builds a new notification service
 func NewService(api wrapper.SNSAPI, topic string) Service {
 	return &snsService{
 		api:   api,

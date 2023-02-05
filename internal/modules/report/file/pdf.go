@@ -12,7 +12,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-//Builder interface
+// Builder interface
+//
 //go:generate mockgen -source=./pdf.go -destination=./mock/pdf_mock.go
 type Builder interface {
 	BuildFile(title string, church *domain.Church, members []*domain.Member) ([]byte, error)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-//Contact struct
+// Contact struct
 type Contact struct {
 	PhoneArea     int    `json:"phoneArea,omitempty"`
 	Phone         int    `json:"phone,omitempty"`
@@ -13,7 +13,7 @@ type Contact struct {
 	Email         string `json:"email"`
 }
 
-//GetFormattedPhone (99) 99999999
+// GetFormattedPhone (99) 99999999
 func (c Contact) GetFormattedPhone() string {
 	if c.Phone == 0 {
 		return ""
@@ -21,7 +21,7 @@ func (c Contact) GetFormattedPhone() string {
 	return fmt.Sprintf("(%d) %d", c.PhoneArea, c.Phone)
 }
 
-//GetFormattedCellPhone (99) 999999999
+// GetFormattedCellPhone (99) 999999999
 func (c Contact) GetFormattedCellPhone() string {
 	if c.CellPhone == 0 {
 		return ""

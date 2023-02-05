@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-//Religion struct
+// Religion struct
 type Religion struct {
 	FathersReligion   string     `json:"fathersReligion,omitempty"`
 	BaptismPlace      string     `json:"baptismPlace"`

@@ -3,18 +3,18 @@ package api
 import (
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
-	report "github.com/BrunoDM2943/church-members-api/internal/modules/report"
+	"github.com/BrunoDM2943/church-members-api/internal/modules/report"
 	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
 
-//ReportHandler is a REST controller
+// ReportHandler is a REST controller
 type ReportHandler struct {
 	reportGenerator report.Service
 }
 
-//NewReportHandler builds a new ReportHandler
+// NewReportHandler builds a new ReportHandler
 func NewReportHandler(reportGenerator report.Service) *ReportHandler {
 	return &ReportHandler{reportGenerator}
 }

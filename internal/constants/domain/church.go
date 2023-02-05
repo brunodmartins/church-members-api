@@ -1,6 +1,6 @@
 package domain
 
-//Church provides information about a church
+// Church provides information about a church
 type Church struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`

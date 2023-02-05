@@ -16,4 +16,3 @@ func EncryptPassword(password string) []byte {
 func IsSamePassword(encryptedPassword []byte, rawPassword string) error {
 	return bcrypt.CompareHashAndPassword(encryptedPassword, []byte(rawPassword))
 }
-

@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//InitConfiguration loads global configuration variables on Viper
+// InitConfiguration loads global configuration variables on Viper
 func InitConfiguration() {
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 	logrus.SetOutput(os.Stdout)

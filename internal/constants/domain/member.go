@@ -6,7 +6,7 @@ import (
 	"github.com/bearbin/go-age"
 )
 
-//Member struct
+// Member struct
 type Member struct {
 	ID                     string   `json:"id"`
 	ChurchID               string   `json:"church_id"`
@@ -21,7 +21,7 @@ type Member struct {
 	Active                 bool     `json:"active,omitempty"`
 }
 
-//Classification returns a member classification based on age and marriage
+// Classification returns a member classification based on age and marriage
 func (member Member) Classification() enum.Classification {
 	age := age.Age(member.Person.BirthDate)
 	if age < 15 {
@@ -35,7 +35,7 @@ func (member Member) Classification() enum.Classification {
 	}
 }
 
-//IsLegal validate if a member is legal only if it's not a children
+// IsLegal validate if a member is legal only if it's not a children
 func (member Member) IsLegal() bool {
 	return member.Classification() != classification.CHILDREN
 }

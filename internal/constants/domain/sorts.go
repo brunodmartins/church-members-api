@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-//SortByBirthDay a list of members
+// SortByBirthDay a list of members
 type SortByBirthDay []*Member
 
-//SortByMarriageDay a list of members
+// SortByMarriageDay a list of members
 type SortByMarriageDay []*Member
 
-//SortByName a list of members
+// SortByName a list of members
 type SortByName []*Member
 
 func (a SortByName) Len() int      { return len(a) }

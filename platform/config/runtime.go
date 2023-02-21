@@ -21,7 +21,7 @@ func InitConfiguration() {
 	viper.Set("tables.member_history", os.Getenv("TABLE_MEMBER_HISTORY"))
 	viper.Set("tables.user", os.Getenv("TABLE_USER"))
 	viper.Set("tables.church", os.Getenv("TABLE_CHURCH"))
-	viper.Set("pdf.font.path", "./fonts/Arial.ttf")
+	viper.Set("pdf.font.path", "./resources/fonts/Arial.ttf")
 	viper.Set("reports.topic", os.Getenv("REPORTS_TOPIC"))
 	viper.Set("security.token.secret", os.Getenv("TOKEN_SECRET"))
 	viper.Set("security.token.expiration", os.Getenv("TOKEN_EXPIRATION"))

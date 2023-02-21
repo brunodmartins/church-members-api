@@ -19,8 +19,7 @@ ENV SERVER $SERVER \
     JOBS_DAILY_PHONE $JOBS_DAILY_PHONE \
     REPORTS_TOPIC $REPORTS_TOPIC
 
-COPY --from=build /go/src/app/bundles/* ./bundles/
-COPY --from=build /go/src/app/fonts/* ./fonts/
+COPY --from=build /go/src/app/resources ./resources/
 COPY --from=build /go/src/app/church-members-api .
 
 CMD ["/app/church-members-api"]

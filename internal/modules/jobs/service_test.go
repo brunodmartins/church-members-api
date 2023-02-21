@@ -20,7 +20,7 @@ import (
 )
 
 func init() {
-	viper.Set("bundles.location", "../../../bundles")
+	viper.Set("bundles.location", "../../../resources/i18n")
 }
 
 func TestLastDayRange(t *testing.T) {
@@ -35,19 +35,19 @@ func TestFmtDate(t *testing.T) {
 
 func TestWeeklyBuildMessage(t *testing.T) {
 	job := newWeeklyBirthDaysJob(nil, nil, nil)
-	time := time.Now()
-	fmtDate := fmtDate(time)
+	now := time.Now()
+	fmtDate := fmtDate(now)
 	t.Run("With both birth and marriage", func(t *testing.T) {
 		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate, fmtDate)
-		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(time), BuildMarriageMembers(&time)))
+		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(now), BuildMarriageMembers(&now)))
 	})
 	t.Run("Only birth", func(t *testing.T) {
 		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n---------\n", fmtDate)
-		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(time), []*domain.Member{}))
+		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(now), []*domain.Member{}))
 	})
 	t.Run("Only marriage", func(t *testing.T) {
 		expected := fmt.Sprintf("Weekly birthdays\nBirth\n---------\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate)
-		assert.Equal(t, expected, job.buildMessage([]*domain.Member{}, BuildMarriageMembers(&time)))
+		assert.Equal(t, expected, job.buildMessage([]*domain.Member{}, BuildMarriageMembers(&now)))
 	})
 	t.Run("None", func(t *testing.T) {
 		expected := "Weekly birthdays\nBirth\n---------\nMarriage\n---------\n"
@@ -57,10 +57,10 @@ func TestWeeklyBuildMessage(t *testing.T) {
 
 func TestDailyBuildMessage(t *testing.T) {
 	job := newDailyBirthDaysJob(nil, nil, nil)
-	time := time.Now()
-	fmtDate := fmtDate(time)
+	now := time.Now()
+	fmtDate := fmtDate(now)
 	expected := fmt.Sprintf("church_short_name:Birthdays-foo bar-%s,", fmtDate)
-	assert.Equal(t, expected, job.buildMessage(buildContext(), BuildBirthDaysMembers(time)))
+	assert.Equal(t, expected, job.buildMessage(buildContext(), BuildBirthDaysMembers(now)))
 }
 
 func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {

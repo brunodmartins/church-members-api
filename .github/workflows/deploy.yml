@@ -4,8 +4,7 @@ on:
   push:
     branches: [ master ]
     paths:
-      - "bundles/**"
-      - "fonts/**"
+      - "resources/**"
       - "**.go"
 jobs:
   main:

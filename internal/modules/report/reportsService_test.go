@@ -20,7 +20,7 @@ import (
 )
 
 func init() {
-	viper.Set("bundles.location", "../../../bundles")
+	viper.Set("bundles.location", "../../../resources/i18n")
 }
 
 func TestBirthdayReport(t *testing.T) {

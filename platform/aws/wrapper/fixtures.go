@@ -2,9 +2,9 @@ package wrapper
 
 import (
 	"context"
-	mock_wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper/mock"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"

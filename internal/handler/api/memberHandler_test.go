@@ -2,15 +2,15 @@ package api
 
 import (
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"testing"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/golang/mock/gomock"
 )
 

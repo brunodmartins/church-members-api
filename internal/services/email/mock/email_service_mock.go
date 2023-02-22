@@ -7,7 +7,7 @@ package mock_email
 import (
 	reflect "reflect"
 
-	email "github.com/BrunoDM2943/church-members-api/internal/services/email"
+	email "github.com/brunodmartins/church-members-api/internal/services/email"
 	gomock "github.com/golang/mock/gomock"
 )
 

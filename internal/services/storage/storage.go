@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/sirupsen/logrus"
 )
 

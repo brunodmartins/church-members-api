@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	mock_church "github.com/BrunoDM2943/church-members-api/internal/modules/church/mock"
-	mock_jobs "github.com/BrunoDM2943/church-members-api/internal/modules/jobs/mock"
+	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
+	mock_jobs "github.com/brunodmartins/church-members-api/internal/modules/jobs/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

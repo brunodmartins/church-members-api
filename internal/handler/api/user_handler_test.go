@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	"github.com/golang/mock/gomock"
 	"net/http"
 	"testing"

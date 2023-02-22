@@ -2,13 +2,13 @@ package member_test
 
 import (
 	"context"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member/mock"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
+	"github.com/brunodmartins/church-members-api/internal/modules/member"
+	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"testing"
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

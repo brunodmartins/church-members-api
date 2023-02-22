@@ -2,15 +2,15 @@ package member
 
 import (
 	"context"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/google/uuid"
 )
 

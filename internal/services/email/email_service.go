@@ -1,9 +1,9 @@
 package email
 
 import (
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go/service/sesv2"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 )
 
 //go:generate mockgen -source=./email_service.go -destination=./mock/email_service_mock.go

@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"net/http"
 
 	"github.com/sirupsen/logrus"

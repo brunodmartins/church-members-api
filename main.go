@@ -18,9 +18,9 @@
 package main
 
 import (
-	"github.com/BrunoDM2943/church-members-api/cmd"
-	"github.com/BrunoDM2943/church-members-api/platform/config"
-	"github.com/BrunoDM2943/church-members-api/platform/i18n"
+	"github.com/brunodmartins/church-members-api/cmd"
+	"github.com/brunodmartins/church-members-api/platform/config"
+	"github.com/brunodmartins/church-members-api/platform/i18n"
 )
 
 //go:generate swagger generate spec -m -o ./docs/specs/swagger.yaml

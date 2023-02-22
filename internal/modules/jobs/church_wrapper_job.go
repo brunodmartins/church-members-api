@@ -3,8 +3,8 @@ package jobs
 import (
 	"context"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/church"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/modules/church"
 	"github.com/sirupsen/logrus"
 )
 

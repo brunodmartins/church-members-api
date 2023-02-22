@@ -2,7 +2,7 @@ package classification
 
 import (
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"strings"
 )
 

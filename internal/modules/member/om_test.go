@@ -3,7 +3,7 @@ package member_test
 import (
 	"context"
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
 
 var (

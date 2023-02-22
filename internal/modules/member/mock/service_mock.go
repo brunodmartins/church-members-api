@@ -9,9 +9,9 @@ import (
 	reflect "reflect"
 	time "time"
 
-	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	member "github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	wrapper "github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
+	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
+	member "github.com/brunodmartins/church-members-api/internal/modules/member"
+	wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	gomock "github.com/golang/mock/gomock"
 )
 

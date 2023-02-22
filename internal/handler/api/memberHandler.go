@@ -2,17 +2,17 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/brunodmartins/church-members-api/internal/modules/member"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"time"
 
 	"github.com/graphql-go/graphql"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	gql "github.com/BrunoDM2943/church-members-api/internal/handler/graphql"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	gql "github.com/brunodmartins/church-members-api/internal/handler/graphql"
 )
 
 // MemberHandler is a REST controller

@@ -1,9 +1,9 @@
 package domain
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
 	"github.com/bearbin/go-age"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 )
 
 // Member struct

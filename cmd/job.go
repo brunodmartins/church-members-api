@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/BrunoDM2943/church-members-api/internal/modules/jobs"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/brunodmartins/church-members-api/internal/modules/jobs"
 	"github.com/sirupsen/logrus"
 )
 

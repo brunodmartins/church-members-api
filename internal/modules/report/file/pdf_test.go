@@ -4,7 +4,7 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
+	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/spf13/viper"
 
 	"github.com/stretchr/testify/assert"

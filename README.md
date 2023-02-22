@@ -1,11 +1,10 @@
 # church-members-api ⛪️
 
-![Go](https://github.com/BrunoDM2943/church-members-api/workflows/Go/badge.svg)
-[![codecov](https://codecov.io/gh/BrunoDM2943/church-members-api/branch/master/graph/badge.svg)](https://codecov.io/gh/BrunoDM2943/church-members-api)  [![Go Report Card](https://goreportcard.com/badge/github.com/BrunoDM2943/church-members-api?style=flat-square)](https://goreportcard.com/report/github.com/BrunoDM2943/church-members-api)
-![Deploy](https://github.com/BrunoDM2943/church-members-api/workflows/Docker%20Image%20CI/badge.svg)
+![Go](https://github.com/brunodmartins/church-members-api/workflows/Go/badge.svg)
+[![codecov](https://codecov.io/gh/brunodmartins/church-members-api/branch/master/graph/badge.svg)](https://codecov.io/gh/brunodmartins/church-members-api)  [![Go Report Card](https://goreportcard.com/badge/github.com/brunodmartins/church-members-api?style=flat-square)](https://goreportcard.com/report/github.com/brunodmartins/church-members-api)
+![Deploy](https://github.com/brunodmartins/church-members-api/workflows/Docker%20Image%20CI/badge.svg)
 
-
-A simple application to manage a church's members. 
+A simple application to manage a church's members.
 
 ## Features 💻
 
@@ -17,8 +16,8 @@ A simple application to manage a church's members.
   - Birthdays list
   - Marriage list
 - Notification jobs
-  - Weekly births through email
-  - Dailly birthdays through SMS 
+    - Weekly births through email
+    - Dailly birthdays through SMS
 - i18n
   - Supports pt-BR and en-US
 
@@ -67,4 +66,4 @@ The following configuration are required through **Terraform vars**
 
 ## Support ✉️
 
-You can create a PR for it =) 
+You can create a PR for it =)

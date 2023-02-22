@@ -3,7 +3,7 @@ package security
 import (
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/viper"

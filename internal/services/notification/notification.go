@@ -2,9 +2,9 @@ package notification
 
 import (
 	"context"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/sirupsen/logrus"
 )
 

@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	mock_church "github.com/BrunoDM2943/church-members-api/internal/modules/church/mock"
-	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
-	"github.com/BrunoDM2943/church-members-api/platform/crypto"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
+	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
+	"github.com/brunodmartins/church-members-api/platform/crypto"
 	"github.com/spf13/viper"
 
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

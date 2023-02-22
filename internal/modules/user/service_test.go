@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	mock_user "github.com/BrunoDM2943/church-members-api/internal/modules/user/mock"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )

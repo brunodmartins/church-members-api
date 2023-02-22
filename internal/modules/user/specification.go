@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 )
 
 func WithSMSNotifications() wrapper.QuerySpecification {

@@ -1,4 +1,4 @@
-module github.com/BrunoDM2943/church-members-api
+module github.com/brunodmartins/church-members-api
 
 go 1.16
 

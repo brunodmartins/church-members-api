@@ -7,13 +7,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
-	"github.com/BrunoDM2943/church-members-api/internal/services/email"
+	"github.com/brunodmartins/church-members-api/internal/modules/user"
+	"github.com/brunodmartins/church-members-api/internal/services/email"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	"github.com/BrunoDM2943/church-members-api/internal/services/notification"
-	"github.com/BrunoDM2943/church-members-api/platform/i18n"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/modules/member"
+	"github.com/brunodmartins/church-members-api/internal/services/notification"
+	"github.com/brunodmartins/church-members-api/platform/i18n"
 )
 
 // Job exposing jobs operations

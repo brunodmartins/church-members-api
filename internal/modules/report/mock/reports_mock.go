@@ -8,7 +8,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	enum "github.com/BrunoDM2943/church-members-api/internal/constants/enum"
+	enum "github.com/brunodmartins/church-members-api/internal/constants/enum"
 	gomock "github.com/golang/mock/gomock"
 )
 

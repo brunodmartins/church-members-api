@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/dto"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/brunodmartins/church-members-api/internal/modules/user"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )

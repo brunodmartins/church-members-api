@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/role"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"time"
 )
 

@@ -1,8 +1,8 @@
 package api
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
-	mock_report "github.com/BrunoDM2943/church-members-api/internal/modules/report/mock"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
+	mock_report "github.com/brunodmartins/church-members-api/internal/modules/report/mock"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"testing"

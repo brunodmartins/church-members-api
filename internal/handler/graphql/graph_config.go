@@ -1,7 +1,7 @@
 package graphql
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
+	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	"github.com/graphql-go/graphql"
 )
 

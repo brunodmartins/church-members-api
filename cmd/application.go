@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/BrunoDM2943/church-members-api/platform/config"
+	"github.com/brunodmartins/church-members-api/platform/config"
 	"github.com/spf13/viper"
 )
 

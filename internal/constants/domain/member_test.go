@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 	"testing"
 	"time"
 

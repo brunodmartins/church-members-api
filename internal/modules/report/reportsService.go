@@ -6,17 +6,17 @@ import (
 	"context"
 	"encoding/csv"
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
-	"github.com/BrunoDM2943/church-members-api/internal/services/storage"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
+	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	"github.com/sirupsen/logrus"
 	"sort"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/member"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/report/file"
-	"github.com/BrunoDM2943/church-members-api/platform/i18n"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum"
+	"github.com/brunodmartins/church-members-api/internal/modules/member"
+	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
+	"github.com/brunodmartins/church-members-api/platform/i18n"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go

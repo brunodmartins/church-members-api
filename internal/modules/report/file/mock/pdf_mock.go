@@ -7,7 +7,7 @@ package mock_file
 import (
 	reflect "reflect"
 
-	domain "github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
 	gomock "github.com/golang/mock/gomock"
 )
 

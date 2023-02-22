@@ -2,12 +2,12 @@ package wrapper
 
 import (
 	"context"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"net/http"
 )
 

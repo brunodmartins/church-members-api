@@ -1,8 +1,8 @@
 package church
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	mock_church "github.com/BrunoDM2943/church-members-api/internal/modules/church/mock"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"

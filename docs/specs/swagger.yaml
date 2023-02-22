@@ -27,7 +27,7 @@ definitions:
         type: string
         x-go-name: ZipCode
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
   Contact:
     description: Contact struct
     properties:
@@ -51,7 +51,7 @@ definitions:
         type: integer
         x-go-name: PhoneArea
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
   CreateMemberRequest:
     description: CreateMemberRequest for HTTP calls to post member
     properties:
@@ -87,7 +87,7 @@ definitions:
       religion:
         $ref: '#/definitions/Religion'
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   CreateMemberResponse:
     description: CreateMemberResponse for HTTP create member responses
     properties:
@@ -95,7 +95,7 @@ definitions:
         type: string
         x-go-name: ID
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   CreateUserRequest:
     description: CreateUserRequest for HTTP calls to post user
     properties:
@@ -121,7 +121,7 @@ definitions:
         type: string
         x-go-name: UserName
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   ErrorResponse:
     description: ErrorResponse for HTTP error responses
     properties:
@@ -132,7 +132,7 @@ definitions:
         type: string
         x-go-name: Message
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   FormattedError:
     properties:
       extensions:
@@ -190,7 +190,7 @@ definitions:
       religion:
         $ref: '#/definitions/Religion'
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   GetTokenResponse:
     description: GetTokenResponse for HTTP get token responses
     properties:
@@ -198,7 +198,7 @@ definitions:
         type: string
         x-go-name: Token
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   GraphQLErrorResponse:
     description: GraphQLErrorResponse for HTTP error responses
     properties:
@@ -208,7 +208,7 @@ definitions:
         type: array
         x-go-name: Errors
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   Member:
     description: Member struct
     properties:
@@ -244,7 +244,7 @@ definitions:
       religion:
         $ref: '#/definitions/Religion'
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
   NotificationPreferences:
     properties:
       send_daily_sms:
@@ -254,7 +254,7 @@ definitions:
         type: boolean
         x-go-name: SendWeeklyEmail
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
   Person:
     description: Person type
     properties:
@@ -306,7 +306,7 @@ definitions:
         type: string
         x-go-name: SpousesName
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
   PutMemberStatusRequest:
     description: PutMemberStatusRequest for HTTP calls to put member status
     properties:
@@ -321,7 +321,7 @@ definitions:
         type: string
         x-go-name: Reason
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/dto
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
   Religion:
     description: Religion struct
     properties:
@@ -362,7 +362,7 @@ definitions:
         type: boolean
         x-go-name: Tithe
     type: object
-    x-go-package: github.com/BrunoDM2943/church-members-api/internal/constants/domain
+    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
   SourceLocation:
     properties:
       column:

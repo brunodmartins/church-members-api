@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/BrunoDM2943/church-members-api/internal/handler/api/middleware"
+	"github.com/brunodmartins/church-members-api/internal/handler/api/middleware"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/stretchr/testify/assert"

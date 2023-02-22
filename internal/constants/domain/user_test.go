@@ -2,7 +2,7 @@ package domain
 
 import (
 	"context"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/role"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

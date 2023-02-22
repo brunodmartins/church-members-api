@@ -1,8 +1,8 @@
 package graphql
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
 	"github.com/bearbin/go-age"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/graphql-go/graphql"
 )
 

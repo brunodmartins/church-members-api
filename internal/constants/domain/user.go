@@ -3,8 +3,8 @@ package domain
 import (
 	"context"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum"
-	"github.com/BrunoDM2943/church-members-api/platform/crypto"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum"
+	"github.com/brunodmartins/church-members-api/platform/crypto"
 )
 
 type User struct {

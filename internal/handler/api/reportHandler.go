@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/classification"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/enum/reportType"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/report"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
+	"github.com/brunodmartins/church-members-api/internal/modules/report"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )

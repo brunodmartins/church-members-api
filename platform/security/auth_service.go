@@ -4,12 +4,12 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/church"
-	"github.com/BrunoDM2943/church-members-api/internal/modules/user"
-	"github.com/BrunoDM2943/church-members-api/platform/crypto"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/modules/church"
+	"github.com/brunodmartins/church-members-api/internal/modules/user"
+	"github.com/brunodmartins/church-members-api/platform/crypto"
 
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 )
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go

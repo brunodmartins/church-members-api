@@ -2,7 +2,7 @@ package security
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
 
 const (

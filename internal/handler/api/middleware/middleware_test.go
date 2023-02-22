@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"errors"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
-	"github.com/BrunoDM2943/church-members-api/platform/security"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/platform/security"
 	"github.com/gofiber/fiber/v2"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"

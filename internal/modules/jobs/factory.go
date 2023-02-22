@@ -1,6 +1,6 @@
 package jobs
 
-import "github.com/BrunoDM2943/church-members-api/platform/cdi"
+import "github.com/brunodmartins/church-members-api/platform/cdi"
 
 func BuildJob(jobType JobType) Job {
 	memberService := cdi.ProvideMemberService()

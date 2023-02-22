@@ -2,9 +2,9 @@ package user
 
 import (
 	"context"
-	"github.com/BrunoDM2943/church-members-api/internal/constants/domain"
-	"github.com/BrunoDM2943/church-members-api/platform/aws/wrapper"
-	apierrors "github.com/BrunoDM2943/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"net/http"
 )
 

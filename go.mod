@@ -30,5 +30,5 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/valyala/fasthttp v1.34.0 // indirect
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
-	golang.org/x/text v0.3.7
+	golang.org/x/text v0.3.8
 )

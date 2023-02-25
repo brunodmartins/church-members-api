@@ -15,6 +15,8 @@ type MessageService struct {
 	localize *i18n.Localizer
 }
 
+var bundles = make(map[string]*i18n.Localizer)
+
 func (service *MessageService) GetMessage(key, defaultValue string) string {
 	return service.localize.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
@@ -56,4 +58,14 @@ func loadBundle(language language.Tag) *i18n.Bundle {
 	bundle.MustLoadMessageFile(path)
 	logrus.Infof("Bundle %s loaded", language)
 	return bundle
+}
+
+// GetLocalize returns a i18n.Localize based on a language tag
+func GetLocalize(language language.Tag) *i18n.Localizer {
+	if bundles[language.String()] != nil {
+		return bundles[language.String()]
+	}
+	result := i18n.NewLocalizer(loadBundle(language))
+	bundles[language.String()] = result
+	return result
 }

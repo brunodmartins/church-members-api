@@ -21,12 +21,12 @@ func newChurchWrapperJob(service church.Service, job Job) Job {
 }
 
 func (wrapper *churchWrapperJob) RunJob(ctx context.Context) error {
-	churchs, err := wrapper.service.List()
+	churches, err := wrapper.service.List()
 	if err != nil {
 		logrus.Error("Error obtaining church list", err)
 		return err
 	}
-	for _, church := range churchs {
+	for _, church := range churches {
 		err := wrapper.job.RunJob(context.WithValue(ctx, "user", &domain.User{
 			Church: church,
 		}))

@@ -15,13 +15,8 @@ import (
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	mock_notification "github.com/brunodmartins/church-members-api/internal/services/notification/mock"
 	"github.com/golang/mock/gomock"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	viper.Set("bundles.location", "../../../resources/i18n")
-}
 
 func TestLastDayRange(t *testing.T) {
 	start, end := lastDaysRange()
@@ -39,19 +34,19 @@ func TestWeeklyBuildMessage(t *testing.T) {
 	fmtDate := fmtDate(now)
 	t.Run("With both birth and marriage", func(t *testing.T) {
 		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate, fmtDate)
-		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(now), BuildMarriageMembers(&now)))
+		assert.Equal(t, expected, job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), BuildMarriageMembers(&now)))
 	})
 	t.Run("Only birth", func(t *testing.T) {
 		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n---------\n", fmtDate)
-		assert.Equal(t, expected, job.buildMessage(BuildBirthDaysMembers(now), []*domain.Member{}))
+		assert.Equal(t, expected, job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), []*domain.Member{}))
 	})
 	t.Run("Only marriage", func(t *testing.T) {
 		expected := fmt.Sprintf("Weekly birthdays\nBirth\n---------\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate)
-		assert.Equal(t, expected, job.buildMessage([]*domain.Member{}, BuildMarriageMembers(&now)))
+		assert.Equal(t, expected, job.buildMessage(context.TODO(), []*domain.Member{}, BuildMarriageMembers(&now)))
 	})
 	t.Run("None", func(t *testing.T) {
 		expected := "Weekly birthdays\nBirth\n---------\nMarriage\n---------\n"
-		assert.Equal(t, expected, job.buildMessage([]*domain.Member{}, []*domain.Member{}))
+		assert.Equal(t, expected, job.buildMessage(context.TODO(), []*domain.Member{}, []*domain.Member{}))
 	})
 }
 

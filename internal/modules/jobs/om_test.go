@@ -51,9 +51,11 @@ func BuildUsers() []*domain.User {
 func buildChurchs() []*domain.Church {
 	return []*domain.Church{
 		{
-			ID: "1",
+			ID:       "1",
+			Language: "pt-BR",
 		}, {
-			ID: "2",
+			ID:       "2",
+			Language: "en",
 		},
 	}
 }

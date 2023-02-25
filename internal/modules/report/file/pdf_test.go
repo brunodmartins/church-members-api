@@ -1,6 +1,7 @@
 package file_test
 
 import (
+	"context"
 	"testing"
 	"unicode/utf8"
 
@@ -11,13 +12,12 @@ import (
 )
 
 func init() {
-	viper.Set("bundles.location", "../../../../resources/i18n")
 	viper.Set("pdf.font.path", "../../../../resources/fonts/Arial.ttf")
 }
 
 func TestBuildFile(t *testing.T) {
 	pdfBuilder := file.NewPDFBuilder()
-	out, err := pdfBuilder.BuildFile("Test", buildChurch(), BuildMembers(100))
+	out, err := pdfBuilder.BuildFile(context.Background(), "Test", buildChurch(), BuildMembers(100))
 	assert.False(t, utf8.Valid(out))
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
@@ -26,6 +26,6 @@ func TestBuildFile(t *testing.T) {
 func TestBuildFileErrorOnFont(t *testing.T) {
 	viper.Set("pdf.font.path", ".")
 	pdfBuilder := file.NewPDFBuilder()
-	_, err := pdfBuilder.BuildFile("Test", buildChurch(), BuildMembers(100))
+	_, err := pdfBuilder.BuildFile(context.Background(), "Test", buildChurch(), BuildMembers(100))
 	assert.NotNil(t, err)
 }

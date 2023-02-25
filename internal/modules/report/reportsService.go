@@ -32,7 +32,6 @@ type Service interface {
 type reportService struct {
 	memberService  member.Service
 	fileBuilder    file.Builder
-	messageService *i18n.MessageService
 	storageService storage.Service
 }
 
@@ -48,7 +47,6 @@ func NewReportService(memberService member.Service, fileBuilder file.Builder, st
 	return &reportService{
 		memberService,
 		fileBuilder,
-		i18n.GetMessageService(),
 		storageService,
 	}
 }
@@ -60,7 +58,7 @@ func (report reportService) BirthdayReport(ctx context.Context) error {
 	}
 
 	sort.Sort(domain.SortByBirthDay(members))
-	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
+	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(ctx), func(row file.Data) []string {
 		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName(),
@@ -88,7 +86,7 @@ func (report reportService) MarriageReport(ctx context.Context) error {
 
 	sort.Sort(domain.SortByMarriageDay(members))
 
-	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(), func(row file.Data) []string {
+	csvOut := file.TransformToCSVData(buildCSVData(members), report.getCSVColumns(ctx), func(row file.Data) []string {
 		member := row.Value.(*domain.Member)
 		return []string{
 			member.Person.GetFullName() + "&" + member.Person.SpousesName,
@@ -105,7 +103,7 @@ func (report reportService) MemberReport(ctx context.Context) error {
 		return err
 	}
 	sort.Sort(domain.SortByName(members))
-	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
+	result, err := report.fileBuilder.BuildFile(ctx, i18n.GetMessage(ctx, "Reports.Title.Default"), domain.GetChurch(ctx), members)
 	if err != nil {
 		return err
 	}
@@ -118,7 +116,7 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 		return err
 	}
 	sort.Sort(domain.SortByName(members))
-	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Default", "Member's report"), domain.GetChurch(ctx), members)
+	result, err := report.fileBuilder.BuildFile(ctx, i18n.GetMessage(ctx, "Reports.Title.Default"), domain.GetChurch(ctx), members)
 	if err != nil {
 		return err
 	}
@@ -131,17 +129,17 @@ func (report reportService) LegalReport(ctx context.Context) error {
 		return err
 	}
 	sort.Sort(domain.SortByName(members))
-	result, err := report.fileBuilder.BuildFile(report.messageService.GetMessage("Reports.Title.Legal", "Member's report - Legal"), domain.GetChurch(ctx), members)
+	result, err := report.fileBuilder.BuildFile(ctx, i18n.GetMessage(ctx, "Reports.Title.Legal"), domain.GetChurch(ctx), members)
 	if err != nil {
 		return err
 	}
 	return report.storageService.SaveFile(ctx, legalReportName, result)
 }
 
-func (report *reportService) getCSVColumns() []string {
+func (report *reportService) getCSVColumns(ctx context.Context) []string {
 	return []string{
-		report.messageService.GetMessage("Domain.Name", "Name"),
-		report.messageService.GetMessage("Domain.Date", "Date"),
+		i18n.GetMessage(ctx, "Domain.Name"),
+		i18n.GetMessage(ctx, "Domain.Date"),
 	}
 }
 

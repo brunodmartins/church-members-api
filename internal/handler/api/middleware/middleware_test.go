@@ -67,6 +67,29 @@ func TestErrorMiddleware(t *testing.T) {
 	})
 }
 
+func TestI18NMiddleware(t *testing.T) {
+	app := fiber.New(fiber.Config{
+		ErrorHandler: ApiErrorMiddleWare,
+	})
+	app.Use(I18NMiddleware)
+	app.Get("/test", func(ctx *fiber.Ctx) error {
+		assert.NotNil(t, ctx.Get("i18n"))
+		return nil
+	})
+	t.Run("With Header  - 200", func(t *testing.T) {
+		req := buildRequest()
+		req.Header.Set(languageHeader, "pt-BR")
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+
+	t.Run("Without Header  - 200", func(t *testing.T) {
+		req := buildRequest()
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+}
+
 func buildToken() string {
 	return security.GenerateJWTToken(&domain.User{
 		ID:       "id",

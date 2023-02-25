@@ -11,7 +11,6 @@ import (
 )
 
 func init() {
-	viper.Set("bundles.location", "../../../../resources/i18n")
 	viper.Set("pdf.font.path", "../../../../resources/fonts/Arial.ttf")
 }
 

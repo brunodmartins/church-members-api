@@ -13,10 +13,6 @@ import (
 	"testing"
 )
 
-func init() {
-	viper.Set("bundles.location", "../../../../resources/i18n")
-}
-
 func TestAuthMiddleware(t *testing.T) {
 	viper.Set("security.token.expiration", 1)
 	app := fiber.New(fiber.Config{

@@ -15,13 +15,8 @@ import (
 	mock_file "github.com/brunodmartins/church-members-api/internal/modules/report/file/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/golang/mock/gomock"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	viper.Set("bundles.location", "../../../resources/i18n")
-}
 
 func TestBirthdayReport(t *testing.T) {
 	ctrl := gomock.NewController(t)

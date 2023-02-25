@@ -15,13 +15,8 @@ import (
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	mock_notification "github.com/brunodmartins/church-members-api/internal/services/notification/mock"
 	"github.com/golang/mock/gomock"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	viper.Set("bundles.location", "../../../resources/i18n")
-}
 
 func TestLastDayRange(t *testing.T) {
 	start, end := lastDaysRange()

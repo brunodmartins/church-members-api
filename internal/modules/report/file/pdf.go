@@ -3,9 +3,9 @@ package file
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
-
-	i18n2 "github.com/brunodmartins/church-members-api/platform/i18n"
+	"github.com/brunodmartins/church-members-api/platform/i18n"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/signintech/gopdf"
@@ -16,17 +16,14 @@ import (
 //
 //go:generate mockgen -source=./pdf.go -destination=./mock/pdf_mock.go
 type Builder interface {
-	BuildFile(title string, church *domain.Church, members []*domain.Member) ([]byte, error)
+	BuildFile(ctx context.Context, title string, church *domain.Church, members []*domain.Member) ([]byte, error)
 }
 
 type pdfBuilder struct {
-	messageService *i18n2.MessageService
 }
 
 func NewPDFBuilder() *pdfBuilder {
-	return &pdfBuilder{
-		messageService: i18n2.GetMessageService(),
-	}
+	return &pdfBuilder{}
 }
 
 func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, church *domain.Church, builder *gopdf.GoPdf) {
@@ -72,38 +69,38 @@ func (pdfBuilder *pdfBuilder) setValue(value string, builder *gopdf.GoPdf) {
 	builder.Cell(nil, value)
 }
 
-func (pdfBuilder *pdfBuilder) buildRowSection(data *domain.Member, builder *gopdf.GoPdf) {
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Name", "Name"), builder)
+func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.Member, builder *gopdf.GoPdf) {
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Name"), builder)
 	pdfBuilder.setValue(data.Person.GetFullName(), builder)
 	builder.Br(15)
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification", "Classification"), builder)
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Classification"), builder)
 	classification := data.Classification()
-	pdfBuilder.setValue(pdfBuilder.messageService.GetMessage("Domain.Classification."+classification.String(), classification.String()), builder)
+	pdfBuilder.setValue(i18n.GetMessage(ctx, "Domain.Classification."+classification.String()), builder)
 	builder.Br(15)
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Address", "Address"), builder)
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Address"), builder)
 	pdfBuilder.setValue(data.Person.Address.String(), builder)
 	builder.Br(15)
 
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.BirthDate", "Birth date"), builder)
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.BirthDate"), builder)
 	pdfBuilder.setValue(data.Person.BirthDate.Format("02/01/2006"), builder)
 	builder.SetX(builder.GetX() + 10)
 	if data.Person.MarriageDate != nil {
-		pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.MarriageDate", "Marriage Date"), builder)
+		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.MarriageDate"), builder)
 		pdfBuilder.setValue(data.Person.MarriageDate.Format("02/01/2006"), builder)
 	}
 	builder.Br(15)
 
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Phone", "Phone"), builder)
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Phone"), builder)
 
 	pdfBuilder.setValue(data.Person.Contact.GetFormattedPhone(), builder)
 
 	builder.SetX(builder.GetX() + 10)
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.CellPhone", "CellPhone"), builder)
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.CellPhone"), builder)
 
 	pdfBuilder.setValue(data.Person.Contact.GetFormattedCellPhone(), builder)
 	builder.Br(15)
 
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Email", "Email"), builder)
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Email"), builder)
 	pdfBuilder.setValue(data.Person.Contact.Email, builder)
 
 	builder.Br(10)
@@ -114,8 +111,8 @@ func (pdfBuilder *pdfBuilder) buildRowSection(data *domain.Member, builder *gopd
 
 }
 
-func (pdfBuilder *pdfBuilder) buildSummarySection(data []*domain.Member, builder *gopdf.GoPdf) {
-	pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.MembersQuantity", "Number of members"), builder)
+func (pdfBuilder *pdfBuilder) buildSummarySection(ctx context.Context, data []*domain.Member, builder *gopdf.GoPdf) {
+	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.MembersQuantity"), builder)
 	pdfBuilder.setValue(fmt.Sprintf("%d", len(data)), builder)
 	builder.Br(15)
 
@@ -127,14 +124,14 @@ func (pdfBuilder *pdfBuilder) buildSummarySection(data []*domain.Member, builder
 	}
 
 	for key, value := range summary {
-		pdfBuilder.setField(pdfBuilder.messageService.GetMessage("Domain.Classification."+key, key), builder)
+		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Classification."+key), builder)
 		pdfBuilder.setValue(fmt.Sprintf("%d", value), builder)
 		builder.Br(15)
 	}
 
 }
 
-func (pdfBuilder *pdfBuilder) BuildFile(title string, church *domain.Church, data []*domain.Member) ([]byte, error) {
+func (pdfBuilder *pdfBuilder) BuildFile(ctx context.Context, title string, church *domain.Church, data []*domain.Member) ([]byte, error) {
 	pdf := &gopdf.GoPdf{}
 	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
 	if err := pdfBuilder.setFont(pdf); err != nil {
@@ -150,9 +147,9 @@ func (pdfBuilder *pdfBuilder) BuildFile(title string, church *domain.Church, dat
 			count = 0
 		}
 		count++
-		pdfBuilder.buildRowSection(member, pdf)
+		pdfBuilder.buildRowSection(ctx, member, pdf)
 	}
 	pdf.AddPage()
-	pdfBuilder.buildSummarySection(data, pdf)
+	pdfBuilder.buildSummarySection(ctx, data, pdf)
 	return pdfBuilder.toBytes(pdf), nil
 }

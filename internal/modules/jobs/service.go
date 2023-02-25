@@ -62,8 +62,7 @@ func (job dailyBirthDaysJob) RunJob(ctx context.Context) error {
 }
 
 func (job dailyBirthDaysJob) buildMessage(ctx context.Context, members []*domain.Member) string {
-	tr := i18n.GetMessageService()
-	title := tr.GetMessage("Jobs.Daily.Title", "Birthdays")
+	title := i18n.GetMessage(ctx, "Jobs.Daily.Title")
 	builder := strings.Builder{}
 	for _, member := range members {
 		builder.WriteString(fmt.Sprintf("%s-%s,", member.Person.GetFullName(), fmtDate(member.Person.BirthDate)))
@@ -98,33 +97,31 @@ func (job weeklyBirthDaysJob) RunJob(ctx context.Context) error {
 		return err
 	}
 	sort.Sort(domain.SortByMarriageDay(marriageMembers))
-	emailBody := job.buildMessage(birthMembers, marriageMembers)
+	emailBody := job.buildMessage(ctx, birthMembers, marriageMembers)
 	users, err := job.userService.SearchUser(ctx, user.WithEmailNotifications())
 	if err != nil {
 		return err
 	}
 	for _, emailTO := range mapToSlice(users, getEmail) {
-		if err := job.emailService.SendEmail(buildEmailCommand(emailBody, emailTO)); err != nil {
+		if err := job.emailService.SendEmail(buildEmailCommand(ctx, emailBody, emailTO)); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func buildEmailCommand(message, emailTO string) email.Command {
-	tr := i18n.GetMessageService()
+func buildEmailCommand(ctx context.Context, message, emailTO string) email.Command {
 	return email.Command{
 		Body:       message,
-		Subject:    tr.GetMessage("Jobs.Weekly.Title", "Weekly birthdays"),
+		Subject:    i18n.GetMessage(ctx, "Jobs.Weekly.Title"),
 		Recipients: []string{emailTO},
 	}
 }
 
-func (job weeklyBirthDaysJob) buildMessage(birthMembers, marriageMembers []*domain.Member) string {
-	tr := i18n.GetMessageService()
+func (job weeklyBirthDaysJob) buildMessage(ctx context.Context, birthMembers, marriageMembers []*domain.Member) string {
 	builder := strings.Builder{}
-	builder.WriteString(fmt.Sprintf("%s\n", tr.GetMessage("Jobs.Weekly.Title", "Weekly birthdays")))
-	builder.WriteString(fmt.Sprintf("%s\n", tr.GetMessage("Jobs.Weekly.Birth", "Birth")))
+	builder.WriteString(fmt.Sprintf("%s\n", i18n.GetMessage(ctx, "Jobs.Weekly.Title")))
+	builder.WriteString(fmt.Sprintf("%s\n", i18n.GetMessage(ctx, "Jobs.Weekly.Birth")))
 	for _, member := range birthMembers {
 		builder.WriteString(fmt.Sprintf("- %s - %s\n", member.Person.GetFullName(), fmtDate(member.Person.BirthDate)))
 	}
@@ -132,7 +129,7 @@ func (job weeklyBirthDaysJob) buildMessage(birthMembers, marriageMembers []*doma
 		builder.WriteString("---------\n")
 	}
 
-	builder.WriteString(fmt.Sprintf("%s\n", tr.GetMessage("Jobs.Weekly.Marriage", "Marriage")))
+	builder.WriteString(fmt.Sprintf("%s\n", i18n.GetMessage(ctx, "Jobs.Weekly.Marriage")))
 	for _, member := range marriageMembers {
 		builder.WriteString(fmt.Sprintf("- %s & %s - %s\n", member.Person.GetFullName(), member.Person.SpousesName, fmtDate(*member.Person.MarriageDate)))
 	}

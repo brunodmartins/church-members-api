@@ -106,7 +106,7 @@ func TestGenerateMemberReport(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return nil
@@ -117,7 +117,7 @@ func TestGenerateMemberReport(t *testing.T) {
 	t.Run("Fail - Save report", func(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return genericError
@@ -128,7 +128,7 @@ func TestGenerateMemberReport(t *testing.T) {
 	t.Run("Fail - build report", func(t *testing.T) {
 		members := BuildMembers(0)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), members).Return([]byte{}, genericError)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, genericError)
 		err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})
@@ -153,7 +153,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("classification_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return nil
@@ -166,7 +166,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("classification_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return genericError
@@ -179,7 +179,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, genericError)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, genericError)
 		err := service.ClassificationReport(ctx, classification.ADULT)
 		assert.NotNil(t, err)
 	})
@@ -206,7 +206,7 @@ func TestGenerateLegalReport(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("legal_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return nil
@@ -218,7 +218,7 @@ func TestGenerateLegalReport(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("legal_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return genericError
@@ -230,7 +230,7 @@ func TestGenerateLegalReport(t *testing.T) {
 		querySpec := wrapper.QuerySpecification(nil)
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
-		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, genericError)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, genericError)
 		err := service.LegalReport(ctx)
 		assert.NotNil(t, err)
 	})

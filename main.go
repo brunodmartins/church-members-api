@@ -20,12 +20,10 @@ package main
 import (
 	"github.com/brunodmartins/church-members-api/cmd"
 	"github.com/brunodmartins/church-members-api/platform/config"
-	"github.com/brunodmartins/church-members-api/platform/i18n"
 )
 
 //go:generate swagger generate spec -m -o ./docs/specs/swagger.yaml
 func main() {
 	config.InitConfiguration()
-	_ = i18n.GetMessageService()
 	cmd.ProvideRunner().Run()
 }

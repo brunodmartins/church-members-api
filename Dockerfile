@@ -9,7 +9,6 @@ FROM alpine:3.7 AS runtime
 
 WORKDIR /app
 
-COPY --from=build /go/src/app/resources ./resources/
 COPY --from=build /go/src/app/church-members-api .
 
 CMD ["/app/church-members-api"]

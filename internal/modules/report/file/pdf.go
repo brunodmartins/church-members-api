@@ -4,13 +4,16 @@ import (
 	"bufio"
 	"bytes"
 	"context"
+	"embed"
 	"fmt"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/signintech/gopdf"
-	"github.com/spf13/viper"
 )
+
+//go:embed fonts/*.ttf
+var fontFS embed.FS
 
 // Builder interface
 //
@@ -43,9 +46,12 @@ func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, church *domain
 }
 
 func (pdfBuilder *pdfBuilder) setFont(builder *gopdf.GoPdf) error {
-	builder.AddTTFFont("arial", viper.GetString("pdf.font.path"))
-
-	err := builder.SetFont("arial", "", 14)
+	file, err := fontFS.Open("fonts/Arial.ttf")
+	if err != nil {
+		return err
+	}
+	builder.AddTTFFontByReader("arial", file)
+	err = builder.SetFont("arial", "", 14)
 	if err != nil {
 		return err
 	}

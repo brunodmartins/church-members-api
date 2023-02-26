@@ -4,12 +4,10 @@ on:
   push:
     branches: [ master ]
     paths:
-      - "resources/**"
       - "**.go"
   pull_request:
     branches: [ master ]
     paths:
-      - "resources/**"
       - "**.go"
 
 jobs:

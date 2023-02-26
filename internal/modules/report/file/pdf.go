@@ -46,15 +46,9 @@ func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, church *domain
 }
 
 func (pdfBuilder *pdfBuilder) setFont(builder *gopdf.GoPdf) error {
-	file, err := fontFS.Open("fonts/Arial.ttf")
-	if err != nil {
-		return err
-	}
+	file, _ := fontFS.Open("fonts/Arial.ttf")
 	builder.AddTTFFontByReader("arial", file)
-	err = builder.SetFont("arial", "", 14)
-	if err != nil {
-		return err
-	}
+	_ = builder.SetFont("arial", "", 14)
 	return nil
 }
 

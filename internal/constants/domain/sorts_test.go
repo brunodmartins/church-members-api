@@ -13,30 +13,30 @@ func TestSortByBirth(t *testing.T) {
 	secondId := NewID()
 	thirdId := NewID()
 	fourthId := NewID()
-	time, _ := time.Parse(time.RFC3339, "2020-01-01")
+	baseTestTime, _ := time.Parse(time.RFC3339, "2020-01-01")
 	members := []*Member{
 		{
 			ID: thirdId,
-			Person: Person{
-				BirthDate: time.AddDate(0, 1, 10),
+			Person: &Person{
+				BirthDate: baseTestTime.AddDate(0, 1, 10),
 			},
 		},
 		{
 			ID: fourthId,
-			Person: Person{
-				BirthDate: time.AddDate(0, 2, 2),
+			Person: &Person{
+				BirthDate: baseTestTime.AddDate(0, 2, 2),
 			},
 		},
 		{
 			ID: secondId,
-			Person: Person{
-				BirthDate: time.AddDate(0, 0, 2),
+			Person: &Person{
+				BirthDate: baseTestTime.AddDate(0, 0, 2),
 			},
 		},
 		{
 			ID: firstId,
-			Person: Person{
-				BirthDate: time.AddDate(0, 0, 1),
+			Person: &Person{
+				BirthDate: baseTestTime.AddDate(0, 0, 1),
 			},
 		},
 	}
@@ -56,13 +56,13 @@ func TestSortByMarriage(t *testing.T) {
 	members := []*Member{
 		{
 			ID: secondId,
-			Person: Person{
+			Person: &Person{
 				MarriageDate: &birthDateOne,
 			},
 		},
 		{
 			ID: firstId,
-			Person: Person{
+			Person: &Person{
 				MarriageDate: &birthDateTwo,
 			},
 		},
@@ -75,13 +75,13 @@ func TestSortByMarriage(t *testing.T) {
 func TestSortByName(t *testing.T) {
 	members := []*Member{
 		{
-			Person: Person{
+			Person: &Person{
 				FirstName: "John",
 				LastName:  "Mclane",
 			},
 		},
 		{
-			Person: Person{
+			Person: &Person{
 				FirstName: "John",
 				LastName:  "Doe",
 			},

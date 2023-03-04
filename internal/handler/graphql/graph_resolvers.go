@@ -17,16 +17,16 @@ func classificationResolver(p graphql.ResolveParams) (interface{}, error) {
 }
 
 func fullNameResolver(p graphql.ResolveParams) (i interface{}, e error) {
-	person := p.Source.(domain.Person)
+	person := p.Source.(*domain.Person)
 	return person.GetFullName(), nil
 }
 
 func ageResolver(p graphql.ResolveParams) (i interface{}, e error) {
-	return age.Age(p.Source.(domain.Person).BirthDate), nil
+	return age.Age(p.Source.(*domain.Person).BirthDate), nil
 }
 
 func marriageDateResolver(p graphql.ResolveParams) (interface{}, error) {
-	person := p.Source.(domain.Person)
+	person := p.Source.(*domain.Person)
 	if person.MarriageDate == nil {
 		return nil, nil
 	}
@@ -34,16 +34,16 @@ func marriageDateResolver(p graphql.ResolveParams) (interface{}, error) {
 }
 
 func cellPhoneResolver(p graphql.ResolveParams) (interface{}, error) {
-	contact := p.Source.(domain.Contact)
+	contact := p.Source.(*domain.Contact)
 	return contact.GetFormattedCellPhone(), nil
 }
 
 func phoneResolver(p graphql.ResolveParams) (interface{}, error) {
-	contact := p.Source.(domain.Contact)
+	contact := p.Source.(*domain.Contact)
 	return contact.GetFormattedPhone(), nil
 }
 
 func fullAddressResolver(p graphql.ResolveParams) (interface{}, error) {
-	address := p.Source.(domain.Address)
+	address := p.Source.(*domain.Address)
 	return address.String(), nil
 }

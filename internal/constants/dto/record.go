@@ -130,7 +130,7 @@ func (item *MemberItem) ToMember() *domain.Member {
 		AttendsSundayWorship:   item.AttendsSundayWorship,
 		AttendsSundaySchool:    item.AttendsSundaySchool,
 		AttendsObservation:     item.AttendsObservation,
-		Person: domain.Person{
+		Person: &domain.Person{
 			Name:             item.Name,
 			FirstName:        item.FirstName,
 			LastName:         item.LastName,
@@ -144,14 +144,14 @@ func (item *MemberItem) ToMember() *domain.Member {
 			ChildrenQuantity: item.ChildrenQuantity,
 			Profession:       item.Profession,
 			Gender:           item.Gender,
-			Contact: domain.Contact{
+			Contact: &domain.Contact{
 				PhoneArea:     item.PhoneArea,
 				Phone:         item.Phone,
 				CellPhoneArea: item.CellPhoneArea,
 				CellPhone:     item.CellPhone,
 				Email:         item.Email,
 			},
-			Address: domain.Address{
+			Address: &domain.Address{
 				ZipCode:  item.ZipCode,
 				State:    item.State,
 				City:     item.City,
@@ -161,7 +161,7 @@ func (item *MemberItem) ToMember() *domain.Member {
 				MoreInfo: item.MoreInfo,
 			},
 		},
-		Religion: domain.Religion{
+		Religion: &domain.Religion{
 			FathersReligion:   item.FathersReligion,
 			BaptismPlace:      item.BaptismPlace,
 			LearnedGospelAge:  item.LearnedGospelAge,

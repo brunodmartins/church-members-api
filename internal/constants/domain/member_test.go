@@ -29,28 +29,28 @@ func TestFormattedContact(t *testing.T) {
 func TestClassification(t *testing.T) {
 	t.Run("Children", func(t *testing.T) {
 		assert.Equal(t, classification.CHILDREN, Member{
-			Person: Person{
+			Person: &Person{
 				BirthDate: time.Now(),
 			},
 		}.Classification())
 	})
 	t.Run("Teen", func(t *testing.T) {
 		assert.Equal(t, classification.TEEN, Member{
-			Person: Person{
+			Person: &Person{
 				BirthDate: time.Now().AddDate(-17, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Young", func(t *testing.T) {
 		assert.Equal(t, classification.YOUNG, Member{
-			Person: Person{
+			Person: &Person{
 				BirthDate: time.Now().AddDate(-29, 0, 0),
 			},
 		}.Classification())
 	})
 	t.Run("Adult Single", func(t *testing.T) {
 		assert.Equal(t, classification.ADULT, Member{
-			Person: Person{
+			Person: &Person{
 				BirthDate: time.Now().AddDate(-33, 0, 0),
 			},
 		}.Classification())
@@ -58,7 +58,7 @@ func TestClassification(t *testing.T) {
 	t.Run("Adult Married", func(t *testing.T) {
 		now := time.Now()
 		assert.Equal(t, classification.ADULT, Member{
-			Person: Person{
+			Person: &Person{
 				BirthDate:    time.Now().AddDate(-25, 0, 0),
 				MarriageDate: &now,
 			},
@@ -89,7 +89,7 @@ func TestIsLegal(t *testing.T) {
 
 func BuildChildren() *Member {
 	return &Member{
-		Person: Person{
+		Person: &Person{
 			BirthDate: time.Now(),
 		},
 	}
@@ -97,7 +97,7 @@ func BuildChildren() *Member {
 
 func BuildAdult() *Member {
 	return &Member{
-		Person: Person{
+		Person: &Person{
 			BirthDate: time.Now().AddDate(-20, 0, 0),
 		},
 	}

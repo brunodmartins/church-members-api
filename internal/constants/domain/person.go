@@ -19,8 +19,8 @@ type Person struct {
 	ChildrenQuantity int        `json:"childrenQuantity"`
 	Profession       string     `json:"profession,omitempty"`
 	Gender           string     `json:"gender"`
-	Contact          Contact    `json:"contact"`
-	Address          Address    `json:"address"`
+	Contact          *Contact   `json:"contact"`
+	Address          *Address   `json:"address"`
 }
 
 // GetFullName of a person

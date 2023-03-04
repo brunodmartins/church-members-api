@@ -35,7 +35,7 @@ func TestResolvers(t *testing.T) {
 		assert.Equal(t, member.Person.MarriageDate, value)
 	})
 	t.Run("marriageDateResolver - nil", func(t *testing.T) {
-		value, err := marriageDateResolver(buildParams(domain.Person{}))
+		value, err := marriageDateResolver(buildParams(&domain.Person{}))
 		assert.Nil(t, err)
 		assert.Nil(t, value)
 	})

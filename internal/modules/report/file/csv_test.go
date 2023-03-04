@@ -14,7 +14,7 @@ func TestTransformCSVToData(t *testing.T) {
 	data := []Data{
 		{
 			Value: domain.Member{
-				Person: domain.Person{
+				Person: &domain.Person{
 					FirstName: "Teste",
 					LastName:  "Teste",
 					BirthDate: t1,
@@ -23,7 +23,7 @@ func TestTransformCSVToData(t *testing.T) {
 		},
 		{
 			Value: domain.Member{
-				Person: domain.Person{
+				Person: &domain.Person{
 					FirstName: "Teste 2",
 					LastName:  "Teste 2",
 					BirthDate: t2,

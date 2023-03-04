@@ -2,6 +2,7 @@ package member_test
 
 import (
 	"context"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -27,7 +28,7 @@ func TestListAllMembers(t *testing.T) {
 	})
 	t.Run("Success with post specification", func(t *testing.T) {
 		repo.EXPECT().FindAll(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(2), nil)
-		members, err := service.SearchMembers(BuildContext(), member.OnlyActive(), member.OnlyLegalMembers())
+		members, err := service.SearchMembers(BuildContext(), member.OnlyActive(), member.OnlyByClassification(classification.CHILDREN))
 		assert.Nil(t, err)
 		assert.Len(t, members, 2)
 	})
@@ -46,9 +47,9 @@ func TestFindMember(t *testing.T) {
 	service := member.NewMemberService(repo)
 
 	id := domain.NewID()
-	member := buildMember(id)
+	churchMember := buildMember(id)
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(member, nil)
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
 		found, err := service.GetMember(BuildContext(), id)
 		assert.Equal(t, id, found.ID)
 		assert.Nil(t, err)
@@ -71,21 +72,21 @@ func TestSaveMember(t *testing.T) {
 	service := member.NewMemberService(repo)
 
 	t.Run("Success", func(t *testing.T) {
-		member := buildMember("")
-		repo.EXPECT().Insert(gomock.Any(), gomock.AssignableToTypeOf(member)).DoAndReturn(func(ctx context.Context, member *domain.Member) error {
+		churchMember := buildMember("")
+		repo.EXPECT().Insert(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).DoAndReturn(func(ctx context.Context, member *domain.Member) error {
 			member.ID = domain.NewID()
 			return nil
 		})
-		id, err := service.SaveMember(BuildContext(), member)
+		id, err := service.SaveMember(BuildContext(), churchMember)
 		assert.Nil(t, err)
-		assert.NotEmpty(t, member.ID)
+		assert.NotEmpty(t, churchMember.ID)
 		assert.NotEmpty(t, id)
-		assert.True(t, member.Active)
+		assert.True(t, churchMember.Active)
 	})
 	t.Run("Fail", func(t *testing.T) {
-		member := buildMember("")
-		repo.EXPECT().Insert(gomock.Any(), gomock.AssignableToTypeOf(member)).Return(genericError)
-		_, err := service.SaveMember(BuildContext(), member)
+		churchMember := buildMember("")
+		repo.EXPECT().Insert(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(genericError)
+		_, err := service.SaveMember(BuildContext(), churchMember)
 		assert.NotNil(t, err)
 	})
 }
@@ -99,22 +100,22 @@ func TestChangeStatus(t *testing.T) {
 	status := true
 	reason := "test"
 	date := time.Now()
-	member := buildMember(id)
+	churchMember := buildMember(id)
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(member, nil)
-		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(member)).Return(nil)
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(nil)
 		repo.EXPECT().GenerateStatusHistory(id, status, reason, date).Return(nil)
 		assert.Nil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
 	})
 	t.Run("Fail - Status History", func(t *testing.T) {
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(member, nil)
-		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(member)).Return(nil)
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(nil)
 		repo.EXPECT().GenerateStatusHistory(id, status, reason, date).Return(genericError)
 		assert.NotNil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
 	})
 	t.Run("Fail - Update Status", func(t *testing.T) {
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(member, nil)
-		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(member)).Return(genericError)
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(genericError)
 		assert.NotNil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
 	})
 	t.Run("Fail - Get Member", func(t *testing.T) {

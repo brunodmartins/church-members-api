@@ -8,27 +8,27 @@ import (
 
 // Member struct
 type Member struct {
-	ID                     string   `json:"id"`
-	ChurchID               string   `json:"church_id"`
-	OldChurch              string   `json:"oldChurch,omitempty"`
-	AttendsFridayWorship   bool     `json:"attendsFridayWorship"`
-	AttendsSaturdayWorship bool     `json:"attendsSaturdayWorship"`
-	AttendsSundayWorship   bool     `json:"attendsSundayWorship"`
-	AttendsSundaySchool    bool     `json:"attendsSundaySchool"`
-	AttendsObservation     string   `json:"attendsObservation,omitempty"`
-	Person                 Person   `json:"person"`
-	Religion               Religion `json:"religion"`
-	Active                 bool     `json:"active,omitempty"`
+	ID                     string    `json:"id"`
+	ChurchID               string    `json:"church_id"`
+	OldChurch              string    `json:"oldChurch,omitempty"`
+	AttendsFridayWorship   bool      `json:"attendsFridayWorship"`
+	AttendsSaturdayWorship bool      `json:"attendsSaturdayWorship"`
+	AttendsSundayWorship   bool      `json:"attendsSundayWorship"`
+	AttendsSundaySchool    bool      `json:"attendsSundaySchool"`
+	AttendsObservation     string    `json:"attendsObservation,omitempty"`
+	Person                 *Person   `json:"person"`
+	Religion               *Religion `json:"religion"`
+	Active                 bool      `json:"active,omitempty"`
 }
 
 // Classification returns a member classification based on age and marriage
 func (member Member) Classification() enum.Classification {
-	age := age.Age(member.Person.BirthDate)
-	if age < 15 {
+	personAge := age.Age(member.Person.BirthDate)
+	if personAge < 15 {
 		return classification.CHILDREN
-	} else if age < 18 {
+	} else if personAge < 18 {
 		return classification.TEEN
-	} else if age < 30 && member.Person.MarriageDate == nil {
+	} else if personAge < 30 && member.Person.MarriageDate == nil {
 		return classification.YOUNG
 	} else {
 		return classification.ADULT

@@ -12,7 +12,7 @@ var genericError = errors.New("generic error")
 func BuildBirthDaysMembers(date time.Time) []*domain.Member {
 	return []*domain.Member{
 		{
-			Person: domain.Person{
+			Person: &domain.Person{
 				BirthDate: date,
 				FirstName: "foo",
 				LastName:  "bar",
@@ -25,7 +25,7 @@ func BuildMarriageMembers(date *time.Time) []*domain.Member {
 
 	return []*domain.Member{
 		{
-			Person: domain.Person{
+			Person: &domain.Person{
 				MarriageDate: date,
 				FirstName:    "foo",
 				LastName:     "bar",

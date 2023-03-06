@@ -36,16 +36,16 @@ type GetMemberResponse struct {
 // GetPersonResponse for HTTP get person response
 // swagger:model GetPersonResponse
 type GetPersonResponse struct {
-	FirstName    string              `json:"firstName"`
-	LastName     string              `json:"lastName"`
-	FullName     string              `json:"fullName"`
-	Gender       string              `json:"gender"`
-	Age          int                 `json:"age"`
-	BirthDate    time.Time           `json:"birthDate"`
-	MarriageDate *time.Time          `json:"marriageDate"`
-	SpousesName  string              `json:"spousesName"`
-	Contact      *GetContactResponse `json:"contact"`
-	Address      *GetAddressResponse `json:"address"`
+	FirstName    string              `json:"firstName,omitempty"`
+	LastName     string              `json:"lastName,omitempty"`
+	FullName     string              `json:"fullName,omitempty"`
+	Gender       string              `json:"gender,omitempty"`
+	Age          int                 `json:"age,omitempty"`
+	BirthDate    time.Time           `json:"birthDate,omitempty"`
+	MarriageDate *time.Time          `json:"marriageDate,omitempty"`
+	SpousesName  string              `json:"spousesName,omitempty"`
+	Contact      *GetContactResponse `json:"contact,omitempty"`
+	Address      *GetAddressResponse `json:"address,omitempty"`
 }
 
 // GetContactResponse for HTTP get contact response
@@ -59,13 +59,13 @@ type GetContactResponse struct {
 // GetAddressResponse for HTTP get address response
 // swagger:model GetAddressResponse
 type GetAddressResponse struct {
-	ZipCode  string `json:"zipCode"`
-	State    string `json:"state"`
-	City     string `json:"city"`
-	Address  string `json:"address"`
-	District string `json:"district"`
-	Number   int    `json:"number"`
-	Full     string `json:"full"`
+	ZipCode  string `json:"zipCode,omitempty"`
+	State    string `json:"state,omitempty"`
+	City     string `json:"city,omitempty"`
+	Address  string `json:"address,omitempty"`
+	District string `json:"district,omitempty"`
+	Number   int    `json:"number,omitempty"`
+	Full     string `json:"full,omitempty"`
 }
 
 // GetTokenResponse for HTTP get token responses

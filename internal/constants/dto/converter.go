@@ -30,6 +30,9 @@ func buildPersonResponse(person *domain.Person) *GetPersonResponse {
 }
 
 func buildContactResponse(contact *domain.Contact) *GetContactResponse {
+	if contact == nil {
+		return nil
+	}
 	return &GetContactResponse{
 		Cellphone: contact.GetFormattedCellPhone(),
 		Phone:     contact.GetFormattedPhone(),
@@ -38,6 +41,9 @@ func buildContactResponse(contact *domain.Contact) *GetContactResponse {
 }
 
 func buildAddressResponse(address *domain.Address) *GetAddressResponse {
+	if address == nil {
+		return nil
+	}
 	return &GetAddressResponse{
 		ZipCode:  address.ZipCode,
 		State:    address.State,

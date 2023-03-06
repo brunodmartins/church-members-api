@@ -121,7 +121,7 @@ func convertMarriageDate(marriageDate *time.Time) string {
 
 // ToMember converts a MemberItem into a domain.Member
 func (item *MemberItem) ToMember() *domain.Member {
-	return &domain.Member{
+	member := &domain.Member{
 		ID:                     item.ID,
 		ChurchID:               item.ChurchID,
 		OldChurch:              item.OldChurch,
@@ -144,22 +144,6 @@ func (item *MemberItem) ToMember() *domain.Member {
 			ChildrenQuantity: item.ChildrenQuantity,
 			Profession:       item.Profession,
 			Gender:           item.Gender,
-			Contact: &domain.Contact{
-				PhoneArea:     item.PhoneArea,
-				Phone:         item.Phone,
-				CellPhoneArea: item.CellPhoneArea,
-				CellPhone:     item.CellPhone,
-				Email:         item.Email,
-			},
-			Address: &domain.Address{
-				ZipCode:  item.ZipCode,
-				State:    item.State,
-				City:     item.City,
-				Address:  item.Address,
-				District: item.District,
-				Number:   item.AddressNumber,
-				MoreInfo: item.MoreInfo,
-			},
 		},
 		Religion: &domain.Religion{
 			FathersReligion:   item.FathersReligion,
@@ -176,6 +160,41 @@ func (item *MemberItem) ToMember() *domain.Member {
 		},
 		Active: item.Active,
 	}
+	if item.hasContact() {
+		member.Person.Contact = &domain.Contact{
+			PhoneArea:     item.PhoneArea,
+			Phone:         item.Phone,
+			CellPhoneArea: item.CellPhoneArea,
+			CellPhone:     item.CellPhone,
+			Email:         item.Email,
+		}
+	}
+	if item.hasAddress() {
+		member.Person.Address = &domain.Address{
+			ZipCode:  item.ZipCode,
+			State:    item.State,
+			City:     item.City,
+			Address:  item.Address,
+			District: item.District,
+			Number:   item.AddressNumber,
+			MoreInfo: item.MoreInfo,
+		}
+	}
+	return member
+}
+
+func (item *MemberItem) hasContact() bool {
+	if item.Phone != 0 || item.CellPhone != 0 || item.Email != "" {
+		return true
+	}
+	return false
+}
+
+func (item *MemberItem) hasAddress() bool {
+	if item.Address != "" {
+		return true
+	}
+	return false
 }
 
 type UserItem struct {

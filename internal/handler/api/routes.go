@@ -18,6 +18,8 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// Register the receiving member
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -57,6 +59,8 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// }
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -79,6 +83,8 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// Returns the member information
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -111,6 +117,8 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// Changes the member status
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -150,6 +158,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// Generates a CSV birthday report
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/csv
 	// responses:
@@ -167,6 +177,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// Generates a CSV Marriage report
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/csv
 	// responses:
@@ -184,6 +196,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// Generates a PDF legal report
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/pdf
 	// responses:
@@ -201,6 +215,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// Generates a PDF member report by classification
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/pdf
 	// parameters:
@@ -223,6 +239,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// Generates a PDF member report
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/pdf
 	// responses:
@@ -241,6 +259,8 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// Returns a report file url
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -266,6 +286,8 @@ func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
 	// Generates a token for a given user
 	//
 	// ---
+	// security:
+	// - login: []
 	// produces:
 	// - application/csv
 	// responses:
@@ -286,6 +308,8 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	// Register the receiving user
 	//
 	// ---
+	// security:
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:

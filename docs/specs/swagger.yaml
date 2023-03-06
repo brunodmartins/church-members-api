@@ -405,6 +405,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Create member
     /members/{id}:
         get:
@@ -434,6 +436,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Get member
     /members/{id}/status:
         put:
@@ -467,6 +471,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Put member status
     /members/search:
         post:
@@ -496,6 +502,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/GraphQLErrorResponse'
+            security:
+                - authenticated: []
             summary: Search member
     /reports/{reportType}:
         get:
@@ -515,6 +523,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Get a report file
     /reports/members:
         post:
@@ -529,6 +539,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Member report
     /reports/members/birthday:
         post:
@@ -543,6 +555,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Birthday report
     /reports/members/classification/{classification}:
         post:
@@ -562,6 +576,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Member report
     /reports/members/legal:
         post:
@@ -576,6 +592,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Legal report
     /reports/members/marriage:
         post:
@@ -590,6 +608,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Marriage report
     /users:
         post:
@@ -615,6 +635,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - authenticated: []
             summary: Create a user
     /users/token:
         get:
@@ -629,6 +651,8 @@ paths:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
+            security:
+                - anonymous: []
             summary: Get a user Token
 produces:
     - application/json

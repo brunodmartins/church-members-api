@@ -2,17 +2,29 @@
 //
 // This API manages the members of a church.
 //
-//	    Schemes: http
-//	    Host: localhost:8080
-//	    Version: 1.0.0
+//	Schemes: http
+//	Host: localhost:8080
+//	Version: 1.0.0
 //
-//	    Consumes:
-//	    - application/json
+//	Consumes:
+//	- application/json
 //
-//	    Produces:
-//	    - application/json
-//		   - application/csv
-//		   - application/pdf
+//	Produces:
+//	- application/json
+//	   - application/csv
+//	   - application/pdf
+//
+//	Security:
+//	- anonymous:
+//	- authenticated:
+//
+//	SecurityDefinitions:
+//	  anonymous:
+//	    type: basic
+//	  authenticated:
+//	    type: apiKey
+//	    name: X-Auth-Token
+//	    in: header
 //
 // swagger:meta
 package main

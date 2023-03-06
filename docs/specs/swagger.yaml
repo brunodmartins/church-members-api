@@ -1,641 +1,649 @@
 consumes:
-- application/json
+    - application/json
 definitions:
-  Address:
-    description: Address struct
-    properties:
-      address:
-        type: string
-        x-go-name: Address
-      city:
-        type: string
-        x-go-name: City
-      district:
-        type: string
-        x-go-name: District
-      moreInfo:
-        type: string
-        x-go-name: MoreInfo
-      number:
-        format: int64
-        type: integer
-        x-go-name: Number
-      state:
-        type: string
-        x-go-name: State
-      zipCode:
-        type: string
-        x-go-name: ZipCode
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-  Contact:
-    description: Contact struct
-    properties:
-      cellPhone:
-        format: int64
-        type: integer
-        x-go-name: CellPhone
-      cellPhoneArea:
-        format: int64
-        type: integer
-        x-go-name: CellPhoneArea
-      email:
-        type: string
-        x-go-name: Email
-      phone:
-        format: int64
-        type: integer
-        x-go-name: Phone
-      phoneArea:
-        format: int64
-        type: integer
-        x-go-name: PhoneArea
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-  CreateMemberRequest:
-    description: CreateMemberRequest for HTTP calls to post member
-    properties:
-      active:
-        type: boolean
-        x-go-name: Active
-      attendsFridayWorship:
-        type: boolean
-        x-go-name: AttendsFridayWorship
-      attendsObservation:
-        type: string
-        x-go-name: AttendsObservation
-      attendsSaturdayWorship:
-        type: boolean
-        x-go-name: AttendsSaturdayWorship
-      attendsSundaySchool:
-        type: boolean
-        x-go-name: AttendsSundaySchool
-      attendsSundayWorship:
-        type: boolean
-        x-go-name: AttendsSundayWorship
-      church_id:
-        type: string
-        x-go-name: ChurchID
-      id:
-        type: string
-        x-go-name: ID
-      oldChurch:
-        type: string
-        x-go-name: OldChurch
-      person:
-        $ref: '#/definitions/Person'
-      religion:
-        $ref: '#/definitions/Religion'
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  CreateMemberResponse:
-    description: CreateMemberResponse for HTTP create member responses
-    properties:
-      id:
-        type: string
-        x-go-name: ID
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  CreateUserRequest:
-    description: CreateUserRequest for HTTP calls to post user
-    properties:
-      email:
-        type: string
-        x-go-name: Email
-      password:
-        type: string
-        x-go-name: Password
-      phone:
-        type: string
-        x-go-name: Phone
-      role:
-        type: string
-        x-go-name: Role
-      send_daily_sms:
-        type: boolean
-        x-go-name: SendDailySMS
-      send_weekly_email:
-        type: boolean
-        x-go-name: SendWeeklyEmail
-      username:
-        type: string
-        x-go-name: UserName
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  ErrorResponse:
-    description: ErrorResponse for HTTP error responses
-    properties:
-      error:
-        type: string
-        x-go-name: Error
-      message:
-        type: string
-        x-go-name: Message
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  FormattedError:
-    properties:
-      extensions:
-        additionalProperties:
-          type: object
+    Address:
+        description: Address struct
+        properties:
+            address:
+                type: string
+                x-go-name: Address
+            city:
+                type: string
+                x-go-name: City
+            district:
+                type: string
+                x-go-name: District
+            moreInfo:
+                type: string
+                x-go-name: MoreInfo
+            number:
+                format: int64
+                type: integer
+                x-go-name: Number
+            state:
+                type: string
+                x-go-name: State
+            zipCode:
+                type: string
+                x-go-name: ZipCode
         type: object
-        x-go-name: Extensions
-      locations:
-        items:
-          $ref: '#/definitions/SourceLocation'
-        type: array
-        x-go-name: Locations
-      message:
-        type: string
-        x-go-name: Message
-      path:
-        items:
-          type: object
-        type: array
-        x-go-name: Path
-    type: object
-    x-go-package: github.com/graphql-go/graphql/gqlerrors
-  GetMemberResponse:
-    description: GetMemberResponse for HTTP get member responses
-    properties:
-      active:
-        type: boolean
-        x-go-name: Active
-      attendsFridayWorship:
-        type: boolean
-        x-go-name: AttendsFridayWorship
-      attendsObservation:
-        type: string
-        x-go-name: AttendsObservation
-      attendsSaturdayWorship:
-        type: boolean
-        x-go-name: AttendsSaturdayWorship
-      attendsSundaySchool:
-        type: boolean
-        x-go-name: AttendsSundaySchool
-      attendsSundayWorship:
-        type: boolean
-        x-go-name: AttendsSundayWorship
-      church_id:
-        type: string
-        x-go-name: ChurchID
-      id:
-        type: string
-        x-go-name: ID
-      oldChurch:
-        type: string
-        x-go-name: OldChurch
-      person:
-        $ref: '#/definitions/Person'
-      religion:
-        $ref: '#/definitions/Religion'
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  GetTokenResponse:
-    description: GetTokenResponse for HTTP get token responses
-    properties:
-      token:
-        type: string
-        x-go-name: Token
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  GraphQLErrorResponse:
-    description: GraphQLErrorResponse for HTTP error responses
-    properties:
-      errors:
-        items:
-          $ref: '#/definitions/FormattedError'
-        type: array
-        x-go-name: Errors
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  Member:
-    description: Member struct
-    properties:
-      active:
-        type: boolean
-        x-go-name: Active
-      attendsFridayWorship:
-        type: boolean
-        x-go-name: AttendsFridayWorship
-      attendsObservation:
-        type: string
-        x-go-name: AttendsObservation
-      attendsSaturdayWorship:
-        type: boolean
-        x-go-name: AttendsSaturdayWorship
-      attendsSundaySchool:
-        type: boolean
-        x-go-name: AttendsSundaySchool
-      attendsSundayWorship:
-        type: boolean
-        x-go-name: AttendsSundayWorship
-      church_id:
-        type: string
-        x-go-name: ChurchID
-      id:
-        type: string
-        x-go-name: ID
-      oldChurch:
-        type: string
-        x-go-name: OldChurch
-      person:
-        $ref: '#/definitions/Person'
-      religion:
-        $ref: '#/definitions/Religion'
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-  NotificationPreferences:
-    properties:
-      send_daily_sms:
-        type: boolean
-        x-go-name: SendDailySMS
-      send_weekly_email:
-        type: boolean
-        x-go-name: SendWeeklyEmail
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-  Person:
-    description: Person type
-    properties:
-      address:
-        $ref: '#/definitions/Address'
-      birthDate:
-        format: date-time
-        type: string
-        x-go-name: BirthDate
-      brothersQuantity:
-        format: int64
-        type: integer
-        x-go-name: BrothersQuantity
-      childrenQuantity:
-        format: int64
-        type: integer
-        x-go-name: ChildrenQuantity
-      contact:
-        $ref: '#/definitions/Contact'
-      fathersName:
-        type: string
-        x-go-name: FathersName
-      firstName:
-        type: string
-        x-go-name: FirstName
-      gender:
-        type: string
-        x-go-name: Gender
-      lastName:
-        type: string
-        x-go-name: LastName
-      marriageDate:
-        format: date-time
-        type: string
-        x-go-name: MarriageDate
-      mothersName:
-        type: string
-        x-go-name: MothersName
-      name:
-        type: string
-        x-go-name: Name
-      placeOfBirth:
-        type: string
-        x-go-name: PlaceOfBirth
-      profession:
-        type: string
-        x-go-name: Profession
-      spousesName:
-        type: string
-        x-go-name: SpousesName
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-  PutMemberStatusRequest:
-    description: PutMemberStatusRequest for HTTP calls to put member status
-    properties:
-      active:
-        type: boolean
-        x-go-name: Active
-      date:
-        format: date-time
-        type: string
-        x-go-name: Date
-      reason:
-        type: string
-        x-go-name: Reason
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-  Religion:
-    description: Religion struct
-    properties:
-      acceptedJesus:
-        type: boolean
-        x-go-name: AcceptedJesus
-      acceptedJesusDate:
-        format: date-time
-        type: string
-        x-go-name: AcceptedJesusDate
-      agreesTithe:
-        type: boolean
-        x-go-name: AgreesTithe
-      baptismDate:
-        format: date-time
-        type: string
-        x-go-name: BaptismDate
-      baptismPlace:
-        type: string
-        x-go-name: BaptismPlace
-      baptized:
-        type: boolean
-        x-go-name: Baptized
-      catholicBaptized:
-        type: boolean
-        x-go-name: CatholicBaptized
-      fathersReligion:
-        type: string
-        x-go-name: FathersReligion
-      knowsTithe:
-        type: boolean
-        x-go-name: KnowsTithe
-      learnedGospelAge:
-        format: int64
-        type: integer
-        x-go-name: LearnedGospelAge
-      tithe:
-        type: boolean
-        x-go-name: Tithe
-    type: object
-    x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-  SourceLocation:
-    properties:
-      column:
-        format: int64
-        type: integer
-        x-go-name: Column
-      line:
-        format: int64
-        type: integer
-        x-go-name: Line
-    type: object
-    x-go-package: github.com/graphql-go/graphql/language/location
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    Contact:
+        description: Contact struct
+        properties:
+            cellPhone:
+                format: int64
+                type: integer
+                x-go-name: CellPhone
+            cellPhoneArea:
+                format: int64
+                type: integer
+                x-go-name: CellPhoneArea
+            email:
+                type: string
+                x-go-name: Email
+            phone:
+                format: int64
+                type: integer
+                x-go-name: Phone
+            phoneArea:
+                format: int64
+                type: integer
+                x-go-name: PhoneArea
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    CreateMemberRequest:
+        description: CreateMemberRequest for HTTP calls to post member
+        properties:
+            active:
+                type: boolean
+                x-go-name: Active
+            attendsFridayWorship:
+                type: boolean
+                x-go-name: AttendsFridayWorship
+            attendsObservation:
+                type: string
+                x-go-name: AttendsObservation
+            attendsSaturdayWorship:
+                type: boolean
+                x-go-name: AttendsSaturdayWorship
+            attendsSundaySchool:
+                type: boolean
+                x-go-name: AttendsSundaySchool
+            attendsSundayWorship:
+                type: boolean
+                x-go-name: AttendsSundayWorship
+            church_id:
+                type: string
+                x-go-name: ChurchID
+            id:
+                type: string
+                x-go-name: ID
+            oldChurch:
+                type: string
+                x-go-name: OldChurch
+            person:
+                $ref: '#/definitions/Person'
+            religion:
+                $ref: '#/definitions/Religion'
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreateMemberResponse:
+        description: CreateMemberResponse for HTTP create member responses
+        properties:
+            id:
+                type: string
+                x-go-name: ID
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreateUserRequest:
+        description: CreateUserRequest for HTTP calls to post user
+        properties:
+            email:
+                type: string
+                x-go-name: Email
+            password:
+                type: string
+                x-go-name: Password
+            phone:
+                type: string
+                x-go-name: Phone
+            role:
+                type: string
+                x-go-name: Role
+            send_daily_sms:
+                type: boolean
+                x-go-name: SendDailySMS
+            send_weekly_email:
+                type: boolean
+                x-go-name: SendWeeklyEmail
+            username:
+                type: string
+                x-go-name: UserName
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    ErrorResponse:
+        description: ErrorResponse for HTTP error responses
+        properties:
+            error:
+                type: string
+                x-go-name: Error
+            message:
+                type: string
+                x-go-name: Message
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    FormattedError:
+        properties:
+            extensions:
+                additionalProperties: {}
+                type: object
+                x-go-name: Extensions
+            locations:
+                items:
+                    $ref: '#/definitions/SourceLocation'
+                type: array
+                x-go-name: Locations
+            message:
+                type: string
+                x-go-name: Message
+            path:
+                items: {}
+                type: array
+                x-go-name: Path
+        type: object
+        x-go-package: github.com/graphql-go/graphql/gqlerrors
+    GetMemberResponse:
+        description: GetMemberResponse for HTTP get member responses
+        properties:
+            active:
+                type: boolean
+                x-go-name: Active
+            attendsFridayWorship:
+                type: boolean
+                x-go-name: AttendsFridayWorship
+            attendsObservation:
+                type: string
+                x-go-name: AttendsObservation
+            attendsSaturdayWorship:
+                type: boolean
+                x-go-name: AttendsSaturdayWorship
+            attendsSundaySchool:
+                type: boolean
+                x-go-name: AttendsSundaySchool
+            attendsSundayWorship:
+                type: boolean
+                x-go-name: AttendsSundayWorship
+            church_id:
+                type: string
+                x-go-name: ChurchID
+            id:
+                type: string
+                x-go-name: ID
+            oldChurch:
+                type: string
+                x-go-name: OldChurch
+            person:
+                $ref: '#/definitions/Person'
+            religion:
+                $ref: '#/definitions/Religion'
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GetTokenResponse:
+        description: GetTokenResponse for HTTP get token responses
+        properties:
+            token:
+                type: string
+                x-go-name: Token
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GraphQLErrorResponse:
+        description: GraphQLErrorResponse for HTTP error responses
+        properties:
+            errors:
+                items:
+                    $ref: '#/definitions/FormattedError'
+                type: array
+                x-go-name: Errors
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    Member:
+        description: Member struct
+        properties:
+            active:
+                type: boolean
+                x-go-name: Active
+            attendsFridayWorship:
+                type: boolean
+                x-go-name: AttendsFridayWorship
+            attendsObservation:
+                type: string
+                x-go-name: AttendsObservation
+            attendsSaturdayWorship:
+                type: boolean
+                x-go-name: AttendsSaturdayWorship
+            attendsSundaySchool:
+                type: boolean
+                x-go-name: AttendsSundaySchool
+            attendsSundayWorship:
+                type: boolean
+                x-go-name: AttendsSundayWorship
+            church_id:
+                type: string
+                x-go-name: ChurchID
+            id:
+                type: string
+                x-go-name: ID
+            oldChurch:
+                type: string
+                x-go-name: OldChurch
+            person:
+                $ref: '#/definitions/Person'
+            religion:
+                $ref: '#/definitions/Religion'
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    NotificationPreferences:
+        properties:
+            send_daily_sms:
+                type: boolean
+                x-go-name: SendDailySMS
+            send_weekly_email:
+                type: boolean
+                x-go-name: SendWeeklyEmail
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    Person:
+        description: Person type
+        properties:
+            address:
+                $ref: '#/definitions/Address'
+            birthDate:
+                format: date-time
+                type: string
+                x-go-name: BirthDate
+            brothersQuantity:
+                format: int64
+                type: integer
+                x-go-name: BrothersQuantity
+            childrenQuantity:
+                format: int64
+                type: integer
+                x-go-name: ChildrenQuantity
+            contact:
+                $ref: '#/definitions/Contact'
+            fathersName:
+                type: string
+                x-go-name: FathersName
+            firstName:
+                type: string
+                x-go-name: FirstName
+            gender:
+                type: string
+                x-go-name: Gender
+            lastName:
+                type: string
+                x-go-name: LastName
+            marriageDate:
+                format: date-time
+                type: string
+                x-go-name: MarriageDate
+            mothersName:
+                type: string
+                x-go-name: MothersName
+            name:
+                type: string
+                x-go-name: Name
+            placeOfBirth:
+                type: string
+                x-go-name: PlaceOfBirth
+            profession:
+                type: string
+                x-go-name: Profession
+            spousesName:
+                type: string
+                x-go-name: SpousesName
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    PutMemberStatusRequest:
+        description: PutMemberStatusRequest for HTTP calls to put member status
+        properties:
+            active:
+                type: boolean
+                x-go-name: Active
+            date:
+                format: date-time
+                type: string
+                x-go-name: Date
+            reason:
+                type: string
+                x-go-name: Reason
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    Religion:
+        description: Religion struct
+        properties:
+            acceptedJesus:
+                type: boolean
+                x-go-name: AcceptedJesus
+            acceptedJesusDate:
+                format: date-time
+                type: string
+                x-go-name: AcceptedJesusDate
+            agreesTithe:
+                type: boolean
+                x-go-name: AgreesTithe
+            baptismDate:
+                format: date-time
+                type: string
+                x-go-name: BaptismDate
+            baptismPlace:
+                type: string
+                x-go-name: BaptismPlace
+            baptized:
+                type: boolean
+                x-go-name: Baptized
+            catholicBaptized:
+                type: boolean
+                x-go-name: CatholicBaptized
+            fathersReligion:
+                type: string
+                x-go-name: FathersReligion
+            knowsTithe:
+                type: boolean
+                x-go-name: KnowsTithe
+            learnedGospelAge:
+                format: int64
+                type: integer
+                x-go-name: LearnedGospelAge
+            tithe:
+                type: boolean
+                x-go-name: Tithe
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    SourceLocation:
+        properties:
+            column:
+                format: int64
+                type: integer
+                x-go-name: Column
+            line:
+                format: int64
+                type: integer
+                x-go-name: Line
+        type: object
+        x-go-package: github.com/graphql-go/graphql/language/location
 host: localhost:8080
 info:
-  description: This API manages the members of a church.
-  title: church-members-api
-  version: 1.0.0
+    description: This API manages the members of a church.
+    title: church-members-api
+    version: 1.0.0
 paths:
-  /members:
-    post:
-      description: Register the receiving member
-      operationId: postMember
-      parameters:
-      - description: The member to be registered
-        in: body
-        name: member
-        required: true
-        schema:
-          $ref: '#/definitions/CreateMemberRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Member registered
-          schema:
-            $ref: '#/definitions/CreateMemberResponse'
-        "400":
-          description: Invalid request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Create member
-  /members/{id}:
-    get:
-      description: Returns the member information
-      operationId: getMember
-      parameters:
-      - description: The member id
-        in: path
-        name: id
-        required: true
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: The member information
-          schema:
-            $ref: '#/definitions/GetMemberResponse'
-        "400":
-          description: Invalid ID
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: Member not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Get member
-  /members/{id}/status:
-    put:
-      description: Changes the member status
-      operationId: putMemberStatus
-      parameters:
-      - description: The member id
-        in: path
-        name: id
-        required: true
-      - description: The status information
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/PutMemberStatusRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Status change successfully
-        "400":
-          description: Invalid request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: Member not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Put member status
-  /members/search:
-    post:
-      description: |-
-        A GraphQL endpoint to search for members data
-        {
-        member(name:"Bruno", active:true, gender:"M"){
-        id
-        person{
-        firstName,
-        lastName
-        }
-        }
-        }
-      operationId: searchMember
-      parameters:
-      - description: The GraphQL query
-        in: body
-        name: query
-        required: true
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Members found
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/GraphQLErrorResponse'
-      summary: Search member
-  /reports/{reportType}:
-    get:
-      description: Returns a report file url
-      operationId: getURLForReport
-      parameters:
-      - description: The report type [members,legal,classification,birthdate,marriage]
-        in: path
-        name: reportType
-        required: true
-      produces:
-      - application/json
-      responses:
-        "307":
-          description: S3 url to redirect
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Get a report file
-  /reports/members:
-    post:
-      description: Generates a PDF member report
-      operationId: generateMembersReport
-      produces:
-      - application/pdf
-      responses:
-        "200":
-          description: PDF report
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Member report
-  /reports/members/birthday:
-    post:
-      description: Generates a CSV birthday report
-      operationId: generateBirthDayReport
-      produces:
-      - application/csv
-      responses:
-        "200":
-          description: CSV report
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Birthday report
-  /reports/members/classification/{classification}:
-    post:
-      description: Generates a PDF member report by classification
-      operationId: generateClassificationReport
-      parameters:
-      - description: The member classification [adult, teen, young, children]
-        in: path
-        name: classification
-        required: true
-      produces:
-      - application/pdf
-      responses:
-        "200":
-          description: PDF report
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Member report
-  /reports/members/legal:
-    post:
-      description: Generates a PDF legal report
-      operationId: generateLegalReport
-      produces:
-      - application/pdf
-      responses:
-        "200":
-          description: PDF report
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Legal report
-  /reports/members/marriage:
-    post:
-      description: Generates a CSV Marriage report
-      operationId: generateMarriageReport
-      produces:
-      - application/csv
-      responses:
-        "200":
-          description: CSV report
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Marriage report
-  /users:
-    post:
-      description: Register the receiving user
-      operationId: postUser
-      parameters:
-      - description: The user to be registered
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/CreateUserRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: User registered
-        "400":
-          description: Invalid request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Create a user
-  /users/token:
-    get:
-      description: Generates a token for a given user
-      operationId: getToken
-      produces:
-      - application/csv
-      responses:
-        "201":
-          description: Token generated
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      summary: Get a user Token
+    /members:
+        post:
+            description: Register the receiving member
+            operationId: postMember
+            parameters:
+                - description: The member to be registered
+                  in: body
+                  name: member
+                  required: true
+                  schema:
+                    $ref: '#/definitions/CreateMemberRequest'
+            produces:
+                - application/json
+            responses:
+                "201":
+                    description: Member registered
+                    schema:
+                        $ref: '#/definitions/CreateMemberResponse'
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Create member
+    /members/{id}:
+        get:
+            description: Returns the member information
+            operationId: getMember
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The member information
+                    schema:
+                        $ref: '#/definitions/GetMemberResponse'
+                "400":
+                    description: Invalid ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Get member
+    /members/{id}/status:
+        put:
+            description: Changes the member status
+            operationId: putMemberStatus
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                - description: The status information
+                  in: body
+                  name: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/PutMemberStatusRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Status change successfully
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Put member status
+    /members/search:
+        post:
+            description: |-
+                A GraphQL endpoint to search for members data
+                {
+                member(name:"Bruno", active:true, gender:"M"){
+                id
+                person{
+                firstName,
+                lastName
+                }
+                }
+                }
+            operationId: searchMember
+            parameters:
+                - description: The GraphQL query
+                  in: body
+                  name: query
+                  required: true
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Members found
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/GraphQLErrorResponse'
+            summary: Search member
+    /reports/{reportType}:
+        get:
+            description: Returns a report file url
+            operationId: getURLForReport
+            parameters:
+                - description: The report type [members,legal,classification,birthdate,marriage]
+                  in: path
+                  name: reportType
+                  required: true
+            produces:
+                - application/json
+            responses:
+                "307":
+                    description: S3 url to redirect
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Get a report file
+    /reports/members:
+        post:
+            description: Generates a PDF member report
+            operationId: generateMembersReport
+            produces:
+                - application/pdf
+            responses:
+                "200":
+                    description: PDF report
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Member report
+    /reports/members/birthday:
+        post:
+            description: Generates a CSV birthday report
+            operationId: generateBirthDayReport
+            produces:
+                - application/csv
+            responses:
+                "200":
+                    description: CSV report
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Birthday report
+    /reports/members/classification/{classification}:
+        post:
+            description: Generates a PDF member report by classification
+            operationId: generateClassificationReport
+            parameters:
+                - description: The member classification [adult, teen, young, children]
+                  in: path
+                  name: classification
+                  required: true
+            produces:
+                - application/pdf
+            responses:
+                "200":
+                    description: PDF report
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Member report
+    /reports/members/legal:
+        post:
+            description: Generates a PDF legal report
+            operationId: generateLegalReport
+            produces:
+                - application/pdf
+            responses:
+                "200":
+                    description: PDF report
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Legal report
+    /reports/members/marriage:
+        post:
+            description: Generates a CSV Marriage report
+            operationId: generateMarriageReport
+            produces:
+                - application/csv
+            responses:
+                "200":
+                    description: CSV report
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Marriage report
+    /users:
+        post:
+            description: Register the receiving user
+            operationId: postUser
+            parameters:
+                - description: The user to be registered
+                  in: body
+                  name: user
+                  required: true
+                  schema:
+                    $ref: '#/definitions/CreateUserRequest'
+            produces:
+                - application/json
+            responses:
+                "201":
+                    description: User registered
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Create a user
+    /users/token:
+        get:
+            description: Generates a token for a given user
+            operationId: getToken
+            produces:
+                - application/csv
+            responses:
+                "201":
+                    description: Token generated
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            summary: Get a user Token
 produces:
-- application/json
-- application/csv
-- application/pdf
+    - application/json
+    - application/csv
+    - application/pdf
 schemes:
-- http
+    - http
+security:
+    - anonymous: []
+    - authenticated: []
+securityDefinitions:
+    anonymous:
+        type: basic
+    authenticated:
+        in: header
+        name: X-Auth-Token
+        type: apiKey
 swagger: "2.0"

@@ -153,40 +153,97 @@ definitions:
                 x-go-name: Path
         type: object
         x-go-package: github.com/graphql-go/graphql/gqlerrors
+    GetAddressResponse:
+        description: GetAddressResponse for HTTP get address response
+        properties:
+            address:
+                type: string
+                x-go-name: Address
+            city:
+                type: string
+                x-go-name: City
+            district:
+                type: string
+                x-go-name: District
+            full:
+                type: string
+                x-go-name: Full
+            number:
+                format: int64
+                type: integer
+                x-go-name: Number
+            state:
+                type: string
+                x-go-name: State
+            zipCode:
+                type: string
+                x-go-name: ZipCode
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GetContactResponse:
+        description: GetContactResponse for HTTP get contact response
+        properties:
+            cellphone:
+                type: string
+                x-go-name: Cellphone
+            email:
+                type: string
+                x-go-name: Email
+            phone:
+                type: string
+                x-go-name: Phone
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetMemberResponse:
         description: GetMemberResponse for HTTP get member responses
         properties:
             active:
                 type: boolean
                 x-go-name: Active
-            attendsFridayWorship:
-                type: boolean
-                x-go-name: AttendsFridayWorship
-            attendsObservation:
+            classification:
                 type: string
-                x-go-name: AttendsObservation
-            attendsSaturdayWorship:
-                type: boolean
-                x-go-name: AttendsSaturdayWorship
-            attendsSundaySchool:
-                type: boolean
-                x-go-name: AttendsSundaySchool
-            attendsSundayWorship:
-                type: boolean
-                x-go-name: AttendsSundayWorship
-            church_id:
-                type: string
-                x-go-name: ChurchID
+                x-go-name: Classification
             id:
                 type: string
                 x-go-name: ID
-            oldChurch:
-                type: string
-                x-go-name: OldChurch
             person:
-                $ref: '#/definitions/Person'
-            religion:
-                $ref: '#/definitions/Religion'
+                $ref: '#/definitions/GetPersonResponse'
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GetPersonResponse:
+        description: GetPersonResponse for HTTP get person response
+        properties:
+            address:
+                $ref: '#/definitions/GetAddressResponse'
+            age:
+                format: int64
+                type: integer
+                x-go-name: Age
+            birthDate:
+                format: date-time
+                type: string
+                x-go-name: BirthDate
+            contact:
+                $ref: '#/definitions/GetContactResponse'
+            firstName:
+                type: string
+                x-go-name: FirstName
+            fullName:
+                type: string
+                x-go-name: FullName
+            gender:
+                type: string
+                x-go-name: Gender
+            lastName:
+                type: string
+                x-go-name: LastName
+            marriageDate:
+                format: date-time
+                type: string
+                x-go-name: MarriageDate
+            spousesName:
+                type: string
+                x-go-name: SpousesName
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetTokenResponse:
@@ -476,23 +533,18 @@ paths:
             summary: Put member status
     /members/search:
         post:
-            description: |-
-                A GraphQL endpoint to search for members data
-                {
-                member(name:"Bruno", active:true, gender:"M"){
-                id
-                person{
-                firstName,
-                lastName
-                }
-                }
-                }
+            description: Search member
             operationId: searchMember
             parameters:
-                - description: The GraphQL query
-                  in: body
-                  name: query
-                  required: true
+                - description: The member names
+                  in: query
+                  name: name
+                - description: The member status active [true,false]
+                  in: query
+                  name: active
+                - description: The member gender [M,F]
+                  in: query
+                  name: gender
             produces:
                 - application/json
             responses:
@@ -501,10 +553,9 @@ paths:
                 default:
                     description: unexpected error
                     schema:
-                        $ref: '#/definitions/GraphQLErrorResponse'
+                        $ref: '#/definitions/ErrorResponse'
             security:
                 - token: []
-            summary: Search member
     /reports/{reportType}:
         get:
             description: Returns a report file url

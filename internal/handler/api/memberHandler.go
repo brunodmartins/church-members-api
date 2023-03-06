@@ -7,12 +7,10 @@ import (
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
+	"strconv"
 	"time"
 
-	"github.com/graphql-go/graphql"
-
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	gql "github.com/brunodmartins/church-members-api/internal/handler/graphql"
 )
 
 // MemberHandler is a REST controller
@@ -54,14 +52,25 @@ func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
 }
 
 func (handler *MemberHandler) searchMember(ctx *fiber.Ctx) error {
-	schema := gql.CreateSchema(handler.service)
-	result := graphql.Do(graphql.Params{
-		Schema:        schema,
-		RequestString: string(ctx.Body()),
-		Context:       ctx.UserContext(),
-	})
-	if result.HasErrors() {
-		return ctx.Status(http.StatusInternalServerError).JSON(dto.GraphQLErrorResponse{Errors: result.Errors})
+	queryFilters := member.QueryBuilder{}
+	if name := ctx.Query("name"); name != "" {
+		queryFilters.AddFilter("name", name)
+	}
+	if gender := ctx.Query("gender"); gender != "" {
+		queryFilters.AddFilter("gender", gender)
+	}
+	if activeParam := ctx.Query("active"); activeParam != "" {
+		active, _ := strconv.ParseBool(activeParam)
+		queryFilters.AddFilter("active", active)
+	}
+
+	members, err := handler.service.SearchMembers(ctx.UserContext(), queryFilters.ToSpecification())
+	if err != nil {
+		return err
+	}
+	result := make([]*dto.GetMemberResponse, 0)
+	for _, churchMember := range members {
+		result = append(result, dto.NewGetMemberResponse(churchMember))
 	}
 	return ctx.Status(http.StatusOK).JSON(result)
 }

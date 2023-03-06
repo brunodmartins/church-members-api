@@ -47,16 +47,6 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// Search member
 	//
-	// A GraphQL endpoint to search for members data
-	// {
-	//		member(name:"Bruno", active:true, gender:"M"){
-	//			  id
-	//				person{
-	//					firstName,
-	//					lastName
-	//				}
-	//		}
-	// }
 	//
 	// ---
 	// security:
@@ -64,18 +54,26 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// produces:
 	// - application/json
 	// parameters:
-	// - name: query
-	//   in: body
-	//   description: The GraphQL query
-	//   required: true
+	// - name: name
+	//   in: query
+	//   description: The member names
+	//   required: false
+	// - name: active
+	//   in: query
+	//   description: The member status active [true,false]
+	//   required: false
+	// - name: gender
+	//   in: query
+	//   description: The member gender [M,F]
+	//   required: false
 	// responses:
 	//   '200':
 	//     description: Members found
 	//   default:
 	//     description: unexpected error
 	//     schema:
-	//       "$ref": "#/definitions/GraphQLErrorResponse"
-	app.Post("/members/search", handler.searchMember)
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/members", handler.searchMember)
 	// swagger:operation GET /members/{id} getMember
 	//
 	// Get member

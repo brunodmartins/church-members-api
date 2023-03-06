@@ -90,20 +90,12 @@ func TestPostMemberSearch(t *testing.T) {
 	memberHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		body := []byte(`{
-			member(gender:"M", active:false){
-					person{
-						firstName,
-						lastName,
-						gender
-					}
-			}
-		}`)
 		service.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, nil)
-		runTest(app, buildPost("/members/search", body)).assertStatus(t, http.StatusOK)
+		runTest(app, buildGet("/members?name=test&active=true")).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		runTest(app, buildPost("/members/search", emptyJson)).assertStatus(t, http.StatusInternalServerError)
+		service.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, genericError)
+		runTest(app, buildGet("/members?name=test&active=true")).assertStatus(t, http.StatusInternalServerError)
 	})
 }
 

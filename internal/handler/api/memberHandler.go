@@ -45,11 +45,11 @@ func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
 	if !domain.IsValidID(id) {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	member, err := handler.service.GetMember(ctx.UserContext(), id)
+	churchMember, err := handler.service.GetMember(ctx.UserContext(), id)
 	if err != nil {
 		return err
 	} else {
-		return ctx.Status(http.StatusOK).JSON(member)
+		return ctx.Status(http.StatusOK).JSON(dto.NewGetMemberResponse(churchMember))
 	}
 }
 

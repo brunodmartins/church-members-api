@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"github.com/bearbin/go-age"
 	"time"
 )
 
@@ -26,4 +27,9 @@ type Person struct {
 // GetFullName of a person
 func (person Person) GetFullName() string {
 	return person.FirstName + " " + person.LastName
+}
+
+// Age of a person
+func (person Person) Age() int {
+	return age.Age(person.BirthDate)
 }

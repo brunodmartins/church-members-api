@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"github.com/graphql-go/graphql/gqlerrors"
 	"time"
 )
 
@@ -10,12 +9,6 @@ import (
 type ErrorResponse struct {
 	Message string `json:"message"`
 	Error   string `json:"error"`
-}
-
-// GraphQLErrorResponse for HTTP error responses
-// swagger:model GraphQLErrorResponse
-type GraphQLErrorResponse struct {
-	Errors []gqlerrors.FormattedError `json:"errors"`
 }
 
 // CreateMemberResponse for HTTP create member responses

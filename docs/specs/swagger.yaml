@@ -133,26 +133,6 @@ definitions:
                 x-go-name: Message
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    FormattedError:
-        properties:
-            extensions:
-                additionalProperties: {}
-                type: object
-                x-go-name: Extensions
-            locations:
-                items:
-                    $ref: '#/definitions/SourceLocation'
-                type: array
-                x-go-name: Locations
-            message:
-                type: string
-                x-go-name: Message
-            path:
-                items: {}
-                type: array
-                x-go-name: Path
-        type: object
-        x-go-package: github.com/graphql-go/graphql/gqlerrors
     GetAddressResponse:
         description: GetAddressResponse for HTTP get address response
         properties:
@@ -252,16 +232,6 @@ definitions:
             token:
                 type: string
                 x-go-name: Token
-        type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    GraphQLErrorResponse:
-        description: GraphQLErrorResponse for HTTP error responses
-        properties:
-            errors:
-                items:
-                    $ref: '#/definitions/FormattedError'
-                type: array
-                x-go-name: Errors
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     Member:
@@ -418,18 +388,6 @@ definitions:
                 x-go-name: Tithe
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-    SourceLocation:
-        properties:
-            column:
-                format: int64
-                type: integer
-                x-go-name: Column
-            line:
-                format: int64
-                type: integer
-                x-go-name: Line
-        type: object
-        x-go-package: github.com/graphql-go/graphql/language/location
 host: localhost:8080
 info:
     description: This API manages the members of a church.

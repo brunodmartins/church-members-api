@@ -406,7 +406,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Create member
     /members/{id}:
         get:
@@ -437,7 +437,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Get member
     /members/{id}/status:
         put:
@@ -472,7 +472,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Put member status
     /members/search:
         post:
@@ -503,7 +503,7 @@ paths:
                     schema:
                         $ref: '#/definitions/GraphQLErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Search member
     /reports/{reportType}:
         get:
@@ -524,7 +524,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Get a report file
     /reports/members:
         post:
@@ -540,7 +540,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Member report
     /reports/members/birthday:
         post:
@@ -556,7 +556,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Birthday report
     /reports/members/classification/{classification}:
         post:
@@ -577,7 +577,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Member report
     /reports/members/legal:
         post:
@@ -593,7 +593,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Legal report
     /reports/members/marriage:
         post:
@@ -609,7 +609,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Marriage report
     /users:
         post:
@@ -636,7 +636,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - authenticated: []
+                - token: []
             summary: Create a user
     /users/token:
         get:
@@ -652,7 +652,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - anonymous: []
+                - login: []
             summary: Get a user Token
 produces:
     - application/json
@@ -661,12 +661,12 @@ produces:
 schemes:
     - http
 security:
-    - anonymous: []
-    - authenticated: []
+    - login: []
+    - token: []
 securityDefinitions:
-    anonymous:
+    login:
         type: basic
-    authenticated:
+    token:
         in: header
         name: X-Auth-Token
         type: apiKey

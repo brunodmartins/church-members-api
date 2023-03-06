@@ -19,7 +19,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -60,7 +60,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -84,7 +84,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -118,7 +118,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -159,7 +159,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/csv
 	// responses:
@@ -178,7 +178,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/csv
 	// responses:
@@ -197,7 +197,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/pdf
 	// responses:
@@ -216,7 +216,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/pdf
 	// parameters:
@@ -240,7 +240,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/pdf
 	// responses:
@@ -260,7 +260,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:
@@ -287,7 +287,7 @@ func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - anonymous: []
+	// - login: []
 	// produces:
 	// - application/csv
 	// responses:
@@ -309,7 +309,7 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	//
 	// ---
 	// security:
-	// - authenticated: []
+	// - token: []
 	// produces:
 	// - application/json
 	// parameters:

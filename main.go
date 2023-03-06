@@ -15,13 +15,13 @@
 //	   - application/pdf
 //
 //	Security:
-//	- anonymous:
-//	- authenticated:
+//	- login:
+//	- token:
 //
 //	SecurityDefinitions:
-//	  anonymous:
+//	  login:
 //	    type: basic
-//	  authenticated:
+//	  token:
 //	    type: apiKey
 //	    name: X-Auth-Token
 //	    in: header

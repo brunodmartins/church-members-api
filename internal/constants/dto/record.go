@@ -57,6 +57,8 @@ type MemberItem struct {
 	Active                 bool       `dynamodbav:"active,omitempty"`
 	BirthDateShort         string     `dynamodbav:"birthDateShort"`
 	MarriageDateShort      string     `dynamodbav:"marriageDateShort"`
+	MembershipStartDate    time.Time  `dynamodbav:"membershipStartDate"`
+	MembershipEndDate      *time.Time `dynamodbav:"membershipEndDate"`
 }
 
 // NewMemberItem creates a MemberItem from a domain.Member
@@ -109,6 +111,8 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		Active:                 member.Active,
 		BirthDateShort:         utils.ConvertDate(member.Person.BirthDate),
 		MarriageDateShort:      convertMarriageDate(member.Person.MarriageDate),
+		MembershipStartDate:    member.MembershipStartDate,
+		MembershipEndDate:      member.MembershipEndDate,
 	}
 }
 
@@ -130,6 +134,8 @@ func (item *MemberItem) ToMember() *domain.Member {
 		AttendsSundayWorship:   item.AttendsSundayWorship,
 		AttendsSundaySchool:    item.AttendsSundaySchool,
 		AttendsObservation:     item.AttendsObservation,
+		MembershipStartDate:    item.MembershipStartDate,
+		MembershipEndDate:      item.MembershipEndDate,
 		Person: &domain.Person{
 			Name:             item.Name,
 			FirstName:        item.FirstName,

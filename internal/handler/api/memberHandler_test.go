@@ -6,8 +6,8 @@ import (
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -26,8 +26,8 @@ func TestGetMember(t *testing.T) {
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
 		service.EXPECT().GetMember(gomock.Any(), id).Return(buildMember(id), nil)
-		runTest(app, buildGet("/members/"+id)).assert(t, http.StatusOK, new(domain.Member), func(parsedBody interface{}) {
-			member := parsedBody.(*domain.Member)
+		runTest(app, buildGet("/members/"+id)).assert(t, http.StatusOK, new(dto.GetMemberResponse), func(parsedBody interface{}) {
+			member := parsedBody.(*dto.GetMemberResponse)
 			assert.Equal(t, id, member.ID)
 		})
 	})
@@ -74,7 +74,7 @@ func TestPostMember(t *testing.T) {
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
-		body, _ := ioutil.ReadFile("./resources/create_member.json")
+		body, _ := os.ReadFile("./resources/create_member.json")
 		service.EXPECT().SaveMember(gomock.Any(), gomock.AssignableToTypeOf(&domain.Member{})).Return(id, genericError)
 		runTest(app, buildPost("/members", body)).assertStatus(t, http.StatusInternalServerError)
 	})
@@ -90,20 +90,12 @@ func TestPostMemberSearch(t *testing.T) {
 	memberHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		body := []byte(`{
-			member(gender:"M", active:false){
-					person{
-						firstName,
-						lastName,
-						gender
-					}
-			}
-		}`)
 		service.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, nil)
-		runTest(app, buildPost("/members/search", body)).assertStatus(t, http.StatusOK)
+		runTest(app, buildGet("/members?name=test&active=true")).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		runTest(app, buildPost("/members/search", emptyJson)).assertStatus(t, http.StatusInternalServerError)
+		service.EXPECT().SearchMembers(gomock.Any(), gomock.Any()).Return([]*domain.Member{}, genericError)
+		runTest(app, buildGet("/members?name=test&active=true")).assertStatus(t, http.StatusInternalServerError)
 	})
 }
 

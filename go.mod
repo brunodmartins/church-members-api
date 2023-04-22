@@ -20,7 +20,6 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.1.0
 	github.com/golang/mock v1.3.1-0.20190508161146-9fa652df1129
 	github.com/google/uuid v1.2.0
-	github.com/graphql-go/graphql v0.7.8
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/signintech/gopdf v0.9.7
 	github.com/sirupsen/logrus v1.4.2

@@ -81,6 +81,7 @@ func TestSaveMember(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotEmpty(t, churchMember.ID)
 		assert.NotEmpty(t, id)
+		assert.NotEmpty(t, churchMember.MembershipStartDate)
 		assert.True(t, churchMember.Active)
 	})
 	t.Run("Fail", func(t *testing.T) {

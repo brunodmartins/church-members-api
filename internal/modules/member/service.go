@@ -49,6 +49,7 @@ func (s *memberService) GetMember(ctx context.Context, id string) (*domain.Membe
 func (s *memberService) SaveMember(ctx context.Context, member *domain.Member) (string, error) {
 	member.Active = true
 	member.ChurchID = domain.GetChurchID(ctx)
+	member.MembershipStartDate = time.Now()
 	err := s.repo.Insert(ctx, member)
 	return member.ID, err
 }

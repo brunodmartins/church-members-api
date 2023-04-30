@@ -2,15 +2,13 @@ package member
 
 import (
 	"context"
-	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
-	"time"
-
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/google/uuid"
 )
 
@@ -19,22 +17,19 @@ type Repository interface {
 	FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Member, error)
 	FindByID(ctx context.Context, id string) (*domain.Member, error)
 	Insert(ctx context.Context, member *domain.Member) error
-	UpdateStatus(ctx context.Context, member *domain.Member) error
-	GenerateStatusHistory(id string, status bool, reason string, date time.Time) error
+	RetireMembership(ctx context.Context, member *domain.Member) error
 }
 
 type dynamoRepository struct {
-	api                wrapper.DynamoDBAPI
-	memberTable        string
-	memberHistoryTable string
-	wrapper            *wrapper.DynamoDBWrapper
+	api         wrapper.DynamoDBAPI
+	memberTable string
+	wrapper     *wrapper.DynamoDBWrapper
 }
 
-func NewRepository(api wrapper.DynamoDBAPI, memberTable, memberHistoryTable string) Repository {
+func NewRepository(api wrapper.DynamoDBAPI, memberTable string) Repository {
 	return dynamoRepository{
 		api,
 		memberTable,
-		memberHistoryTable,
 		wrapper.NewDynamoDBWrapper(api, memberTable),
 	}
 }
@@ -82,7 +77,7 @@ func (repo dynamoRepository) Insert(ctx context.Context, member *domain.Member) 
 	return repo.wrapper.SaveItem(dto.NewMemberItem(member))
 }
 
-func (repo dynamoRepository) UpdateStatus(ctx context.Context, member *domain.Member) error {
+func (repo dynamoRepository) RetireMembership(ctx context.Context, member *domain.Member) error {
 	_, err := repo.api.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
@@ -97,23 +92,15 @@ func (repo dynamoRepository) UpdateStatus(ctx context.Context, member *domain.Me
 			":active": &types.AttributeValueMemberBOOL{
 				Value: member.Active,
 			},
+			":membershipEndDate": &types.AttributeValueMemberS{
+				Value: member.MembershipEndDate.String(),
+			},
+			":membershipEndReason": &types.AttributeValueMemberS{
+				Value: member.MembershipEndReason,
+			},
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String("set active = :active"),
-	})
-	return err
-}
-
-func (repo dynamoRepository) GenerateStatusHistory(id string, status bool, reason string, date time.Time) error {
-	_, err := repo.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
-		Item: map[string]types.AttributeValue{
-			"id":        &types.AttributeValueMemberS{Value: uuid.New().String()},
-			"member_id": &types.AttributeValueMemberS{Value: id},
-			"reason":    &types.AttributeValueMemberS{Value: reason},
-			"status":    &types.AttributeValueMemberBOOL{Value: status},
-			"date":      &types.AttributeValueMemberS{Value: date.String()},
-		},
-		TableName: aws.String(repo.memberHistoryTable),
+		UpdateExpression: aws.String("set active = :active, membershipEndDate = :membershipEndDate, membershipEndReason = :membershipEndReason"),
 	})
 	return err
 }

@@ -108,11 +108,11 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/members/:id", handler.getMember)
-	// swagger:operation PUT /members/{id}/status putMemberStatus
+	// swagger:operation DELETE /members/{id} retireMember
 	//
-	// Put member status
+	// Retire Member
 	//
-	// Changes the member status
+	// Retire a member from the church
 	//
 	// ---
 	// security:
@@ -126,10 +126,10 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//   required: true
 	// - name: body
 	//   in: body
-	//   description: The status information
+	//   description: The retire information
 	//   required: true
 	//   schema:
-	//     "$ref": "#/definitions/PutMemberStatusRequest"
+	//     "$ref": "#/definitions/RetireMemberRequest"
 	// responses:
 	//   '200':
 	//     description: Status change successfully
@@ -145,7 +145,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     description: unexpected error
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Put("/members/:id/status", handler.putStatus)
+	app.Delete("/members/:id", handler.retireMember)
 }
 
 func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {

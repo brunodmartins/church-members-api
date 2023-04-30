@@ -19,15 +19,14 @@ import (
 )
 
 const (
-	memberTable        = "member-test"
-	memberHistoryTable = "member-history-test"
+	memberTable = "member-test"
 )
 
 func TestDynamoRepository_FindAll(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
+	repo := member.NewRepository(dynamoMock, memberTable)
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: buildItems(2)}, nil)
 		members, err := repo.FindAll(context.Background(), buildMockSpecification(t))
@@ -52,7 +51,7 @@ func TestDynamoRepository_FindByID(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
+	repo := member.NewRepository(dynamoMock, memberTable)
 	id := domain.NewID()
 	ctx := BuildContext()
 	t.Run("Success", func(t *testing.T) {
@@ -79,7 +78,7 @@ func TestDynamoRepository_Insert(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
+	repo := member.NewRepository(dynamoMock, memberTable)
 	member := buildMember("")
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
@@ -102,16 +101,18 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
+	repo := member.NewRepository(dynamoMock, memberTable)
 	id := domain.NewID()
-	member := buildMember(id)
+	churchMember := buildMember(id)
+	endDate := time.Now()
+	churchMember.MembershipEndDate = &endDate
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().UpdateItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error) {
 			assert.Equal(t, memberTable, *params.TableName)
 			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
 			return nil, nil
 		})
-		err := repo.UpdateStatus(context.Background(), member)
+		err := repo.RetireMembership(context.Background(), churchMember)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail", func(t *testing.T) {
@@ -120,31 +121,7 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
 			return nil, genericError
 		})
-		err := repo.UpdateStatus(context.Background(), member)
-		assert.NotNil(t, err)
-	})
-}
-
-func TestDynamoRepository_GenerateStatusHistory(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	repo := member.NewRepository(dynamoMock, memberTable, memberHistoryTable)
-	id := domain.NewID()
-	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
-			assert.Equal(t, memberHistoryTable, *params.TableName)
-			return nil, nil
-		})
-		err := repo.GenerateStatusHistory(id, false, "", time.Now())
-		assert.Nil(t, err)
-	})
-	t.Run("Fail", func(t *testing.T) {
-		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
-			assert.Equal(t, memberHistoryTable, *params.TableName)
-			return nil, genericError
-		})
-		err := repo.GenerateStatusHistory(id, false, "", time.Now())
+		err := repo.RetireMembership(context.Background(), churchMember)
 		assert.NotNil(t, err)
 	})
 }

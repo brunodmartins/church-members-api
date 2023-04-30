@@ -6,12 +6,11 @@ import (
 	"time"
 )
 
-// PutMemberStatusRequest for HTTP calls to put member status
-// swagger:model PutMemberStatusRequest
-type PutMemberStatusRequest struct {
-	Active *bool     `json:"active" validate:"required"`
-	Reason string    `json:"reason" validate:"required"`
-	Date   time.Time `json:"date"`
+// RetireMemberRequest for HTTP calls to put member status
+// swagger:model RetireMemberRequest
+type RetireMemberRequest struct {
+	Reason     string    `json:"reason" validate:"required"`
+	RetireDate time.Time `json:"date"`
 }
 
 // CreateMemberRequest for HTTP calls to post member

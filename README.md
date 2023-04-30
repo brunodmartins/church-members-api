@@ -57,7 +57,6 @@ The following configuration are required through **Terraform vars**
 |Hard coded on Terraform|SERVER|Used to define the environment where the application will run. Defaults to **AWS**|
 |Hard coded on Terraform|APPLICATION|Used to defined the Lambda type: **API** or **JOB**|
 |Terraform takes it from dynamo resource|TABLE_MEMBER|DynamoDB members table|
-|Terraform takes it from dynamo resource|TABLE_MEMBER_HISTORY|DynamoDB members history table|
 |Terraform takes it from dynamo resource|TABLE_USER|DynamoDB users table|
 |Terraform takes it from dynamo resource|TABLE_CHURCH|DynamoDB churchs table|
 |Terraform takes it from SNS resource|REPORTS_TOPIC|The topic to notify weekly jobs through email|

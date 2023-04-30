@@ -139,7 +139,7 @@ func (report reportService) LegalReport(ctx context.Context) error {
 func (report *reportService) getCSVColumns(ctx context.Context) []string {
 	return []string{
 		i18n.GetMessage(ctx, "Domain.Name"),
-		i18n.GetMessage(ctx, "Domain.Date"),
+		i18n.GetMessage(ctx, "Domain.RetireDate"),
 	}
 }
 

@@ -99,7 +99,7 @@ func TestPostMemberSearch(t *testing.T) {
 	})
 }
 
-func TestPutStatus(t *testing.T) {
+func TestRetireMember(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	app := newApp()
@@ -110,29 +110,25 @@ func TestPutStatus(t *testing.T) {
 	id := domain.NewID()
 
 	t.Run("Success - 200", func(t *testing.T) {
-		body := []byte(`{"active":true, "reason": "Came back"}`)
-		service.EXPECT().ChangeStatus(gomock.Any(), id, gomock.Eq(true), gomock.Eq("Came back"), gomock.Any()).Return(nil)
-		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusOK)
+		body := []byte(`{"reason": "Leaved the church"}`)
+		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Any()).Return(nil)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 400 - ID", func(t *testing.T) {
-		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 400 - Reason", func(t *testing.T) {
-		body := []byte(`{"active":false}`)
-		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusBadRequest)
-	})
-	t.Run("Fail - 400 - Active", func(t *testing.T) {
-		body := []byte(`{"reason": "exited"}`)
-		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusBadRequest)
+		body := []byte(`{}`)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
-		body := []byte(`{"active":false, "reason": "Not Found"}`)
-		service.EXPECT().ChangeStatus(gomock.Any(), id, gomock.Eq(false), gomock.Eq("Not Found"), gomock.Any()).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
-		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusNotFound)
+		body := []byte(`{"reason": "Not Found"}`)
+		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Not Found"), gomock.Any()).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		body := []byte(`{"active":false, "reason": "exited"}`)
-		service.EXPECT().ChangeStatus(gomock.Any(), id, gomock.Eq(false), gomock.Eq("exited"), gomock.Any()).Return(genericError)
-		runTest(app, buildPut(fmt.Sprintf("/members/%s/status", id), body)).assertStatus(t, http.StatusInternalServerError)
+		body := []byte(`{"reason": "exited"}`)
+		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("exited"), gomock.Any()).Return(genericError)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

@@ -68,8 +68,8 @@ func buildPost(target string, body []byte) *http.Request {
 	return buildRequest("POST", target, body)
 }
 
-func buildPut(target string, body []byte) *http.Request {
-	return buildRequest("PUT", target, body)
+func buildDelete(target string, body []byte) *http.Request {
+	return buildRequest("DELETE", target, body)
 }
 
 func buildGet(target string) *http.Request {

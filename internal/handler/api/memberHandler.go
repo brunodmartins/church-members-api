@@ -75,24 +75,24 @@ func (handler *MemberHandler) searchMember(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(result)
 }
 
-func (handler *MemberHandler) putStatus(ctx *fiber.Ctx) error {
+func (handler *MemberHandler) retireMember(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if !domain.IsValidID(id) {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	putMemberStatusCommand := new(dto.PutMemberStatusRequest)
-	_ = json.Unmarshal(ctx.Body(), &putMemberStatusCommand)
-	if err := ValidateStruct(putMemberStatusCommand); err != nil {
+	retireMemberRequest := new(dto.RetireMemberRequest)
+	_ = json.Unmarshal(ctx.Body(), &retireMemberRequest)
+	if err := ValidateStruct(retireMemberRequest); err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
 			Message: "Invalid body received",
 			Error:   err.Error(),
 		})
 	}
-	if putMemberStatusCommand.Date.IsZero() {
-		putMemberStatusCommand.Date = time.Now()
+	if retireMemberRequest.RetireDate.IsZero() {
+		retireMemberRequest.RetireDate = time.Now()
 	}
 
-	err := handler.service.ChangeStatus(ctx.UserContext(), id, *putMemberStatusCommand.Active, putMemberStatusCommand.Reason, putMemberStatusCommand.Date)
+	err := handler.service.RetireMembership(ctx.UserContext(), id, retireMemberRequest.Reason, retireMemberRequest.RetireDate)
 
 	if err != nil {
 		return err

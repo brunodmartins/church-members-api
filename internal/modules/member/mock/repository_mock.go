@@ -7,7 +7,6 @@ package mock_member
 import (
 	context "context"
 	reflect "reflect"
-	time "time"
 
 	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
 	wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -67,20 +66,6 @@ func (mr *MockRepositoryMockRecorder) FindByID(ctx, id interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockRepository)(nil).FindByID), ctx, id)
 }
 
-// GenerateStatusHistory mocks base method.
-func (m *MockRepository) GenerateStatusHistory(id string, status bool, reason string, date time.Time) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateStatusHistory", id, status, reason, date)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// GenerateStatusHistory indicates an expected call of GenerateStatusHistory.
-func (mr *MockRepositoryMockRecorder) GenerateStatusHistory(id, status, reason, date interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateStatusHistory", reflect.TypeOf((*MockRepository)(nil).GenerateStatusHistory), id, status, reason, date)
-}
-
 // Insert mocks base method.
 func (m *MockRepository) Insert(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()
@@ -95,16 +80,16 @@ func (mr *MockRepositoryMockRecorder) Insert(ctx, member interface{}) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), ctx, member)
 }
 
-// UpdateStatus mocks base method.
-func (m *MockRepository) UpdateStatus(ctx context.Context, member *domain.Member) error {
+// RetireMembership mocks base method.
+func (m *MockRepository) RetireMembership(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateStatus", ctx, member)
+	ret := m.ctrl.Call(m, "RetireMembership", ctx, member)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateStatus indicates an expected call of UpdateStatus.
-func (mr *MockRepositoryMockRecorder) UpdateStatus(ctx, member interface{}) *gomock.Call {
+// RetireMembership indicates an expected call of RetireMembership.
+func (mr *MockRepositoryMockRecorder) RetireMembership(ctx, member interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatus", reflect.TypeOf((*MockRepository)(nil).UpdateStatus), ctx, member)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetireMembership", reflect.TypeOf((*MockRepository)(nil).RetireMembership), ctx, member)
 }

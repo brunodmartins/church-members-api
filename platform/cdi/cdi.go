@@ -77,7 +77,7 @@ func ProvideStorageService() storage.Service {
 
 func provideMemberRepository() member2.Repository {
 	if memberRepository == nil {
-		memberRepository = member2.NewRepository(provideDynamoDB(), viper.GetString("tables.member"), viper.GetString("tables.member_history"))
+		memberRepository = member2.NewRepository(provideDynamoDB(), viper.GetString("tables.member"))
 	}
 	return memberRepository
 }

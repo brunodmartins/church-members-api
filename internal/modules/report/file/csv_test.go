@@ -31,7 +31,7 @@ func TestTransformCSVToData(t *testing.T) {
 			},
 		},
 	}
-	csvOut := TransformToCSVData(data, []string{"Name", "Date"}, func(row Data) []string {
+	csvOut := TransformToCSVData(data, []string{"Name", "RetireDate"}, func(row Data) []string {
 		member := row.Value.(domain.Member)
 		return []string{
 			member.Person.GetFullName(),
@@ -39,7 +39,7 @@ func TestTransformCSVToData(t *testing.T) {
 		}
 	})
 	assert.Equal(t, 3, len(csvOut))
-	assert.Equal(t, []string{"Name", "Date"}, csvOut[0])
+	assert.Equal(t, []string{"Name", "RetireDate"}, csvOut[0])
 	assert.Equal(t, []string{"Teste 2 Teste 2", "22/03"}, csvOut[2])
 	assert.Equal(t, []string{"Teste Teste", "07/06"}, csvOut[1])
 }

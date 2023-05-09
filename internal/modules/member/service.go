@@ -15,7 +15,7 @@ type Service interface {
 	SearchMembers(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error)
 	GetMember(ctx context.Context, id string) (*domain.Member, error)
 	SaveMember(ctx context.Context, member *domain.Member) (string, error)
-	ChangeStatus(ctx context.Context, id string, status bool, reason string, date time.Time) error
+	RetireMembership(ctx context.Context, id string, reason string, date time.Time) error
 }
 
 type memberService struct {
@@ -54,15 +54,13 @@ func (s *memberService) SaveMember(ctx context.Context, member *domain.Member) (
 	return member.ID, err
 }
 
-func (s *memberService) ChangeStatus(ctx context.Context, ID string, status bool, reason string, date time.Time) error {
-	member, err := s.GetMember(ctx, ID)
+func (s *memberService) RetireMembership(ctx context.Context, id string, reason string, date time.Time) error {
+	member, err := s.GetMember(ctx, id)
 	if err != nil {
 		return err
 	}
-	member.Active = status
-	err = s.repo.UpdateStatus(ctx, member)
-	if err == nil {
-		return s.repo.GenerateStatusHistory(ID, status, reason, date)
-	}
-	return err
+	member.Active = false
+	member.MembershipEndDate = &date
+	member.MembershipEndReason = reason
+	return s.repo.RetireMembership(ctx, member)
 }

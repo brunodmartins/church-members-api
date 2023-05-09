@@ -38,20 +38,6 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// ChangeStatus mocks base method.
-func (m *MockService) ChangeStatus(ctx context.Context, id string, status bool, reason string, date time.Time) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ChangeStatus", ctx, id, status, reason, date)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// ChangeStatus indicates an expected call of ChangeStatus.
-func (mr *MockServiceMockRecorder) ChangeStatus(ctx, id, status, reason, date interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChangeStatus", reflect.TypeOf((*MockService)(nil).ChangeStatus), ctx, id, status, reason, date)
-}
-
 // GetMember mocks base method.
 func (m *MockService) GetMember(ctx context.Context, id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()
@@ -65,6 +51,20 @@ func (m *MockService) GetMember(ctx context.Context, id string) (*domain.Member,
 func (mr *MockServiceMockRecorder) GetMember(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMember", reflect.TypeOf((*MockService)(nil).GetMember), ctx, id)
+}
+
+// RetireMembership mocks base method.
+func (m *MockService) RetireMembership(ctx context.Context, id, reason string, date time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RetireMembership", ctx, id, reason, date)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RetireMembership indicates an expected call of RetireMembership.
+func (mr *MockServiceMockRecorder) RetireMembership(ctx, id, reason, date interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetireMembership", reflect.TypeOf((*MockService)(nil).RetireMembership), ctx, id, reason, date)
 }
 
 // SaveMember mocks base method.

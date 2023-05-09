@@ -98,29 +98,21 @@ func TestChangeStatus(t *testing.T) {
 	repo := mock_member.NewMockRepository(ctrl)
 	service := member.NewMemberService(repo)
 	id := domain.NewID()
-	status := true
 	reason := "test"
 	date := time.Now()
 	churchMember := buildMember(id)
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
-		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(nil)
-		repo.EXPECT().GenerateStatusHistory(id, status, reason, date).Return(nil)
-		assert.Nil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
+		repo.EXPECT().RetireMembership(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(nil)
+		assert.Nil(t, service.RetireMembership(BuildContext(), id, reason, date))
 	})
-	t.Run("Fail - Status History", func(t *testing.T) {
+	t.Run("Fail - Retire member", func(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
-		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(nil)
-		repo.EXPECT().GenerateStatusHistory(id, status, reason, date).Return(genericError)
-		assert.NotNil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
-	})
-	t.Run("Fail - Update Status", func(t *testing.T) {
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(churchMember, nil)
-		repo.EXPECT().UpdateStatus(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(genericError)
-		assert.NotNil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
+		repo.EXPECT().RetireMembership(gomock.Any(), gomock.AssignableToTypeOf(churchMember)).Return(genericError)
+		assert.NotNil(t, service.RetireMembership(BuildContext(), id, reason, date))
 	})
 	t.Run("Fail - Get Member", func(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(nil, genericError)
-		assert.NotNil(t, service.ChangeStatus(BuildContext(), id, status, reason, date))
+		assert.NotNil(t, service.RetireMembership(BuildContext(), id, reason, date))
 	})
 }

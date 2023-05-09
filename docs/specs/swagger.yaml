@@ -332,12 +332,9 @@ definitions:
                 x-go-name: SpousesName
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-    PutMemberStatusRequest:
-        description: PutMemberStatusRequest for HTTP calls to put member status
+    RetireMemberRequest:
+        description: RetireMemberRequest for HTTP calls to retire membership
         properties:
-            active:
-                type: boolean
-                x-go-name: Active
             date:
                 format: date-time
                 type: string
@@ -454,21 +451,20 @@ paths:
             security:
                 - token: []
             summary: Get member
-    /members/{id}/status:
-        put:
-            description: Changes the member status
-            operationId: putMemberStatus
+        delete:
+            description: Delete a member, removings its membership
+            operationId: deleteMembership
             parameters:
                 - description: The member id
                   in: path
                   name: id
                   required: true
-                - description: The status information
+                - description: The retire information
                   in: body
                   name: body
                   required: true
                   schema:
-                    $ref: '#/definitions/PutMemberStatusRequest'
+                    $ref: '#/definitions/RetireMemberRequest'
             produces:
                 - application/json
             responses:
@@ -488,7 +484,7 @@ paths:
                         $ref: '#/definitions/ErrorResponse'
             security:
                 - token: []
-            summary: Put member status
+            summary: Retire membership
     /members/search:
         post:
             description: Search member

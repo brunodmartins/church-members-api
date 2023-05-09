@@ -22,6 +22,7 @@ type Member struct {
 	Active                 bool       `json:"active,omitempty"`
 	MembershipStartDate    time.Time  `json:"membership_start_date"`
 	MembershipEndDate      *time.Time `json:"membership_end_date,omitempty"`
+	MembershipEndReason    string     `json:"membership_end_reason,omitempty"`
 }
 
 // Classification returns a member classification based on age and marriage

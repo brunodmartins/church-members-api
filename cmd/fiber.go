@@ -38,6 +38,7 @@ func provideFiberApplication() *fiber.App {
 
 	authHandler.SetUpRoutes(app)
 	app.Use(middleware.AuthMiddlewareMiddleWare)
+	app.Use(middleware.I18NMiddleware)
 
 	memberHandler.SetUpRoutes(app)
 	reportHandler.SetUpRoutes(app)

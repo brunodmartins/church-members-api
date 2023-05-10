@@ -92,16 +92,30 @@ func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.
 
 	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Phone"), builder)
 
-	pdfBuilder.setValue(data.Person.Contact.GetFormattedPhone(), builder)
+	if data.Person.Contact != nil {
+		pdfBuilder.setValue(data.Person.Contact.GetFormattedPhone(), builder)
+	} else {
+		pdfBuilder.setValue("", builder)
+	}
 
 	builder.SetX(builder.GetX() + 10)
 	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.CellPhone"), builder)
 
-	pdfBuilder.setValue(data.Person.Contact.GetFormattedCellPhone(), builder)
+	if data.Person.Contact != nil {
+		pdfBuilder.setValue(data.Person.Contact.GetFormattedCellPhone(), builder)
+	} else {
+		pdfBuilder.setValue("", builder)
+	}
+
 	builder.Br(15)
 
 	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Email"), builder)
-	pdfBuilder.setValue(data.Person.Contact.Email, builder)
+
+	if data.Person.Contact != nil {
+		pdfBuilder.setValue(data.Person.Contact.Email, builder)
+	} else {
+		pdfBuilder.setValue("", builder)
+	}
 
 	builder.Br(10)
 	builder.SetLineWidth(2)

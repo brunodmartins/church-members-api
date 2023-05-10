@@ -127,6 +127,43 @@ func TestBirthDay(t *testing.T) {
 	assert.Len(t, queryExpression.Names(), 3)
 }
 
+func TestAllMembers(t *testing.T) {
+	spec := AllMembers()
+	builder := spec(BuildContext(), expression.NewBuilder())
+	queryExpression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, queryExpression.Names(), 1)
+}
+
+func TestOnlyYearMemberShip(t *testing.T) {
+	now := time.Now()
+	currentYear := now.Year()
+	t.Run("Do not filter active member", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = true
+		assert.True(t, OnlyYearMemberShip(currentYear)(member))
+	})
+	t.Run("Do not filter inactive member that retired on the year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		member.MembershipEndDate = &now
+		assert.True(t, OnlyYearMemberShip(currentYear)(member))
+	})
+	t.Run("Filter inactive member that retired on past year", func(t *testing.T) {
+		member := BuildAdult()
+		memberShipEndDate := now.AddDate(-1, 0, 0)
+		member.Active = false
+		member.MembershipEndDate = &memberShipEndDate
+		assert.False(t, OnlyYearMemberShip(currentYear)(member))
+	})
+	t.Run("Filter inactive member that do not have a retire date", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		assert.False(t, OnlyYearMemberShip(currentYear)(member))
+	})
+
+}
+
 func BuildChildren() *domain.Member {
 	return &domain.Member{
 		Person: &domain.Person{

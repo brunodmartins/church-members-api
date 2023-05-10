@@ -147,6 +147,26 @@ func WithBirthday(date time.Time) wrapper.QuerySpecification {
 	}
 }
 
+func AllMembers() wrapper.QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		keyCondition := withChurchKey(ctx)
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(keyCondition),
+		}
+	}
+}
+
+func OnlyYearMemberShip(year int) Specification {
+	return func(member *domain.Member) bool {
+		if member.Active {
+			return true
+		} else if member.MembershipEndDate != nil && member.MembershipEndDate.Year() == year {
+			return true
+		}
+		return false
+	}
+}
+
 func withChurchKey(ctx context.Context) expression.KeyConditionBuilder {
 	return expression.Key("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }

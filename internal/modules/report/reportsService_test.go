@@ -105,7 +105,7 @@ func TestGenerateMemberReport(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 		members := BuildMembers(0)
-		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil)), gomock.AssignableToTypeOf(member.Specification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
@@ -116,7 +116,7 @@ func TestGenerateMemberReport(t *testing.T) {
 	})
 	t.Run("Fail - Save report", func(t *testing.T) {
 		members := BuildMembers(0)
-		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil)), gomock.AssignableToTypeOf(member.Specification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
 		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
@@ -127,13 +127,13 @@ func TestGenerateMemberReport(t *testing.T) {
 	})
 	t.Run("Fail - build report", func(t *testing.T) {
 		members := BuildMembers(0)
-		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil)), gomock.AssignableToTypeOf(member.Specification(nil))).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, genericError)
 		err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})
 	t.Run("Fail - Search", func(t *testing.T) {
-		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(nil, genericError)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil)), gomock.AssignableToTypeOf(member.Specification(nil))).Return(nil, genericError)
 		err := service.MemberReport(ctx)
 		assert.NotNil(t, err)
 	})

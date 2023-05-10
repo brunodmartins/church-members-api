@@ -10,6 +10,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	"github.com/sirupsen/logrus"
 	"sort"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
@@ -98,7 +99,7 @@ func (report reportService) MarriageReport(ctx context.Context) error {
 }
 
 func (report reportService) MemberReport(ctx context.Context) error {
-	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
+	members, err := report.memberService.SearchMembers(ctx, member.AllMembers(), member.OnlyYearMemberShip(time.Now().Year()))
 	if err != nil {
 		return err
 	}
@@ -124,7 +125,7 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 }
 
 func (report reportService) LegalReport(ctx context.Context) error {
-	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyLegalMembers())
+	members, err := report.memberService.SearchMembers(ctx, member.AllMembers(), member.OnlyYearMemberShip(time.Now().Year()), member.OnlyLegalMembers())
 	if err != nil {
 		return err
 	}

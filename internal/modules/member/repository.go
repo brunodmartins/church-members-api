@@ -10,6 +10,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/google/uuid"
+	"time"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
@@ -93,7 +94,7 @@ func (repo dynamoRepository) RetireMembership(ctx context.Context, member *domai
 				Value: member.Active,
 			},
 			":membershipEndDate": &types.AttributeValueMemberS{
-				Value: member.MembershipEndDate.String(),
+				Value: member.MembershipEndDate.Format(time.RFC3339),
 			},
 			":membershipEndReason": &types.AttributeValueMemberS{
 				Value: member.MembershipEndReason,

@@ -12,6 +12,8 @@
 "Domain.MembersQuantity" = "Number of members"
 "Domain.Name" = "Name"
 "Domain.Phone" = "Phone"
+"Domain.RetireDate" = "Retire date"
+"Domain.RetireReason" = "Retire reason"
 "Reports.Title.Default" = "Member's report"
 "Reports.Title.Legal" = "Member's report - Legal"
 "Jobs.Daily.Title"="Birthdays"

@@ -14,10 +14,21 @@ func BuildMembers(size int) []*domain.Member {
 	return members
 }
 
+func buildInactiveMember() *domain.Member {
+	member := buildMember(domain.NewID())
+	now := time.Now()
+	member.Active = false
+	member.MembershipEndDate = &now
+	member.MembershipEndReason = "Left the church due to test reasons"
+	member.Person.FirstName = "A"
+	return member
+}
+
 func buildMember(id string) *domain.Member {
 	now := time.Now()
 	return &domain.Member{
-		ID: id,
+		ID:     id,
+		Active: true,
 		Person: &domain.Person{
 			FirstName:    "First Name",
 			LastName:     "Last Name",

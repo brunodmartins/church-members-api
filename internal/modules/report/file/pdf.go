@@ -7,6 +7,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/signintech/gopdf"
@@ -43,6 +44,9 @@ func (pdfBuilder *pdfBuilder) buildFirstPageSection(title string, church *domain
 	builder.SetY(120)
 	builder.SetX(0)
 	builder.CellWithOption(rect, title, options)
+	builder.SetY(140)
+	builder.SetX(0)
+	builder.CellWithOption(rect, fmt.Sprintf("%d", time.Now().Year()), options)
 }
 
 func (pdfBuilder *pdfBuilder) setFont(builder *gopdf.GoPdf) error {
@@ -117,6 +121,18 @@ func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.
 		pdfBuilder.setValue("", builder)
 	}
 
+	if !data.Active {
+		builder.Br(15)
+
+		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.RetireDate"), builder)
+		pdfBuilder.setValue(data.MembershipEndDate.Format("02/01/2006"), builder)
+
+		builder.SetX(builder.GetX() + 10)
+
+		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.RetireReason"), builder)
+		pdfBuilder.setValue(data.MembershipEndReason, builder)
+	}
+
 	builder.Br(10)
 	builder.SetLineWidth(2)
 	builder.SetLineType("dashed")
@@ -132,9 +148,11 @@ func (pdfBuilder *pdfBuilder) buildSummarySection(ctx context.Context, data []*d
 
 	summary := map[string]int{}
 	for _, member := range data {
-		count := summary[member.Classification().String()]
-		count++
-		summary[member.Classification().String()] = count
+		if member.Active {
+			count := summary[member.Classification().String()]
+			count++
+			summary[member.Classification().String()] = count
+		}
 	}
 
 	for key, value := range summary {
@@ -153,7 +171,7 @@ func (pdfBuilder *pdfBuilder) BuildFile(ctx context.Context, title string, churc
 	}
 	pdfBuilder.buildFirstPageSection(title, church, pdf)
 	pdf.AddPage()
-	const maxPerPage int = 7
+	const maxPerPage int = 6
 	count := 0
 	for _, member := range data {
 		if count == maxPerPage {

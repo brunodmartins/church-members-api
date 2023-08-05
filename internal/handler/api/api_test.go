@@ -26,11 +26,11 @@ var emptyJson = []byte("{}")
 type mapAssert func(parsedBody interface{})
 
 func (result httpResult) assertStatus(t *testing.T, expected int) {
-	assert.Equal(t, expected, result.status)
+	assert.Equal(t, expected, result.status, string(result.body))
 }
 
 func (result httpResult) assert(t *testing.T, expected int, dto interface{}, assertBody mapAssert) {
-	assert.Equal(t, expected, result.status)
+	assert.Equal(t, expected, result.status, string(result.body))
 	err := json.Unmarshal(result.body, dto)
 	if err != nil {
 		t.Error(err)

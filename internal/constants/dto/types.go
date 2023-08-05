@@ -22,3 +22,10 @@ func (d *Date) UnmarshalJSON(bytes []byte) error {
 func (d *Date) toString(bytes []byte) string {
 	return strings.Replace(string(bytes), "\"", "", -1)
 }
+
+func ToTime(date *Date) *time.Time {
+	if date == nil {
+		return nil
+	}
+	return &date.Time
+}

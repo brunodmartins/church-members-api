@@ -1,8 +1,8 @@
 consumes:
     - application/json
 definitions:
-    Address:
-        description: Address struct
+    CreateAddressRequest:
+        description: CreateAddressRequest for HTTP calls to post a person
         properties:
             address:
                 type: string
@@ -27,9 +27,9 @@ definitions:
                 type: string
                 x-go-name: ZipCode
         type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-    Contact:
-        description: Contact struct
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreateContactRequest:
+        description: CreateContactRequest for HTTP calls to post a person
         properties:
             cellPhone:
                 format: int64
@@ -51,13 +51,10 @@ definitions:
                 type: integer
                 x-go-name: PhoneArea
         type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     CreateMemberRequest:
         description: CreateMemberRequest for HTTP calls to post member
         properties:
-            active:
-                type: boolean
-                x-go-name: Active
             attendsFridayWorship:
                 type: boolean
                 x-go-name: AttendsFridayWorship
@@ -73,19 +70,13 @@ definitions:
             attendsSundayWorship:
                 type: boolean
                 x-go-name: AttendsSundayWorship
-            church_id:
-                type: string
-                x-go-name: ChurchID
-            id:
-                type: string
-                x-go-name: ID
             oldChurch:
                 type: string
                 x-go-name: OldChurch
             person:
-                $ref: '#/definitions/Person'
+                $ref: '#/definitions/CreatePersonRequest'
             religion:
-                $ref: '#/definitions/Religion'
+                $ref: '#/definitions/CreateReligionRequest'
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     CreateMemberResponse:
@@ -94,6 +85,92 @@ definitions:
             id:
                 type: string
                 x-go-name: ID
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreatePersonRequest:
+        description: CreatePersonRequest for HTTP calls to post a person
+        properties:
+            address:
+                $ref: '#/definitions/CreateAddressRequest'
+            birthDate:
+                type: string
+                x-go-name: BirthDate
+            brothersQuantity:
+                format: int64
+                type: integer
+                x-go-name: BrothersQuantity
+            childrenQuantity:
+                format: int64
+                type: integer
+                x-go-name: ChildrenQuantity
+            contact:
+                $ref: '#/definitions/CreateContactRequest'
+            fathersName:
+                type: string
+                x-go-name: FathersName
+            firstName:
+                type: string
+                x-go-name: FirstName
+            gender:
+                type: string
+                x-go-name: Gender
+            lastName:
+                type: string
+                x-go-name: LastName
+            marriageDate:
+                type: string
+                x-go-name: MarriageDate
+            mothersName:
+                type: string
+                x-go-name: MothersName
+            placeOfBirth:
+                type: string
+                x-go-name: PlaceOfBirth
+            profession:
+                type: string
+                x-go-name: Profession
+            spousesName:
+                type: string
+                x-go-name: SpousesName
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreateReligionRequest:
+        description: CreateReligionRequest for HTTP calls to post a person
+        properties:
+            acceptedJesus:
+                type: boolean
+                x-go-name: AcceptedJesus
+            acceptedJesusDate:
+                type: string
+                x-go-name: AcceptedJesusDate
+            agreesTithe:
+                type: boolean
+                x-go-name: AgreesTithe
+            baptismDate:
+                type: string
+                x-go-name: BaptismDate
+            baptismPlace:
+                type: string
+                x-go-name: BaptismPlace
+            baptized:
+                type: boolean
+                x-go-name: Baptized
+            catholicBaptized:
+                type: boolean
+                x-go-name: CatholicBaptized
+            fathersReligion:
+                type: string
+                x-go-name: FathersReligion
+            knowsTithe:
+                type: boolean
+                x-go-name: KnowsTithe
+            learnedGospelAge:
+                format: int64
+                type: integer
+                x-go-name: LearnedGospelAge
+            tithe:
+                type: boolean
+                x-go-name: Tithe
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     CreateUserRequest:
@@ -234,42 +311,6 @@ definitions:
                 x-go-name: Token
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    Member:
-        description: Member struct
-        properties:
-            active:
-                type: boolean
-                x-go-name: Active
-            attendsFridayWorship:
-                type: boolean
-                x-go-name: AttendsFridayWorship
-            attendsObservation:
-                type: string
-                x-go-name: AttendsObservation
-            attendsSaturdayWorship:
-                type: boolean
-                x-go-name: AttendsSaturdayWorship
-            attendsSundaySchool:
-                type: boolean
-                x-go-name: AttendsSundaySchool
-            attendsSundayWorship:
-                type: boolean
-                x-go-name: AttendsSundayWorship
-            church_id:
-                type: string
-                x-go-name: ChurchID
-            id:
-                type: string
-                x-go-name: ID
-            oldChurch:
-                type: string
-                x-go-name: OldChurch
-            person:
-                $ref: '#/definitions/Person'
-            religion:
-                $ref: '#/definitions/Religion'
-        type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
     NotificationPreferences:
         properties:
             send_daily_sms:
@@ -280,111 +321,21 @@ definitions:
                 x-go-name: SendWeeklyEmail
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
-    Person:
-        description: Person type
-        properties:
-            address:
-                $ref: '#/definitions/Address'
-            birthDate:
-                format: date-time
-                type: string
-                x-go-name: BirthDate
-            brothersQuantity:
-                format: int64
-                type: integer
-                x-go-name: BrothersQuantity
-            childrenQuantity:
-                format: int64
-                type: integer
-                x-go-name: ChildrenQuantity
-            contact:
-                $ref: '#/definitions/Contact'
-            fathersName:
-                type: string
-                x-go-name: FathersName
-            firstName:
-                type: string
-                x-go-name: FirstName
-            gender:
-                type: string
-                x-go-name: Gender
-            lastName:
-                type: string
-                x-go-name: LastName
-            marriageDate:
-                format: date-time
-                type: string
-                x-go-name: MarriageDate
-            mothersName:
-                type: string
-                x-go-name: MothersName
-            name:
-                type: string
-                x-go-name: Name
-            placeOfBirth:
-                type: string
-                x-go-name: PlaceOfBirth
-            profession:
-                type: string
-                x-go-name: Profession
-            spousesName:
-                type: string
-                x-go-name: SpousesName
-        type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
     RetireMemberRequest:
-        description: RetireMemberRequest for HTTP calls to retire membership
+        description: RetireMemberRequest for HTTP calls to put member status
         properties:
             date:
                 format: date-time
                 type: string
-                x-go-name: Date
+                x-go-name: RetireDate
             reason:
+                description: The reason the member as retired
                 type: string
                 x-go-name: Reason
+        required:
+            - reason
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    Religion:
-        description: Religion struct
-        properties:
-            acceptedJesus:
-                type: boolean
-                x-go-name: AcceptedJesus
-            acceptedJesusDate:
-                format: date-time
-                type: string
-                x-go-name: AcceptedJesusDate
-            agreesTithe:
-                type: boolean
-                x-go-name: AgreesTithe
-            baptismDate:
-                format: date-time
-                type: string
-                x-go-name: BaptismDate
-            baptismPlace:
-                type: string
-                x-go-name: BaptismPlace
-            baptized:
-                type: boolean
-                x-go-name: Baptized
-            catholicBaptized:
-                type: boolean
-                x-go-name: CatholicBaptized
-            fathersReligion:
-                type: string
-                x-go-name: FathersReligion
-            knowsTithe:
-                type: boolean
-                x-go-name: KnowsTithe
-            learnedGospelAge:
-                format: int64
-                type: integer
-                x-go-name: LearnedGospelAge
-            tithe:
-                type: boolean
-                x-go-name: Tithe
-        type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
 host: localhost:8080
 info:
     description: This API manages the members of a church.
@@ -421,39 +372,9 @@ paths:
                 - token: []
             summary: Create member
     /members/{id}:
-        get:
-            description: Returns the member information
-            operationId: getMember
-            parameters:
-                - description: The member id
-                  in: path
-                  name: id
-                  required: true
-            produces:
-                - application/json
-            responses:
-                "200":
-                    description: The member information
-                    schema:
-                        $ref: '#/definitions/GetMemberResponse'
-                "400":
-                    description: Invalid ID
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-                "404":
-                    description: Member not found
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-                default:
-                    description: unexpected error
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-            security:
-                - token: []
-            summary: Get member
         delete:
-            description: Delete a member, removings its membership
-            operationId: deleteMembership
+            description: Retire a member from the church
+            operationId: retireMember
             parameters:
                 - description: The member id
                   in: path
@@ -484,7 +405,37 @@ paths:
                         $ref: '#/definitions/ErrorResponse'
             security:
                 - token: []
-            summary: Retire membership
+            summary: Retire Member
+        get:
+            description: Returns the member information
+            operationId: getMember
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The member information
+                    schema:
+                        $ref: '#/definitions/GetMemberResponse'
+                "400":
+                    description: Invalid ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Get member
     /members/search:
         post:
             description: Search member

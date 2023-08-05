@@ -27,15 +27,24 @@ func NewMemberHandler(service member.Service) *MemberHandler {
 
 func (handler *MemberHandler) postMember(ctx *fiber.Ctx) error {
 	memberRequestDTO := new(dto.CreateMemberRequest)
-	_ = json.Unmarshal(ctx.Body(), &memberRequestDTO)
-	if memberRequestDTO.Member == nil {
-		return apierrors.NewApiError("Invalid body received", http.StatusBadRequest)
+	if err := json.Unmarshal(ctx.Body(), &memberRequestDTO); err != nil {
+		return handler.badRequest(ctx, err)
 	}
-	id, err := handler.service.SaveMember(ctx.UserContext(), memberRequestDTO.Member)
+	if err := ValidateStruct(memberRequestDTO); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	id, err := handler.service.SaveMember(ctx.UserContext(), memberRequestDTO.ToMember())
 	if err != nil {
 		return err
 	}
 	return ctx.Status(http.StatusCreated).JSON(dto.CreateMemberResponse{ID: id})
+}
+
+func (handler *MemberHandler) badRequest(ctx *fiber.Ctx, err error) error {
+	return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
+		Message: "Invalid body received",
+		Error:   err.Error(),
+	})
 }
 
 func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
@@ -81,12 +90,11 @@ func (handler *MemberHandler) retireMember(ctx *fiber.Ctx) error {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
 	retireMemberRequest := new(dto.RetireMemberRequest)
-	_ = json.Unmarshal(ctx.Body(), &retireMemberRequest)
+	if err := json.Unmarshal(ctx.Body(), &retireMemberRequest); err != nil {
+		return handler.badRequest(ctx, err)
+	}
 	if err := ValidateStruct(retireMemberRequest); err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
-			Message: "Invalid body received",
-			Error:   err.Error(),
-		})
+		return handler.badRequest(ctx, err)
 	}
 	if retireMemberRequest.RetireDate.IsZero() {
 		retireMemberRequest.RetireDate = time.Now()

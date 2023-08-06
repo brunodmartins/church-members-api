@@ -71,6 +71,7 @@ func TestPostMember(t *testing.T) {
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
 		runTest(app, buildPost("/members", emptyJson)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildPost("/members", badJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
@@ -116,6 +117,7 @@ func TestRetireMember(t *testing.T) {
 	})
 	t.Run("Fail - 400 - ID", func(t *testing.T) {
 		runTest(app, buildDelete(fmt.Sprintf("/members/%s", "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", "X"), badJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 400 - Reason", func(t *testing.T) {
 		body := []byte(`{}`)

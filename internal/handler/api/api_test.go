@@ -22,6 +22,7 @@ type httpResult struct {
 }
 
 var emptyJson = []byte("{}")
+var badJson = []byte("")
 
 type mapAssert func(parsedBody interface{})
 

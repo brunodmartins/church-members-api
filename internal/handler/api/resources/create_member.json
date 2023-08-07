@@ -6,7 +6,7 @@
   "person": {
     "firstName": "XXXX",
     "lastName": "XXXX XXX",
-    "birthDate": "2020-01-01T00:00:00-03:00",
+    "birthDate": "2020-01-01",
     "naturalidade": "XXXXX",
     "placeOfBirth": "XXXXX",
     "fathersName": "XXXXXX",
@@ -19,7 +19,7 @@
     "contact": {
       "cellPhoneArea": 99,
       "cellPhone": 123456789,
-      "email": "XXXXXX"
+      "email": "XXXXXX@xxxx.com"
     },
     "address": {
       "zipCode": "XXXXXXX",

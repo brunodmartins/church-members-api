@@ -71,6 +71,7 @@ func TestPostMember(t *testing.T) {
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
 		runTest(app, buildPost("/members", emptyJson)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildPost("/members", badJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		id := domain.NewID()
@@ -118,8 +119,8 @@ func TestRetireMember(t *testing.T) {
 		runTest(app, buildDelete(fmt.Sprintf("/members/%s", "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 400 - Reason", func(t *testing.T) {
-		body := []byte(`{}`)
-		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), emptyJson)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), badJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		body := []byte(`{"reason": "Not Found"}`)

@@ -18,10 +18,10 @@ type RetireMemberRequest struct {
 // swagger:model CreateMemberRequest
 type CreateMemberRequest struct {
 	OldChurch              string                `json:"oldChurch"`
-	AttendsFridayWorship   bool                  `json:"attendsFridayWorship" validate:"required"`
-	AttendsSaturdayWorship bool                  `json:"attendsSaturdayWorship" validate:"required"`
-	AttendsSundayWorship   bool                  `json:"attendsSundayWorship" validate:"required"`
-	AttendsSundaySchool    bool                  `json:"attendsSundaySchool" validate:"required"`
+	AttendsFridayWorship   *bool                 `json:"attendsFridayWorship" validate:"required"`
+	AttendsSaturdayWorship *bool                 `json:"attendsSaturdayWorship" validate:"required"`
+	AttendsSundayWorship   *bool                 `json:"attendsSundayWorship" validate:"required"`
+	AttendsSundaySchool    *bool                 `json:"attendsSundaySchool" validate:"required"`
 	AttendsObservation     string                `json:"attendsObservation"`
 	Person                 CreatePersonRequest   `json:"person" validate:"required"`
 	Religion               CreateReligionRequest `json:"religion" validate:"required"`
@@ -30,10 +30,10 @@ type CreateMemberRequest struct {
 func (dto CreateMemberRequest) ToMember() *domain.Member {
 	return &domain.Member{
 		OldChurch:              dto.OldChurch,
-		AttendsFridayWorship:   dto.AttendsFridayWorship,
-		AttendsSaturdayWorship: dto.AttendsSaturdayWorship,
-		AttendsSundayWorship:   dto.AttendsSundayWorship,
-		AttendsSundaySchool:    dto.AttendsSundaySchool,
+		AttendsFridayWorship:   *dto.AttendsFridayWorship,
+		AttendsSaturdayWorship: *dto.AttendsSaturdayWorship,
+		AttendsSundayWorship:   *dto.AttendsSundayWorship,
+		AttendsSundaySchool:    *dto.AttendsSundaySchool,
 		AttendsObservation:     dto.AttendsObservation,
 		Person:                 dto.Person.ToPerson(),
 		Religion:               dto.Religion.ToReligion(),
@@ -82,11 +82,11 @@ func (dto CreatePersonRequest) ToPerson() *domain.Person {
 // CreateContactRequest for HTTP calls to post a person
 // swagger:model CreateContactRequest
 type CreateContactRequest struct {
-	PhoneArea     int    `json:"phoneArea"`
-	Phone         int    `json:"phone"`
-	CellPhoneArea int    `json:"cellPhoneArea"`
-	CellPhone     int    `json:"cellPhone"`
-	Email         string `json:"email" validate:"email"`
+	PhoneArea     int     `json:"phoneArea"`
+	Phone         int     `json:"phone"`
+	CellPhoneArea int     `json:"cellPhoneArea"`
+	CellPhone     int     `json:"cellPhone"`
+	Email         *string `json:"email" validate:"email"`
 }
 
 func (dto CreateContactRequest) ToContact() *domain.Contact {
@@ -95,7 +95,7 @@ func (dto CreateContactRequest) ToContact() *domain.Contact {
 		Phone:         dto.Phone,
 		CellPhoneArea: dto.CellPhoneArea,
 		CellPhone:     dto.CellPhone,
-		Email:         dto.Email,
+		Email:         *dto.Email,
 	}
 }
 

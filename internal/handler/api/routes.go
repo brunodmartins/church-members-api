@@ -43,7 +43,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/members", handler.postMember)
-	// swagger:operation POST /members/search searchMember
+	// swagger:operation GET /members searchMember
 	//
 	// Search member
 	//

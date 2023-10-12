@@ -82,11 +82,11 @@ func (dto CreatePersonRequest) ToPerson() *domain.Person {
 // CreateContactRequest for HTTP calls to post a person
 // swagger:model CreateContactRequest
 type CreateContactRequest struct {
-	PhoneArea     int     `json:"phoneArea"`
-	Phone         int     `json:"phone"`
-	CellPhoneArea int     `json:"cellPhoneArea"`
-	CellPhone     int     `json:"cellPhone"`
-	Email         *string `json:"email" validate:"email"`
+	PhoneArea     int    `json:"phoneArea"`
+	Phone         int    `json:"phone"`
+	CellPhoneArea int    `json:"cellPhoneArea"`
+	CellPhone     int    `json:"cellPhone"`
+	Email         string `json:"email"`
 }
 
 func (dto CreateContactRequest) ToContact() *domain.Contact {
@@ -95,7 +95,7 @@ func (dto CreateContactRequest) ToContact() *domain.Contact {
 		Phone:         dto.Phone,
 		CellPhoneArea: dto.CellPhoneArea,
 		CellPhone:     dto.CellPhone,
-		Email:         *dto.Email,
+		Email:         dto.Email,
 	}
 }
 

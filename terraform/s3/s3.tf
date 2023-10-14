@@ -1,26 +1,40 @@
 
 resource "aws_s3_bucket" "bucket" {
   bucket = "church-members-data"
-  acl    = "private"
+}
 
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
+resource "aws_s3_bucket_server_side_encryption_configuration" "sse_config" {
+  bucket = aws_s3_bucket.bucket.id
+  rule {
       apply_server_side_encryption_by_default {
         sse_algorithm     = "aws:kms"
       }
+  }
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "lifecycle" {
+  bucket = aws_s3_bucket.bucket.id
+  
+  rule {
+    id = "expire-failed-uploads"
+    status = "Enabled"
+    abort_incomplete_multipart_upload {
+        days_after_initiation = 1
     }
   }
+}
 
-  lifecycle_rule {
-    id = "expire-failed-uploads"
-    enabled = true
-
-    abort_incomplete_multipart_upload_days = 1
+resource "aws_s3_bucket_versioning" "versioning" {
+  bucket = aws_s3_bucket.bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
+}
+
+
+resource "aws_s3_bucket_acl" "acl" {
+  bucket = aws_s3_bucket.bucket.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_public_access_block" "block_public_access" {

@@ -1,5 +1,17 @@
+variable "member_table_name" {
+  type = string
+}
+
+variable "user_table_name" {
+  type = string
+}
+
+variable "church_table_name" {
+  type = string
+}
+
 resource "aws_dynamodb_table" "member_v2" {
-  name = "member_v2"
+  name = var.member_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "church_id"
   range_key = "id"
@@ -85,7 +97,7 @@ resource "aws_dynamodb_table" "member_v2" {
 }
 
 resource "aws_dynamodb_table" "users_v2" {
-  name = "user_v2"
+  name = var.user_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "church_id"
   range_key = "username"
@@ -102,7 +114,7 @@ resource "aws_dynamodb_table" "users_v2" {
 }
 
 resource "aws_dynamodb_table" "church_table" {
-  name = "church"
+  name = var.church_table_name
   billing_mode = "PAY_PER_REQUEST"
   hash_key = "id"
 

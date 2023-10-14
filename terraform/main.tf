@@ -49,6 +49,9 @@ module "ses" {
 
 module "dynamodb" {
   source = "./dynamodb"
+  member_table_name = "member_v2"
+  user_table_name = "user_v2"
+  church_table_name = "church"
 }
 
 module "iam" {

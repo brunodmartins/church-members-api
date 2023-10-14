@@ -1,14 +1,3 @@
-resource "aws_dynamodb_table" "member_table" {
-  name = "member"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
-  }
-}
-
 resource "aws_dynamodb_table" "member_v2" {
   name = "member_v2"
   billing_mode = "PAY_PER_REQUEST"
@@ -95,28 +84,6 @@ resource "aws_dynamodb_table" "member_v2" {
 
 }
 
-resource "aws_dynamodb_table" "member_history_table" {
-  name = "member_history"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
-  }
-}
-
-resource "aws_dynamodb_table" "user_table" {
-  name = "user"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
-  }
-}
-
 resource "aws_dynamodb_table" "users_v2" {
   name = "user_v2"
   billing_mode = "PAY_PER_REQUEST"
@@ -134,7 +101,6 @@ resource "aws_dynamodb_table" "users_v2" {
   }
 }
 
-
 resource "aws_dynamodb_table" "church_table" {
   name = "church"
   billing_mode = "PAY_PER_REQUEST"
@@ -148,10 +114,6 @@ resource "aws_dynamodb_table" "church_table" {
 
 output "member_table_name" {
   value = aws_dynamodb_table.member_v2.name
-}
-
-output "member_history_table_name" {
-  value = aws_dynamodb_table.member_history_table.name
 }
 
 output "user_table_name" {
@@ -168,7 +130,6 @@ output "tables_arn" {
     "${aws_dynamodb_table.member_v2.arn}/index/nameIndex",
     "${aws_dynamodb_table.member_v2.arn}/index/maritalStatusIndex",
     "${aws_dynamodb_table.member_v2.arn}/index/birthDateIndex",
-    aws_dynamodb_table.member_history_table.arn,
     aws_dynamodb_table.users_v2.arn,
     aws_dynamodb_table.church_table.arn
   ]

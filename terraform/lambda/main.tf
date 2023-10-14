@@ -10,10 +10,6 @@ variable "member_table_name" {
   type = string
 }
 
-variable "member_history_table_name" {
-  type = string
-}
-
 variable "user_table_name" {
   type = string
 }
@@ -59,7 +55,6 @@ resource "aws_lambda_function" "lambda_api" {
       "APP_LANG" : var.app_lang,
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
-      "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "TABLE_USER" : var.user_table_name,
       "TABLE_CHURCH": var.church_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
@@ -84,7 +79,6 @@ resource "aws_lambda_function" "lambda_job" {
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_USER" : var.user_table_name,
-      "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "TABLE_CHURCH": var.church_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
       "STORAGE": var.bucket_name,

@@ -68,7 +68,6 @@ module "sns" {
 module "lambda" {
   source = "./lambda"
   member_table_name = module.dynamodb.member_table_name
-  member_history_table_name = module.dynamodb.member_history_table_name
   user_table_name = module.dynamodb.user_table_name
   church_table_name = module.dynamodb.church_table_name
   image_uri = module.ecr.image_id

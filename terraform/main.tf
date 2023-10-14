@@ -85,6 +85,7 @@ module "lambda" {
 
 module "gateway" {
   source = "./gateway"
+  gateway_name = "church-members-api-gw"
   region = data.aws_region.current.name
   account_id = data.aws_caller_identity.current.account_id
   lambda_name = module.lambda.lambda_name

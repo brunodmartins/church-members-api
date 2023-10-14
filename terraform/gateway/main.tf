@@ -14,6 +14,10 @@ variable "lambda_arn" {
   type = string
 }
 
+variable "gateway_name" {
+  type = string
+}
+
 data "template_file" "aws_api_swagger" {
   template = file("${path.module}/swagger-terraform.json")
   vars = {
@@ -24,7 +28,7 @@ data "template_file" "aws_api_swagger" {
 }
 
 resource "aws_api_gateway_rest_api" "api_gateway" {
-  name = "church-members-api-gw"
+  name = var.gateway_name
   description = "church-members-api API gateway"
   body = data.template_file.aws_api_swagger.rendered
   minimum_compression_size = 1

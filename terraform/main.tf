@@ -58,6 +58,7 @@ module "iam" {
   source = "./iam"
   dynamodb_tables = module.dynamodb.tables_arn
   bucket_arn = module.s3.bucket_arn
+  role_name = "church-members-api"
 }
 
 module "ecr" {

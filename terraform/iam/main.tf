@@ -6,8 +6,12 @@ variable "bucket_arn" {
   type = string
 }
 
+variable "role_name" {
+  type = string
+}
+
 resource "aws_iam_policy" "church_members_api_policy" {
-  name = "church-members-api-policy"
+  name = "${var.role_name}-policy"
   description = "This policy allow church-members-api full execution"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -69,7 +73,7 @@ resource "aws_iam_policy" "church_members_api_policy" {
 }
 
 resource "aws_iam_role" "church_members_api_role" {
-  name = "church-members-api-role"
+  name = "${var.role_name}-role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [

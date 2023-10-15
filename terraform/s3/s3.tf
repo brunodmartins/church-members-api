@@ -1,6 +1,9 @@
+variable "bucket_name" {
+  type = string
+}
 
 resource "aws_s3_bucket" "bucket" {
-  bucket = "church-members-data"
+  bucket = var.bucket_name
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "sse_config" {
@@ -48,7 +51,7 @@ resource "aws_s3_bucket_public_access_block" "block_public_access" {
 
 
 output "bucket_name" {
-    value = "church-members-data"
+    value = var.bucket_name
 }
 
 output "bucket_arn" {

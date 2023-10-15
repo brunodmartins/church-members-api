@@ -15,10 +15,6 @@ terraform {
   }
 }
 
-variable "region" {
-  default = "us-east-1"
-}
-
 variable "security_token_secret" {
   type = string
 }
@@ -31,9 +27,7 @@ variable "email_sender" {
   type = string
 }
 
-provider "aws" {
-  region = var.region
-}
+provider "aws" {}
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}

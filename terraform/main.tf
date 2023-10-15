@@ -19,10 +19,6 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "app_lang" {
-  type = string
-}
-
 variable "security_token_secret" {
   type = string
 }
@@ -77,7 +73,6 @@ module "lambda" {
   image_uri = module.ecr.image_id
   lambda_role_arn = module.iam.lambda_role_arn
   topic_arn = module.sns.reports_topic
-  app_lang = var.app_lang
   security_token_secret = var.security_token_secret
   security_token_expiration = var.security_token_expiration
   email_sender = var.email_sender

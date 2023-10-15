@@ -22,10 +22,6 @@ variable "topic_arn" {
   type = string
 }
 
-variable "app_lang" {
-  type = string
-}
-
 variable "security_token_secret" {
   type = string
 }
@@ -60,7 +56,6 @@ resource "aws_lambda_function" "lambda_api" {
     variables = {
       "SERVER" : "AWS",
       "APPLICATION" : "API"
-      "APP_LANG" : var.app_lang,
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_USER" : var.user_table_name,
@@ -83,7 +78,6 @@ resource "aws_lambda_function" "lambda_job" {
     variables = {
       "SERVER" : "AWS",
       "APPLICATION" : "JOB"
-      "APP_LANG" : var.app_lang,
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_USER" : var.user_table_name,

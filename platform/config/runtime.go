@@ -15,7 +15,6 @@ func InitConfiguration() {
 
 	viper.Set("cloud", os.Getenv("SERVER"))
 	viper.Set("application", os.Getenv("APPLICATION"))
-	viper.Set("lang", os.Getenv("APP_LANG"))
 	viper.Set("tables.member", os.Getenv("TABLE_MEMBER"))
 	viper.Set("tables.user", os.Getenv("TABLE_USER"))
 	viper.Set("tables.church", os.Getenv("TABLE_CHURCH"))

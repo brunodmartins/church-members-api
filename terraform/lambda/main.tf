@@ -10,10 +10,6 @@ variable "member_table_name" {
   type = string
 }
 
-variable "member_history_table_name" {
-  type = string
-}
-
 variable "user_table_name" {
   type = string
 }
@@ -23,10 +19,6 @@ variable "church_table_name" {
 }
 
 variable "topic_arn" {
-  type = string
-}
-
-variable "app_lang" {
   type = string
 }
 
@@ -46,8 +38,16 @@ variable "bucket_name" {
   type = string
 }
 
+variable "lambda_api_name" {
+  type = string
+}
+
+variable "lambda_job_name" {
+  type = string
+}
+
 resource "aws_lambda_function" "lambda_api" {
-  function_name = "church-members-api-lambda"
+  function_name = var.lambda_api_name
   role = var.lambda_role_arn
   timeout = 500
   image_uri = var.image_uri
@@ -56,10 +56,8 @@ resource "aws_lambda_function" "lambda_api" {
     variables = {
       "SERVER" : "AWS",
       "APPLICATION" : "API"
-      "APP_LANG" : var.app_lang,
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
-      "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "TABLE_USER" : var.user_table_name,
       "TABLE_CHURCH": var.church_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
@@ -71,7 +69,7 @@ resource "aws_lambda_function" "lambda_api" {
 }
 
 resource "aws_lambda_function" "lambda_job" {
-  function_name = "church-members-job-lambda"
+  function_name = var.lambda_job_name
   role = var.lambda_role_arn
   timeout = 500
   image_uri = var.image_uri
@@ -80,11 +78,9 @@ resource "aws_lambda_function" "lambda_job" {
     variables = {
       "SERVER" : "AWS",
       "APPLICATION" : "JOB"
-      "APP_LANG" : var.app_lang,
       "EMAIL_SENDER": var.email_sender,
       "TABLE_MEMBER" : var.member_table_name,
       "TABLE_USER" : var.user_table_name,
-      "TABLE_MEMBER_HISTORY" : var.member_history_table_name,
       "TABLE_CHURCH": var.church_table_name,
       "REPORTS_TOPIC" : var.topic_arn,
       "STORAGE": var.bucket_name,

@@ -82,6 +82,8 @@ module "lambda" {
   security_token_expiration = var.security_token_expiration
   email_sender = var.email_sender
   bucket_name = module.s3.bucket_name
+  lambda_api_name = "church-members-api-lambda"
+  lambda_job_name = "church-members-job-lambda"
 }
 
 module "gateway" {

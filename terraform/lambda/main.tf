@@ -42,8 +42,16 @@ variable "bucket_name" {
   type = string
 }
 
+variable "lambda_api_name" {
+  type = string
+}
+
+variable "lambda_job_name" {
+  type = string
+}
+
 resource "aws_lambda_function" "lambda_api" {
-  function_name = "church-members-api-lambda"
+  function_name = var.lambda_api_name
   role = var.lambda_role_arn
   timeout = 500
   image_uri = var.image_uri
@@ -66,7 +74,7 @@ resource "aws_lambda_function" "lambda_api" {
 }
 
 resource "aws_lambda_function" "lambda_job" {
-  function_name = "church-members-job-lambda"
+  function_name = var.lambda_job_name
   role = var.lambda_role_arn
   timeout = 500
   image_uri = var.image_uri

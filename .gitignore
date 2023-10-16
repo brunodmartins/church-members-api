@@ -20,3 +20,4 @@ debug
 cmd.zip
 internal.zip
 .run
+*.tfvars

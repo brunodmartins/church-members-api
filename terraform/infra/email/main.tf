@@ -1,7 +1,3 @@
-variable email {
-  type = string
-}
-
 resource "aws_ses_email_identity" "email" {
   email = var.email
 }

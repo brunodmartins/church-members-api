@@ -1,15 +1,3 @@
-variable "dynamodb_tables" {
-  type = list(string)
-}
-
-variable "bucket_arn" {
-  type = string
-}
-
-variable "role_name" {
-  type = string
-}
-
 resource "aws_iam_policy" "church_members_api_policy" {
   name = "${var.role_name}-policy"
   description = "This policy allow church-members-api full execution"
@@ -87,7 +75,6 @@ resource "aws_iam_role" "church_members_api_role" {
     ]
   })
 }
-
 
 resource "aws_iam_role_policy_attachment" "attach_policy" {
   role = aws_iam_role.church_members_api_role.name

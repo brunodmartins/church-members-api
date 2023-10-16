@@ -10,7 +10,7 @@ terraform {
     organization = "church-members-api"
 
     workspaces {
-      name = "church-members-api"
+      name = "church-members-infra"
     }
   }
 }

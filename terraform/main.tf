@@ -1,37 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
-  }
-
-  backend "remote" {
-    hostname = "app.terraform.io"
-    organization = "church-members-api"
-
-    workspaces {
-      name = "church-members-api"
-    }
-  }
-}
-
-variable "security_token_secret" {
-  type = string
-}
-
-variable "security_token_expiration" {
-  type = string
-}
-
-variable "email_sender" {
-  type = string
-}
-
-provider "aws" {}
-
-data "aws_caller_identity" "current" {}
-data "aws_region" "current" {}
-
 module "ses" {
   source = "./ses"
   email = var.email_sender

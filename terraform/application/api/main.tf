@@ -1,29 +1,24 @@
-variable "region" {
-  type = string
-}
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 
-variable "account_id" {
-  type = string
-}
 
-variable "lambda_name" {
-  type = string
-}
-
-variable "lambda_arn" {
-  type = string
-}
-
-variable "gateway_name" {
-  type = string
+resource "aws_lambda_function" "lambda_api" {
+  function_name = var.lambda_api_name
+  role = var.lambda_role_arn
+  timeout = 500
+  image_uri = var.image_uri
+  package_type = "Image"
+  environment {
+    variables = var.env_var
+  }
 }
 
 data "template_file" "aws_api_swagger" {
   template = file("${path.module}/swagger-terraform.json")
   vars = {
-    aws_region = var.region
-    aws_account_id = var.account_id
-    lambda_id = var.lambda_name
+    aws_region = data.aws_region.current.name
+    aws_account_id = data.aws_caller_identity.current.account_id
+    lambda_id = aws_lambda_function.lambda_api.function_name
   }
 }
 
@@ -65,7 +60,9 @@ resource "aws_api_gateway_stage" "api_stage" {
   stage_name = "prod"
 }
 
-
-output "gateway_id" {
-  value = aws_api_gateway_rest_api.api_gateway.id
+resource "aws_lambda_permission" "policy_any_proxy" {
+  action        = "lambda:InvokeFunction"
+  function_name =  aws_lambda_function.lambda_api.arn
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.api_gateway.id}/*/*/*"
 }

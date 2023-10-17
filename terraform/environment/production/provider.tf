@@ -15,7 +15,14 @@ terraform {
   }
 }
 
-provider "aws" {}
+provider "aws" {
+  default_tags {
+    tags = {
+      Environment = "Production"
+      Application = "church-members-api"
+    }
+  }
+}
 
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}

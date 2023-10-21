@@ -1,0 +1,29 @@
+{
+  "church_id": {
+    "S": "24bbd325-30d1-49e6-99f4-4464a908c2ec"
+  },
+  "username": {
+    "S": "test_user"
+  },
+  "email": {
+    "S": "local@test.com"
+  },
+  "id": {
+    "S": "0409e78b-22bd-4dd6-8b21-51b071d05c63"
+  },
+  "password": {
+    "S": ""
+  },
+  "phone": {
+    "S": "+551112345678"
+  },
+  "role": {
+    "S": "ADMIN"
+  },
+  "send_daily_sms": {
+    "BOOL": false
+  },
+  "send_weekly_email": {
+    "BOOL": false
+  }
+}

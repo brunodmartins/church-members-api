@@ -74,6 +74,15 @@ func OnlyActive() wrapper.QuerySpecification {
 	}
 }
 
+func OnlyInactive() wrapper.QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		keyCondition := withChurchKey(ctx)
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(keyCondition).WithFilter(activeCondition(false)),
+		}
+	}
+}
+
 func OnlyMarriage() wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
 		keyCondition := withChurchKey(ctx).And(expression.Key("maritalStatus").Equal(expression.Value("MARRIED")))
@@ -91,6 +100,12 @@ func activeCondition(value bool) expression.ConditionBuilder {
 func OnlyLegalMembers() Specification {
 	return func(member *domain.Member) bool {
 		return member.IsLegal()
+	}
+}
+
+func OnlyMembershipEndCurrentYear() Specification {
+	return func(member *domain.Member) bool {
+		return member.MembershipEndCurrentYear()
 	}
 }
 

@@ -128,6 +128,11 @@ func (report reportService) LegalReport(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	inactiveMembers, err := report.memberService.SearchMembers(ctx, member.OnlyInactive(), member.OnlyLegalMembers(), member.OnlyMembershipEndCurrentYear())
+	if err != nil {
+		return err
+	}
+	members = append(members, inactiveMembers...)
 	sort.Sort(domain.SortByName(members))
 	result, err := report.fileBuilder.BuildFile(ctx, i18n.GetMessage(ctx, "Reports.Title.Legal"), domain.GetChurch(ctx), members)
 	if err != nil {

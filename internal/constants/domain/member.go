@@ -43,3 +43,7 @@ func (member Member) Classification() enum.Classification {
 func (member Member) IsLegal() bool {
 	return member.Classification() != classification.CHILDREN
 }
+
+func (member Member) MembershipEndCurrentYear() bool {
+	return member.MembershipEndDate != nil && member.MembershipEndDate.Year() == time.Now().Year()
+}

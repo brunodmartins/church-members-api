@@ -87,6 +87,29 @@ func TestIsLegal(t *testing.T) {
 	assert.False(t, BuildChildren().IsLegal())
 }
 
+func TestIsMembershipEndCurrentYear(t *testing.T) {
+	t.Run("Member active", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = true
+		member.MembershipEndDate = nil
+		assert.False(t, member.MembershipEndCurrentYear())
+	})
+	t.Run("Member Inactive current year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		now := time.Now()
+		member.MembershipEndDate = &now
+		assert.True(t, member.MembershipEndCurrentYear())
+	})
+	t.Run("Member Inactive last year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		now := time.Now().AddDate(-1, 0, 0)
+		member.MembershipEndDate = &now
+		assert.False(t, member.MembershipEndCurrentYear())
+	})
+}
+
 func BuildChildren() *Member {
 	return &Member{
 		Person: &Person{

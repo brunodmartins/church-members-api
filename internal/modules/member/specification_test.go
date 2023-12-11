@@ -98,6 +98,29 @@ func TestOnlyLegalMembers(t *testing.T) {
 	assert.False(t, OnlyLegalMembers()(BuildChildren()))
 }
 
+func TestOnlyMembershipEndCurrentYear(t *testing.T) {
+	t.Run("Member active", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = true
+		member.MembershipEndDate = nil
+		assert.False(t, OnlyMembershipEndCurrentYear()(member))
+	})
+	t.Run("Member Inactive current year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		now := time.Now()
+		member.MembershipEndDate = &now
+		assert.True(t, OnlyMembershipEndCurrentYear()(member))
+	})
+	t.Run("Member Inactive last year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		now := time.Now().AddDate(-1, 0, 0)
+		member.MembershipEndDate = &now
+		assert.False(t, OnlyMembershipEndCurrentYear()(member))
+	})
+}
+
 func TestOnlyByClassification(t *testing.T) {
 	assert.True(t, OnlyByClassification(classification.YOUNG)(BuildAdult()))
 	assert.False(t, OnlyByClassification(classification.ADULT)(BuildChildren()))

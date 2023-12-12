@@ -117,6 +117,15 @@ func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.
 		pdfBuilder.setValue("", builder)
 	}
 
+	if !data.Active {
+		builder.Br(15)
+		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.MembershipEndDate"), builder)
+		pdfBuilder.setValue(data.MembershipEndDate.Format("02/01/2006"), builder)
+		builder.Br(15)
+		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.MembershipEndReason"), builder)
+		pdfBuilder.setValue(data.MembershipEndReason, builder)
+	}
+
 	builder.Br(10)
 	builder.SetLineWidth(2)
 	builder.SetLineType("dashed")
@@ -153,7 +162,7 @@ func (pdfBuilder *pdfBuilder) BuildFile(ctx context.Context, title string, churc
 	}
 	pdfBuilder.buildFirstPageSection(title, church, pdf)
 	pdf.AddPage()
-	const maxPerPage int = 7
+	const maxPerPage int = 6
 	count := 0
 	for _, member := range data {
 		if count == maxPerPage {

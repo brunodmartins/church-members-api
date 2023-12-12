@@ -12,6 +12,8 @@
 "Domain.MembersQuantity" = "Quantidade de Membros"
 "Domain.Name" = "Nome"
 "Domain.Phone" = "Telefone"
+"Domain.MembershipEndReason" = "Motivo"
+"Domain.MembershipEndDate" = "Fim da membresia"
 "Reports.Title.Default" = "Relatório de Membros"
 "Reports.Title.Legal" = "Relatório de Membros - Jurídico"
 "Jobs.Daily.Title"="Aniversários"

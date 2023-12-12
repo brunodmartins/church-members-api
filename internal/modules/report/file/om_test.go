@@ -8,16 +8,28 @@ import (
 
 func BuildMembers(size int) []*domain.Member {
 	var members []*domain.Member
+	members = append(members, buildInactiveMember(domain.NewID()))
 	for i := 0; i < size; i++ {
 		members = append(members, buildMember(domain.NewID()))
 	}
+	members = append(members, buildInactiveMember(domain.NewID()))
 	return members
+}
+
+func buildInactiveMember(id string) *domain.Member {
+	member := buildMember(id)
+	member.Active = false
+	member.MembershipEndReason = "End test reason"
+	now := time.Now()
+	member.MembershipEndDate = &now
+	return member
 }
 
 func buildMember(id string) *domain.Member {
 	now := time.Now()
 	return &domain.Member{
-		ID: id,
+		ID:     id,
+		Active: true,
 		Person: &domain.Person{
 			FirstName:    "First Name",
 			LastName:     "Last Name",

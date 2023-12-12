@@ -2,6 +2,7 @@ package member
 
 import (
 	"context"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"testing"
 	"time"
 
@@ -30,6 +31,17 @@ func TestCreateActiveFilter(t *testing.T) {
 	queryExpression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, queryExpression.Names(), 2)
+	assert.Equal(t, &types.AttributeValueMemberBOOL{Value: true}, queryExpression.Values()[":0"])
+
+}
+
+func TestCreateInactiveFilter(t *testing.T) {
+	spec := OnlyInactive()
+	builder := spec(BuildContext(), expression.NewBuilder())
+	queryExpression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, queryExpression.Names(), 2)
+	assert.Equal(t, &types.AttributeValueMemberBOOL{Value: false}, queryExpression.Values()[":0"])
 }
 
 func TestQuerySpecification_ApplyFilters(t *testing.T) {
@@ -96,6 +108,29 @@ func TestCreateMarriageFilter(t *testing.T) {
 func TestOnlyLegalMembers(t *testing.T) {
 	assert.True(t, OnlyLegalMembers()(BuildAdult()))
 	assert.False(t, OnlyLegalMembers()(BuildChildren()))
+}
+
+func TestOnlyMembershipEndCurrentYear(t *testing.T) {
+	t.Run("Member active", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = true
+		member.MembershipEndDate = nil
+		assert.False(t, OnlyMembershipEndCurrentYear()(member))
+	})
+	t.Run("Member Inactive current year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		now := time.Now()
+		member.MembershipEndDate = &now
+		assert.True(t, OnlyMembershipEndCurrentYear()(member))
+	})
+	t.Run("Member Inactive last year", func(t *testing.T) {
+		member := BuildAdult()
+		member.Active = false
+		now := time.Now().AddDate(-1, 0, 0)
+		member.MembershipEndDate = &now
+		assert.False(t, OnlyMembershipEndCurrentYear()(member))
+	})
 }
 
 func TestOnlyByClassification(t *testing.T) {

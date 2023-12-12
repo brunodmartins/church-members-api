@@ -2,6 +2,7 @@ package member
 
 import (
 	"context"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"testing"
 	"time"
 
@@ -30,6 +31,17 @@ func TestCreateActiveFilter(t *testing.T) {
 	queryExpression, err := builder.Build()
 	assert.Nil(t, err)
 	assert.Len(t, queryExpression.Names(), 2)
+	assert.Equal(t, &types.AttributeValueMemberBOOL{Value: true}, queryExpression.Values()[":0"])
+
+}
+
+func TestCreateInactiveFilter(t *testing.T) {
+	spec := OnlyInactive()
+	builder := spec(BuildContext(), expression.NewBuilder())
+	queryExpression, err := builder.Build()
+	assert.Nil(t, err)
+	assert.Len(t, queryExpression.Names(), 2)
+	assert.Equal(t, &types.AttributeValueMemberBOOL{Value: false}, queryExpression.Values()[":0"])
 }
 
 func TestQuerySpecification_ApplyFilters(t *testing.T) {

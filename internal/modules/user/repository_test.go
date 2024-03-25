@@ -13,8 +13,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 )
 
 const (

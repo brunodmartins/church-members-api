@@ -329,13 +329,13 @@ definitions:
                 type: string
                 x-go-name: RetireDate
             reason:
-                description: The reason the member as retired
                 type: string
                 x-go-name: Reason
-        required:
-            - reason
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    UpdateContactRequest:
+        $ref: '#/definitions/CreateContactRequest'
+        description: UpdateContactRequest for HTTP calls to post a person
 host: localhost:8080
 info:
     description: This API manages the members of a church.
@@ -343,6 +343,30 @@ info:
     version: 1.0.0
 paths:
     /members:
+        get:
+            description: Search member
+            operationId: searchMember
+            parameters:
+                - description: The member names
+                  in: query
+                  name: name
+                - description: The member status active [true,false]
+                  in: query
+                  name: active
+                - description: The member gender [M,F]
+                  in: query
+                  name: gender
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Members found
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
         post:
             description: Register the receiving member
             operationId: postMember
@@ -436,31 +460,41 @@ paths:
             security:
                 - token: []
             summary: Get member
-    /members/search:
-        post:
-            description: Search member
-            operationId: searchMember
+    /members/{id}/contact:
+        put:
+            description: Update the contact for the given member
+            operationId: updateContact
             parameters:
-                - description: The member names
-                  in: query
-                  name: name
-                - description: The member status active [true,false]
-                  in: query
-                  name: active
-                - description: The member gender [M,F]
-                  in: query
-                  name: gender
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                - description: The contact to be updated
+                  in: body
+                  name: member
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UpdateContactRequest'
             produces:
                 - application/json
             responses:
                 "200":
-                    description: Members found
+                    description: Contact updated
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
                 default:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
                 - token: []
+            summary: Update member - Contact
     /reports/{reportType}:
         get:
             description: Returns a report file url

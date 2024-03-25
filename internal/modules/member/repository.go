@@ -2,6 +2,7 @@ package member
 
 import (
 	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -19,6 +20,7 @@ type Repository interface {
 	FindByID(ctx context.Context, id string) (*domain.Member, error)
 	Insert(ctx context.Context, member *domain.Member) error
 	RetireMembership(ctx context.Context, member *domain.Member) error
+	UpdateContact(ctx context.Context, member *domain.Member) error
 }
 
 type dynamoRepository struct {
@@ -104,4 +106,42 @@ func (repo dynamoRepository) RetireMembership(ctx context.Context, member *domai
 		UpdateExpression: aws.String("set active = :active, membershipEndDate = :membershipEndDate, membershipEndReason = :membershipEndReason"),
 	})
 	return err
+}
+
+func (repo dynamoRepository) UpdateContact(ctx context.Context, member *domain.Member) error {
+	updateQuery := "set phoneArea = :phoneArea, phone = :phone, cellPhoneArea = :cellPhoneArea, cellPhone = :cellPhone, email = :email"
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{
+				Value: member.ID,
+			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: member.ChurchID,
+			},
+		},
+		TableName: aws.String(repo.memberTable),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":phoneArea":     toNumberAttributeValue(member.Person.Contact.PhoneArea),
+			":phone":         toNumberAttributeValue(member.Person.Contact.Phone),
+			":cellPhoneArea": toNumberAttributeValue(member.Person.Contact.CellPhoneArea),
+			":cellPhone":     toNumberAttributeValue(member.Person.Contact.CellPhone),
+			":email":         toStringAttributeValue(member.Person.Contact.Email),
+		},
+		ReturnValues:     "UPDATED_NEW",
+		UpdateExpression: aws.String(updateQuery),
+	})
+	return err
+}
+
+func toNumberAttributeValue(value int) types.AttributeValue {
+	if value == 0 {
+		return &types.AttributeValueMemberNULL{Value: true}
+	}
+	return &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", value)}
+}
+func toStringAttributeValue(value string) types.AttributeValue {
+	if value == "" {
+		return &types.AttributeValueMemberNULL{Value: true}
+	}
+	return &types.AttributeValueMemberS{Value: value}
 }

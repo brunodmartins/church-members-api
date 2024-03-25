@@ -73,6 +73,10 @@ func buildDelete(target string, body []byte) *http.Request {
 	return buildRequest("DELETE", target, body)
 }
 
+func buildPut(target string, body []byte) *http.Request {
+	return buildRequest("PUT", target, body)
+}
+
 func buildGet(target string) *http.Request {
 	return buildRequest("GET", target, []byte(""))
 }

@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/viper"
 
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 )
 
 func TestAuthService_GenerateToken(t *testing.T) {

@@ -3,6 +3,7 @@ package jobs
 import (
 	"context"
 	"fmt"
+	"go.uber.org/mock/gomock"
 	"testing"
 	"time"
 
@@ -14,7 +15,6 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	mock_notification "github.com/brunodmartins/church-members-api/internal/services/notification/mock"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 

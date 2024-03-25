@@ -6,11 +6,11 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	"go.uber.org/mock/gomock"
 	"testing"
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -2,15 +2,16 @@ package member_test
 
 import (
 	"context"
+	"fmt"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	"go.uber.org/mock/gomock"
 	"testing"
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -115,4 +116,52 @@ func TestChangeStatus(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(nil, genericError)
 		assert.NotNil(t, service.RetireMembership(BuildContext(), id, reason, date))
 	})
+}
+
+func TestMemberService_UpdateContact(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctx := context.TODO()
+	defer ctrl.Finish()
+	repo := mock_member.NewMockRepository(ctrl)
+	service := member.NewMemberService(repo)
+	t.Run("Successfully update the contact information", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		contact := domain.Contact{
+			Email: "test@test.com",
+		}
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateContact(gomock.Eq(ctx), memberContactMatcher{contact: contact}).Return(nil)
+		assert.Nil(t, service.UpdateContact(ctx, id, contact))
+	})
+	t.Run("Fails to update the contact information due to update error", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		contact := domain.Contact{
+			Email: "test@test.com",
+		}
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateContact(gomock.Eq(ctx), memberContactMatcher{contact: contact}).Return(genericError)
+		assert.NotNil(t, service.UpdateContact(ctx, id, contact))
+	})
+	t.Run("Fails to update the contact information due to find error", func(t *testing.T) {
+		id := domain.NewID()
+		contact := domain.Contact{
+			Email: "test@test.com",
+		}
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(nil, genericError)
+		assert.NotNil(t, service.UpdateContact(ctx, id, contact))
+	})
+}
+
+type memberContactMatcher struct {
+	contact domain.Contact
+}
+
+func (expected memberContactMatcher) Matches(received any) bool {
+	return *received.(*domain.Member).Person.Contact == expected.contact
+}
+
+func (expected memberContactMatcher) String() string {
+	return fmt.Sprintf("Expetected %v", expected.contact)
 }

@@ -6,8 +6,8 @@ import (
 
 	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	mock_jobs "github.com/brunodmartins/church-members-api/internal/modules/jobs/mock"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 )
 
 func TestChurchWrapperJob_RunJob(t *testing.T) {

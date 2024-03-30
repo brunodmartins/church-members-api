@@ -89,6 +89,20 @@ type CreateContactRequest struct {
 	Email         string `json:"email"`
 }
 
+// UpdateContactRequest for HTTP calls to post a person
+// swagger:model UpdateContactRequest
+type UpdateContactRequest CreateContactRequest
+
+func (dto UpdateContactRequest) ToContact() domain.Contact {
+	return domain.Contact{
+		PhoneArea:     dto.PhoneArea,
+		Phone:         dto.Phone,
+		CellPhoneArea: dto.CellPhoneArea,
+		CellPhone:     dto.CellPhone,
+		Email:         dto.Email,
+	}
+}
+
 func (dto CreateContactRequest) ToContact() *domain.Contact {
 	return &domain.Contact{
 		PhoneArea:     dto.PhoneArea,

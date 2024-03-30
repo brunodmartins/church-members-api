@@ -6,12 +6,12 @@ import (
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"net/http"
 	"os"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/golang/mock/gomock"
 )
 
 func TestGetMember(t *testing.T) {
@@ -131,5 +131,38 @@ func TestRetireMember(t *testing.T) {
 		body := []byte(`{"reason": "exited"}`)
 		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("exited"), gomock.Any()).Return(genericError)
 		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestUpdateContact(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+	id := domain.NewID()
+	const url = "/members/%s/contact"
+	t.Run("Success - 200", func(t *testing.T) {
+		body := []byte(`{"email": "test@test.com"}`)
+		service.EXPECT().UpdateContact(gomock.Any(), id, gomock.Eq(domain.Contact{Email: "test@test.com"})).Return(nil)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - 400 - ID", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 400 - Bad JSON", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, id), badJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 404", func(t *testing.T) {
+		body := []byte(`{"email": "test@test.com"}`)
+		service.EXPECT().UpdateContact(gomock.Any(), id, gomock.Eq(domain.Contact{Email: "test@test.com"})).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusNotFound)
+	})
+	t.Run("Fail - 500", func(t *testing.T) {
+		body := []byte(`{"email": "test@test.com"}`)
+		service.EXPECT().UpdateContact(gomock.Any(), id, gomock.Eq(domain.Contact{Email: "test@test.com"})).Return(genericError)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

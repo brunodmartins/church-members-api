@@ -2,6 +2,7 @@ package member_test
 
 import (
 	"context"
+	"fmt"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -11,9 +12,10 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"net/http"
+	"reflect"
 	"testing"
 	"time"
 )
@@ -124,6 +126,133 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 		err := repo.RetireMembership(context.Background(), churchMember)
 		assert.NotNil(t, err)
 	})
+}
+
+func TestDynamoRepository_UpdateContact(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	ctx := context.TODO()
+	repo := member.NewRepository(dynamoMock, memberTable)
+
+	t.Run("Success - Changing all fields", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		matcher := UpdateContactMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":phoneArea":     &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.PhoneArea)},
+				":phone":         &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.Phone)},
+				":cellPhoneArea": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhoneArea)},
+				":cellPhone":     &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhone)},
+				":email":         &types.AttributeValueMemberS{Value: churchMember.Person.Contact.Email},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdateContact(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Success - Keeping only cellPhone and email", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		churchMember.Person.Contact.PhoneArea = 0
+		churchMember.Person.Contact.Phone = 0
+		matcher := UpdateContactMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":phoneArea":     &types.AttributeValueMemberNULL{Value: true},
+				":phone":         &types.AttributeValueMemberNULL{Value: true},
+				":cellPhoneArea": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhoneArea)},
+				":cellPhone":     &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhone)},
+				":email":         &types.AttributeValueMemberS{Value: churchMember.Person.Contact.Email},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdateContact(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Success - Keeping only email", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		churchMember.Person.Contact.PhoneArea = 0
+		churchMember.Person.Contact.Phone = 0
+		churchMember.Person.Contact.CellPhoneArea = 0
+		churchMember.Person.Contact.CellPhone = 0
+		matcher := UpdateContactMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":phoneArea":     &types.AttributeValueMemberNULL{Value: true},
+				":phone":         &types.AttributeValueMemberNULL{Value: true},
+				":cellPhoneArea": &types.AttributeValueMemberNULL{Value: true},
+				":cellPhone":     &types.AttributeValueMemberNULL{Value: true},
+				":email":         &types.AttributeValueMemberS{Value: churchMember.Person.Contact.Email},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdateContact(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Success - Keeping only cellphone", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		churchMember.Person.Contact.PhoneArea = 0
+		churchMember.Person.Contact.Phone = 0
+		churchMember.Person.Contact.Email = ""
+		matcher := UpdateContactMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":phoneArea":     &types.AttributeValueMemberNULL{Value: true},
+				":phone":         &types.AttributeValueMemberNULL{Value: true},
+				":cellPhoneArea": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhoneArea)},
+				":cellPhone":     &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhone)},
+				":email":         &types.AttributeValueMemberNULL{Value: true},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdateContact(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Fail - Error on DynamoDB", func(t *testing.T) {
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		assert.NotNil(t, repo.UpdateContact(ctx, buildMember(domain.NewID())))
+	})
+}
+
+type UpdateContactMatcher struct {
+	table    string
+	memberID string
+	churchID string
+	values   map[string]types.AttributeValue
+}
+
+func (expected UpdateContactMatcher) Matches(r any) bool {
+	received := r.(*dynamodb.UpdateItemInput)
+	if *received.TableName != expected.table {
+		return false
+	}
+	if received.Key["id"].(*types.AttributeValueMemberS).Value != expected.memberID {
+		return false
+	}
+	if received.Key["church_id"].(*types.AttributeValueMemberS).Value != expected.churchID {
+		return false
+	}
+
+	if !reflect.DeepEqual(received.ExpressionAttributeValues, expected.values) {
+		return false
+	}
+	return true
+}
+
+func (expected UpdateContactMatcher) String() string {
+	return fmt.Sprintf("Expected ID: {%s}, ChurchID: {%s}, Table: {%s}, Values:{%v}", expected.memberID, expected.churchID, expected.table, expected.values)
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {

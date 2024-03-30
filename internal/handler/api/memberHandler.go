@@ -107,3 +107,19 @@ func (handler *MemberHandler) retireMember(ctx *fiber.Ctx) error {
 	}
 	return ctx.SendStatus(http.StatusOK)
 }
+
+func (handler *MemberHandler) updateContact(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if !domain.IsValidID(id) {
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
+	}
+	contactUpdateRequest := new(dto.UpdateContactRequest)
+	if err := json.Unmarshal(ctx.Body(), &contactUpdateRequest); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	err := handler.service.UpdateContact(ctx.UserContext(), id, contactUpdateRequest.ToContact())
+	if err != nil {
+		return err
+	}
+	return ctx.SendStatus(http.StatusOK)
+}

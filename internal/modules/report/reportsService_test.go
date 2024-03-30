@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
 	mock_storage "github.com/brunodmartins/church-members-api/internal/services/storage/mock"
+	"go.uber.org/mock/gomock"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -14,7 +15,6 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/modules/report"
 	mock_file "github.com/brunodmartins/church-members-api/internal/modules/report/file/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 )
 

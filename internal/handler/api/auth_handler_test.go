@@ -7,8 +7,8 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	mock_security "github.com/brunodmartins/church-members-api/platform/security/mock"
-	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"net/http"
 	"testing"
 )

@@ -7,9 +7,9 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/mock/gomock"
 	"net/http"
 	"testing"
 )

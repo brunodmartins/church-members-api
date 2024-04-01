@@ -76,9 +76,9 @@ func (wrapper *DynamoDBWrapper) ScanDynamoDB(ctx context.Context, specification 
 	return wrapper.api.Scan(ctx, queryInput)
 }
 
-func (wrapper *DynamoDBWrapper) SaveItem(item interface{}) error {
+func (wrapper *DynamoDBWrapper) SaveItem(ctx context.Context, item interface{}) error {
 	av, _ := attributevalue.MarshalMap(item)
-	_, err := wrapper.api.PutItem(context.TODO(), &dynamodb.PutItemInput{
+	_, err := wrapper.api.PutItem(ctx, &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: aws.String(wrapper.table),
 	})

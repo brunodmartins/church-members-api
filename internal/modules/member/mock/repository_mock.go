@@ -99,6 +99,20 @@ func (mr *MockRepositoryMockRecorder) RetireMembership(ctx, member any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetireMembership", reflect.TypeOf((*MockRepository)(nil).RetireMembership), ctx, member)
 }
 
+// UpdateAddress mocks base method.
+func (m *MockRepository) UpdateAddress(ctx context.Context, member *domain.Member) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAddress", ctx, member)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateAddress indicates an expected call of UpdateAddress.
+func (mr *MockRepositoryMockRecorder) UpdateAddress(ctx, member any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockRepository)(nil).UpdateAddress), ctx, member)
+}
+
 // UpdateContact mocks base method.
 func (m *MockRepository) UpdateContact(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()

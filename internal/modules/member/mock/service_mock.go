@@ -107,6 +107,20 @@ func (mr *MockServiceMockRecorder) SearchMembers(ctx, querySpecification any, po
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchMembers", reflect.TypeOf((*MockService)(nil).SearchMembers), varargs...)
 }
 
+// UpdateAddress mocks base method.
+func (m *MockService) UpdateAddress(ctx context.Context, memberID string, address domain.Address) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateAddress", ctx, memberID, address)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateAddress indicates an expected call of UpdateAddress.
+func (mr *MockServiceMockRecorder) UpdateAddress(ctx, memberID, address any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockService)(nil).UpdateAddress), ctx, memberID, address)
+}
+
 // UpdateContact mocks base method.
 func (m *MockService) UpdateContact(ctx context.Context, memberID string, contact domain.Contact) error {
 	m.ctrl.T.Helper()

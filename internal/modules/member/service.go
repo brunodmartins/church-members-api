@@ -17,6 +17,7 @@ type Service interface {
 	SaveMember(ctx context.Context, member *domain.Member) (string, error)
 	RetireMembership(ctx context.Context, id string, reason string, date time.Time) error
 	UpdateContact(ctx context.Context, memberID string, contact domain.Contact) error
+	UpdateAddress(ctx context.Context, memberID string, address domain.Address) error
 }
 
 type memberService struct {
@@ -73,4 +74,13 @@ func (s *memberService) UpdateContact(ctx context.Context, id string, contact do
 	}
 	member.Person.Contact = &contact
 	return s.repo.UpdateContact(ctx, member)
+}
+
+func (s *memberService) UpdateAddress(ctx context.Context, id string, address domain.Address) error {
+	member, err := s.GetMember(ctx, id)
+	if err != nil {
+		return err
+	}
+	member.Person.Address = &address
+	return s.repo.UpdateAddress(ctx, member)
 }

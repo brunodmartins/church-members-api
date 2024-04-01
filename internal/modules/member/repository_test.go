@@ -12,10 +12,12 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -58,9 +60,9 @@ func TestDynamoRepository_FindByID(t *testing.T) {
 	ctx := BuildContext()
 	t.Run("Success", func(t *testing.T) {
 		wrapper.MockGetItem(t, dynamoMock, memberTable, buildKey(ctx, id), buildItem(id), nil)
-		member, err := repo.FindByID(ctx, id)
+		churchMember, err := repo.FindByID(ctx, id)
 		assert.Nil(t, err)
-		assert.Equal(t, id, member.ID)
+		assert.Equal(t, id, churchMember.ID)
 	})
 	t.Run("Not Found", func(t *testing.T) {
 		wrapper.MockGetItem(t, dynamoMock, memberTable, buildKey(ctx, id), nil, nil)
@@ -81,20 +83,20 @@ func TestDynamoRepository_Insert(t *testing.T) {
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
 	repo := member.NewRepository(dynamoMock, memberTable)
-	member := buildMember("")
+	churchMember := buildMember("")
 	t.Run("Success", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.PutItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.PutItemOutput, error) {
 			assert.Equal(t, memberTable, *params.TableName)
 			assert.NotNil(t, params.Item)
 			return nil, nil
 		})
-		err := repo.Insert(context.Background(), member)
+		err := repo.Insert(context.Background(), churchMember)
 		assert.Nil(t, err)
-		assert.NotEmpty(t, member.ID)
+		assert.NotEmpty(t, churchMember.ID)
 	})
 	t.Run("Fail", func(t *testing.T) {
 		dynamoMock.EXPECT().PutItem(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, genericError)
-		err := repo.Insert(context.Background(), member)
+		err := repo.Insert(context.Background(), churchMember)
 		assert.NotNil(t, err)
 	})
 }
@@ -104,26 +106,48 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
 	repo := member.NewRepository(dynamoMock, memberTable)
-	id := domain.NewID()
-	churchMember := buildMember(id)
-	endDate := time.Now()
-	churchMember.MembershipEndDate = &endDate
-	t.Run("Success", func(t *testing.T) {
-		dynamoMock.EXPECT().UpdateItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error) {
-			assert.Equal(t, memberTable, *params.TableName)
-			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
-			return nil, nil
-		})
-		err := repo.RetireMembership(context.Background(), churchMember)
+	ctx := context.TODO()
+
+	t.Run("Success - Changing all fields", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		endDate := time.Now()
+		churchMember.MembershipEndDate = &endDate
+		churchMember.Active = false
+		churchMember.MembershipEndReason = "test reason"
+		matcher := UpdateMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":active":              &types.AttributeValueMemberBOOL{Value: false},
+				":membershipEndDate":   &types.AttributeValueMemberS{Value: endDate.Format(time.RFC3339)},
+				":membershipEndReason": &types.AttributeValueMemberS{Value: "test reason"},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.RetireMembership(ctx, churchMember)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail", func(t *testing.T) {
-		dynamoMock.EXPECT().UpdateItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, params *dynamodb.UpdateItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error) {
-			assert.Equal(t, memberTable, *params.TableName)
-			assert.Equal(t, id, params.Key["id"].(*types.AttributeValueMemberS).Value)
-			return nil, genericError
-		})
-		err := repo.RetireMembership(context.Background(), churchMember)
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		endDate := time.Now()
+		churchMember.MembershipEndDate = &endDate
+		churchMember.Active = false
+		churchMember.MembershipEndReason = "test reason"
+		matcher := UpdateMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":active":              &types.AttributeValueMemberBOOL{Value: false},
+				":membershipEndDate":   &types.AttributeValueMemberS{Value: endDate.Format(time.RFC3339)},
+				":membershipEndReason": &types.AttributeValueMemberS{Value: "test reason"},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, genericError)
+		err := repo.RetireMembership(ctx, churchMember)
 		assert.NotNil(t, err)
 	})
 }
@@ -138,7 +162,7 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 	t.Run("Success - Changing all fields", func(t *testing.T) {
 		id := domain.NewID()
 		churchMember := buildMember(id)
-		matcher := UpdateContactMatcher{
+		matcher := UpdateMatcher{
 			table:    memberTable,
 			memberID: churchMember.ID,
 			churchID: churchMember.ChurchID,
@@ -159,7 +183,7 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 		churchMember := buildMember(id)
 		churchMember.Person.Contact.PhoneArea = 0
 		churchMember.Person.Contact.Phone = 0
-		matcher := UpdateContactMatcher{
+		matcher := UpdateMatcher{
 			table:    memberTable,
 			memberID: churchMember.ID,
 			churchID: churchMember.ChurchID,
@@ -182,7 +206,7 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 		churchMember.Person.Contact.Phone = 0
 		churchMember.Person.Contact.CellPhoneArea = 0
 		churchMember.Person.Contact.CellPhone = 0
-		matcher := UpdateContactMatcher{
+		matcher := UpdateMatcher{
 			table:    memberTable,
 			memberID: churchMember.ID,
 			churchID: churchMember.ChurchID,
@@ -204,7 +228,7 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 		churchMember.Person.Contact.PhoneArea = 0
 		churchMember.Person.Contact.Phone = 0
 		churchMember.Person.Contact.Email = ""
-		matcher := UpdateContactMatcher{
+		matcher := UpdateMatcher{
 			table:    memberTable,
 			memberID: churchMember.ID,
 			churchID: churchMember.ChurchID,
@@ -226,14 +250,48 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 	})
 }
 
-type UpdateContactMatcher struct {
+func TestDynamoRepository_UpdateAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	ctx := context.TODO()
+	repo := member.NewRepository(dynamoMock, memberTable)
+
+	t.Run("Success - Changing all fields", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		matcher := UpdateMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":zipCode":  &types.AttributeValueMemberNULL{Value: true},
+				":state":    &types.AttributeValueMemberS{Value: churchMember.Person.Address.State},
+				":city":     &types.AttributeValueMemberS{Value: churchMember.Person.Address.City},
+				":address":  &types.AttributeValueMemberS{Value: churchMember.Person.Address.Address},
+				":district": &types.AttributeValueMemberS{Value: churchMember.Person.Address.District},
+				":number":   &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Address.Number)},
+				":moreInfo": &types.AttributeValueMemberS{Value: churchMember.Person.Address.MoreInfo},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdateAddress(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Fail - Error on DynamoDB", func(t *testing.T) {
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		assert.NotNil(t, repo.UpdateAddress(ctx, buildMember(domain.NewID())))
+	})
+}
+
+type UpdateMatcher struct {
 	table    string
 	memberID string
 	churchID string
 	values   map[string]types.AttributeValue
 }
 
-func (expected UpdateContactMatcher) Matches(r any) bool {
+func (expected UpdateMatcher) Matches(r any) bool {
 	received := r.(*dynamodb.UpdateItemInput)
 	if *received.TableName != expected.table {
 		return false
@@ -244,14 +302,24 @@ func (expected UpdateContactMatcher) Matches(r any) bool {
 	if received.Key["church_id"].(*types.AttributeValueMemberS).Value != expected.churchID {
 		return false
 	}
-
+	if received.UpdateExpression == nil {
+		return false
+	}
+	updateQuery := *received.UpdateExpression
 	if !reflect.DeepEqual(received.ExpressionAttributeValues, expected.values) {
 		return false
 	}
+	for key := range received.ExpressionAttributeValues {
+		if !strings.Contains(updateQuery, key) {
+			log.Errorf("Key %s not found in update query", key)
+			return false
+		}
+	}
+
 	return true
 }
 
-func (expected UpdateContactMatcher) String() string {
+func (expected UpdateMatcher) String() string {
 	return fmt.Sprintf("Expected ID: {%s}, ChurchID: {%s}, Table: {%s}, Values:{%v}", expected.memberID, expected.churchID, expected.table, expected.values)
 }
 

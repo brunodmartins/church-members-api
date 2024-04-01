@@ -113,11 +113,30 @@ func (handler *MemberHandler) updateContact(ctx *fiber.Ctx) error {
 	if !domain.IsValidID(id) {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	contactUpdateRequest := new(dto.UpdateContactRequest)
+	contactUpdateRequest := new(dto.ContactRequest)
 	if err := json.Unmarshal(ctx.Body(), &contactUpdateRequest); err != nil {
 		return handler.badRequest(ctx, err)
 	}
-	err := handler.service.UpdateContact(ctx.UserContext(), id, contactUpdateRequest.ToContact())
+	err := handler.service.UpdateContact(ctx.UserContext(), id, *contactUpdateRequest.ToContact())
+	if err != nil {
+		return err
+	}
+	return ctx.SendStatus(http.StatusOK)
+}
+
+func (handler *MemberHandler) updateAddress(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if !domain.IsValidID(id) {
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
+	}
+	address := new(dto.AddressRequest)
+	if err := json.Unmarshal(ctx.Body(), &address); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	if err := ValidateStruct(address); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	err := handler.service.UpdateAddress(ctx.UserContext(), id, *address.ToAddress())
 	if err != nil {
 		return err
 	}

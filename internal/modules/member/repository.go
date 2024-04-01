@@ -11,6 +11,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/google/uuid"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,7 @@ type Repository interface {
 	Insert(ctx context.Context, member *domain.Member) error
 	RetireMembership(ctx context.Context, member *domain.Member) error
 	UpdateContact(ctx context.Context, member *domain.Member) error
+	UpdateAddress(ctx context.Context, member *domain.Member) error
 }
 
 type dynamoRepository struct {
@@ -46,7 +48,10 @@ func (repo dynamoRepository) FindAll(ctx context.Context, specification wrapper.
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
 			record := &dto.MemberItem{}
-			attributevalue.UnmarshalMap(item, record)
+			err = attributevalue.UnmarshalMap(item, record)
+			if err != nil {
+				return nil, err
+			}
 			members = append(members, record.ToMember())
 		}
 	}
@@ -77,11 +82,11 @@ func (repo dynamoRepository) buildKey(ctx context.Context, id string) wrapper.Co
 
 func (repo dynamoRepository) Insert(ctx context.Context, member *domain.Member) error {
 	member.ID = uuid.NewString()
-	return repo.wrapper.SaveItem(dto.NewMemberItem(member))
+	return repo.wrapper.SaveItem(ctx, dto.NewMemberItem(member))
 }
 
 func (repo dynamoRepository) RetireMembership(ctx context.Context, member *domain.Member) error {
-	_, err := repo.api.UpdateItem(context.TODO(), &dynamodb.UpdateItemInput{
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
 				Value: member.ID,
@@ -103,13 +108,12 @@ func (repo dynamoRepository) RetireMembership(ctx context.Context, member *domai
 			},
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String("set active = :active, membershipEndDate = :membershipEndDate, membershipEndReason = :membershipEndReason"),
+		UpdateExpression: aws.String(buildUpdateQuery("active", "membershipEndDate", "membershipEndReason")),
 	})
 	return err
 }
 
 func (repo dynamoRepository) UpdateContact(ctx context.Context, member *domain.Member) error {
-	updateQuery := "set phoneArea = :phoneArea, phone = :phone, cellPhoneArea = :cellPhoneArea, cellPhone = :cellPhone, email = :email"
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
@@ -128,9 +132,49 @@ func (repo dynamoRepository) UpdateContact(ctx context.Context, member *domain.M
 			":email":         toStringAttributeValue(member.Person.Contact.Email),
 		},
 		ReturnValues:     "UPDATED_NEW",
+		UpdateExpression: aws.String(buildUpdateQuery("phoneArea", "phone", "cellPhoneArea", "cellPhone", "email")),
+	})
+	return err
+}
+
+func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.Member) error {
+	updateQuery := buildUpdateQuery("zipCode", "state", "city", "address", "district", "number", "moreInfo")
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{
+				Value: member.ID,
+			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: member.ChurchID,
+			},
+		},
+		TableName: aws.String(repo.memberTable),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":zipCode":  toStringAttributeValue(member.Person.Address.ZipCode),
+			":state":    toStringAttributeValue(member.Person.Address.State),
+			":city":     toStringAttributeValue(member.Person.Address.City),
+			":address":  toStringAttributeValue(member.Person.Address.Address),
+			":district": toStringAttributeValue(member.Person.Address.District),
+			":number":   toNumberAttributeValue(member.Person.Address.Number),
+			":moreInfo": toStringAttributeValue(member.Person.Address.MoreInfo),
+		},
+		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String(updateQuery),
 	})
 	return err
+}
+
+func buildUpdateQuery(fields ...string) string {
+	builder := strings.Builder{}
+	builder.WriteString("set ")
+	for _, f := range fields {
+		builder.WriteString(f)
+		builder.WriteString(" = :")
+		builder.WriteString(f)
+		builder.WriteString(", ")
+	}
+	result := builder.String()
+	return result[:len(result)-2]
 }
 
 func toNumberAttributeValue(value int) types.AttributeValue {

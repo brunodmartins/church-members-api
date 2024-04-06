@@ -154,6 +154,39 @@ func TestMemberService_UpdateContact(t *testing.T) {
 	})
 }
 
+func TestMemberService_UpdateAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctx := context.TODO()
+	defer ctrl.Finish()
+	repo := mock_member.NewMockRepository(ctrl)
+	service := member.NewMemberService(repo)
+	id := domain.NewID()
+	churchMember := buildMember(id)
+	address := domain.Address{
+		ZipCode:  "123456-789",
+		State:    "Sao Paulo",
+		City:     "Sao Paulo",
+		Address:  "Test",
+		District: "Testing",
+		Number:   123456,
+		MoreInfo: "1999",
+	}
+	t.Run("Successfully update the address information", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateAddress(gomock.Eq(ctx), memberAddressMatcher{address: address}).Return(nil)
+		assert.NoError(t, service.UpdateAddress(ctx, id, address))
+	})
+	t.Run("Fails to update the address information due to update error", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateAddress(gomock.Eq(ctx), memberAddressMatcher{address: address}).Return(genericError)
+		assert.Error(t, service.UpdateAddress(ctx, id, address))
+	})
+	t.Run("Fails to update the address information due to find error", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(nil, genericError)
+		assert.Error(t, service.UpdateAddress(ctx, id, address))
+	})
+}
+
 type memberContactMatcher struct {
 	contact domain.Contact
 }
@@ -164,4 +197,16 @@ func (expected memberContactMatcher) Matches(received any) bool {
 
 func (expected memberContactMatcher) String() string {
 	return fmt.Sprintf("Expetected %v", expected.contact)
+}
+
+type memberAddressMatcher struct {
+	address domain.Address
+}
+
+func (expected memberAddressMatcher) Matches(received any) bool {
+	return *received.(*domain.Member).Person.Address == expected.address
+}
+
+func (expected memberAddressMatcher) String() string {
+	return fmt.Sprintf("Expetected %v", expected.address)
 }

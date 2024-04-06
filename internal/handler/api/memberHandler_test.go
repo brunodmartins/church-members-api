@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
@@ -163,6 +164,42 @@ func TestUpdateContact(t *testing.T) {
 	t.Run("Fail - 500", func(t *testing.T) {
 		body := []byte(`{"email": "test@test.com"}`)
 		service.EXPECT().UpdateContact(gomock.Any(), id, gomock.Eq(domain.Contact{Email: "test@test.com"})).Return(genericError)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestUpdateAddress(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+	id := domain.NewID()
+	const url = "/members/%s/address"
+	address := domain.Address{
+		ZipCode:  "123456-789",
+		State:    "Sao Paulo",
+		City:     "Sao Paulo",
+		Address:  "Test",
+		District: "Testing",
+		Number:   123456,
+		MoreInfo: "1999",
+	}
+	body, _ := json.Marshal(address)
+	t.Run("Success - 200", func(t *testing.T) {
+		service.EXPECT().UpdateAddress(gomock.Any(), id, gomock.Eq(address)).Return(nil)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - 400 - ID", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 400 - Bad JSON", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, id), badJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 500", func(t *testing.T) {
+		service.EXPECT().UpdateAddress(gomock.Any(), id, gomock.Eq(address)).Return(genericError)
 		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

@@ -34,7 +34,10 @@ func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*do
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
 			record := &dto.UserItem{}
-			attributevalue.UnmarshalMap(item, record)
+			err = attributevalue.UnmarshalMap(item, record)
+			if err != nil {
+				return nil, err
+			}
 			return record.ToUser(), nil
 		}
 	}
@@ -43,7 +46,7 @@ func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*do
 
 func (repo dynamoRepository) SaveUser(ctx context.Context, user *domain.User) error {
 	user.ID = uuid.NewString()
-	return repo.SaveItem(dto.NewUserItem(user))
+	return repo.SaveItem(ctx, dto.NewUserItem(user))
 }
 
 func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
@@ -55,7 +58,10 @@ func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapp
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
 			record := &dto.UserItem{}
-			attributevalue.UnmarshalMap(item, record)
+			err = attributevalue.UnmarshalMap(item, record)
+			if err != nil {
+				return nil, err
+			}
 			users = append(users, record.ToUser())
 		}
 	}

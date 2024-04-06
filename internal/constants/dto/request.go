@@ -43,20 +43,20 @@ func (dto CreateMemberRequest) ToMember() *domain.Member {
 // CreatePersonRequest for HTTP calls to post a person
 // swagger:model CreatePersonRequest
 type CreatePersonRequest struct {
-	FirstName        string               `json:"firstName" validate:"required"`
-	LastName         string               `json:"lastName" validate:"required"`
-	BirthDate        Date                 `json:"birthDate" validate:"required"`
-	MarriageDate     *Date                `json:"marriageDate"`
-	PlaceOfBirth     string               `json:"placeOfBirth"`
-	FathersName      string               `json:"fathersName"`
-	MothersName      string               `json:"mothersName"`
-	SpousesName      string               `json:"spousesName"`
-	BrothersQuantity int                  `json:"brothersQuantity"`
-	ChildrenQuantity int                  `json:"childrenQuantity"`
-	Profession       string               `json:"profession"`
-	Gender           string               `json:"gender" validate:"required,eq=M|eq=F"`
-	Contact          CreateContactRequest `json:"contact" validate:"required"`
-	Address          CreateAddressRequest `json:"address" validate:"required"`
+	FirstName        string         `json:"firstName" validate:"required"`
+	LastName         string         `json:"lastName" validate:"required"`
+	BirthDate        Date           `json:"birthDate" validate:"required"`
+	MarriageDate     *Date          `json:"marriageDate"`
+	PlaceOfBirth     string         `json:"placeOfBirth"`
+	FathersName      string         `json:"fathersName"`
+	MothersName      string         `json:"mothersName"`
+	SpousesName      string         `json:"spousesName"`
+	BrothersQuantity int            `json:"brothersQuantity"`
+	ChildrenQuantity int            `json:"childrenQuantity"`
+	Profession       string         `json:"profession"`
+	Gender           string         `json:"gender" validate:"required,eq=M|eq=F"`
+	Contact          ContactRequest `json:"contact" validate:"required"`
+	Address          AddressRequest `json:"address" validate:"required"`
 }
 
 func (dto CreatePersonRequest) ToPerson() *domain.Person {
@@ -79,9 +79,9 @@ func (dto CreatePersonRequest) ToPerson() *domain.Person {
 	}
 }
 
-// CreateContactRequest for HTTP calls to post a person
-// swagger:model CreateContactRequest
-type CreateContactRequest struct {
+// ContactRequest for HTTP calls to post a person
+// swagger:model ContactRequest
+type ContactRequest struct {
 	PhoneArea     int    `json:"phoneArea"`
 	Phone         int    `json:"phone"`
 	CellPhoneArea int    `json:"cellPhoneArea"`
@@ -89,21 +89,7 @@ type CreateContactRequest struct {
 	Email         string `json:"email"`
 }
 
-// UpdateContactRequest for HTTP calls to post a person
-// swagger:model UpdateContactRequest
-type UpdateContactRequest CreateContactRequest
-
-func (dto UpdateContactRequest) ToContact() domain.Contact {
-	return domain.Contact{
-		PhoneArea:     dto.PhoneArea,
-		Phone:         dto.Phone,
-		CellPhoneArea: dto.CellPhoneArea,
-		CellPhone:     dto.CellPhone,
-		Email:         dto.Email,
-	}
-}
-
-func (dto CreateContactRequest) ToContact() *domain.Contact {
+func (dto ContactRequest) ToContact() *domain.Contact {
 	return &domain.Contact{
 		PhoneArea:     dto.PhoneArea,
 		Phone:         dto.Phone,
@@ -113,9 +99,9 @@ func (dto CreateContactRequest) ToContact() *domain.Contact {
 	}
 }
 
-// CreateAddressRequest for HTTP calls to post a person
-// swagger:model CreateAddressRequest
-type CreateAddressRequest struct {
+// AddressRequest for HTTP calls to post a person
+// swagger:model AddressRequest
+type AddressRequest struct {
 	ZipCode  string `json:"zipCode" validate:"required"`
 	State    string `json:"state" validate:"required"`
 	City     string `json:"city" validate:"required"`
@@ -125,7 +111,7 @@ type CreateAddressRequest struct {
 	MoreInfo string `json:"moreInfo"`
 }
 
-func (dto CreateAddressRequest) ToAddress() *domain.Address {
+func (dto AddressRequest) ToAddress() *domain.Address {
 	return &domain.Address{
 		ZipCode:  dto.ZipCode,
 		State:    dto.State,

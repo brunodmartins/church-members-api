@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/brunodmartins/church-members-api/internal/constants"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -23,6 +24,7 @@ type Repository interface {
 	RetireMembership(ctx context.Context, member *domain.Member) error
 	UpdateContact(ctx context.Context, member *domain.Member) error
 	UpdateAddress(ctx context.Context, member *domain.Member) error
+	UpdatePerson(ctx context.Context, member *domain.Member) error
 }
 
 type dynamoRepository struct {
@@ -160,6 +162,42 @@ func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.M
 		},
 		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String(updateQuery),
+	})
+	return err
+}
+
+func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Member) error {
+	updateQuery := buildUpdateQuery("name", "firstName", "lastName", "birthDate", "birthDateShort",
+		"marriageDate", "marriageDateShort", "spousesName", "maritalStatus", "childrensQuantity")
+	attributes := map[string]types.AttributeValue{
+		":name":              toStringAttributeValue(member.Person.GetFullName()),
+		":firstName":         toStringAttributeValue(member.Person.FirstName),
+		":lastName":          toStringAttributeValue(member.Person.LastName),
+		":birthDate":         toStringAttributeValue(member.Person.BirthDate.Format(time.RFC3339)),
+		":birthDateShort":    toStringAttributeValue(member.Person.BirthDate.Format(constants.ShortDateFormat)),
+		":marriageDate":      &types.AttributeValueMemberNULL{Value: true},
+		":marriageDateShort": &types.AttributeValueMemberNULL{Value: true},
+		":spousesName":       toStringAttributeValue(member.Person.SpousesName),
+		":maritalStatus":     toStringAttributeValue(member.Person.MaritalStatus),
+		":childrensQuantity": toNumberAttributeValue(member.Person.ChildrenQuantity),
+	}
+	if member.Person.MarriageDate != nil {
+		attributes[":marriageDate"] = toStringAttributeValue(member.Person.MarriageDate.Format(time.RFC3339))
+		attributes[":marriageDateShort"] = toStringAttributeValue(member.Person.MarriageDate.Format(constants.ShortDateFormat))
+	}
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{
+				Value: member.ID,
+			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: member.ChurchID,
+			},
+		},
+		TableName:                 aws.String(repo.memberTable),
+		ExpressionAttributeValues: attributes,
+		ReturnValues:              "UPDATED_NEW",
+		UpdateExpression:          aws.String(updateQuery),
 	})
 	return err
 }

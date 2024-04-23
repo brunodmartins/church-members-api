@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"github.com/brunodmartins/church-members-api/internal/constants"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -281,6 +282,71 @@ func TestDynamoRepository_UpdateAddress(t *testing.T) {
 	t.Run("Fail - Error on DynamoDB", func(t *testing.T) {
 		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
 		assert.NotNil(t, repo.UpdateAddress(ctx, buildMember(domain.NewID())))
+	})
+}
+
+func TestDynamoRepository_UpdatePerson(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	ctx := context.TODO()
+	repo := member.NewRepository(dynamoMock, memberTable)
+
+	t.Run("Success - Changing all fields", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		matcher := UpdateMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":name":              &types.AttributeValueMemberS{Value: churchMember.Person.GetFullName()},
+				":firstName":         &types.AttributeValueMemberS{Value: churchMember.Person.FirstName},
+				":lastName":          &types.AttributeValueMemberS{Value: churchMember.Person.LastName},
+				":birthDate":         &types.AttributeValueMemberS{Value: churchMember.Person.BirthDate.Format(time.RFC3339)},
+				":birthDateShort":    &types.AttributeValueMemberS{Value: churchMember.Person.BirthDate.Format(constants.ShortDateFormat)},
+				":marriageDate":      &types.AttributeValueMemberS{Value: churchMember.Person.MarriageDate.Format(time.RFC3339)},
+				":marriageDateShort": &types.AttributeValueMemberS{Value: churchMember.Person.MarriageDate.Format(constants.ShortDateFormat)},
+				":spousesName":       &types.AttributeValueMemberS{Value: churchMember.Person.SpousesName},
+				":maritalStatus":     &types.AttributeValueMemberS{Value: churchMember.Person.MaritalStatus},
+				":childrensQuantity": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.ChildrenQuantity)},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdatePerson(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Success - Changing all fields, but no children, nor married", func(t *testing.T) {
+		id := domain.NewID()
+		churchMember := buildMember(id)
+		churchMember.Person.ChildrenQuantity = 0
+		churchMember.Person.MaritalStatus = "SINGLE"
+		churchMember.Person.MarriageDate = nil
+		churchMember.Person.SpousesName = ""
+		matcher := UpdateMatcher{
+			table:    memberTable,
+			memberID: churchMember.ID,
+			churchID: churchMember.ChurchID,
+			values: map[string]types.AttributeValue{
+				":name":              &types.AttributeValueMemberS{Value: churchMember.Person.GetFullName()},
+				":firstName":         &types.AttributeValueMemberS{Value: churchMember.Person.FirstName},
+				":lastName":          &types.AttributeValueMemberS{Value: churchMember.Person.LastName},
+				":birthDate":         &types.AttributeValueMemberS{Value: churchMember.Person.BirthDate.Format(time.RFC3339)},
+				":birthDateShort":    &types.AttributeValueMemberS{Value: churchMember.Person.BirthDate.Format(constants.ShortDateFormat)},
+				":marriageDate":      &types.AttributeValueMemberNULL{Value: true},
+				":marriageDateShort": &types.AttributeValueMemberNULL{Value: true},
+				":spousesName":       &types.AttributeValueMemberNULL{Value: true},
+				":maritalStatus":     &types.AttributeValueMemberS{Value: churchMember.Person.MaritalStatus},
+				":childrensQuantity": &types.AttributeValueMemberNULL{Value: true},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdatePerson(ctx, churchMember)
+		assert.Nil(t, err)
+	})
+	t.Run("Fail - Error on DynamoDB", func(t *testing.T) {
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		assert.NotNil(t, repo.UpdatePerson(ctx, buildMember(domain.NewID())))
 	})
 }
 

@@ -1,8 +1,8 @@
 package dto
 
 import (
+	"github.com/brunodmartins/church-members-api/internal/constants"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
-	"github.com/brunodmartins/church-members-api/platform/utils"
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -27,6 +27,7 @@ type MemberItem struct {
 	FathersName            string     `dynamodbav:"fathersName"`
 	MothersName            string     `dynamodbav:"mothersName"`
 	SpousesName            string     `dynamodbav:"spousesName,omitempty"`
+	MaritalStatus          string     `dynamodbav:"maritalStatus,omitempty"`
 	BrothersQuantity       int        `dynamodbav:"brothersQuantity"`
 	ChildrenQuantity       int        `dynamodbav:"childrensQuantity"`
 	Profession             string     `dynamodbav:"profession,omitempty"`
@@ -82,6 +83,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		FathersName:            member.Person.FathersName,
 		MothersName:            member.Person.MothersName,
 		SpousesName:            member.Person.SpousesName,
+		MaritalStatus:          member.Person.MaritalStatus,
 		BrothersQuantity:       member.Person.BrothersQuantity,
 		ChildrenQuantity:       member.Person.ChildrenQuantity,
 		Profession:             member.Person.Profession,
@@ -110,7 +112,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		AcceptedJesusDate:      member.Religion.AcceptedJesusDate,
 		BaptismDate:            member.Religion.BaptismDate,
 		Active:                 member.Active,
-		BirthDateShort:         utils.ConvertDate(member.Person.BirthDate),
+		BirthDateShort:         member.Person.BirthDate.Format(constants.ShortDateFormat),
 		MarriageDateShort:      convertMarriageDate(member.Person.MarriageDate),
 		MembershipStartDate:    member.MembershipStartDate,
 		MembershipEndDate:      member.MembershipEndDate,
@@ -120,7 +122,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 
 func convertMarriageDate(marriageDate *time.Time) string {
 	if marriageDate != nil {
-		return utils.ConvertDate(*marriageDate)
+		return marriageDate.Format(constants.ShortDateFormat)
 	}
 	return ""
 }
@@ -149,6 +151,7 @@ func (item *MemberItem) ToMember() *domain.Member {
 			FathersName:      item.FathersName,
 			MothersName:      item.MothersName,
 			SpousesName:      item.SpousesName,
+			MaritalStatus:    item.MaritalStatus,
 			BrothersQuantity: item.BrothersQuantity,
 			ChildrenQuantity: item.ChildrenQuantity,
 			Profession:       item.Profession,

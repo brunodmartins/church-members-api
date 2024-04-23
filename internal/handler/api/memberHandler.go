@@ -142,3 +142,22 @@ func (handler *MemberHandler) updateAddress(ctx *fiber.Ctx) error {
 	}
 	return ctx.SendStatus(http.StatusOK)
 }
+
+func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if !domain.IsValidID(id) {
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
+	}
+	personRequest := new(dto.UpdatePersonRequest)
+	if err := json.Unmarshal(ctx.Body(), &personRequest); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	if err := ValidateStruct(personRequest); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	err := handler.service.UpdatePerson(ctx.UserContext(), id, personRequest.ToPerson())
+	if err != nil {
+		return err
+	}
+	return ctx.SendStatus(http.StatusOK)
+}

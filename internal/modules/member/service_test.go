@@ -187,6 +187,39 @@ func TestMemberService_UpdateAddress(t *testing.T) {
 	})
 }
 
+func TestMemberService_UpdatePerson(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctx := context.TODO()
+	defer ctrl.Finish()
+	repo := mock_member.NewMockRepository(ctrl)
+	service := member.NewMemberService(repo)
+	id := domain.NewID()
+	churchMember := buildMember(id)
+	person := domain.Person{
+		FirstName:        "New name",
+		LastName:         "New last name",
+		BirthDate:        churchMember.Person.BirthDate,
+		MarriageDate:     nil,
+		SpousesName:      "",
+		MaritalStatus:    "SINGLE",
+		ChildrenQuantity: churchMember.Person.ChildrenQuantity,
+	}
+	t.Run("Successfully update the person information", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdatePerson(gomock.Eq(ctx), memberPersonMatcher{person: person}).Return(nil)
+		assert.NoError(t, service.UpdatePerson(ctx, id, person))
+	})
+	t.Run("Fails to update the person information due to update error", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdatePerson(gomock.Eq(ctx), memberPersonMatcher{person: person}).Return(genericError)
+		assert.Error(t, service.UpdatePerson(ctx, id, person))
+	})
+	t.Run("Fails to update the person information due to find error", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(nil, genericError)
+		assert.Error(t, service.UpdatePerson(ctx, id, person))
+	})
+}
+
 type memberContactMatcher struct {
 	contact domain.Contact
 }
@@ -209,4 +242,40 @@ func (expected memberAddressMatcher) Matches(received any) bool {
 
 func (expected memberAddressMatcher) String() string {
 	return fmt.Sprintf("Expetected %v", expected.address)
+}
+
+type memberPersonMatcher struct {
+	person domain.Person
+}
+
+func (expected memberPersonMatcher) Matches(received any) bool {
+	receivedMember := received.(*domain.Member)
+
+	if receivedMember.Person.FirstName != expected.person.FirstName {
+		return false
+	}
+	if receivedMember.Person.LastName != expected.person.LastName {
+		return false
+	}
+	if receivedMember.Person.BirthDate != expected.person.BirthDate {
+		return false
+	}
+	if receivedMember.Person.MarriageDate != expected.person.MarriageDate {
+		return false
+	}
+	if receivedMember.Person.ChildrenQuantity != expected.person.ChildrenQuantity {
+		return false
+	}
+	if receivedMember.Person.SpousesName != expected.person.SpousesName {
+		return false
+	}
+	if receivedMember.Person.MaritalStatus != expected.person.MaritalStatus {
+		return false
+	}
+
+	return true
+}
+
+func (expected memberPersonMatcher) String() string {
+	return fmt.Sprintf("Expetected %v", expected.person)
 }

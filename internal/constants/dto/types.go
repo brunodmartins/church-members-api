@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"encoding/json"
 	"strings"
 	"time"
 )
@@ -17,6 +18,11 @@ func (d *Date) UnmarshalJSON(bytes []byte) error {
 	}
 	d.Time = result
 	return nil
+}
+
+func (d Date) MarshalJSON() ([]byte, error) {
+	result := d.Time.Format(time.DateOnly)
+	return json.Marshal(result)
 }
 
 func (d *Date) toString(bytes []byte) string {

@@ -1,8 +1,8 @@
 consumes:
     - application/json
 definitions:
-    CreateAddressRequest:
-        description: CreateAddressRequest for HTTP calls to post a person
+    AddressRequest:
+        description: AddressRequest for HTTP calls to post a person
         properties:
             address:
                 type: string
@@ -28,8 +28,8 @@ definitions:
                 x-go-name: ZipCode
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    CreateContactRequest:
-        description: CreateContactRequest for HTTP calls to post a person
+    ContactRequest:
+        description: ContactRequest for HTTP calls to post a person
         properties:
             cellPhone:
                 format: int64
@@ -91,7 +91,7 @@ definitions:
         description: CreatePersonRequest for HTTP calls to post a person
         properties:
             address:
-                $ref: '#/definitions/CreateAddressRequest'
+                $ref: '#/definitions/AddressRequest'
             birthDate:
                 type: string
                 x-go-name: BirthDate
@@ -104,7 +104,7 @@ definitions:
                 type: integer
                 x-go-name: ChildrenQuantity
             contact:
-                $ref: '#/definitions/CreateContactRequest'
+                $ref: '#/definitions/ContactRequest'
             fathersName:
                 type: string
                 x-go-name: FathersName
@@ -117,6 +117,9 @@ definitions:
             lastName:
                 type: string
                 x-go-name: LastName
+            maritalStatus:
+                type: string
+                x-go-name: MaritalStatus
             marriageDate:
                 type: string
                 x-go-name: MarriageDate
@@ -294,6 +297,9 @@ definitions:
             lastName:
                 type: string
                 x-go-name: LastName
+            maritalStatus:
+                type: string
+                x-go-name: MaritalStatus
             marriageDate:
                 format: date-time
                 type: string
@@ -333,9 +339,33 @@ definitions:
                 x-go-name: Reason
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    UpdateContactRequest:
-        $ref: '#/definitions/CreateContactRequest'
-        description: UpdateContactRequest for HTTP calls to post a person
+    UpdatePersonRequest:
+        description: UpdatePersonRequest for HTTP calls to put a person
+        properties:
+            birthDate:
+                type: string
+                x-go-name: BirthDate
+            childrenQuantity:
+                format: int64
+                type: integer
+                x-go-name: ChildrenQuantity
+            firstName:
+                type: string
+                x-go-name: FirstName
+            lastName:
+                type: string
+                x-go-name: LastName
+            maritalStatus:
+                type: string
+                x-go-name: MaritalStatus
+            marriageDate:
+                type: string
+                x-go-name: MarriageDate
+            spousesName:
+                type: string
+                x-go-name: SpousesName
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
 host: localhost:8080
 info:
     description: This API manages the members of a church.
@@ -460,6 +490,41 @@ paths:
             security:
                 - token: []
             summary: Get member
+    /members/{id}/address:
+        put:
+            description: Update the address for the given member
+            operationId: updateAddress
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                - description: The address to be updated
+                  in: body
+                  name: member
+                  required: true
+                  schema:
+                      $ref: '#/definitions/AddressRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Address updated
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: [ ]
+            summary: Update member - Address
     /members/{id}/contact:
         put:
             description: Update the contact for the given member
@@ -474,7 +539,7 @@ paths:
                   name: member
                   required: true
                   schema:
-                    $ref: '#/definitions/UpdateContactRequest'
+                      $ref: '#/definitions/ContactRequest'
             produces:
                 - application/json
             responses:
@@ -495,6 +560,41 @@ paths:
             security:
                 - token: []
             summary: Update member - Contact
+    /members/{id}/person:
+        put:
+            description: Update the person for the given member
+            operationId: updatePerson
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                - description: The person to be updated
+                  in: body
+                  name: member
+                  required: true
+                  schema:
+                      $ref: '#/definitions/UpdatePersonRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Person updated
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: [ ]
+            summary: Update member - Person
     /reports/{reportType}:
         get:
             description: Returns a report file url

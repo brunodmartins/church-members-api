@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
@@ -200,6 +201,50 @@ func TestUpdateAddress(t *testing.T) {
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
 		service.EXPECT().UpdateAddress(gomock.Any(), id, gomock.Eq(address)).Return(genericError)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestUpdatePerson(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+	id := domain.NewID()
+	const url = "/members/%s/person"
+	birthDate, _ := time.Parse(time.DateOnly, time.Now().Format(time.DateOnly))
+	expected := domain.Person{
+		FirstName:     "First Name",
+		LastName:      "Last Name",
+		BirthDate:     birthDate,
+		MarriageDate:  nil,
+		SpousesName:   "",
+		MaritalStatus: "SINGLE",
+	}
+	person := dto.UpdatePersonRequest{
+		FirstName:     expected.FirstName,
+		LastName:      expected.LastName,
+		BirthDate:     dto.Date{expected.BirthDate},
+		MarriageDate:  nil,
+		SpousesName:   expected.SpousesName,
+		MaritalStatus: expected.MaritalStatus,
+	}
+	body, _ := json.Marshal(person)
+	t.Run("Success - 200", func(t *testing.T) {
+		service.EXPECT().UpdatePerson(gomock.Any(), id, gomock.Eq(expected)).Return(nil)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - 400 - ID", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 400 - Bad JSON", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, id), badJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 500", func(t *testing.T) {
+		service.EXPECT().UpdatePerson(gomock.Any(), id, gomock.Eq(expected)).Return(genericError)
 		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

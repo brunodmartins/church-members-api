@@ -171,3 +171,27 @@ type CreateUserRequest struct {
 func (r CreateUserRequest) ToUser() *domain.User {
 	return domain.NewUser(r.UserName, r.Email, r.Password, r.Phone, role.From(r.Role), r.NotificationPreferences)
 }
+
+// UpdatePersonRequest for HTTP calls to put a person
+// swagger:model UpdatePersonRequest
+type UpdatePersonRequest struct {
+	FirstName        string `json:"firstName" validate:"required"`
+	LastName         string `json:"lastName" validate:"required"`
+	BirthDate        Date   `json:"birthDate" validate:"required"`
+	MarriageDate     *Date  `json:"marriageDate"`
+	SpousesName      string `json:"spousesName"`
+	MaritalStatus    string `json:"maritalStatus" validate:"eq=SINGLE|eq=WIDOW|eq=MARRIED|eq=DIVORCED"`
+	ChildrenQuantity int    `json:"childrenQuantity"`
+}
+
+func (request UpdatePersonRequest) ToPerson() domain.Person {
+	return domain.Person{
+		FirstName:        request.FirstName,
+		LastName:         request.LastName,
+		BirthDate:        request.BirthDate.Time,
+		MarriageDate:     ToTime(request.MarriageDate),
+		SpousesName:      request.SpousesName,
+		MaritalStatus:    request.MaritalStatus,
+		ChildrenQuantity: request.ChildrenQuantity,
+	}
+}

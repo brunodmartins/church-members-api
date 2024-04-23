@@ -222,6 +222,44 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Put("/members/:id/address", handler.updateAddress)
+	// swagger:operation PUT /members/{id}/person updatePerson
+	//
+	// Update member - Person
+	//
+	// Update the person for the given member
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   description: The member id
+	//   required: true
+	// - name: member
+	//   in: body
+	//   description: The person to be updated
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/UpdatePersonRequest"
+	// responses:
+	//   '200':
+	//     description: Person updated
+	//   '404':
+	//     description: Member not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Put("/members/:id/person", handler.updatePerson)
 }
 
 func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {

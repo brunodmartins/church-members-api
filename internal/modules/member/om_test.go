@@ -24,11 +24,13 @@ func buildMember(id string) *domain.Member {
 	return &domain.Member{
 		ID: id,
 		Person: &domain.Person{
-			FirstName:    "First Name",
-			LastName:     "Last Name",
-			BirthDate:    now,
-			MarriageDate: &now,
-			SpousesName:  "Spouses name",
+			FirstName:        "First Name",
+			LastName:         "Last Name",
+			BirthDate:        now,
+			MarriageDate:     &now,
+			SpousesName:      "Spouses name",
+			MaritalStatus:    "MARRIED",
+			ChildrenQuantity: 1,
 			Contact: &domain.Contact{
 				CellPhoneArea: 99,
 				CellPhone:     1234567890,

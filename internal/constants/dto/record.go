@@ -1,8 +1,8 @@
 package dto
 
 import (
+	"github.com/brunodmartins/church-members-api/internal/constants"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
-	"github.com/brunodmartins/church-members-api/platform/utils"
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -110,7 +110,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		AcceptedJesusDate:      member.Religion.AcceptedJesusDate,
 		BaptismDate:            member.Religion.BaptismDate,
 		Active:                 member.Active,
-		BirthDateShort:         utils.ConvertDate(member.Person.BirthDate),
+		BirthDateShort:         member.Person.BirthDate.Format(constants.ShortDateFormat),
 		MarriageDateShort:      convertMarriageDate(member.Person.MarriageDate),
 		MembershipStartDate:    member.MembershipStartDate,
 		MembershipEndDate:      member.MembershipEndDate,
@@ -120,7 +120,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 
 func convertMarriageDate(marriageDate *time.Time) string {
 	if marriageDate != nil {
-		return utils.ConvertDate(*marriageDate)
+		return marriageDate.Format(constants.ShortDateFormat)
 	}
 	return ""
 }

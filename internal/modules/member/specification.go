@@ -3,10 +3,10 @@ package member
 import (
 	"context"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
+	"github.com/brunodmartins/church-members-api/internal/constants"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
-	"github.com/brunodmartins/church-members-api/platform/utils"
 	"time"
 )
 
@@ -135,14 +135,14 @@ func LastMarriages(startDate, endDate time.Time) wrapper.QuerySpecification {
 		builderExpression = builderExpression.WithKeyCondition(maritalStatus.And(withChurchKey(ctx)))
 		return wrapper.ExpressionBuilder{
 			Index:   maritalStatusIndex(),
-			Builder: builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate))).And(activeCondition(true))),
+			Builder: builderExpression.WithFilter(expression.Name("marriageDateShort").Between(expression.Value(startDate.Format(constants.ShortDateFormat)), expression.Value(endDate.Format(constants.ShortDateFormat))).And(activeCondition(true))),
 		}
 	}
 }
 
 func LastBirths(startDate, endDate time.Time) wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
-		dateKey := expression.Key("birthDateShort").Between(expression.Value(utils.ConvertDate(startDate)), expression.Value(utils.ConvertDate(endDate)))
+		dateKey := expression.Key("birthDateShort").Between(expression.Value(startDate.Format(constants.ShortDateFormat)), expression.Value(endDate.Format(constants.ShortDateFormat)))
 		key := withChurchKey(ctx).And(dateKey)
 		return wrapper.ExpressionBuilder{
 			Index:   birthDateIndex(),
@@ -153,7 +153,7 @@ func LastBirths(startDate, endDate time.Time) wrapper.QuerySpecification {
 
 func WithBirthday(date time.Time) wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
-		dateKey := expression.Key("birthDateShort").Equal(expression.Value(utils.ConvertDate(date)))
+		dateKey := expression.Key("birthDateShort").Equal(expression.Value(date.Format(constants.ShortDateFormat)))
 		builderExpression = builderExpression.WithKeyCondition(dateKey.And(withChurchKey(ctx)))
 		return wrapper.ExpressionBuilder{
 			Index:   birthDateIndex(),

@@ -51,6 +51,7 @@ type CreatePersonRequest struct {
 	FathersName      string         `json:"fathersName"`
 	MothersName      string         `json:"mothersName"`
 	SpousesName      string         `json:"spousesName"`
+	MaritalStatus    string         `json:"maritalStatus" validate:"eq=SINGLE|eq=WIDOW|eq=MARRIED|eq=DIVORCED"`
 	BrothersQuantity int            `json:"brothersQuantity"`
 	ChildrenQuantity int            `json:"childrenQuantity"`
 	Profession       string         `json:"profession"`
@@ -70,6 +71,7 @@ func (dto CreatePersonRequest) ToPerson() *domain.Person {
 		FathersName:      dto.FathersName,
 		MothersName:      dto.MothersName,
 		SpousesName:      dto.SpousesName,
+		MaritalStatus:    dto.MaritalStatus,
 		BrothersQuantity: dto.BrothersQuantity,
 		ChildrenQuantity: dto.ChildrenQuantity,
 		Profession:       dto.Profession,

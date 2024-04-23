@@ -27,6 +27,7 @@ type MemberItem struct {
 	FathersName            string     `dynamodbav:"fathersName"`
 	MothersName            string     `dynamodbav:"mothersName"`
 	SpousesName            string     `dynamodbav:"spousesName,omitempty"`
+	MaritalStatus          string     `dynamodbav:"maritalStatus,omitempty"`
 	BrothersQuantity       int        `dynamodbav:"brothersQuantity"`
 	ChildrenQuantity       int        `dynamodbav:"childrensQuantity"`
 	Profession             string     `dynamodbav:"profession,omitempty"`
@@ -82,6 +83,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		FathersName:            member.Person.FathersName,
 		MothersName:            member.Person.MothersName,
 		SpousesName:            member.Person.SpousesName,
+		MaritalStatus:          member.Person.MaritalStatus,
 		BrothersQuantity:       member.Person.BrothersQuantity,
 		ChildrenQuantity:       member.Person.ChildrenQuantity,
 		Profession:             member.Person.Profession,
@@ -149,6 +151,7 @@ func (item *MemberItem) ToMember() *domain.Member {
 			FathersName:      item.FathersName,
 			MothersName:      item.MothersName,
 			SpousesName:      item.SpousesName,
+			MaritalStatus:    item.MaritalStatus,
 			BrothersQuantity: item.BrothersQuantity,
 			ChildrenQuantity: item.ChildrenQuantity,
 			Profession:       item.Profession,

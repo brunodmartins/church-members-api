@@ -15,6 +15,7 @@ type Person struct {
 	PlaceOfBirth     string     `json:"placeOfBirth"`
 	FathersName      string     `json:"fathersName"`
 	MothersName      string     `json:"mothersName"`
+	MaritalStatus    string     `json:"maritalStatus"`
 	SpousesName      string     `json:"spousesName,omitempty"`
 	BrothersQuantity int        `json:"brothersQuantity"`
 	ChildrenQuantity int        `json:"childrenQuantity"`

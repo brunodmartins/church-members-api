@@ -16,6 +16,7 @@
     "childrensQuantity": 0,
     "profession": "XXXXXX",
     "gender": "M",
+    "maritalStatus": "SINGLE",
     "contact": {
       "cellPhoneArea": 99,
       "cellPhone": 123456789,

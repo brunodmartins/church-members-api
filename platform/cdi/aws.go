@@ -17,7 +17,7 @@ func provideDynamoDB() *dynamodb.Client {
 	if err != nil {
 		panic("unable to load SDK config, " + err.Error())
 	}
-	if viper.Get("cloud") == "" {
+	if viper.Get("cloud") == "LOCAL" {
 		return dynamodb.NewFromConfig(cfg, func(options *dynamodb.Options) {
 			options.BaseEndpoint = aws.String("http://127.0.0.1:4566")
 		})
@@ -43,7 +43,7 @@ func provideS3() *s3.Client {
 	if err != nil {
 		panic("unable to load SDK config, " + err.Error())
 	}
-	if viper.Get("cloud") == "" {
+	if viper.Get("cloud") == "LOCAL" {
 		return s3.NewFromConfig(cfg, func(options *s3.Options) {
 			options.BaseEndpoint = aws.String("http://127.0.0.1:4566")
 		})

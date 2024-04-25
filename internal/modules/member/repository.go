@@ -167,8 +167,9 @@ func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.M
 }
 
 func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Member) error {
-	updateQuery := buildUpdateQuery("name", "firstName", "lastName", "birthDate", "birthDateShort",
+	updateQuery := buildUpdateQuery("#name", "firstName", "lastName", "birthDate", "birthDateShort",
 		"marriageDate", "marriageDateShort", "spousesName", "maritalStatus", "childrensQuantity")
+	updateQuery = strings.Replace(updateQuery, ":#name", ":name", 1)
 	attributes := map[string]types.AttributeValue{
 		":name":              toStringAttributeValue(member.Person.GetFullName()),
 		":firstName":         toStringAttributeValue(member.Person.FirstName),
@@ -194,7 +195,10 @@ func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Me
 				Value: member.ChurchID,
 			},
 		},
-		TableName:                 aws.String(repo.memberTable),
+		TableName: aws.String(repo.memberTable),
+		ExpressionAttributeNames: map[string]string{
+			"#name": "name",
+		},
 		ExpressionAttributeValues: attributes,
 		ReturnValues:              "UPDATED_NEW",
 		UpdateExpression:          aws.String(updateQuery),

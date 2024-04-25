@@ -16,16 +16,17 @@ func NewGetMemberResponse(member *domain.Member) *GetMemberResponse {
 
 func buildPersonResponse(person *domain.Person) *GetPersonResponse {
 	return &GetPersonResponse{
-		FirstName:    person.FirstName,
-		LastName:     person.LastName,
-		FullName:     person.GetFullName(),
-		Gender:       person.Gender,
-		Age:          person.Age(),
-		BirthDate:    person.BirthDate,
-		MarriageDate: person.MarriageDate,
-		SpousesName:  person.SpousesName,
-		Contact:      buildContactResponse(person.Contact),
-		Address:      buildAddressResponse(person.Address),
+		FirstName:     person.FirstName,
+		LastName:      person.LastName,
+		FullName:      person.GetFullName(),
+		Gender:        person.Gender,
+		Age:           person.Age(),
+		BirthDate:     person.BirthDate,
+		MarriageDate:  person.MarriageDate,
+		SpousesName:   person.SpousesName,
+		MaritalStatus: person.MaritalStatus,
+		Contact:       buildContactResponse(person.Contact),
+		Address:       buildAddressResponse(person.Address),
 	}
 }
 

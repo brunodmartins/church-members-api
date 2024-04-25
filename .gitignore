@@ -19,7 +19,6 @@ debug
 .terraform*
 cmd.zip
 internal.zip
-.run
 *.tfvars
 *.tfstate*
 volume/

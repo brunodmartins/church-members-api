@@ -1,0 +1,21 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration default="false" name="go build github.com/brunodmartins/church-members-api"
+                   type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+        <module name="church-members-api"/>
+        <working_directory value="$PROJECT_DIR$"/>
+        <envs>
+            <env name="APPLICATION" value="API"/>
+            <env name="SERVER" value="LOCAL"/>
+            <env name="STORAGE" value="church-members-data-dev"/>
+            <env name="TABLE_CHURCH" value="church_dev"/>
+            <env name="TABLE_MEMBER" value="member_dev"/>
+            <env name="TABLE_USER" value="user_dev"/>
+            <env name="TOKEN_SECRET" value="abc123"/>
+            <env name="TOKEN_EXPIRATION" value="600"/>
+        </envs>
+        <kind value="PACKAGE"/>
+        <package value="github.com/brunodmartins/church-members-api"/>
+        <directory value="$PROJECT_DIR$"/>
+        <method v="2"/>
+    </configuration>
+</component>

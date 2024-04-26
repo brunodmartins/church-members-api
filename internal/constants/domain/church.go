@@ -6,4 +6,5 @@ type Church struct {
 	Name         string `json:"name"`
 	Abbreviation string `json:"abbreviation"`
 	Language     string `json:"language"`
+	Email        string `json:"email"`
 }

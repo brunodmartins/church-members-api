@@ -19,7 +19,7 @@ import (
 )
 
 func TestLastDayRange(t *testing.T) {
-	start, end := lastDaysRange()
+	start, end := weeklyBirthDaysJob{}.lastDaysRange()
 	assert.Equal(t, start.Add(6*24*time.Hour), end)
 }
 
@@ -164,6 +164,8 @@ func buildContext() context.Context {
 		Church: &domain.Church{
 			ID:           "church_id_test",
 			Abbreviation: "church_short_name",
+			Name:         "Test Church",
+			Email:        "test@example.com",
 		},
 	})
 }

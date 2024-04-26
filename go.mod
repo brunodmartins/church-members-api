@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/BurntSushi/toml v1.0.0
+	github.com/arran4/golang-ical v0.2.8
 	github.com/aws/aws-lambda-go v1.23.0
 	github.com/aws/aws-sdk-go v1.40.49
 	github.com/aws/aws-sdk-go-v2 v1.21.2
@@ -18,13 +19,13 @@ require (
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.52.1
 	github.com/golang-jwt/jwt/v4 v4.1.0
-	github.com/golang/mock v1.3.1-0.20190508161146-9fa652df1129
 	github.com/google/uuid v1.5.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/signintech/gopdf v0.9.7
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/viper v1.6.2
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.7.0
+	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.17.0
 	golang.org/x/text v0.14.0
 )
@@ -74,7 +75,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.51.1 // indirect

@@ -13,5 +13,6 @@ func buildChurch(id string) *domain.Church {
 		Name:         "test church",
 		Abbreviation: "tc",
 		Language:     "pt-br",
+		Email:        "test@test.com",
 	}
 }

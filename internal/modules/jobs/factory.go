@@ -13,6 +13,10 @@ func BuildJob(jobType JobType) Job {
 	case DAILY_BIRTHDAYS:
 		job := newDailyBirthDaysJob(memberService, cdi.ProvideNotificationService(), userService)
 		return newChurchWrapperJob(churchService, job)
+	case CALENDAR_BUILD:
+		job := NewCalendarJob(cdi.ProvideCalendarStorage(), memberService)
+		return newChurchWrapperJob(churchService, job)
 	}
+
 	return nil
 }

@@ -10,9 +10,10 @@ type JobType int
 const (
 	WEEKLY_BIRTHDAYS JobType = iota + 1
 	DAILY_BIRTHDAYS
+	CALENDAR_BUILD
 )
 
-var jobs = []string{"WEEKLY_BIRTHDAYS", "DAILY_BIRTHDAYS"}
+var jobs = []string{"WEEKLY_BIRTHDAYS", "DAILY_BIRTHDAYS", "CALENDAR_BUILD"}
 
 func (j JobType) String() string {
 	return jobs[j-1]

@@ -34,3 +34,13 @@ func (person Person) GetFullName() string {
 func (person Person) Age() int {
 	return age.Age(person.BirthDate)
 }
+
+// IsMarried returns true if the person is MARRIED
+func (person Person) IsMarried() bool {
+	return "MARRIED" == person.MaritalStatus
+}
+
+// GetCoupleName return the couple name in case the person is married
+func (person Person) GetCoupleName() string {
+	return person.GetFullName() + " & " + person.SpousesName
+}

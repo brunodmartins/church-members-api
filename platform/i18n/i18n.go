@@ -15,16 +15,16 @@ var LocaleFS embed.FS
 
 var bundles = make(map[string]*i18n.Localizer)
 
-func GetMessage(ctx context.Context, key string) string {
+func GetMessage(ctx context.Context, key string, value ...any) string {
 	localize := GetLocalize(language.English)
 	if ctx.Value("i18n") != nil {
 		localize = ctx.Value("i18n").(*i18n.Localizer)
 	}
-	return localize.MustLocalize(&i18n.LocalizeConfig{
+	return fmt.Sprintf(localize.MustLocalize(&i18n.LocalizeConfig{
 		DefaultMessage: &i18n.Message{
 			ID: key,
 		},
-	})
+	}), value...)
 }
 
 func loadBundle(language language.Tag) *i18n.Bundle {

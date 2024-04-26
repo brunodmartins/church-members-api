@@ -8,6 +8,7 @@ import (
 	report2 "github.com/brunodmartins/church-members-api/internal/modules/report"
 	file2 "github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
+	"github.com/brunodmartins/church-members-api/internal/services/calendar"
 	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"github.com/brunodmartins/church-members-api/internal/services/notification"
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
@@ -87,4 +88,8 @@ func provideReportGenerator() report2.Service {
 		reportGenerator = report2.NewReportService(ProvideMemberService(), file2.NewPDFBuilder(), ProvideStorageService())
 	}
 	return reportGenerator
+}
+
+func ProvideCalendarStorage() calendar.Storage {
+	return calendar.NewCalendarStorage(ProvideStorageService())
 }

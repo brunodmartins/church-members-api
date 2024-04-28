@@ -20,3 +20,5 @@
 "Jobs.Weekly.Title"="Weekly birthdays"
 "Jobs.Weekly.Birth"="Birth"
 "Jobs.Weekly.Marriage"="Marriage"
+"Jobs.Calendar.Birthday.Message"="Its the birthday of %s"
+"Jobs.Calendar.MarriageDay.Message"="Its the marriage day of %s"

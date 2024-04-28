@@ -14,6 +14,10 @@ func TestJobType_From(t *testing.T) {
 		jobType, _ := new(JobType).From("WEEKLY_BIRTHDAYS")
 		assert.Equal(t, WEEKLY_BIRTHDAYS, jobType)
 	})
+	t.Run("CALENDAR_BUILD", func(t *testing.T) {
+		jobType, _ := new(JobType).From("CALENDAR_BUILD")
+		assert.Equal(t, CALENDAR_BUILD, jobType)
+	})
 	t.Run("error", func(t *testing.T) {
 		_, err := new(JobType).From("err")
 		assert.NotNil(t, err)

@@ -38,7 +38,7 @@ func (calendar *Calendar) Serialize() []byte {
 		addEvent.SetAllDayEndAt(event.Time)
 		addEvent.SetSummary(event.Title)
 		addEvent.SetDescription(event.Description)
-		addEvent.AddRrule(fmt.Sprintf("FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d", time.Now().Month(), time.Now().Day()))
+		addEvent.AddRrule(fmt.Sprintf("FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d", event.Time.Month(), event.Time.Day()))
 		alarm := addEvent.AddAlarm()
 		alarm.SetAction(ics.ActionDisplay)
 		alarm.SetDescription(event.Description)

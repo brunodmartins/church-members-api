@@ -210,28 +210,32 @@ func (item *MemberItem) hasAddress() bool {
 }
 
 type UserItem struct {
-	ID              string `dynamodbav:"id"`
-	ChurchID        string `dynamodbav:"church_id"`
-	UserName        string `dynamodbav:"username"`
-	Email           string `dynamodbav:"email"`
-	Role            string `dynamodbav:"role"`
-	Password        string `dynamodbav:"password"`
-	Phone           string `dynamodbav:"phone"`
-	SendDailySMS    bool   `dynamodbav:"send_daily_sms"`
-	SendWeeklyEmail bool   `dynamodbav:"send_weekly_email"`
+	ID                string `dynamodbav:"id"`
+	ChurchID          string `dynamodbav:"church_id"`
+	UserName          string `dynamodbav:"username"`
+	Email             string `dynamodbav:"email"`
+	Role              string `dynamodbav:"role"`
+	Password          string `dynamodbav:"password"`
+	Phone             string `dynamodbav:"phone"`
+	ConfirmedEmail    bool   `dynamodbav:"confirmed_email"`
+	SendDailySMS      bool   `dynamodbav:"send_daily_sms"`
+	SendWeeklyEmail   bool   `dynamodbav:"send_weekly_email"`
+	ConfirmationToken string `dynamodbav:"confirmation_token"`
 }
 
 // NewUserItem creates a UserItem from a domain.User
 func NewUserItem(user *domain.User) *UserItem {
 	return &UserItem{
-		ID:              user.ID,
-		UserName:        user.UserName,
-		Email:           user.Email,
-		Role:            user.Role.String(),
-		Password:        string(user.Password),
-		Phone:           user.Phone,
-		SendDailySMS:    user.Preferences.SendDailySMS,
-		SendWeeklyEmail: user.Preferences.SendWeeklyEmail,
+		ID:                user.ID,
+		UserName:          user.UserName,
+		Email:             user.Email,
+		Role:              user.Role.String(),
+		Password:          string(user.Password),
+		Phone:             user.Phone,
+		SendDailySMS:      user.Preferences.SendDailySMS,
+		SendWeeklyEmail:   user.Preferences.SendWeeklyEmail,
+		ConfirmedEmail:    user.ConfirmedEmail,
+		ConfirmationToken: user.ConfirmationToken,
 	}
 }
 
@@ -249,5 +253,7 @@ func (item *UserItem) ToUser() *domain.User {
 			SendDailySMS:    item.SendDailySMS,
 			SendWeeklyEmail: item.SendWeeklyEmail,
 		},
+		ConfirmedEmail:    item.ConfirmedEmail,
+		ConfirmationToken: item.ConfirmationToken,
 	}
 }

@@ -11,6 +11,8 @@ func TestNewUser(t *testing.T) {
 	const password = "123"
 	user := NewUser("", "", "", password, role.USER, NotificationPreferences{})
 	assert.NotEqual(t, password, string(user.Password))
+	assert.False(t, user.ConfirmedEmail)
+	assert.NotEmpty(t, user.ConfirmationToken)
 }
 
 func TestGetChurch(t *testing.T) {

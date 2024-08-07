@@ -3,6 +3,7 @@ package jobs
 import (
 	"context"
 	"fmt"
+	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"go.uber.org/mock/gomock"
 	"testing"
 	"time"
@@ -32,23 +33,19 @@ func TestWeeklyBuildMessage(t *testing.T) {
 	job := newWeeklyBirthDaysJob(nil, nil, nil)
 	now := time.Now()
 	t.Run("With both birth and marriage", func(t *testing.T) {
-		message, err := job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), BuildMarriageMembers(&now))
-		assert.NoError(t, err)
+		message := job.buildEmailData(context.TODO(), BuildBirthDaysMembers(now), BuildMarriageMembers(&now))
 		assert.NotEmpty(t, message)
 	})
 	t.Run("Only birth", func(t *testing.T) {
-		message, err := job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), []*domain.Member{})
-		assert.NoError(t, err)
+		message := job.buildEmailData(context.TODO(), BuildBirthDaysMembers(now), []*domain.Member{})
 		assert.NotEmpty(t, message)
 	})
 	t.Run("Only marriage", func(t *testing.T) {
-		message, err := job.buildMessage(context.TODO(), []*domain.Member{}, BuildMarriageMembers(&now))
-		assert.NoError(t, err)
+		message := job.buildEmailData(context.TODO(), []*domain.Member{}, BuildMarriageMembers(&now))
 		assert.NotEmpty(t, message)
 	})
 	t.Run("None", func(t *testing.T) {
-		message, err := job.buildMessage(context.TODO(), []*domain.Member{}, []*domain.Member{})
-		assert.NoError(t, err)
+		message := job.buildEmailData(context.TODO(), []*domain.Member{}, []*domain.Member{})
 		assert.NotEmpty(t, message)
 	})
 }
@@ -81,7 +78,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 			return BuildMarriageMembers(&now), nil
 		}).Times(2)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
-		emailService.EXPECT().SendEmail(gomock.Any()).Return(nil).Times(2)
+		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.WeeklyBirthTemplate), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
 		assert.Nil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail users search", func(t *testing.T) {
@@ -106,7 +103,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 			return BuildMarriageMembers(&now), nil
 		}).Times(2)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
-		emailService.EXPECT().SendEmail(gomock.Any()).Return(genericError)
+		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.WeeklyBirthTemplate), gomock.Any(), gomock.Any(), gomock.Any()).Return(genericError)
 		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail Search marriage members", func(t *testing.T) {

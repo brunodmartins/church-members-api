@@ -14,10 +14,11 @@ var genericError = errors.New("error")
 
 func buildUser(id string, password string) *domain.User {
 	return &domain.User{
-		ID:       id,
-		UserName: userName,
-		Email:    "",
-		Password: []byte(password),
+		ID:             id,
+		UserName:       userName,
+		Email:          "",
+		Password:       []byte(password),
+		ConfirmedEmail: true,
 	}
 }
 

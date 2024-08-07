@@ -48,6 +48,7 @@ module "api" {
     "TOKEN_SECRET" : var.security_token_secret,
     "TOKEN_EXPIRATION" : var.security_token_expiration,
     "STORAGE": module.s3_bucket.bucket_name,
+    "API_ENDPOINT": module.api.gateway_url
   }
   gateway_name    = var.gateway_name
 }

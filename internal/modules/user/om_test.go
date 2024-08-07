@@ -7,18 +7,21 @@ import (
 )
 
 const (
-	userName = "test-User"
-	password = "password"
+	userName          = "test-User"
+	password          = "password"
+	confirmationToken = "token"
 )
 
 var genericError = errors.New("error")
 
 func buildUser(id string, password string) *domain.User {
 	return &domain.User{
-		ID:       id,
-		UserName: userName,
-		Email:    "",
-		Password: []byte(password),
-		Role:     role.USER,
+		ID:                id,
+		UserName:          userName,
+		Email:             "",
+		Password:          []byte(password),
+		Role:              role.USER,
+		ConfirmedEmail:    false,
+		ConfirmationToken: confirmationToken,
 	}
 }

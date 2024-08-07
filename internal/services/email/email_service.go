@@ -36,7 +36,7 @@ func buildEmailInput(command Command, fromEmail string) *sesv2.SendEmailInput {
 		Content: &sesv2.EmailContent{
 			Simple: &sesv2.Message{
 				Body: &sesv2.Body{
-					Text: &sesv2.Content{
+					Html: &sesv2.Content{
 						Charset: aws.String("ISO-8859-1"),
 						Data:    aws.String(command.Body),
 					},

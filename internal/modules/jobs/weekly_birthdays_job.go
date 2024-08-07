@@ -1,22 +1,41 @@
 package jobs
 
 import (
+	"bytes"
 	"context"
-	"fmt"
+	_ "embed"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
 	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
+	"html/template"
 	"sort"
-	"strings"
 	"time"
 )
+
+//go:embed resources/weekly_birthdays_template.html
+var emailHTML string
 
 type weeklyBirthDaysJob struct {
 	memberService member.Service
 	emailService  email.Service
 	userService   user.Service
+}
+
+type weeklyTemplateDTO struct {
+	Title           string
+	BirthTitle      string
+	MarriageTitle   string
+	NameColumn      string
+	DateColumn      string
+	MembersBirth    []memberDTO
+	MembersMarriage []memberDTO
+}
+
+type memberDTO struct {
+	Name string
+	Date string
 }
 
 func newWeeklyBirthDaysJob(
@@ -40,7 +59,10 @@ func (job weeklyBirthDaysJob) RunJob(ctx context.Context) error {
 		return err
 	}
 	sort.Sort(domain.SortByMarriageDay(marriageMembers))
-	emailBody := job.buildMessage(ctx, birthMembers, marriageMembers)
+	emailBody, err := job.buildMessage(ctx, birthMembers, marriageMembers)
+	if err != nil {
+		return err
+	}
 	users, err := job.userService.SearchUser(ctx, user.WithEmailNotifications())
 	if err != nil {
 		return err
@@ -61,25 +83,37 @@ func (job weeklyBirthDaysJob) buildEmailCommand(ctx context.Context, message, em
 	}
 }
 
-func (job weeklyBirthDaysJob) buildMessage(ctx context.Context, birthMembers, marriageMembers []*domain.Member) string {
-	builder := strings.Builder{}
-	builder.WriteString(fmt.Sprintf("%s\n", i18n.GetMessage(ctx, "Jobs.Weekly.Title")))
-	builder.WriteString(fmt.Sprintf("%s\n", i18n.GetMessage(ctx, "Jobs.Weekly.Birth")))
-	for _, member := range birthMembers {
-		builder.WriteString(fmt.Sprintf("- %s - %s\n", member.Person.GetFullName(), fmtDate(member.Person.BirthDate)))
+func (job weeklyBirthDaysJob) buildMessage(ctx context.Context, birthMembers, marriageMembers []*domain.Member) (string, error) {
+	weeklyTemplate := weeklyTemplateDTO{
+		Title:         i18n.GetMessage(ctx, "Jobs.Weekly.Title"),
+		BirthTitle:    i18n.GetMessage(ctx, "Jobs.Weekly.Birth"),
+		MarriageTitle: i18n.GetMessage(ctx, "Jobs.Weekly.Marriage"),
+		NameColumn:    i18n.GetMessage(ctx, "Domain.Name"),
+		DateColumn:    i18n.GetMessage(ctx, "Domain.Date"),
 	}
-	if len(birthMembers) == 0 {
-		builder.WriteString("---------\n")
+	tmpl, err := template.New("weekly_job").Parse(emailHTML)
+	if err != nil {
+		return "", err
+	}
+	for _, member := range birthMembers {
+		weeklyTemplate.MembersBirth = append(weeklyTemplate.MembersBirth, memberDTO{
+			Name: member.Person.GetFullName(),
+			Date: fmtDate(member.Person.BirthDate),
+		})
 	}
 
-	builder.WriteString(fmt.Sprintf("%s\n", i18n.GetMessage(ctx, "Jobs.Weekly.Marriage")))
 	for _, member := range marriageMembers {
-		builder.WriteString(fmt.Sprintf("- %s & %s - %s\n", member.Person.GetFullName(), member.Person.SpousesName, fmtDate(*member.Person.MarriageDate)))
+		weeklyTemplate.MembersMarriage = append(weeklyTemplate.MembersMarriage, memberDTO{
+			Name: member.Person.GetCoupleName(),
+			Date: fmtDate(*member.Person.MarriageDate),
+		})
 	}
-	if len(marriageMembers) == 0 {
-		builder.WriteString("---------\n")
+	buf := new(bytes.Buffer)
+	err = tmpl.Execute(buf, weeklyTemplate)
+	if err != nil {
+		return "", err
 	}
-	return builder.String()
+	return buf.String(), nil
 }
 
 func (weeklyBirthDaysJob) lastDaysRange() (time.Time, time.Time) {

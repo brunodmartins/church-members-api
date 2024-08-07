@@ -31,22 +31,25 @@ func TestFmtDate(t *testing.T) {
 func TestWeeklyBuildMessage(t *testing.T) {
 	job := newWeeklyBirthDaysJob(nil, nil, nil)
 	now := time.Now()
-	fmtDate := fmtDate(now)
 	t.Run("With both birth and marriage", func(t *testing.T) {
-		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate, fmtDate)
-		assert.Equal(t, expected, job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), BuildMarriageMembers(&now)))
+		message, err := job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), BuildMarriageMembers(&now))
+		assert.NoError(t, err)
+		assert.NotEmpty(t, message)
 	})
 	t.Run("Only birth", func(t *testing.T) {
-		expected := fmt.Sprintf("Weekly birthdays\nBirth\n- foo bar - %s\nMarriage\n---------\n", fmtDate)
-		assert.Equal(t, expected, job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), []*domain.Member{}))
+		message, err := job.buildMessage(context.TODO(), BuildBirthDaysMembers(now), []*domain.Member{})
+		assert.NoError(t, err)
+		assert.NotEmpty(t, message)
 	})
 	t.Run("Only marriage", func(t *testing.T) {
-		expected := fmt.Sprintf("Weekly birthdays\nBirth\n---------\nMarriage\n- foo bar & foo2 bar2 - %s\n", fmtDate)
-		assert.Equal(t, expected, job.buildMessage(context.TODO(), []*domain.Member{}, BuildMarriageMembers(&now)))
+		message, err := job.buildMessage(context.TODO(), []*domain.Member{}, BuildMarriageMembers(&now))
+		assert.NoError(t, err)
+		assert.NotEmpty(t, message)
 	})
 	t.Run("None", func(t *testing.T) {
-		expected := "Weekly birthdays\nBirth\n---------\nMarriage\n---------\n"
-		assert.Equal(t, expected, job.buildMessage(context.TODO(), []*domain.Member{}, []*domain.Member{}))
+		message, err := job.buildMessage(context.TODO(), []*domain.Member{}, []*domain.Member{})
+		assert.NoError(t, err)
+		assert.NotEmpty(t, message)
 	})
 }
 

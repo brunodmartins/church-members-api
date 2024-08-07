@@ -1,0 +1,130 @@
+<html lang="pt-BR">
+<head >
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <style>
+
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        h1 {
+            color: #009879;
+            font-family: Arial, sans-serif;
+            font-size: 36px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            color: #009879;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 18px;
+            text-align: left;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #009879;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        table, th, td {
+            border-radius: 6px;
+        }
+
+        td {
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>{{.Title}}</h1>
+
+    {{if .MembersBirth}}
+        <h3>{{.BirthTitle}}</h3>
+        <table>
+            <tr>
+                <th>{{.NameColumn}}</th>
+                <th>{{.DateColumn}}</th>
+            </tr>
+            {{range $i, $member := .MembersBirth}}
+            <tr>
+                <td>{{$member.Name}}</td>
+                <td>{{$member.Date}}</td>
+            </tr>
+            {{end}}
+        </table>
+    {{end}}
+    </br>
+    {{if .MembersMarriage}}
+    <h3>{{.MarriageTitle}}</h3>
+    <table>
+        <tr>
+            <th>{{.NameColumn}}</th>
+            <th>{{.DateColumn}}</th>
+        </tr>
+        {{range $i, $member := .MembersMarriage}}
+        <tr>
+            <td>{{$member.Name}}</td>
+            <td>{{$member.Date}}</td>
+        </tr>
+        {{end}}
+    </table>
+    {{end}}
+
+</div>
+</body>
+</html>

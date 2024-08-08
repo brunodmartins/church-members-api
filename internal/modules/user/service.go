@@ -12,6 +12,7 @@ import (
 type Service interface {
 	SaveUser(ctx context.Context, user *domain.User) error
 	SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error)
+	ConfirmEmail(ctx context.Context, userID string, token string) error
 }
 
 type userService struct {
@@ -32,6 +33,21 @@ func (s userService) SaveUser(ctx context.Context, user *domain.User) error {
 
 func (s userService) SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error) {
 	return s.repository.SearchUser(ctx, specification)
+}
+
+func (s userService) ConfirmEmail(ctx context.Context, userID string, token string) error {
+	user, err := s.repository.FindByID(ctx, userID)
+	if err != nil {
+		return err
+	}
+	if user.ConfirmedEmail {
+		return apierrors.NewApiError("email is already confirmed", http.StatusUnprocessableEntity)
+	}
+	if user.ConfirmationToken != token {
+		return apierrors.NewApiError("The provided token does not match for the given user", http.StatusBadRequest)
+	}
+	user.ConfirmedEmail = true
+	return s.repository.UpdateUser(ctx, user)
 }
 
 func (s userService) checkUserExist(ctx context.Context, userName string) error {

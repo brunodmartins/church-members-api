@@ -2,6 +2,9 @@ package user
 
 import (
 	"context"
+	"errors"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
+	"net/http"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -55,6 +58,63 @@ func TestService_SearchUser(t *testing.T) {
 		_, err := service.SearchUser(BuildContext(), spec)
 		assert.NotNil(t, err)
 	})
+}
+
+func TestUserService_ConfirmEmail(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repository := mock_user.NewMockRepository(ctrl)
+	service := NewService(repository)
+	t.Run("Given a valid user and token, when the confirm operation is call, then confirm correctly", func(t *testing.T) {
+		id := domain.NewID()
+		ctx := BuildContext()
+		user := buildUser(id, "")
+		user.ConfirmedEmail = false
+		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(user, nil)
+		repository.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(user)).Return(nil)
+		assert.Nil(t, service.ConfirmEmail(ctx, id, confirmationToken))
+		assert.True(t, user.ConfirmedEmail)
+	})
+	t.Run("Given a valid user and token, when the confirm operation is call, then fails the operation due to repository error", func(t *testing.T) {
+		id := domain.NewID()
+		ctx := BuildContext()
+		user := buildUser(id, "")
+		user.ConfirmedEmail = false
+		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(user, nil)
+		repository.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(user)).Return(errors.New("generic error"))
+		assert.Error(t, service.ConfirmEmail(ctx, id, confirmationToken))
+	})
+	t.Run("Given a valid user and an invalid token, when the confirm operation is call, then fails the operation due to invalid token", func(t *testing.T) {
+		id := domain.NewID()
+		ctx := BuildContext()
+		user := buildUser(id, "")
+		user.ConfirmedEmail = false
+		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(user, nil)
+		err := service.ConfirmEmail(ctx, id, "invalid-token")
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusBadRequest, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given a user that has already confirmed, when the confirm operation is call, then fails the operation due to already be confirmed", func(t *testing.T) {
+		id := domain.NewID()
+		ctx := BuildContext()
+		user := buildUser(id, "")
+		user.ConfirmedEmail = true
+		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(user, nil)
+		err := service.ConfirmEmail(ctx, id, confirmationToken)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusUnprocessableEntity, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given a nonexistent user, when the confirm operation is call, then fails the operation due to not found the user", func(t *testing.T) {
+		id := domain.NewID()
+		ctx := BuildContext()
+		user := buildUser(id, "")
+		user.ConfirmedEmail = true
+		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(nil, apierrors.NewApiError("User not found", http.StatusNotFound))
+		err := service.ConfirmEmail(ctx, id, confirmationToken)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
+	})
+
 }
 
 func BuildContext() context.Context {

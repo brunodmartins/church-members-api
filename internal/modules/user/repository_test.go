@@ -2,11 +2,13 @@ package user
 
 import (
 	"context"
-	"testing"
-
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/test/dynamodbhelper"
+	"net/http"
+	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -96,6 +98,62 @@ func TestDynamoRepository_FindAll(t *testing.T) {
 	})
 }
 
+func TestDynamoRepository_UpdateUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	ctx := context.TODO()
+	repo := NewRepository(dynamoMock, tableUser)
+
+	t.Run("Success - Changing all fields", func(t *testing.T) {
+		id := domain.NewID()
+		user := buildUser(id, "123")
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    tableUser,
+			ID:       user.ID,
+			ChurchID: user.ChurchID,
+			Values: map[string]types.AttributeValue{
+				":confirmed_email": &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.UpdateUser(ctx, user)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Fail - Error on DynamoDB", func(t *testing.T) {
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		assert.Error(t, repo.UpdateUser(ctx, buildUser(domain.NewID(), "123")))
+	})
+}
+
+func TestDynamoRepository_FindByID(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	repo := NewRepository(dynamoMock, tableUser)
+	id := domain.NewID()
+	ctx := BuildContext()
+	t.Run("Success", func(t *testing.T) {
+		wrapper.MockGetItem(t, dynamoMock, tableUser, buildKey(ctx, id), buildItem(id), nil)
+		churchMember, err := repo.FindByID(ctx, id)
+		assert.Nil(t, err)
+		assert.Equal(t, id, churchMember.ID)
+	})
+	t.Run("Not Found", func(t *testing.T) {
+		wrapper.MockGetItem(t, dynamoMock, tableUser, buildKey(ctx, id), nil, nil)
+		memberFound, err := repo.FindByID(ctx, id)
+		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
+		assert.Nil(t, memberFound)
+	})
+	t.Run("Error", func(t *testing.T) {
+		wrapper.MockGetItem(t, dynamoMock, tableUser, buildKey(ctx, id), nil, genericError)
+		memberFound, err := repo.FindByID(ctx, id)
+		assert.NotNil(t, err)
+		assert.Nil(t, memberFound)
+	})
+}
+
 func buildItems(length int) []map[string]types.AttributeValue {
 	var items []map[string]types.AttributeValue
 	for i := 0; i < length; i++ {
@@ -125,4 +183,17 @@ func buildContext() context.Context {
 			ID: "church_id_test",
 		},
 	})
+}
+
+func buildKey(ctx context.Context, id string) wrapper.CompositeKey {
+	return wrapper.CompositeKey{
+		PartitionKey: wrapper.Key{
+			Id:    "church_id",
+			Value: domain.GetChurchID(ctx),
+		},
+		SortKey: wrapper.Key{
+			Id:    "id",
+			Value: id,
+		},
+	}
 }

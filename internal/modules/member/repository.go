@@ -110,7 +110,7 @@ func (repo dynamoRepository) RetireMembership(ctx context.Context, member *domai
 			},
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String(buildUpdateQuery("active", "membershipEndDate", "membershipEndReason")),
+		UpdateExpression: aws.String(repo.wrapper.BuildUpdateQuery("active", "membershipEndDate", "membershipEndReason")),
 	})
 	return err
 }
@@ -134,13 +134,13 @@ func (repo dynamoRepository) UpdateContact(ctx context.Context, member *domain.M
 			":email":         toStringAttributeValue(member.Person.Contact.Email),
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String(buildUpdateQuery("phoneArea", "phone", "cellPhoneArea", "cellPhone", "email")),
+		UpdateExpression: aws.String(repo.wrapper.BuildUpdateQuery("phoneArea", "phone", "cellPhoneArea", "cellPhone", "email")),
 	})
 	return err
 }
 
 func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.Member) error {
-	updateQuery := buildUpdateQuery("zipCode", "state", "city", "address", "district", "number", "moreInfo")
+	updateQuery := repo.wrapper.BuildUpdateQuery("zipCode", "state", "city", "address", "district", "number", "moreInfo")
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
@@ -167,7 +167,7 @@ func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.M
 }
 
 func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Member) error {
-	updateQuery := buildUpdateQuery("#name", "firstName", "lastName", "birthDate", "birthDateShort",
+	updateQuery := repo.wrapper.BuildUpdateQuery("#name", "firstName", "lastName", "birthDate", "birthDateShort",
 		"marriageDate", "marriageDateShort", "spousesName", "maritalStatus", "childrensQuantity")
 	updateQuery = strings.Replace(updateQuery, ":#name", ":name", 1)
 	attributes := map[string]types.AttributeValue{
@@ -204,19 +204,6 @@ func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Me
 		UpdateExpression:          aws.String(updateQuery),
 	})
 	return err
-}
-
-func buildUpdateQuery(fields ...string) string {
-	builder := strings.Builder{}
-	builder.WriteString("set ")
-	for _, f := range fields {
-		builder.WriteString(f)
-		builder.WriteString(" = :")
-		builder.WriteString(f)
-		builder.WriteString(", ")
-	}
-	result := builder.String()
-	return result[:len(result)-2]
 }
 
 func toNumberAttributeValue(value int) types.AttributeValue {

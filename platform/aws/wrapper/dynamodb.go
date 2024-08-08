@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"net/http"
+	"strings"
 )
 
 //go:generate mockgen -source=./dynamodb.go -destination=./mock/dynamodb_mock.go
@@ -98,6 +99,19 @@ func (wrapper *DynamoDBWrapper) GetItem(key KeyAttribute, value interface{}) err
 	}
 
 	return attributevalue.UnmarshalMap(result.Item, value)
+}
+
+func (wrapper *DynamoDBWrapper) BuildUpdateQuery(fields ...string) string {
+	builder := strings.Builder{}
+	builder.WriteString("set ")
+	for _, f := range fields {
+		builder.WriteString(f)
+		builder.WriteString(" = :")
+		builder.WriteString(f)
+		builder.WriteString(", ")
+	}
+	result := builder.String()
+	return result[:len(result)-2]
 }
 
 // Key groups the ID and Value of a key

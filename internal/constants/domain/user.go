@@ -40,9 +40,18 @@ func NewUser(userName, email, password, phone string, role enum.Role, preference
 }
 
 func GetChurchID(ctx context.Context) string {
-	return GetChurch(ctx).ID
+	if church := GetChurch(ctx); church != nil {
+		return church.ID
+	}
+	return ctx.Value("church_id").(string)
 }
 
 func GetChurch(ctx context.Context) *Church {
-	return ctx.Value("user").(*User).Church
+	if church := ctx.Value("church"); church != nil {
+		return church.(*Church)
+	}
+	if user := ctx.Value("user"); user != nil {
+		return user.(*User).Church
+	}
+	return nil
 }

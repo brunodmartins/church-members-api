@@ -23,6 +23,7 @@ func InitConfiguration() {
 	viper.Set("security.token.expiration", os.Getenv("TOKEN_EXPIRATION"))
 	viper.Set("email.sender", os.Getenv("EMAIL_SENDER"))
 	viper.Set("storage.name", os.Getenv("STORAGE"))
+	viper.Set("email.confirm.url", os.Getenv("API_ENDPOINT"))
 }
 
 func IsAWS() bool {

@@ -13,12 +13,10 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"github.com/gofiber/fiber/v2/log"
+	"github.com/brunodmartins/church-members-api/test/dynamodbhelper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"net/http"
-	"reflect"
-	"strings"
 	"testing"
 	"time"
 )
@@ -116,11 +114,11 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 		churchMember.MembershipEndDate = &endDate
 		churchMember.Active = false
 		churchMember.MembershipEndReason = "test reason"
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":active":              &types.AttributeValueMemberBOOL{Value: false},
 				":membershipEndDate":   &types.AttributeValueMemberS{Value: endDate.Format(time.RFC3339)},
 				":membershipEndReason": &types.AttributeValueMemberS{Value: "test reason"},
@@ -137,11 +135,11 @@ func TestDynamoRepository_UpdateStatus(t *testing.T) {
 		churchMember.MembershipEndDate = &endDate
 		churchMember.Active = false
 		churchMember.MembershipEndReason = "test reason"
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":active":              &types.AttributeValueMemberBOOL{Value: false},
 				":membershipEndDate":   &types.AttributeValueMemberS{Value: endDate.Format(time.RFC3339)},
 				":membershipEndReason": &types.AttributeValueMemberS{Value: "test reason"},
@@ -163,11 +161,11 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 	t.Run("Success - Changing all fields", func(t *testing.T) {
 		id := domain.NewID()
 		churchMember := buildMember(id)
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":phoneArea":     &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.PhoneArea)},
 				":phone":         &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.Phone)},
 				":cellPhoneArea": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhoneArea)},
@@ -184,11 +182,11 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 		churchMember := buildMember(id)
 		churchMember.Person.Contact.PhoneArea = 0
 		churchMember.Person.Contact.Phone = 0
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":phoneArea":     &types.AttributeValueMemberNULL{Value: true},
 				":phone":         &types.AttributeValueMemberNULL{Value: true},
 				":cellPhoneArea": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhoneArea)},
@@ -207,11 +205,11 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 		churchMember.Person.Contact.Phone = 0
 		churchMember.Person.Contact.CellPhoneArea = 0
 		churchMember.Person.Contact.CellPhone = 0
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":phoneArea":     &types.AttributeValueMemberNULL{Value: true},
 				":phone":         &types.AttributeValueMemberNULL{Value: true},
 				":cellPhoneArea": &types.AttributeValueMemberNULL{Value: true},
@@ -229,11 +227,11 @@ func TestDynamoRepository_UpdateContact(t *testing.T) {
 		churchMember.Person.Contact.PhoneArea = 0
 		churchMember.Person.Contact.Phone = 0
 		churchMember.Person.Contact.Email = ""
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":phoneArea":     &types.AttributeValueMemberNULL{Value: true},
 				":phone":         &types.AttributeValueMemberNULL{Value: true},
 				":cellPhoneArea": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.Contact.CellPhoneArea)},
@@ -261,11 +259,11 @@ func TestDynamoRepository_UpdateAddress(t *testing.T) {
 	t.Run("Success - Changing all fields", func(t *testing.T) {
 		id := domain.NewID()
 		churchMember := buildMember(id)
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":zipCode":  &types.AttributeValueMemberNULL{Value: true},
 				":state":    &types.AttributeValueMemberS{Value: churchMember.Person.Address.State},
 				":city":     &types.AttributeValueMemberS{Value: churchMember.Person.Address.City},
@@ -295,11 +293,11 @@ func TestDynamoRepository_UpdatePerson(t *testing.T) {
 	t.Run("Success - Changing all fields", func(t *testing.T) {
 		id := domain.NewID()
 		churchMember := buildMember(id)
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":name":              &types.AttributeValueMemberS{Value: churchMember.Person.GetFullName()},
 				":firstName":         &types.AttributeValueMemberS{Value: churchMember.Person.FirstName},
 				":lastName":          &types.AttributeValueMemberS{Value: churchMember.Person.LastName},
@@ -323,11 +321,11 @@ func TestDynamoRepository_UpdatePerson(t *testing.T) {
 		churchMember.Person.MaritalStatus = "SINGLE"
 		churchMember.Person.MarriageDate = nil
 		churchMember.Person.SpousesName = ""
-		matcher := UpdateMatcher{
-			table:    memberTable,
-			memberID: churchMember.ID,
-			churchID: churchMember.ChurchID,
-			values: map[string]types.AttributeValue{
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    memberTable,
+			ID:       churchMember.ID,
+			ChurchID: churchMember.ChurchID,
+			Values: map[string]types.AttributeValue{
 				":name":              &types.AttributeValueMemberS{Value: churchMember.Person.GetFullName()},
 				":firstName":         &types.AttributeValueMemberS{Value: churchMember.Person.FirstName},
 				":lastName":          &types.AttributeValueMemberS{Value: churchMember.Person.LastName},
@@ -348,45 +346,6 @@ func TestDynamoRepository_UpdatePerson(t *testing.T) {
 		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
 		assert.NotNil(t, repo.UpdatePerson(ctx, buildMember(domain.NewID())))
 	})
-}
-
-type UpdateMatcher struct {
-	table    string
-	memberID string
-	churchID string
-	values   map[string]types.AttributeValue
-}
-
-func (expected UpdateMatcher) Matches(r any) bool {
-	received := r.(*dynamodb.UpdateItemInput)
-	if *received.TableName != expected.table {
-		return false
-	}
-	if received.Key["id"].(*types.AttributeValueMemberS).Value != expected.memberID {
-		return false
-	}
-	if received.Key["church_id"].(*types.AttributeValueMemberS).Value != expected.churchID {
-		return false
-	}
-	if received.UpdateExpression == nil {
-		return false
-	}
-	updateQuery := *received.UpdateExpression
-	if !reflect.DeepEqual(received.ExpressionAttributeValues, expected.values) {
-		return false
-	}
-	for key := range received.ExpressionAttributeValues {
-		if !strings.Contains(updateQuery, key) {
-			log.Errorf("Key %s not found in update query", key)
-			return false
-		}
-	}
-
-	return true
-}
-
-func (expected UpdateMatcher) String() string {
-	return fmt.Sprintf("Expected ID: {%s}, ChurchID: {%s}, Table: {%s}, Values:{%v}", expected.memberID, expected.churchID, expected.table, expected.values)
 }
 
 func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {

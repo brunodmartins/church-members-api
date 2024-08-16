@@ -2,6 +2,7 @@ package security
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -18,33 +19,43 @@ type Service interface {
 }
 
 type authService struct {
-	userRepository   user.Repository
-	churchRepository church.Repository
+	userService   user.Service
+	churchService church.Service
 }
 
-func NewAuthService(userRepository user.Repository, churchRepository church.Repository) Service {
+func NewAuthService(userService user.Service, churchService church.Service) Service {
 	return &authService{
-		userRepository:   userRepository,
-		churchRepository: churchRepository,
+		userService:   userService,
+		churchService: churchService,
 	}
 }
 
 func (s *authService) GenerateToken(churchID, username, password string) (string, error) {
-	church, err := s.churchRepository.GetByID(churchID)
+	church, err := s.churchService.GetChurch(churchID)
 	if err != nil {
+		logrus.Errorf("Error getting church %s: %v", churchID, err)
 		return "", s.buildAuthError()
 	}
-	user, err := s.userRepository.FindUser(context.WithValue(context.Background(), "user", &domain.User{
-		Church: church,
-	}), username)
+	ctx := context.WithValue(context.Background(), "church", church)
+	users, err := s.userService.SearchUser(ctx, user.WithUserName(username))
 	if err != nil {
+		logrus.Errorf("Error getting user %s: %v", username, err)
 		return "", err
 	}
-	if user == nil {
+
+	if len(users) == 0 {
+		logrus.Infof("User %s not found", username)
 		return "", s.buildAuthError()
 	}
+	user := users[0]
 	err = crypto.IsSamePassword(user.Password, password)
 	if err != nil {
+		logrus.Infof("Provided password user %s not equal", username)
+		return "", s.buildAuthError()
+	}
+	if !user.ConfirmedEmail {
+		logrus.Infof("User %s has not confirmed the email, confirmation mail sent", username)
+		_ = s.userService.SendConfirmEmail(ctx, user)
 		return "", s.buildAuthError()
 	}
 	user.Church = church

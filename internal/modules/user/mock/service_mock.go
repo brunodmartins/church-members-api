@@ -41,6 +41,20 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// ConfirmEmail mocks base method.
+func (m *MockService) ConfirmEmail(ctx context.Context, userID, token string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmEmail", ctx, userID, token)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmEmail indicates an expected call of ConfirmEmail.
+func (mr *MockServiceMockRecorder) ConfirmEmail(ctx, userID, token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmEmail", reflect.TypeOf((*MockService)(nil).ConfirmEmail), ctx, userID, token)
+}
+
 // SaveUser mocks base method.
 func (m *MockService) SaveUser(ctx context.Context, user *domain.User) error {
 	m.ctrl.T.Helper()
@@ -68,4 +82,18 @@ func (m *MockService) SearchUser(ctx context.Context, specification wrapper.Quer
 func (mr *MockServiceMockRecorder) SearchUser(ctx, specification any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockService)(nil).SearchUser), ctx, specification)
+}
+
+// SendConfirmEmail mocks base method.
+func (m *MockService) SendConfirmEmail(ctx context.Context, user *domain.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendConfirmEmail", ctx, user)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendConfirmEmail indicates an expected call of SendConfirmEmail.
+func (mr *MockServiceMockRecorder) SendConfirmEmail(ctx, user any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendConfirmEmail", reflect.TypeOf((*MockService)(nil).SendConfirmEmail), ctx, user)
 }

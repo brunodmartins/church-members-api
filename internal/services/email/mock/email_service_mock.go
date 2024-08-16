@@ -12,7 +12,6 @@ package mock_email
 import (
 	reflect "reflect"
 
-	email "github.com/brunodmartins/church-members-api/internal/services/email"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -39,16 +38,21 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// SendEmail mocks base method.
-func (m *MockService) SendEmail(arg0 email.Command) error {
+// SendTemplateEmail mocks base method.
+func (m *MockService) SendTemplateEmail(template string, data any, subject string, recipients ...string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendEmail", arg0)
+	varargs := []any{template, data, subject}
+	for _, a := range recipients {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "SendTemplateEmail", varargs...)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SendEmail indicates an expected call of SendEmail.
-func (mr *MockServiceMockRecorder) SendEmail(arg0 any) *gomock.Call {
+// SendTemplateEmail indicates an expected call of SendTemplateEmail.
+func (mr *MockServiceMockRecorder) SendTemplateEmail(template, data, subject any, recipients ...any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendEmail", reflect.TypeOf((*MockService)(nil).SendEmail), arg0)
+	varargs := append([]any{template, data, subject}, recipients...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendTemplateEmail", reflect.TypeOf((*MockService)(nil).SendTemplateEmail), varargs...)
 }

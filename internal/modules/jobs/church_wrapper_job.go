@@ -41,8 +41,6 @@ func (wrapper *churchWrapperJob) RunJob(ctx context.Context) error {
 }
 
 func (wrapper *churchWrapperJob) buildContext(ctx context.Context, church *domain.Church) context.Context {
-	ctx = context.WithValue(ctx, "user", &domain.User{
-		Church: church,
-	})
+	ctx = context.WithValue(ctx, "church", church)
 	return context.WithValue(ctx, "i18n", i18n.GetLocalize(language.MustParse(church.Language)))
 }

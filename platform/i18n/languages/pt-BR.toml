@@ -26,3 +26,4 @@
 "Emails.ConfirmEmail.Message"="Olá! Por favor, confirme seu endereço de email clicando no botão abaixo."
 "Emails.ConfirmEmail.UnaskedMessage"="Se você não solicitou esta confirmação, por favor, ignore este email."
 "Emails.ConfirmEmail.Button"="Confirmar Email"
+"Emails.ConfirmEmail.Subject"="Confirme seu email email do church-members"

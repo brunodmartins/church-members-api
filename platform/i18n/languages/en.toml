@@ -25,4 +25,5 @@
 "Emails.ConfirmEmail.Title"="Confirm your Email"
 "Emails.ConfirmEmail.Message"="Hello! Please confirm your email address by clicking the button below."
 "Emails.ConfirmEmail.UnaskedMessage"="If you did not request this confirmation, please ignore this email."
+"Emails.ConfirmEmail.Subject"="Confirm your church-members email"
 "Emails.ConfirmEmail.Button"="Confirm Email"

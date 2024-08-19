@@ -37,5 +37,6 @@ import (
 //go:generate swagger generate spec -m -o ./docs/specs/swagger.yaml
 func main() {
 	config.InitConfiguration()
+
 	cmd.ProvideRunner().Run()
 }

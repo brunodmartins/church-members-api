@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confirmação de Email</title>
+    <title>{{.Title}}</title>
     <style>
         /* Estilo básico para o corpo do email */
         body {
@@ -76,13 +76,14 @@
 </head>
 <body>
 <div class="email-container">
-    <h1>Confirme seu Email</h1>
-    <p>Olá! Por favor, confirme seu endereço de email clicando no botão abaixo.</p>
+    <h1>{{.Title}}</h1>
+    <p>{{.Message}}</p>
     <div class="button-container">
-        <a href="{{.Link}}" class="confirm-button">Confirmar Email</a>
+        <a href="{{.Link}}" class="confirm-button">{{.ConfirmButton}}</a>
+        {{.Link}}
     </div>
     <div class="footer">
-        <p>Se você não solicitou esta confirmação, por favor, ignore este email.</p>
+        <p>{{.UnaskedMessage}}</p>
     </div>
 </div>
 </body>

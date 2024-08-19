@@ -26,6 +26,7 @@ type ConfirmEmailTemplateDTO struct {
 	User           string
 	Link           string
 	UnaskedMessage string
+	ConfirmButton  string
 }
 
 func NewWeeklyBirthTemplateDTO(ctx context.Context) WeeklyBirthTemplateDTO {
@@ -42,5 +43,6 @@ func NewConfirmEmailTemplateDTO(ctx context.Context) ConfirmEmailTemplateDTO {
 		Title:          i18n.GetMessage(ctx, "Emails.ConfirmEmail.Title"),
 		Message:        i18n.GetMessage(ctx, "Emails.ConfirmEmail.Message"),
 		UnaskedMessage: i18n.GetMessage(ctx, "Emails.ConfirmEmail.UnaskedMessage"),
+		ConfirmButton:  i18n.GetMessage(ctx, "Emails.ConfirmEmail.Button"),
 	}
 }

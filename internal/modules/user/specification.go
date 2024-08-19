@@ -35,3 +35,12 @@ func WithUserName(username string) wrapper.QuerySpecification {
 func withChurchId(ctx context.Context) expression.KeyConditionBuilder {
 	return expression.Key("church_id").Equal(expression.Value(domain.GetChurchID(ctx)))
 }
+
+func WithId(userID string) wrapper.QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		userKey := expression.Key("id").Equal(expression.Value(userID))
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(withChurchId(ctx).And(userKey)),
+		}
+	}
+}

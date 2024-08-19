@@ -9,7 +9,9 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/google/uuid"
+	"net/http"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
@@ -36,19 +38,14 @@ func NewRepository(api wrapper.DynamoDBAPI, userTable string) Repository {
 }
 
 func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.User, error) {
-	record := &dto.UserItem{}
-	err := repo.GetItem(repo.buildKey(ctx, id), record)
+	resp, err := repo.QueryDynamoDB(ctx, WithId(id))
 	if err != nil {
 		return nil, err
 	}
-	return record.ToUser(), nil
+	return repo.mapUserResponse(resp, err)
 }
 
-func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*domain.User, error) {
-	resp, err := repo.QueryDynamoDB(ctx, WithUserName(username))
-	if err != nil {
-		return nil, err
-	}
+func (repo dynamoRepository) mapUserResponse(resp *dynamodb.QueryOutput, err error) (*domain.User, error) {
 	if len(resp.Items) != 0 {
 		for _, item := range resp.Items {
 			record := &dto.UserItem{}
@@ -59,7 +56,15 @@ func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*do
 			return record.ToUser(), nil
 		}
 	}
-	return nil, nil
+	return nil, apierrors.NewApiError("Item not found", http.StatusNotFound)
+}
+
+func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*domain.User, error) {
+	resp, err := repo.QueryDynamoDB(ctx, WithUserName(username))
+	if err != nil {
+		return nil, err
+	}
+	return repo.mapUserResponse(resp, err)
 }
 
 func (repo dynamoRepository) SaveUser(ctx context.Context, user *domain.User) error {

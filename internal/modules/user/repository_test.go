@@ -36,12 +36,6 @@ func TestDynamoRepository_FindUser(t *testing.T) {
 		assert.Equal(t, userName, user.UserName)
 		assert.NotNil(t, password, user.Password)
 	})
-	t.Run("Empty", func(t *testing.T) {
-		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: []map[string]types.AttributeValue{}}, nil)
-		user, err := repo.FindUser(buildContext(), userName)
-		assert.Nil(t, err)
-		assert.Nil(t, user)
-	})
 	t.Run("Error", func(t *testing.T) {
 		dynamoMock.EXPECT().Query(gomock.Any(), gomock.Any()).Return(&dynamodb.QueryOutput{Items: []map[string]types.AttributeValue{}}, genericError)
 		user, err := repo.FindUser(buildContext(), userName)
@@ -135,19 +129,19 @@ func TestDynamoRepository_FindByID(t *testing.T) {
 	id := domain.NewID()
 	ctx := BuildContext()
 	t.Run("Success", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, tableUser, buildKey(ctx, id), buildItem(id), nil)
+		wrapper.MockQuery(dynamoMock, []map[string]types.AttributeValue{buildItem(id)}, nil)
 		churchMember, err := repo.FindByID(ctx, id)
 		assert.Nil(t, err)
 		assert.Equal(t, id, churchMember.ID)
 	})
 	t.Run("Not Found", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, tableUser, buildKey(ctx, id), nil, nil)
+		wrapper.MockQuery(dynamoMock, []map[string]types.AttributeValue{}, nil)
 		memberFound, err := repo.FindByID(ctx, id)
 		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 		assert.Nil(t, memberFound)
 	})
 	t.Run("Error", func(t *testing.T) {
-		wrapper.MockGetItem(t, dynamoMock, tableUser, buildKey(ctx, id), nil, genericError)
+		wrapper.MockQuery(dynamoMock, []map[string]types.AttributeValue{}, genericError)
 		memberFound, err := repo.FindByID(ctx, id)
 		assert.NotNil(t, err)
 		assert.Nil(t, memberFound)

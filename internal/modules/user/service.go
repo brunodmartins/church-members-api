@@ -75,5 +75,5 @@ func (s userService) SendConfirmEmail(ctx context.Context, user *domain.User) er
 	data := email.NewConfirmEmailTemplateDTO(ctx)
 	data.User = user.UserName
 	data.Link = user.BuildConfirmationLink()
-	return s.email.SendTemplateEmail(email.ConfirmEmailTemplate, email.NewConfirmEmailTemplateDTO(ctx), i18n.GetMessage(ctx, "Emails.ConfirmEmail.Subject"), user.Email)
+	return s.email.SendTemplateEmail(email.ConfirmEmailTemplate, data, i18n.GetMessage(ctx, "Emails.ConfirmEmail.Subject"), user.Email)
 }

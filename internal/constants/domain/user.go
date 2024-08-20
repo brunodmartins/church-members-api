@@ -24,7 +24,7 @@ type User struct {
 }
 
 func (u *User) BuildConfirmationLink() string {
-	return fmt.Sprintf("%s/users/%s/confirm?church_id=%s&token=%s", viper.GetString("email.confirm.url"), u.ID, u.ChurchID, u.ConfirmationToken)
+	return fmt.Sprintf("%s/users/%s/confirm?church=%s&token=%s", viper.GetString("email.confirm.url"), u.UserName, u.ChurchID, u.ConfirmationToken)
 }
 
 type NotificationPreferences struct {

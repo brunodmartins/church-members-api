@@ -14,7 +14,7 @@ import (
 type Service interface {
 	SaveUser(ctx context.Context, user *domain.User) error
 	SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error)
-	ConfirmEmail(ctx context.Context, userID string, token string) error
+	ConfirmEmail(ctx context.Context, userName string, token string) error
 	SendConfirmEmail(ctx context.Context, user *domain.User) error
 }
 
@@ -45,8 +45,8 @@ func (s userService) SearchUser(ctx context.Context, specification wrapper.Query
 	return s.repository.SearchUser(ctx, specification)
 }
 
-func (s userService) ConfirmEmail(ctx context.Context, userID string, token string) error {
-	user, err := s.repository.FindByID(ctx, userID)
+func (s userService) ConfirmEmail(ctx context.Context, userName string, token string) error {
+	user, err := s.repository.FindUser(ctx, userName)
 	if err != nil {
 		return err
 	}

@@ -504,7 +504,7 @@ paths:
                   name: member
                   required: true
                   schema:
-                      $ref: '#/definitions/AddressRequest'
+                    $ref: '#/definitions/AddressRequest'
             produces:
                 - application/json
             responses:
@@ -523,7 +523,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - token: [ ]
+                - token: []
             summary: Update member - Address
     /members/{id}/contact:
         put:
@@ -539,7 +539,7 @@ paths:
                   name: member
                   required: true
                   schema:
-                      $ref: '#/definitions/ContactRequest'
+                    $ref: '#/definitions/ContactRequest'
             produces:
                 - application/json
             responses:
@@ -574,7 +574,7 @@ paths:
                   name: member
                   required: true
                   schema:
-                      $ref: '#/definitions/UpdatePersonRequest'
+                    $ref: '#/definitions/UpdatePersonRequest'
             produces:
                 - application/json
             responses:
@@ -593,7 +593,7 @@ paths:
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
-                - token: [ ]
+                - token: []
             summary: Update member - Person
     /reports/{reportType}:
         get:
@@ -728,6 +728,39 @@ paths:
             security:
                 - token: []
             summary: Create a user
+    /users/:user/confirm:
+        get:
+            description: Confirms the email for a given user
+            operationId: ConfirmUserEmail
+            parameters:
+                - description: The user to be confirmed
+                  in: path
+                  name: user
+                  required: true
+                - description: The church of the user to be confirmed
+                  in: query
+                  name: church
+                  required: true
+                - description: The security token for the user to be confirmed
+                  in: query
+                  name: token
+                  required: true
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: User confirm
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Confirms a user email
     /users/token:
         get:
             description: Generates a token for a given user

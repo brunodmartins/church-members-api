@@ -42,17 +42,17 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // ConfirmEmail mocks base method.
-func (m *MockService) ConfirmEmail(ctx context.Context, userID, token string) error {
+func (m *MockService) ConfirmEmail(ctx context.Context, userName, token string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConfirmEmail", ctx, userID, token)
+	ret := m.ctrl.Call(m, "ConfirmEmail", ctx, userName, token)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // ConfirmEmail indicates an expected call of ConfirmEmail.
-func (mr *MockServiceMockRecorder) ConfirmEmail(ctx, userID, token any) *gomock.Call {
+func (mr *MockServiceMockRecorder) ConfirmEmail(ctx, userName, token any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmEmail", reflect.TypeOf((*MockService)(nil).ConfirmEmail), ctx, userID, token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmEmail", reflect.TypeOf((*MockService)(nil).ConfirmEmail), ctx, userName, token)
 }
 
 // SaveUser mocks base method.

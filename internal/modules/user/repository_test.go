@@ -104,7 +104,8 @@ func TestDynamoRepository_UpdateUser(t *testing.T) {
 		user := buildUser(id, "123")
 		matcher := dynamodbhelper.UpdateMatcher{
 			Table:    tableUser,
-			ID:       user.ID,
+			Key:      "username",
+			ID:       user.UserName,
 			ChurchID: user.ChurchID,
 			Values: map[string]types.AttributeValue{
 				":confirmed_email": &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},

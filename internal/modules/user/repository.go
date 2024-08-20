@@ -94,8 +94,8 @@ func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapp
 func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) error {
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
-			"id": &types.AttributeValueMemberS{
-				Value: user.ID,
+			"username": &types.AttributeValueMemberS{
+				Value: user.UserName,
 			},
 			"church_id": &types.AttributeValueMemberS{
 				Value: user.ChurchID,

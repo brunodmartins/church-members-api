@@ -11,6 +11,7 @@ import (
 
 type UpdateMatcher struct {
 	Table    string
+	Key      string
 	ID       string
 	ChurchID string
 	Values   map[string]types.AttributeValue
@@ -18,10 +19,13 @@ type UpdateMatcher struct {
 
 func (expected UpdateMatcher) Matches(r any) bool {
 	received := r.(*dynamodb.UpdateItemInput)
+	if expected.Key == "" {
+		expected.Key = "id"
+	}
 	if *received.TableName != expected.Table {
 		return false
 	}
-	if received.Key["id"].(*types.AttributeValueMemberS).Value != expected.ID {
+	if received.Key[expected.Key].(*types.AttributeValueMemberS).Value != expected.ID {
 		return false
 	}
 	if received.Key["church_id"].(*types.AttributeValueMemberS).Value != expected.ChurchID {

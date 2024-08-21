@@ -18,8 +18,9 @@ var ApiErrorMiddleWare = func(ctx *fiber.Ctx, err error) error {
 			Message: apiError.Error(),
 		})
 	} else {
+		logrus.WithError(err).Error("Unexpeceted Internal Server error")
 		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{
-			Message: fmt.Sprintf("Unexpected error: %s", err.Error()),
+			Message: fmt.Sprint("Unexpected Internal Server error"),
 		})
 	}
 }

@@ -41,6 +41,24 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{Token: token})
 }
 
+func (handler *AuthHandler) confirmUserEmail(ctx *fiber.Ctx) error {
+	accessToken := ctx.Query("accessToken")
+	if accessToken == "" {
+		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: "Invalid url provided",
+		})
+	}
+	valid, claim := security.GetClaim(accessToken)
+	if !valid {
+		return apierrors.NewApiError("Invalid authorization token", http.StatusForbidden)
+	}
+	ctx.SetUserContext(security.AddClaimToContext(claim, ctx.UserContext()))
+	if err := handler.authService.ConfirmEmail(ctx.UserContext(), claim.UserName); err != nil {
+		return err
+	}
+	return ctx.SendStatus(http.StatusOK)
+}
+
 func (handler *AuthHandler) getUser(header string) (string, string) {
 	result := strings.Split(header, ":")
 	return result[0], result[1]

@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sesv2"
+	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/spf13/viper"
 )
 
@@ -33,7 +34,10 @@ func provideSNS() *sns.Client {
 	return sns.NewFromConfig(cfg)
 }
 
-func provideSES() *sesv2.SESV2 {
+func provideSES() wrapper.SESAPI {
+	if viper.Get("cloud") == "LOCAL" {
+		return wrapper.NewMockSESAPI()
+	}
 	mySession := session.Must(session.NewSession())
 	return sesv2.New(mySession)
 }

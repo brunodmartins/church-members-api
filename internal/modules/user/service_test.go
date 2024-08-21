@@ -2,11 +2,6 @@ package user
 
 import (
 	"context"
-	"errors"
-	"github.com/brunodmartins/church-members-api/internal/services/email"
-	mock_email "github.com/brunodmartins/church-members-api/internal/services/email/mock"
-	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"net/http"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -20,20 +15,12 @@ func TestService_SaveUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repository := mock_user.NewMockRepository(ctrl)
-	emailService := mock_email.NewMockService(ctrl)
-	service := NewService(repository, emailService)
+	service := NewService(repository)
 	user := buildUser("id", "")
-	t.Run("Given a valid user, when save it, then store on the database and send confirmation email successfully", func(t *testing.T) {
+	t.Run("Given a valid user, when save it, then store on the database successfully", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
 		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(nil)
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(nil)
 		assert.NoError(t, service.SaveUser(BuildContext(), user))
-	})
-	t.Run("Given a valid user, when save it, then store on the database and send confirmation email fails", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
-		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(nil)
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(genericError)
-		assert.Error(t, service.SaveUser(BuildContext(), user))
 	})
 	t.Run("Given a valid user, when save it, then store on the database fails", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
@@ -50,28 +37,11 @@ func TestService_SaveUser(t *testing.T) {
 	})
 }
 
-func TestService_SendConfirmationEmail(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	repository := mock_user.NewMockRepository(ctrl)
-	emailService := mock_email.NewMockService(ctrl)
-	service := NewService(repository, emailService)
-	user := buildUser("id", "")
-	t.Run("Given a valid user, when send the confirmation email, then send confirmation email successfully", func(t *testing.T) {
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(nil)
-		assert.NoError(t, service.SendConfirmEmail(BuildContext(), user))
-	})
-	t.Run("Given a valid user, when send the confirmation email, then send confirmation email fails", func(t *testing.T) {
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(genericError)
-		assert.Error(t, service.SendConfirmEmail(BuildContext(), user))
-	})
-}
-
 func TestService_SearchUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repository := mock_user.NewMockRepository(ctrl)
-	service := NewService(repository, nil)
+	service := NewService(repository)
 	user := buildUser("id", "")
 	spec := wrapper.QuerySpecification(nil)
 	t.Run("Success", func(t *testing.T) {
@@ -87,56 +57,41 @@ func TestService_SearchUser(t *testing.T) {
 	})
 }
 
-func TestUserService_ConfirmEmail(t *testing.T) {
+func TestService_FindUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repository := mock_user.NewMockRepository(ctrl)
-	service := NewService(repository, nil)
-	t.Run("Given a valid user and token, when the confirm operation is call, then confirm correctly", func(t *testing.T) {
-		ctx := BuildContext()
-		user := buildUser(domain.NewID(), "")
-		user.ConfirmedEmail = false
+	service := NewService(repository)
+	user := buildUser("id", "")
+	ctx := BuildContext()
+	t.Run("Given a valid username, when performing a find on the database, then return the user successfully", func(t *testing.T) {
 		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(userName)).Return(user, nil)
-		repository.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(user)).Return(nil)
-		assert.Nil(t, service.ConfirmEmail(ctx, userName, confirmationToken))
-		assert.True(t, user.ConfirmedEmail)
+		result, err := service.FindUser(ctx, userName)
+		assert.NoError(t, err)
+		assert.Equal(t, user, result)
 	})
-	t.Run("Given a valid user and token, when the confirm operation is call, then fails the operation due to repository error", func(t *testing.T) {
-		ctx := BuildContext()
-		user := buildUser(domain.NewID(), "")
-		user.ConfirmedEmail = false
-		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(userName)).Return(user, nil)
-		repository.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(user)).Return(errors.New("generic error"))
-		assert.Error(t, service.ConfirmEmail(ctx, userName, confirmationToken))
-	})
-	t.Run("Given a valid user and an invalid token, when the confirm operation is call, then fails the operation due to invalid token", func(t *testing.T) {
-		ctx := BuildContext()
-		user := buildUser(domain.NewID(), "")
-		user.ConfirmedEmail = false
-		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(userName)).Return(user, nil)
-		err := service.ConfirmEmail(ctx, userName, "invalid-token")
+	t.Run("Given a valid username, when performing a find on the database, then return error ", func(t *testing.T) {
+		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(userName)).Return(nil, genericError)
+		_, err := service.FindUser(ctx, userName)
 		assert.Error(t, err)
-		assert.Equal(t, http.StatusBadRequest, err.(apierrors.Error).StatusCode())
 	})
-	t.Run("Given a user that has already confirmed, when the confirm operation is call, then fails the operation due to already be confirmed", func(t *testing.T) {
-		ctx := BuildContext()
-		user := buildUser(domain.NewID(), "")
-		user.ConfirmedEmail = true
-		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(userName)).Return(user, nil)
-		err := service.ConfirmEmail(ctx, userName, confirmationToken)
-		assert.Error(t, err)
-		assert.Equal(t, http.StatusUnprocessableEntity, err.(apierrors.Error).StatusCode())
-	})
-	t.Run("Given a nonexistent user, when the confirm operation is call, then fails the operation due to not found the user", func(t *testing.T) {
-		ctx := BuildContext()
-		user := buildUser(domain.NewID(), "")
-		user.ConfirmedEmail = true
-		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(userName)).Return(nil, apierrors.NewApiError("User not found", http.StatusNotFound))
-		err := service.ConfirmEmail(ctx, userName, confirmationToken)
-		assert.Error(t, err)
-		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
-	})
+}
 
+func TestService_UpdateUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repository := mock_user.NewMockRepository(ctrl)
+	service := NewService(repository)
+	user := buildUser("id", "")
+	ctx := BuildContext()
+	t.Run("Given a valid user, when performing an update on the database, then return no error", func(t *testing.T) {
+		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(user)).Return(nil)
+		assert.NoError(t, service.UpdateUser(ctx, user))
+	})
+	t.Run("Given a valid username, when performing an update on the database, then return error ", func(t *testing.T) {
+		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(user)).Return(genericError)
+		assert.Error(t, service.UpdateUser(ctx, user))
+	})
 }
 
 func BuildContext() context.Context {

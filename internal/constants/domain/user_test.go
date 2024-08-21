@@ -2,10 +2,7 @@ package domain
 
 import (
 	"context"
-	"fmt"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
-	"github.com/google/uuid"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,17 +12,6 @@ func TestNewUser(t *testing.T) {
 	user := NewUser("", "", "", password, role.USER, NotificationPreferences{})
 	assert.NotEqual(t, password, string(user.Password))
 	assert.False(t, user.ConfirmedEmail)
-	assert.NotEmpty(t, user.ConfirmationToken)
-}
-
-func TestUser_BuildConfirmationLink(t *testing.T) {
-	user := NewUser("test-user", "", "", "", role.USER, NotificationPreferences{})
-	viper.Set("email.confirm.url", "http://localhost")
-	user.ID = NewID()
-	user.ConfirmationToken = uuid.NewString()
-	user.ChurchID = uuid.NewString()
-	expected := fmt.Sprintf("http://localhost/users/%s/confirm?church=%s&token=%s", user.UserName, user.ChurchID, user.ConfirmationToken)
-	assert.Equal(t, expected, user.BuildConfirmationLink())
 }
 
 func TestGetChurchID(t *testing.T) {

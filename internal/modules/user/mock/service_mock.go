@@ -41,18 +41,19 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// ConfirmEmail mocks base method.
-func (m *MockService) ConfirmEmail(ctx context.Context, userName, token string) error {
+// FindUser mocks base method.
+func (m *MockService) FindUser(ctx context.Context, userName string) (*domain.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ConfirmEmail", ctx, userName, token)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret := m.ctrl.Call(m, "FindUser", ctx, userName)
+	ret0, _ := ret[0].(*domain.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
-// ConfirmEmail indicates an expected call of ConfirmEmail.
-func (mr *MockServiceMockRecorder) ConfirmEmail(ctx, userName, token any) *gomock.Call {
+// FindUser indicates an expected call of FindUser.
+func (mr *MockServiceMockRecorder) FindUser(ctx, userName any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmEmail", reflect.TypeOf((*MockService)(nil).ConfirmEmail), ctx, userName, token)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindUser", reflect.TypeOf((*MockService)(nil).FindUser), ctx, userName)
 }
 
 // SaveUser mocks base method.
@@ -84,16 +85,16 @@ func (mr *MockServiceMockRecorder) SearchUser(ctx, specification any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SearchUser", reflect.TypeOf((*MockService)(nil).SearchUser), ctx, specification)
 }
 
-// SendConfirmEmail mocks base method.
-func (m *MockService) SendConfirmEmail(ctx context.Context, user *domain.User) error {
+// UpdateUser mocks base method.
+func (m *MockService) UpdateUser(ctx context.Context, user *domain.User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendConfirmEmail", ctx, user)
+	ret := m.ctrl.Call(m, "UpdateUser", ctx, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// SendConfirmEmail indicates an expected call of SendConfirmEmail.
-func (mr *MockServiceMockRecorder) SendConfirmEmail(ctx, user any) *gomock.Call {
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockServiceMockRecorder) UpdateUser(ctx, user any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendConfirmEmail", reflect.TypeOf((*MockService)(nil).SendConfirmEmail), ctx, user)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockService)(nil).UpdateUser), ctx, user)
 }

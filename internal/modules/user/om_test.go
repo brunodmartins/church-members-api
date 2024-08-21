@@ -16,12 +16,11 @@ var genericError = errors.New("error")
 
 func buildUser(id string, password string) *domain.User {
 	return &domain.User{
-		ID:                id,
-		UserName:          userName,
-		Email:             "",
-		Password:          []byte(password),
-		Role:              role.USER,
-		ConfirmedEmail:    false,
-		ConfirmationToken: confirmationToken,
+		ID:             id,
+		UserName:       userName,
+		Email:          "",
+		Password:       []byte(password),
+		Role:           role.USER,
+		ConfirmedEmail: false,
 	}
 }

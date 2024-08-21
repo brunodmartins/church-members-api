@@ -2,29 +2,21 @@ package domain
 
 import (
 	"context"
-	"fmt"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/platform/crypto"
-	"github.com/google/uuid"
-	"github.com/spf13/viper"
 )
 
 type User struct {
-	ID                string                  `json:"id"`
-	ChurchID          string                  `json:"church_id"`
-	UserName          string                  `json:"username"`
-	Email             string                  `json:"email"`
-	ConfirmedEmail    bool                    `json:"confirmed_email"`
-	Role              enum.Role               `json:"role"`
-	Phone             string                  `json:"phone"`
-	Preferences       NotificationPreferences `json:"-"`
-	Password          []byte                  `json:"-"`
-	Church            *Church                 `json:"-"`
-	ConfirmationToken string                  `json:"-"`
-}
-
-func (u *User) BuildConfirmationLink() string {
-	return fmt.Sprintf("%s/users/%s/confirm?church=%s&token=%s", viper.GetString("email.confirm.url"), u.UserName, u.ChurchID, u.ConfirmationToken)
+	ID             string                  `json:"id"`
+	ChurchID       string                  `json:"church_id"`
+	UserName       string                  `json:"username"`
+	Email          string                  `json:"email"`
+	ConfirmedEmail bool                    `json:"confirmed_email"`
+	Role           enum.Role               `json:"role"`
+	Phone          string                  `json:"phone"`
+	Preferences    NotificationPreferences `json:"-"`
+	Password       []byte                  `json:"-"`
+	Church         *Church                 `json:"-"`
 }
 
 type NotificationPreferences struct {
@@ -34,14 +26,13 @@ type NotificationPreferences struct {
 
 func NewUser(userName, email, password, phone string, role enum.Role, preferences NotificationPreferences) *User {
 	return &User{
-		UserName:          userName,
-		Email:             email,
-		Phone:             phone,
-		Password:          crypto.EncryptPassword(password),
-		Role:              role,
-		Preferences:       preferences,
-		ConfirmedEmail:    false,
-		ConfirmationToken: uuid.NewString(),
+		UserName:       userName,
+		Email:          email,
+		Phone:          phone,
+		Password:       crypto.EncryptPassword(password),
+		Role:           role,
+		Preferences:    preferences,
+		ConfirmedEmail: false,
 	}
 }
 

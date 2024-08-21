@@ -2,11 +2,15 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/brunodmartins/church-members-api/platform/security"
 	mock_security "github.com/brunodmartins/church-members-api/platform/security/mock"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"net/http"
@@ -66,6 +70,49 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		request := buildGet("/users/token")
 		runTest(app, request).assertStatus(t, http.StatusUnauthorized)
 	})
+}
+
+func TestAuthHandler_ConfirmUserEmail(t *testing.T) {
+	t.Parallel()
+	viper.Set("security.token.expiration", 1000)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_security.NewMockService(ctrl)
+	authHandler := NewAuthHandler(service)
+	authHandler.SetUpRoutes(app)
+
+	username := "user-test"
+	churchID := domain.NewID()
+	user := &domain.User{
+		UserName: username,
+		Church: &domain.Church{
+			ID: churchID,
+		},
+	}
+	token := security.GenerateJWTToken(user)
+
+	ctx := context.WithValue(context.Background(), "user", user)
+	t.Run("Given a valid URL, when perform a GET operation, then return 200 OK", func(t *testing.T) {
+		t.Parallel()
+		service.EXPECT().ConfirmEmail(gomock.Eq(ctx), gomock.Eq(username)).Return(nil)
+		runTest(app, buildGet(fmt.Sprintf("/users/confirm?accessToken=%s", token))).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Given a valid URL, when perform a GET operation, then return 500 error", func(t *testing.T) {
+		t.Parallel()
+		service.EXPECT().ConfirmEmail(gomock.Eq(ctx), gomock.Eq(username)).Return(errors.New("generic error"))
+		runTest(app, buildGet(fmt.Sprintf("/users/confirm?accessToken=%s", token))).assertStatus(t, http.StatusInternalServerError)
+	})
+	t.Run("Given an invalid URL, when perform a GET operation, then return error", func(t *testing.T) {
+		t.Parallel()
+		runTest(app, buildGet(fmt.Sprint("/users/confirm"))).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Given an invalid URL, when perform a GET operation, then return error", func(t *testing.T) {
+		t.Parallel()
+		runTest(app, buildGet(fmt.Sprint("/users/confirm?accessToken=abc"))).assertStatus(t, http.StatusForbidden)
+	})
+
 }
 
 func buildAuthorizationHeader(request *http.Request, auth string, churchID string) {

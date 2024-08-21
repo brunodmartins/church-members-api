@@ -39,16 +39,12 @@ func ProvideUserHandler() *api.UserHandler {
 }
 
 func provideAuthService() security.Service {
-	return security.NewAuthService(
-		ProvideUserService(),
-		ProvideChurchService(),
-	)
+	return security.NewAuthService(ProvideUserService(), ProvideChurchService(), ProvideEmailService())
 }
 
 func ProvideUserService() user.Service {
 	return user.NewService(
 		user.NewRepository(provideDynamoDB(), viper.GetString("tables.user")),
-		ProvideEmailService(),
 	)
 }
 

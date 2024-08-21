@@ -10,8 +10,10 @@
 package mock_security
 
 import (
+	context "context"
 	reflect "reflect"
 
+	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -38,6 +40,20 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// ConfirmEmail mocks base method.
+func (m *MockService) ConfirmEmail(ctx context.Context, userName string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmEmail", ctx, userName)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmEmail indicates an expected call of ConfirmEmail.
+func (mr *MockServiceMockRecorder) ConfirmEmail(ctx, userName any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmEmail", reflect.TypeOf((*MockService)(nil).ConfirmEmail), ctx, userName)
+}
+
 // GenerateToken mocks base method.
 func (m *MockService) GenerateToken(churchID, username, password string) (string, error) {
 	m.ctrl.T.Helper()
@@ -51,4 +67,18 @@ func (m *MockService) GenerateToken(churchID, username, password string) (string
 func (mr *MockServiceMockRecorder) GenerateToken(churchID, username, password any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockService)(nil).GenerateToken), churchID, username, password)
+}
+
+// SendConfirmEmail mocks base method.
+func (m *MockService) SendConfirmEmail(ctx context.Context, user *domain.User) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendConfirmEmail", ctx, user)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendConfirmEmail indicates an expected call of SendConfirmEmail.
+func (mr *MockServiceMockRecorder) SendConfirmEmail(ctx, user any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendConfirmEmail", reflect.TypeOf((*MockService)(nil).SendConfirmEmail), ctx, user)
 }

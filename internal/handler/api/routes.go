@@ -410,6 +410,35 @@ func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/users/token", handler.getToken)
+
+	// swagger:operation GET /users/confirm ConfirmUserEmail
+	//
+	// Confirms a user email
+	//
+	// Confirms the email for a given user
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: accessToken
+	//   in: path
+	//   description: The access token to be confirmed
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: User confirm
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/users/confirm", handler.confirmUserEmail)
 }
 
 func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
@@ -443,43 +472,4 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/users", handler.PostUser)
-}
-
-func (handler *UserHandler) SetUpPublicRoutes(app *fiber.App) {
-	// swagger:operation GET /users/:user/confirm ConfirmUserEmail
-	//
-	// Confirms a user email
-	//
-	// Confirms the email for a given user
-	//
-	// ---
-	// security:
-	// - token: []
-	// produces:
-	// - application/json
-	// parameters:
-	// - name: user
-	//   in: path
-	//   description: The user to be confirmed
-	//   required: true
-	// - name: church
-	//   in: query
-	//   description: The church of the user to be confirmed
-	//   required: true
-	// - name: token
-	//   in: query
-	//   description: The security token for the user to be confirmed
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: User confirm
-	//   '400':
-	//     description: Invalid request
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	//   default:
-	//     description: unexpected error
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	app.Get("/users/:user/confirm", handler.ConfirmUserEmail)
 }

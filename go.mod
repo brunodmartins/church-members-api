@@ -18,7 +18,7 @@ require (
 	github.com/bearbin/go-age v0.0.0-20140407072555-316d0c1e7cd1
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/gofiber/fiber/v2 v2.52.5
-	github.com/golang-jwt/jwt/v4 v4.5.1
+	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/google/uuid v1.5.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/signintech/gopdf v0.9.7

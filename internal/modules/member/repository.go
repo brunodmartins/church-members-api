@@ -140,7 +140,9 @@ func (repo dynamoRepository) UpdateContact(ctx context.Context, member *domain.M
 }
 
 func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.Member) error {
-	updateQuery := repo.wrapper.BuildUpdateQuery("zipCode", "state", "city", "address", "district", "number", "moreInfo")
+	updateQuery := repo.wrapper.BuildUpdateQuery("zipCode", "#state", "city", "address", "district", "#number", "moreInfo")
+	updateQuery = strings.Replace(updateQuery, ":#state", ":state", 1)
+	updateQuery = strings.Replace(updateQuery, ":#number", ":number", 1)
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
@@ -151,6 +153,10 @@ func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.M
 			},
 		},
 		TableName: aws.String(repo.memberTable),
+		ExpressionAttributeNames: map[string]string{
+			"#state":  "state",
+			"#number": "number",
+		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":zipCode":  toStringAttributeValue(member.Person.Address.ZipCode),
 			":state":    toStringAttributeValue(member.Person.Address.State),

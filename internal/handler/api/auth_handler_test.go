@@ -73,7 +73,6 @@ func TestAuthHandler_GetToken(t *testing.T) {
 }
 
 func TestAuthHandler_ConfirmUserEmail(t *testing.T) {
-	t.Parallel()
 	viper.Set("security.token.expiration", 1000)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -95,21 +94,17 @@ func TestAuthHandler_ConfirmUserEmail(t *testing.T) {
 
 	ctx := context.WithValue(context.Background(), "user", user)
 	t.Run("Given a valid URL, when perform a GET operation, then return 200 OK", func(t *testing.T) {
-		t.Parallel()
 		service.EXPECT().ConfirmEmail(gomock.Eq(ctx), gomock.Eq(username)).Return(nil)
 		runTest(app, buildGet(fmt.Sprintf("/users/confirm?accessToken=%s", token))).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Given a valid URL, when perform a GET operation, then return 500 error", func(t *testing.T) {
-		t.Parallel()
 		service.EXPECT().ConfirmEmail(gomock.Eq(ctx), gomock.Eq(username)).Return(errors.New("generic error"))
 		runTest(app, buildGet(fmt.Sprintf("/users/confirm?accessToken=%s", token))).assertStatus(t, http.StatusInternalServerError)
 	})
 	t.Run("Given an invalid URL, when perform a GET operation, then return error", func(t *testing.T) {
-		t.Parallel()
 		runTest(app, buildGet(fmt.Sprint("/users/confirm"))).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Given an invalid URL, when perform a GET operation, then return error", func(t *testing.T) {
-		t.Parallel()
 		runTest(app, buildGet(fmt.Sprint("/users/confirm?accessToken=abc"))).assertStatus(t, http.StatusForbidden)
 	})
 

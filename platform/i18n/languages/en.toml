@@ -27,3 +27,5 @@
 "Emails.ConfirmEmail.UnaskedMessage"="If you did not request this confirmation, please ignore this email."
 "Emails.ConfirmEmail.Subject"="Confirm your church-members email"
 "Emails.ConfirmEmail.Button"="Confirm Email"
+"Emails.WeeklyBirth.Birth"="Born"
+"Emails.WeeklyBirth.Marriage"="Marriage"

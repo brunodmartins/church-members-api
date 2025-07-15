@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/base64"
-	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 
@@ -22,8 +22,7 @@ func NewAuthHandler(authService security.Service) *AuthHandler {
 
 func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 	authHeader := ctx.Get("Authorization")
-	churchID := ctx.Get("church_id")
-	if authHeader == "" || len(handler.splitAuthHeader(authHeader)) != 2 || !domain.IsValidID(churchID) {
+	if authHeader == "" || len(handler.splitAuthHeader(authHeader)) != 2 {
 		return handler.builderUnauthorizedError()
 	}
 	decodedHeader, err := handler.decodeHeader(handler.splitAuthHeader(authHeader)[1])
@@ -34,7 +33,12 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 		return handler.builderUnauthorizedError()
 	}
 	userName, password := handler.getUser(decodedHeader)
-	token, err := handler.authService.GenerateToken(churchID, userName, password)
+	church, err := handler.authService.IdentifyChurch(ctx.Get("church_abbreviation"), ctx.Get("church_id"))
+	if err != nil {
+		logrus.Error(err)
+		return handler.builderUnauthorizedError()
+	}
+	token, err := handler.authService.GenerateToken(church, userName, password)
 	if err != nil {
 		return err
 	}

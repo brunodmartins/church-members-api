@@ -30,49 +30,39 @@ func TestAuthService_GenerateToken(t *testing.T) {
 	church := buildChurch(domain.NewID())
 	testUser := buildUser("", string(crypto.EncryptPassword(password)))
 	t.Run("Given a valid user, when try to authenticate, then succeeds", func(t *testing.T) {
-		churchService.EXPECT().GetChurch(gomock.Eq(church.ID)).Return(church, nil)
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(testUser, nil)
-		token, err := service.GenerateToken(church.ID, userName, password)
+		token, err := service.GenerateToken(church, userName, password)
 		assert.NotEmpty(t, token)
 		assert.Nil(t, err)
 	})
-	t.Run("Given a valid user, when try to authenticate, then fails due to error on look up for the church", func(t *testing.T) {
-		churchService.EXPECT().GetChurch(gomock.Eq(church.ID)).Return(nil, genericError)
-		token, err := service.GenerateToken(church.ID, userName, password)
-		assert.Empty(t, token)
-		assert.Error(t, err)
-	})
+
 	t.Run("Given a valid user, when try to authenticate, then fails due to password not match", func(t *testing.T) {
-		churchService.EXPECT().GetChurch(gomock.Eq(church.ID)).Return(church, nil)
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(testUser, nil)
-		token, err := service.GenerateToken(church.ID, userName, password+"123")
+		token, err := service.GenerateToken(church, userName, password+"123")
 		assert.Empty(t, token)
 		assert.Error(t, err)
 	})
 	t.Run("Given a valid user, when try to authenticate, then fails due to error on look up for the user", func(t *testing.T) {
-		churchService.EXPECT().GetChurch(gomock.Eq(church.ID)).Return(church, nil)
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(nil, genericError)
-		token, err := service.GenerateToken(church.ID, userName, password)
+		token, err := service.GenerateToken(church, userName, password)
 		assert.Empty(t, token)
 		assert.Error(t, err)
 	})
 	t.Run("Given a valid user, when try to authenticate, then fails due to user not have confirmed the email, and send email", func(t *testing.T) {
-		churchService.EXPECT().GetChurch(gomock.Eq(church.ID)).Return(church, nil)
 		unconfirmedUser := buildUser("", string(crypto.EncryptPassword(password)))
 		unconfirmedUser.ConfirmedEmail = false
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(unconfirmedUser, nil)
 		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
-		token, err := service.GenerateToken(church.ID, userName, password)
+		token, err := service.GenerateToken(church, userName, password)
 		assert.Empty(t, token)
 		assert.Error(t, err)
 	})
 	t.Run("Given a valid user, when try to authenticate, then fails due to user not have confirmed the email, and send email fails", func(t *testing.T) {
-		churchService.EXPECT().GetChurch(gomock.Eq(church.ID)).Return(church, nil)
 		unconfirmedUser := buildUser("", string(crypto.EncryptPassword(password)))
 		unconfirmedUser.ConfirmedEmail = false
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(unconfirmedUser, nil)
 		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(genericError)
-		token, err := service.GenerateToken(church.ID, userName, password)
+		token, err := service.GenerateToken(church, userName, password)
 		assert.Empty(t, token)
 		assert.Error(t, err)
 	})
@@ -157,6 +147,45 @@ func TestUserService_ConfirmEmail(t *testing.T) {
 		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 	})
 
+}
+
+func TestAuthService_IdentifyChurch(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	userService := mock_user.NewMockService(ctrl)
+	churchService := mock_church.NewMockService(ctrl)
+	emailService := mock_email.NewMockService(ctrl)
+	service := NewAuthService(userService, churchService, emailService)
+	church := buildChurch(domain.NewID())
+
+	t.Run("Invalid arguments", func(t *testing.T) {
+		_, err := service.IdentifyChurch("", "")
+		assert.Equal(t, apierrors.NewApiError("Church ID or abbreviation must be provided", http.StatusBadRequest), err)
+	})
+	t.Run("Success on Church Abbreviation", func(t *testing.T) {
+		churchService.EXPECT().GetChurchByAbbreviation(church.Abbreviation).Return(church, nil)
+		result, err := service.IdentifyChurch(church.Abbreviation, "")
+		assert.Nil(t, err)
+		assert.Equal(t, church, result)
+	})
+	t.Run("Success on Church ID", func(t *testing.T) {
+		churchService.EXPECT().GetChurch(church.ID).Return(church, nil)
+		result, err := service.IdentifyChurch("", church.ID)
+		assert.Nil(t, err)
+		assert.Equal(t, church, result)
+	})
+	t.Run("Fails on Church Abbreviation", func(t *testing.T) {
+		churchService.EXPECT().GetChurchByAbbreviation(church.Abbreviation).Return(nil, errors.New("error"))
+		result, err := service.IdentifyChurch(church.Abbreviation, "")
+		assert.NotNil(t, err)
+		assert.Nil(t, result)
+	})
+	t.Run("Fails on Church ID", func(t *testing.T) {
+		churchService.EXPECT().GetChurch(church.ID).Return(nil, errors.New("error"))
+		result, err := service.IdentifyChurch("", church.ID)
+		assert.NotNil(t, err)
+		assert.Nil(t, result)
+	})
 }
 
 func Test_buildConfirmationLink(t *testing.T) {

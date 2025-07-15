@@ -29,9 +29,11 @@ func TestAuthHandler_GetToken(t *testing.T) {
 	const userName = "user-test"
 	const password = "password"
 	var churchID = domain.NewID()
+	var church = buildChurch(churchID)
 
 	t.Run("Success - 201", func(t *testing.T) {
-		service.EXPECT().GenerateToken(churchID, userName, password).Return("token", nil)
+		service.EXPECT().IdentifyChurch(gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
+		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), churchID)
 		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
@@ -39,13 +41,26 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		})
 
 	})
+	t.Run("Success - 201 - New login with abbreviation", func(t *testing.T) {
+		service.EXPECT().IdentifyChurch(gomock.Eq(church.Abbreviation), gomock.Eq("")).Return(church, nil)
+		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
+		request := buildGet("/users/token")
+		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), "")
+		request.Header.Set("church_abbreviation", church.Abbreviation)
+		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
+		})
+
+	})
 	t.Run("Fail - Error on service - 500", func(t *testing.T) {
-		service.EXPECT().GenerateToken(churchID, userName, password).Return("", genericError)
+		service.EXPECT().IdentifyChurch(gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
+		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("", genericError)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), churchID)
 		runTest(app, request).assertStatus(t, http.StatusInternalServerError)
 	})
 	t.Run("Fail - church_id empty", func(t *testing.T) {
+		service.EXPECT().IdentifyChurch(gomock.Eq(""), gomock.Eq("")).Return(nil, errors.New("generic error"))
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), domain.NewID())
 		request.Header.Del("church_id")
@@ -121,4 +136,14 @@ func encodeValue(value string) string {
 
 func buildHeaderValue(userName string, password string) string {
 	return fmt.Sprintf("%s:%s", userName, password)
+}
+
+func buildChurch(id string) *domain.Church {
+	return &domain.Church{
+		ID:           id,
+		Name:         "test church",
+		Abbreviation: "tc",
+		Language:     "pt-br",
+		Email:        "test@test.com",
+	}
 }

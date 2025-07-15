@@ -19,7 +19,8 @@ import (
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go
 type Service interface {
-	GenerateToken(churchID, username, password string) (string, error)
+	IdentifyChurch(churchAbbreviation, churchID string) (*domain.Church, error)
+	GenerateToken(church *domain.Church, username, password string) (string, error)
 	SendConfirmEmail(ctx context.Context, user *domain.User) error
 	ConfirmEmail(ctx context.Context, userName string) error
 }
@@ -38,12 +39,7 @@ func NewAuthService(userService user.Service, churchService church.Service, emai
 	}
 }
 
-func (s *authService) GenerateToken(churchID, username, password string) (string, error) {
-	church, err := s.churchService.GetChurch(churchID)
-	if err != nil {
-		logrus.Errorf("Error getting church %s: %v", churchID, err)
-		return "", err
-	}
+func (s *authService) GenerateToken(church *domain.Church, username, password string) (string, error) {
 	ctx := context.WithValue(context.Background(), "church", church)
 	user, err := s.userService.FindUser(ctx, username)
 	if err != nil {
@@ -53,7 +49,7 @@ func (s *authService) GenerateToken(churchID, username, password string) (string
 	err = crypto.IsSamePassword(user.Password, password)
 	if err != nil {
 		logrus.Infof("Provided password user %s not equal", username)
-		return "", apierrors.NewApiError("User passwords do not match", http.StatusUnauthorized)
+		return "", apierrors.NewApiError("Invalid password", http.StatusUnauthorized)
 	}
 	user.Church = church
 	if !user.ConfirmedEmail {
@@ -88,6 +84,21 @@ func (s *authService) ConfirmEmail(ctx context.Context, userName string) error {
 	}
 	user.ConfirmedEmail = true
 	return s.userService.UpdateUser(ctx, user)
+}
+
+func (s *authService) IdentifyChurch(churchAbbreviation string, churchID string) (*domain.Church, error) {
+	if churchAbbreviation == "" && churchID == "" {
+		return nil, apierrors.NewApiError("Church ID or abbreviation must be provided", http.StatusBadRequest)
+	}
+
+	if churchAbbreviation != "" {
+		return s.churchService.GetChurchByAbbreviation(churchAbbreviation)
+	} else {
+		if !domain.IsValidID(churchID) {
+			return nil, apierrors.NewApiError(fmt.Sprintf("Invalid Church ID %s", churchID), http.StatusBadRequest)
+		}
+		return s.churchService.GetChurch(churchID)
+	}
 }
 
 func (s *authService) buildAuthError() apierrors.Error {

@@ -21,6 +21,7 @@ import (
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
+	isgomock struct{}
 }
 
 // MockServiceMockRecorder is the mock recorder for MockService.
@@ -55,18 +56,33 @@ func (mr *MockServiceMockRecorder) ConfirmEmail(ctx, userName any) *gomock.Call 
 }
 
 // GenerateToken mocks base method.
-func (m *MockService) GenerateToken(churchID, username, password string) (string, error) {
+func (m *MockService) GenerateToken(church *domain.Church, username, password string) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateToken", churchID, username, password)
+	ret := m.ctrl.Call(m, "GenerateToken", church, username, password)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockServiceMockRecorder) GenerateToken(churchID, username, password any) *gomock.Call {
+func (mr *MockServiceMockRecorder) GenerateToken(church, username, password any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockService)(nil).GenerateToken), churchID, username, password)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockService)(nil).GenerateToken), church, username, password)
+}
+
+// IdentifyChurch mocks base method.
+func (m *MockService) IdentifyChurch(churchAbbreviation, churchID string) (*domain.Church, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IdentifyChurch", churchAbbreviation, churchID)
+	ret0, _ := ret[0].(*domain.Church)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// IdentifyChurch indicates an expected call of IdentifyChurch.
+func (mr *MockServiceMockRecorder) IdentifyChurch(churchAbbreviation, churchID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IdentifyChurch", reflect.TypeOf((*MockService)(nil).IdentifyChurch), churchAbbreviation, churchID)
 }
 
 // SendConfirmEmail mocks base method.

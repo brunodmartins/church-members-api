@@ -10,5 +10,8 @@ services:
     environment:
       - DEBUG=${DEBUG-}
       - SERVICES=dynamodb,s3,sts
+      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    privileged: true

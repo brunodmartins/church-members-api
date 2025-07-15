@@ -20,6 +20,7 @@ import (
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
+	isgomock struct{}
 }
 
 // MockServiceMockRecorder is the mock recorder for MockService.
@@ -52,6 +53,21 @@ func (m *MockService) GetChurch(id string) (*domain.Church, error) {
 func (mr *MockServiceMockRecorder) GetChurch(id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChurch", reflect.TypeOf((*MockService)(nil).GetChurch), id)
+}
+
+// GetChurchByAbbreviation mocks base method.
+func (m *MockService) GetChurchByAbbreviation(abbreviation string) (*domain.Church, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetChurchByAbbreviation", abbreviation)
+	ret0, _ := ret[0].(*domain.Church)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetChurchByAbbreviation indicates an expected call of GetChurchByAbbreviation.
+func (mr *MockServiceMockRecorder) GetChurchByAbbreviation(abbreviation any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChurchByAbbreviation", reflect.TypeOf((*MockService)(nil).GetChurchByAbbreviation), abbreviation)
 }
 
 // List mocks base method.

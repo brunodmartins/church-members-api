@@ -46,7 +46,7 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), "")
-		request.Header.Set("church_abbreviation", church.Abbreviation)
+		request.Header.Set("x-church-abbreviation", church.Abbreviation)
 		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
 		})

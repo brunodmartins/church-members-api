@@ -33,7 +33,7 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 		return handler.builderUnauthorizedError()
 	}
 	userName, password := handler.getUser(decodedHeader)
-	church, err := handler.authService.IdentifyChurch(ctx.Get("church_abbreviation"), ctx.Get("church_id"))
+	church, err := handler.authService.IdentifyChurch(ctx.Get("x-church-abbreviation"), ctx.Get("church_id"))
 	if err != nil {
 		logrus.Error(err)
 		return handler.builderUnauthorizedError()

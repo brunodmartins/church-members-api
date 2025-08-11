@@ -12,7 +12,7 @@
     "S": "0409e78b-22bd-4dd6-8b21-51b071d05c63"
   },
   "password": {
-    "S": "$2a$04$Jyjr0RXWRjkqnC4hRejZzeIsNVOi2bPypX7a6TltA0ynDv2axNhl2"
+    "S": "$2a$04$vfx1TzFgVxs27PCtbadmFeDHz0iSLKMfMyVn0FNJeSnm3MJ/MtU8C"
   },
   "phone": {
     "S": "+551112345678"
@@ -27,6 +27,6 @@
     "BOOL": false
   },
   "confirmed_email": {
-    "BOOL": false
+    "BOOL": true
   }
 }

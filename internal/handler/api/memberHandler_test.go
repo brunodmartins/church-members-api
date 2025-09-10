@@ -3,15 +3,16 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+	"testing"
+	"time"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-	"net/http"
-	"os"
-	"testing"
-	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
@@ -115,6 +116,12 @@ func TestRetireMember(t *testing.T) {
 	t.Run("Success - 200", func(t *testing.T) {
 		body := []byte(`{"reason": "Leaved the church"}`)
 		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Any()).Return(nil)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Success with given date - 200", func(t *testing.T) {
+		body := []byte(`{"reason": "Leaved the church", "date": "2025-09-09"}`)
+		expectedDate, _ := time.Parse(time.DateOnly, "2025-09-09")
+		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Eq(expectedDate)).Return(nil)
 		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 400 - ID", func(t *testing.T) {

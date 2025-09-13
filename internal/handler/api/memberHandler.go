@@ -106,7 +106,7 @@ func (handler *MemberHandler) retireMember(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member deleted successfully"})
 }
 
 func (handler *MemberHandler) updateContact(ctx *fiber.Ctx) error {

@@ -11,6 +11,12 @@ type ErrorResponse struct {
 	Error   string `json:"error"`
 }
 
+// MessageResponse for HTTP success responses
+// swagger:model MessageResponse
+type MessageResponse struct {
+	Message string `json:"message"`
+}
+
 // CreateMemberResponse for HTTP create member responses
 // swagger:model CreateMemberResponse
 type CreateMemberResponse struct {

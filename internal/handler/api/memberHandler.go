@@ -2,13 +2,14 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
-	"strconv"
-	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
@@ -97,15 +98,15 @@ func (handler *MemberHandler) retireMember(ctx *fiber.Ctx) error {
 		return handler.badRequest(ctx, err)
 	}
 	if retireMemberRequest.RetireDate.IsZero() {
-		retireMemberRequest.RetireDate = time.Now()
+		retireMemberRequest.RetireDate = dto.Date{Time: time.Now()}
 	}
 
-	err := handler.service.RetireMembership(ctx.UserContext(), id, retireMemberRequest.Reason, retireMemberRequest.RetireDate)
+	err := handler.service.RetireMembership(ctx.UserContext(), id, retireMemberRequest.Reason, retireMemberRequest.RetireDate.Time)
 
 	if err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member deleted successfully"})
 }
 
 func (handler *MemberHandler) updateContact(ctx *fiber.Ctx) error {

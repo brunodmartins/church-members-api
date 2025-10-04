@@ -2,16 +2,16 @@ package dto
 
 import (
 	"fmt"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
-	"time"
 )
 
 // RetireMemberRequest for HTTP calls to put member status
 // swagger:model RetireMemberRequest
 type RetireMemberRequest struct {
-	Reason     string    `json:"reason" validate:"required"`
-	RetireDate time.Time `json:"date"`
+	Reason     string `json:"reason" validate:"required"`
+	RetireDate Date   `json:"date"`
 }
 
 // CreateMemberRequest for HTTP calls to post member

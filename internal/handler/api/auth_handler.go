@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/base64"
-	"github.com/brunodmartins/church-members-api/internal/constants/dto"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
+
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/sirupsen/logrus"
 
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/brunodmartins/church-members-api/platform/security"
@@ -33,7 +34,7 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 		return handler.builderUnauthorizedError()
 	}
 	userName, password := handler.getUser(decodedHeader)
-	church, err := handler.authService.IdentifyChurch(ctx.Get("x-church-abbreviation"), ctx.Get("church_id"))
+	church, err := handler.authService.IdentifyChurch(ctx.UserContext(), ctx.Get("x-church-abbreviation"), ctx.Get("church_id"))
 	if err != nil {
 		logrus.Error(err)
 		return handler.builderUnauthorizedError()
@@ -42,7 +43,10 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{Token: token})
+	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{
+		Token:    token,
+		ChurchID: church.ID,
+	})
 }
 
 func (handler *AuthHandler) confirmUserEmail(ctx *fiber.Ctx) error {

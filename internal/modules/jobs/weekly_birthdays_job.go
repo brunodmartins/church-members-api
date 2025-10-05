@@ -3,13 +3,12 @@ package jobs
 import (
 	"context"
 	_ "embed"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
 	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
-	"sort"
-	"time"
 )
 
 type weeklyBirthDaysJob struct {
@@ -29,16 +28,14 @@ func newWeeklyBirthDaysJob(
 }
 
 func (job weeklyBirthDaysJob) RunJob(ctx context.Context) error {
-	birthMembers, err := job.memberService.SearchMembers(ctx, member.LastBirths(job.lastDaysRange()))
+	birthMembers, err := job.memberService.GetLastBirthAnniversaries(ctx)
 	if err != nil {
 		return err
 	}
-	sort.Sort(domain.SortByBirthDay(birthMembers))
-	marriageMembers, err := job.memberService.SearchMembers(ctx, member.LastMarriages(job.lastDaysRange()))
+	marriageMembers, err := job.memberService.GetLastMarriageAnniversaries(ctx)
 	if err != nil {
 		return err
 	}
-	sort.Sort(domain.SortByMarriageDay(marriageMembers))
 	emailData := job.buildEmailData(ctx, birthMembers, marriageMembers)
 	users, err := job.userService.SearchUser(ctx, user.WithEmailNotifications())
 	if err != nil {
@@ -68,9 +65,4 @@ func (job weeklyBirthDaysJob) buildEmailData(ctx context.Context, birthMembers, 
 		})
 	}
 	return weeklyTemplate
-}
-
-func (weeklyBirthDaysJob) lastDaysRange() (time.Time, time.Time) {
-	now := time.Now()
-	return now.Add(-6 * 24 * time.Hour), now
 }

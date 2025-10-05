@@ -10,6 +10,7 @@
 package mock_church
 
 import (
+	"context"
 	reflect "reflect"
 
 	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -40,7 +41,7 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 }
 
 // GetByID mocks base method.
-func (m *MockRepository) GetByID(ID string) (*domain.Church, error) {
+func (m *MockRepository) GetByID(ctx context.Context, ID string) (*domain.Church, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", ID)
 	ret0, _ := ret[0].(*domain.Church)
@@ -55,7 +56,7 @@ func (mr *MockRepositoryMockRecorder) GetByID(ID any) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockRepository) List() ([]*domain.Church, error) {
+func (m *MockRepository) List(context.Context) ([]*domain.Church, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "List")
 	ret0, _ := ret[0].([]*domain.Church)

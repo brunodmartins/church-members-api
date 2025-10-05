@@ -3,11 +3,12 @@ package security
 import (
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"net/http"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/modules/church"
@@ -19,7 +20,7 @@ import (
 
 //go:generate mockgen -source=./auth_service.go -destination=./mock/auth_service_mock.go
 type Service interface {
-	IdentifyChurch(churchAbbreviation, churchID string) (*domain.Church, error)
+	IdentifyChurch(ctx context.Context, churchAbbreviation, churchID string) (*domain.Church, error)
 	GenerateToken(church *domain.Church, username, password string) (string, error)
 	SendConfirmEmail(ctx context.Context, user *domain.User) error
 	ConfirmEmail(ctx context.Context, userName string) error
@@ -86,18 +87,18 @@ func (s *authService) ConfirmEmail(ctx context.Context, userName string) error {
 	return s.userService.UpdateUser(ctx, user)
 }
 
-func (s *authService) IdentifyChurch(churchAbbreviation string, churchID string) (*domain.Church, error) {
+func (s *authService) IdentifyChurch(ctx context.Context, churchAbbreviation, churchID string) (*domain.Church, error) {
 	if churchAbbreviation == "" && churchID == "" {
 		return nil, apierrors.NewApiError("Church ID or abbreviation must be provided", http.StatusBadRequest)
 	}
 
 	if churchAbbreviation != "" {
-		return s.churchService.GetChurchByAbbreviation(churchAbbreviation)
+		return s.churchService.GetChurchByAbbreviation(ctx, churchAbbreviation)
 	} else {
 		if !domain.IsValidID(churchID) {
 			return nil, apierrors.NewApiError(fmt.Sprintf("Invalid Church ID %s", churchID), http.StatusBadRequest)
 		}
-		return s.churchService.GetChurch(churchID)
+		return s.churchService.GetChurch(ctx, churchID)
 	}
 }
 

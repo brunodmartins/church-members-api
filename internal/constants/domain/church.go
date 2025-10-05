@@ -7,4 +7,12 @@ type Church struct {
 	Abbreviation string `json:"abbreviation"`
 	Language     string `json:"language"`
 	Email        string `json:"email"`
+	Logo         string `json:"logo"`
+}
+
+type ChurchStatistics struct {
+	TotalMembers                 int
+	AgeDistribution              []int
+	TotalMembersByGender         map[string]int
+	TotalMembersByClassification map[string]int
 }

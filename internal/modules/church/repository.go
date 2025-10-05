@@ -2,6 +2,7 @@ package church
 
 import (
 	"context"
+
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -9,8 +10,8 @@ import (
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
-	GetByID(ID string) (*domain.Church, error)
-	List() ([]*domain.Church, error)
+	GetByID(ctx context.Context, ID string) (*domain.Church, error)
+	List(ctx context.Context) ([]*domain.Church, error)
 }
 
 type dynamoRepository struct {
@@ -23,7 +24,7 @@ func NewRepository(api wrapper.DynamoDBAPI, table string) Repository {
 	}
 }
 
-func (d dynamoRepository) GetByID(id string) (*domain.Church, error) {
+func (d dynamoRepository) GetByID(ctx context.Context, id string) (*domain.Church, error) {
 	result := &domain.Church{}
 	return result, d.GetItem(d.buildKey(id), result)
 }
@@ -36,9 +37,9 @@ func (d dynamoRepository) buildKey(id string) wrapper.PrimaryKey {
 		}}
 }
 
-func (d dynamoRepository) List() ([]*domain.Church, error) {
+func (d dynamoRepository) List(ctx context.Context) ([]*domain.Church, error) {
 	var result = make([]*domain.Church, 0)
-	resp, err := d.ScanDynamoDB(context.Background(), d.EmptySpecification())
+	resp, err := d.ScanDynamoDB(ctx, d.EmptySpecification())
 	if err != nil {
 		return nil, err
 	}

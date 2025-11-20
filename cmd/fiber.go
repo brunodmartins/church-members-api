@@ -1,12 +1,13 @@
 package cmd
 
 import (
+	"log"
+
 	"github.com/brunodmartins/church-members-api/internal/handler/api/middleware"
 	"github.com/brunodmartins/church-members-api/platform/cdi"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/sirupsen/logrus"
-	"log"
 )
 
 // FiberApplication to use as HTTP API
@@ -31,6 +32,7 @@ func provideFiberApplication() *fiber.App {
 	reportHandler := cdi.ProvideReportHandler()
 	authHandler := cdi.ProvideAuthHandler()
 	userHandler := cdi.ProvideUserHandler()
+	churchHandler := cdi.ProvideChurchHandler()
 
 	app.Get("/ping", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("/pong")
@@ -43,5 +45,7 @@ func provideFiberApplication() *fiber.App {
 	memberHandler.SetUpRoutes(app)
 	reportHandler.SetUpRoutes(app)
 	userHandler.SetUpRoutes(app)
+	churchHandler.SetUpRoutes(app)
+
 	return app
 }

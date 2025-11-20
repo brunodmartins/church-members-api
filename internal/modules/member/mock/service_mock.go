@@ -43,6 +43,36 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// GetLastBirthAnniversaries mocks base method.
+func (m *MockService) GetLastBirthAnniversaries(ctx context.Context) ([]*domain.Member, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLastBirthAnniversaries", ctx)
+	ret0, _ := ret[0].([]*domain.Member)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLastBirthAnniversaries indicates an expected call of GetLastBirthAnniversaries.
+func (mr *MockServiceMockRecorder) GetLastBirthAnniversaries(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLastBirthAnniversaries", reflect.TypeOf((*MockService)(nil).GetLastBirthAnniversaries), ctx)
+}
+
+// GetLastMarriageAnniversaries mocks base method.
+func (m *MockService) GetLastMarriageAnniversaries(ctx context.Context) ([]*domain.Member, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLastMarriageAnniversaries", ctx)
+	ret0, _ := ret[0].([]*domain.Member)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLastMarriageAnniversaries indicates an expected call of GetLastMarriageAnniversaries.
+func (mr *MockServiceMockRecorder) GetLastMarriageAnniversaries(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLastMarriageAnniversaries", reflect.TypeOf((*MockService)(nil).GetLastMarriageAnniversaries), ctx)
+}
+
 // GetMember mocks base method.
 func (m *MockService) GetMember(ctx context.Context, id string) (*domain.Member, error) {
 	m.ctrl.T.Helper()

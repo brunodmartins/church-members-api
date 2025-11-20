@@ -18,6 +18,7 @@ import (
 )
 
 var memberService member2.Service
+var churchService church.Service
 var reportGenerator report2.Service
 
 var memberRepository member2.Repository
@@ -38,6 +39,10 @@ func ProvideUserHandler() *api.UserHandler {
 	return api.NewUserHandler(ProvideUserService())
 }
 
+func ProvideChurchHandler() *api.ChurchHandler {
+	return api.NewChurchHandler(ProvideChurchService())
+}
+
 func provideAuthService() security.Service {
 	return security.NewAuthService(ProvideUserService(), ProvideChurchService(), ProvideEmailService())
 }
@@ -56,7 +61,10 @@ func ProvideMemberService() member2.Service {
 }
 
 func ProvideChurchService() church.Service {
-	return church.NewService(church.NewRepository(provideDynamoDB(), viper.GetString("tables.church")))
+	if churchService == nil {
+		churchService = church.NewService(ProvideMemberService(), church.NewRepository(provideDynamoDB(), viper.GetString("tables.church")))
+	}
+	return churchService
 }
 
 func ProvideNotificationService() notification.Service {

@@ -2,10 +2,12 @@ package member
 
 import (
 	"context"
+	"net/http"
+	"sort"
+	"time"
+
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"net/http"
-	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
@@ -19,6 +21,8 @@ type Service interface {
 	UpdateContact(ctx context.Context, memberID string, contact domain.Contact) error
 	UpdateAddress(ctx context.Context, memberID string, address domain.Address) error
 	UpdatePerson(ctx context.Context, memberID string, person domain.Person) error
+	GetLastBirthAnniversaries(ctx context.Context) ([]*domain.Member, error)
+	GetLastMarriageAnniversaries(ctx context.Context) ([]*domain.Member, error)
 }
 
 type memberService struct {
@@ -100,4 +104,48 @@ func (s *memberService) UpdatePerson(ctx context.Context, id string, person doma
 	member.Person.ChildrenQuantity = person.ChildrenQuantity
 
 	return s.repo.UpdatePerson(ctx, member)
+}
+
+func (s *memberService) GetLastBirthAnniversaries(ctx context.Context) ([]*domain.Member, error) {
+	birthMembers, err := s.SearchMembers(ctx, LastBirths(getWeekRange()))
+	if err != nil {
+		return nil, err
+	}
+	sort.Sort(domain.SortByBirthDay(birthMembers))
+	return birthMembers, nil
+}
+
+func (s *memberService) GetLastMarriageAnniversaries(ctx context.Context) ([]*domain.Member, error) {
+	marriageMembers, err := s.SearchMembers(ctx, LastMarriages(getWeekRange()))
+	if err != nil {
+		return nil, err
+	}
+	sort.Sort(domain.SortByMarriageDay(marriageMembers))
+	return marriageMembers, nil
+}
+
+func getWeekRange() (time.Time, time.Time) {
+	now := time.Now()
+
+	// Get the current weekday (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+	weekday := int(now.Weekday())
+
+	// Calculate days to subtract to get to Monday
+	// If Sunday (0), go back 6 days; otherwise go back (weekday - 1) days
+	daysToMonday := weekday - 1
+	if weekday == 0 {
+		daysToMonday = 6
+	}
+
+	// Calculate Monday of the current week
+	monday := now.AddDate(0, 0, -daysToMonday)
+
+	// Calculate Sunday (6 days after Monday)
+	sunday := monday.AddDate(0, 0, 6)
+
+	// Set times to start of day for Monday and end of day for Sunday
+	monday = time.Date(monday.Year(), monday.Month(), monday.Day(), 0, 0, 0, 0, monday.Location())
+	sunday = time.Date(sunday.Year(), sunday.Month(), sunday.Day(), 23, 59, 59, 999999999, sunday.Location())
+
+	return monday, sunday
 }

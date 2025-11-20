@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-// Routable defines a way to builds a REST Controller routes
+// Routable defines a way to build a REST Controller routes
 type Routable interface {
 	//SetUpRoutes build the REST controller routes
 	SetUpRoutes(app *fiber.App)
@@ -56,14 +56,17 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: name
 	//   in: query
+	//   type: string
 	//   description: The member names
 	//   required: false
 	// - name: active
 	//   in: query
+	//   type: string
 	//   description: The member status active [true,false]
 	//   required: false
 	// - name: gender
 	//   in: query
+	//   type: string
 	//   description: The member gender [M,F]
 	//   required: false
 	// responses:
@@ -74,6 +77,28 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/members", handler.searchMember)
+
+	// swagger:operation GET /members/anniversaries getAnniversaries
+	//
+	// Get anniversaries
+	//
+	// Returns the birthday and marriage anniversaries for the current week
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: The anniversaries information
+	//     schema:
+	//       "$ref": "#/definitions/AnniversariesResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/members/anniversaries", handler.lastAnniversaries)
 	// swagger:operation GET /members/{id} getMember
 	//
 	// Get member
@@ -88,6 +113,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: id
 	//   in: path
+	//   type: string
 	//   description: The member id
 	//   required: true
 	// responses:
@@ -122,6 +148,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: id
 	//   in: path
+	//   type: string
 	//   description: The member id
 	//   required: true
 	// - name: body
@@ -160,6 +187,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: id
 	//   in: path
+	//   type: string
 	//   description: The member id
 	//   required: true
 	// - name: member
@@ -198,6 +226,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: id
 	//   in: path
+	//   type: string
 	//   description: The member id
 	//   required: true
 	// - name: member
@@ -236,6 +265,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: id
 	//   in: path
+	//   type: string
 	//   description: The member id
 	//   required: true
 	// - name: member
@@ -334,6 +364,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: classification
 	//   in: path
+	//   type: string
 	//   description: The member classification [adult, teen, young, children]
 	//   required: true
 	// responses:
@@ -378,6 +409,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// parameters:
 	// - name: reportType
 	//   in: path
+	//   type: string
 	//   description: The report type [members,legal,classification,birthdate,marriage]
 	//   required: true
 	// responses:
@@ -424,7 +456,8 @@ func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
 	// - application/json
 	// parameters:
 	// - name: accessToken
-	//   in: path
+	//   in: query
+	//   type: string
 	//   description: The access token to be confirmed
 	//   required: true
 	// responses:
@@ -472,4 +505,74 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/users", handler.PostUser)
+}
+
+func (h *ChurchHandler) SetUpRoutes(app *fiber.App) {
+	// swagger:operation GET /churches/{id}/statistics getStatistics
+	//
+	// Get statistics
+	//
+	// Returns the church statistics information
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The church id
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: The church statistics information
+	//     schema:
+	//       "$ref": "#/definitions/ChurchStatisticsResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/churches/:id/statistics", h.getStatistics)
+
+	// swagger:operation GET /churches/{id} getChurch
+	//
+	// Get church
+	//
+	// Returns the church information
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The church id
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: The church information
+	//     schema:
+	//       "$ref": "#/definitions/GetChurchResponse"
+	//   '400':
+	//     description: Invalid ID
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: Church not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/churches/:id", h.getChurchByID)
 }

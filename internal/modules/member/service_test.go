@@ -3,13 +3,14 @@ package member_test
 import (
 	"context"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"go.uber.org/mock/gomock"
-	"testing"
-	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/stretchr/testify/assert"
@@ -217,6 +218,84 @@ func TestMemberService_UpdatePerson(t *testing.T) {
 	t.Run("Fails to update the person information due to find error", func(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(nil, genericError)
 		assert.Error(t, service.UpdatePerson(ctx, id, person))
+	})
+}
+
+func TestMemberService_GetLastBirthAnniversaries(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctx := context.TODO()
+	defer ctrl.Finish()
+	repo := mock_member.NewMockRepository(ctrl)
+	service := member.NewMemberService(repo)
+
+	t.Run("Successfully get last birthday members", func(t *testing.T) {
+		members := BuildMembers(2)
+		repo.EXPECT().FindAll(gomock.Eq(ctx), gomock.Any()).Return(members, nil)
+		result, err := service.GetLastBirthAnniversaries(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, members, result)
+	})
+
+	t.Run("Fails to get last birthday members", func(t *testing.T) {
+		repo.EXPECT().FindAll(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		result, err := service.GetLastBirthAnniversaries(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	t.Run("Returns sorted birthday members", func(t *testing.T) {
+		member1 := buildMember("")
+		member1.Person.BirthDate = time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)
+		member2 := buildMember("")
+		member2.Person.BirthDate = time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+		members := []*domain.Member{member1, member2}
+
+		repo.EXPECT().FindAll(gomock.Eq(ctx), gomock.Any()).Return(members, nil)
+		result, err := service.GetLastBirthAnniversaries(ctx)
+
+		assert.NoError(t, err)
+		assert.Equal(t, member2.Person.BirthDate, result[0].Person.BirthDate)
+		assert.Equal(t, member1.Person.BirthDate, result[1].Person.BirthDate)
+	})
+}
+
+func TestMemberService_GetLastMarriageAnniversaries(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctx := context.TODO()
+	defer ctrl.Finish()
+	repo := mock_member.NewMockRepository(ctrl)
+	service := member.NewMemberService(repo)
+
+	t.Run("Successfully get last marriage members", func(t *testing.T) {
+		members := BuildMembers(2)
+		repo.EXPECT().FindAll(gomock.Eq(ctx), gomock.Any()).Return(members, nil)
+		result, err := service.GetLastMarriageAnniversaries(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, members, result)
+	})
+
+	t.Run("Fails to get last marriage members", func(t *testing.T) {
+		repo.EXPECT().FindAll(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		result, err := service.GetLastMarriageAnniversaries(ctx)
+		assert.Error(t, err)
+		assert.Nil(t, result)
+	})
+
+	t.Run("Returns sorted marriage members", func(t *testing.T) {
+		marriageDate1 := time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC)
+		marriageDate2 := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+		member1 := buildMember("")
+		member1.Person.MarriageDate = &marriageDate1
+		member2 := buildMember("")
+		member2.Person.MarriageDate = &marriageDate2
+		members := []*domain.Member{member1, member2}
+
+		repo.EXPECT().FindAll(gomock.Eq(ctx), gomock.Any()).Return(members, nil)
+		result, err := service.GetLastMarriageAnniversaries(ctx)
+
+		assert.NoError(t, err)
+		assert.Equal(t, marriageDate2, *result[0].Person.MarriageDate)
+		assert.Equal(t, marriageDate1, *result[1].Person.MarriageDate)
 	})
 }
 

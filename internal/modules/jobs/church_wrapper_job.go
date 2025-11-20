@@ -2,6 +2,7 @@ package jobs
 
 import (
 	"context"
+
 	"github.com/brunodmartins/church-members-api/platform/i18n"
 	"golang.org/x/text/language"
 
@@ -23,7 +24,7 @@ func newChurchWrapperJob(service church.Service, job Job) Job {
 }
 
 func (wrapper *churchWrapperJob) RunJob(ctx context.Context) error {
-	churches, err := wrapper.service.List()
+	churches, err := wrapper.service.List(ctx)
 	if err != nil {
 		logrus.Error("Error obtaining church list", err)
 		return err

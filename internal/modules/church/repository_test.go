@@ -24,19 +24,19 @@ func TestDynamoRepository_GetByID(t *testing.T) {
 	key := repo.(*dynamoRepository).buildKey(id)
 	t.Run("Success", func(t *testing.T) {
 		wrapper.MockGetItem(t, dynamoMock, table, key, buildItem(id), nil)
-		result, err := repo.GetByID(id)
+		result, err := repo.GetByID(nil, id)
 		assert.NotNil(t, result)
 		assert.Equal(t, id, result.ID)
 		assert.Nil(t, err)
 	})
 	t.Run("Fail", func(t *testing.T) {
 		wrapper.MockGetItem(t, dynamoMock, table, key, nil, genericError)
-		_, err := repo.GetByID(id)
+		_, err := repo.GetByID(nil, id)
 		assert.NotNil(t, err)
 	})
 	t.Run("Not found", func(t *testing.T) {
 		wrapper.MockGetItem(t, dynamoMock, table, key, nil, nil)
-		_, err := repo.GetByID(id)
+		_, err := repo.GetByID(nil, id)
 		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 	})
 
@@ -50,19 +50,19 @@ func TestDynamoRepository_List(t *testing.T) {
 	repo := NewRepository(dynamoMock, table)
 	t.Run("Success", func(t *testing.T) {
 		wrapper.MockScan(dynamoMock, buildItems(5), nil)
-		result, err := repo.List()
+		result, err := repo.List(nil)
 		assert.Nil(t, err)
 		assert.Len(t, result, 5)
 	})
 	t.Run("Empty", func(t *testing.T) {
 		wrapper.MockScan(dynamoMock, buildItems(0), nil)
-		result, err := repo.List()
+		result, err := repo.List(nil)
 		assert.Nil(t, err)
 		assert.Len(t, result, 0)
 	})
 	t.Run("Error", func(t *testing.T) {
 		wrapper.MockScan(dynamoMock, buildItems(0), genericError)
-		result, err := repo.List()
+		result, err := repo.List(nil)
 		assert.NotNil(t, err)
 		assert.Len(t, result, 0)
 	})

@@ -162,3 +162,37 @@ func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
 	}
 	return ctx.SendStatus(http.StatusOK)
 }
+
+func (handler *MemberHandler) lastAnniversaries(ctx *fiber.Ctx) error {
+	birthDayAnniversaries, err := handler.service.GetLastBirthAnniversaries(ctx.UserContext())
+	if err != nil {
+		return err
+	}
+	marriageAnniversaries, err := handler.service.GetLastMarriageAnniversaries(ctx.UserContext())
+	if err != nil {
+		return err
+	}
+
+	birthResponse := make([]dto.MemberAnniversaryResponse, 0)
+	for _, birthDayAnniversary := range birthDayAnniversaries {
+		birthResponse = append(birthResponse, dto.MemberAnniversaryResponse{
+			Name: birthDayAnniversary.Person.GetFullName(),
+			Date: birthDayAnniversary.Person.BirthDate.Format("Jan-02"),
+		})
+	}
+
+	marriageResponse := make([]dto.MemberAnniversaryResponse, 0)
+	for _, marriageAnniversary := range marriageAnniversaries {
+		if marriageAnniversary.Person.MarriageDate != nil {
+			marriageResponse = append(marriageResponse, dto.MemberAnniversaryResponse{
+				Name: marriageAnniversary.Person.GetCoupleName(),
+				Date: marriageAnniversary.Person.MarriageDate.Format("2006-Jan-02"),
+			})
+		}
+	}
+
+	return ctx.Status(http.StatusOK).JSON(dto.AnniversariesResponse{
+		BirthdayAnniversaries: birthResponse,
+		MarriageAnniversaries: marriageResponse,
+	})
+}

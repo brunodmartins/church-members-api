@@ -10,6 +10,7 @@
 package mock_church
 
 import (
+	context "context"
 	reflect "reflect"
 
 	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -41,46 +42,61 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // GetChurch mocks base method.
-func (m *MockService) GetChurch(id string) (*domain.Church, error) {
+func (m *MockService) GetChurch(ctx context.Context, id string) (*domain.Church, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetChurch", id)
+	ret := m.ctrl.Call(m, "GetChurch", ctx, id)
 	ret0, _ := ret[0].(*domain.Church)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetChurch indicates an expected call of GetChurch.
-func (mr *MockServiceMockRecorder) GetChurch(id any) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetChurch(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChurch", reflect.TypeOf((*MockService)(nil).GetChurch), id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChurch", reflect.TypeOf((*MockService)(nil).GetChurch), ctx, id)
 }
 
 // GetChurchByAbbreviation mocks base method.
-func (m *MockService) GetChurchByAbbreviation(abbreviation string) (*domain.Church, error) {
+func (m *MockService) GetChurchByAbbreviation(ctx context.Context, abbreviation string) (*domain.Church, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetChurchByAbbreviation", abbreviation)
+	ret := m.ctrl.Call(m, "GetChurchByAbbreviation", ctx, abbreviation)
 	ret0, _ := ret[0].(*domain.Church)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetChurchByAbbreviation indicates an expected call of GetChurchByAbbreviation.
-func (mr *MockServiceMockRecorder) GetChurchByAbbreviation(abbreviation any) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetChurchByAbbreviation(ctx, abbreviation any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChurchByAbbreviation", reflect.TypeOf((*MockService)(nil).GetChurchByAbbreviation), abbreviation)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetChurchByAbbreviation", reflect.TypeOf((*MockService)(nil).GetChurchByAbbreviation), ctx, abbreviation)
+}
+
+// GetStatistics mocks base method.
+func (m *MockService) GetStatistics(ctx context.Context, id string) (*domain.ChurchStatistics, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetStatistics", ctx, id)
+	ret0, _ := ret[0].(*domain.ChurchStatistics)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetStatistics indicates an expected call of GetStatistics.
+func (mr *MockServiceMockRecorder) GetStatistics(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStatistics", reflect.TypeOf((*MockService)(nil).GetStatistics), ctx, id)
 }
 
 // List mocks base method.
-func (m *MockService) List() ([]*domain.Church, error) {
+func (m *MockService) List(ctx context.Context) ([]*domain.Church, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", ctx)
 	ret0, _ := ret[0].([]*domain.Church)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockServiceMockRecorder) List() *gomock.Call {
+func (mr *MockServiceMockRecorder) List(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockService)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockService)(nil).List), ctx)
 }

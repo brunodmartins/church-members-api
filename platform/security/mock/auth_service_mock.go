@@ -21,7 +21,6 @@ import (
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
-	isgomock struct{}
 }
 
 // MockServiceMockRecorder is the mock recorder for MockService.
@@ -71,18 +70,18 @@ func (mr *MockServiceMockRecorder) GenerateToken(church, username, password any)
 }
 
 // IdentifyChurch mocks base method.
-func (m *MockService) IdentifyChurch(churchAbbreviation, churchID string) (*domain.Church, error) {
+func (m *MockService) IdentifyChurch(ctx context.Context, churchAbbreviation, churchID string) (*domain.Church, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IdentifyChurch", churchAbbreviation, churchID)
+	ret := m.ctrl.Call(m, "IdentifyChurch", ctx, churchAbbreviation, churchID)
 	ret0, _ := ret[0].(*domain.Church)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // IdentifyChurch indicates an expected call of IdentifyChurch.
-func (mr *MockServiceMockRecorder) IdentifyChurch(churchAbbreviation, churchID any) *gomock.Call {
+func (mr *MockServiceMockRecorder) IdentifyChurch(ctx, churchAbbreviation, churchID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IdentifyChurch", reflect.TypeOf((*MockService)(nil).IdentifyChurch), churchAbbreviation, churchID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IdentifyChurch", reflect.TypeOf((*MockService)(nil).IdentifyChurch), ctx, churchAbbreviation, churchID)
 }
 
 // SendConfirmEmail mocks base method.

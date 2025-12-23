@@ -255,3 +255,58 @@ func TestUpdatePerson(t *testing.T) {
 		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
+
+func TestLastAnniversaries(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+
+	t.Run("Success - 200", func(t *testing.T) {
+		birthDate, _ := time.Parse(time.DateOnly, "1990-01-01")
+		marriageDate, _ := time.Parse(time.DateOnly, "2020-01-01")
+		birthMember := &domain.Member{
+			Person: &domain.Person{
+				FirstName: "John",
+				LastName:  "Doe",
+				BirthDate: birthDate,
+			},
+		}
+		marriageMember := &domain.Member{
+			Person: &domain.Person{
+				FirstName:     "Jane",
+				LastName:      "Smith",
+				SpousesName:   "John Smith",
+				MarriageDate:  &marriageDate,
+				MaritalStatus: "MARRIED",
+			},
+		}
+
+		service.EXPECT().GetLastBirthAnniversaries(gomock.Any()).Return([]*domain.Member{birthMember}, nil)
+		service.EXPECT().GetLastMarriageAnniversaries(gomock.Any()).Return([]*domain.Member{marriageMember}, nil)
+
+		runTest(app, buildGet("/members/anniversaries")).assert(t, http.StatusOK, new(dto.AnniversariesResponse), func(parsedBody interface{}) {
+			response := parsedBody.(*dto.AnniversariesResponse)
+			assert.Len(t, response.BirthdayAnniversaries, 1)
+			assert.Len(t, response.MarriageAnniversaries, 1)
+			assert.Equal(t, "John Doe", response.BirthdayAnniversaries[0].Name)
+			assert.Equal(t, "Jan-01", response.BirthdayAnniversaries[0].Date)
+			assert.Equal(t, "Jane Smith & John Smith", response.MarriageAnniversaries[0].Name)
+			assert.Equal(t, "2020-Jan-01", response.MarriageAnniversaries[0].Date)
+		})
+	})
+
+	t.Run("Fail - 500 - Birth Error", func(t *testing.T) {
+		service.EXPECT().GetLastBirthAnniversaries(gomock.Any()).Return(nil, genericError)
+		runTest(app, buildGet("/members/anniversaries")).assertStatus(t, http.StatusInternalServerError)
+	})
+
+	t.Run("Fail - 500 - Marriage Error", func(t *testing.T) {
+		service.EXPECT().GetLastBirthAnniversaries(gomock.Any()).Return([]*domain.Member{}, nil)
+		service.EXPECT().GetLastMarriageAnniversaries(gomock.Any()).Return(nil, genericError)
+		runTest(app, buildGet("/members/anniversaries")).assertStatus(t, http.StatusInternalServerError)
+	})
+}

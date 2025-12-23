@@ -71,5 +71,38 @@ type GetAddressResponse struct {
 // GetTokenResponse for HTTP get token responses
 // swagger:model GetTokenResponse
 type GetTokenResponse struct {
-	Token string `json:"token"`
+	Token    string `json:"token"`
+	ChurchID string `json:"church_id"`
+}
+
+// AnniversariesResponse for HTTP anniversaries responses
+// swagger:model AnniversariesResponse
+type AnniversariesResponse struct {
+	BirthdayAnniversaries []MemberAnniversaryResponse `json:"birthday"`
+	MarriageAnniversaries []MemberAnniversaryResponse `json:"marriage"`
+}
+
+// MemberAnniversaryResponse for HTTP member anniversary responses
+// swagger:model MemberAnniversaryResponse
+type MemberAnniversaryResponse struct {
+	Name string `json:"name"`
+	Date string `json:"date"`
+}
+
+// GetChurchResponse for HTTP church responses
+// swagger:model GetChurchResponse
+type GetChurchResponse struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Abbreviation string `json:"abbreviation"`
+	Logo         string `json:"logo"`
+}
+
+// ChurchStatisticsResponse for HTTP church statistic response
+// swagger:model ChurchStatisticsResponse
+type ChurchStatisticsResponse struct {
+	TotalMembers                 int            `json:"total_members"`
+	AgeDistribution              []int          `json:"age_distribution"`
+	TotalMembersByGender         map[string]int `json:"total_members_by_gender"`
+	TotalMembersByClassification map[string]int `json:"total_members_by_classification"`
 }

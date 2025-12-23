@@ -6,6 +6,9 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"net/http"
+	"testing"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/security"
@@ -13,8 +16,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-	"net/http"
-	"testing"
 )
 
 func TestAuthHandler_GetToken(t *testing.T) {
@@ -32,35 +33,37 @@ func TestAuthHandler_GetToken(t *testing.T) {
 	var church = buildChurch(churchID)
 
 	t.Run("Success - 201", func(t *testing.T) {
-		service.EXPECT().IdentifyChurch(gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
+		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), churchID)
 		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
 		})
 
 	})
 	t.Run("Success - 201 - New login with abbreviation", func(t *testing.T) {
-		service.EXPECT().IdentifyChurch(gomock.Eq(church.Abbreviation), gomock.Eq("")).Return(church, nil)
+		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(church.Abbreviation), gomock.Eq("")).Return(church, nil)
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), "")
 		request.Header.Set("x-church-abbreviation", church.Abbreviation)
 		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
 		})
 
 	})
 	t.Run("Fail - Error on service - 500", func(t *testing.T) {
-		service.EXPECT().IdentifyChurch(gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
+		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("", genericError)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), churchID)
 		runTest(app, request).assertStatus(t, http.StatusInternalServerError)
 	})
 	t.Run("Fail - church_id empty", func(t *testing.T) {
-		service.EXPECT().IdentifyChurch(gomock.Eq(""), gomock.Eq("")).Return(nil, errors.New("generic error"))
+		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(""), gomock.Eq("")).Return(nil, errors.New("generic error"))
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), domain.NewID())
 		request.Header.Del("church_id")

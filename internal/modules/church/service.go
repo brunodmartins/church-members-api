@@ -31,8 +31,8 @@ func NewService(memberService member.Service, repo Repository) Service {
 	}
 }
 
-func (s churchService) List(context.Context) ([]*domain.Church, error) {
-	return s.repo.List(nil)
+func (s churchService) List(ctx context.Context) ([]*domain.Church, error) {
+	return s.repo.List(ctx)
 }
 
 func (s churchService) GetChurch(ctx context.Context, id string) (*domain.Church, error) {

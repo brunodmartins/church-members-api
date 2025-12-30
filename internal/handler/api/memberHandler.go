@@ -122,7 +122,7 @@ func (handler *MemberHandler) updateContact(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
 }
 
 func (handler *MemberHandler) updateAddress(ctx *fiber.Ctx) error {
@@ -141,7 +141,7 @@ func (handler *MemberHandler) updateAddress(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
 }
 
 func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
@@ -160,7 +160,7 @@ func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
 }
 
 func (handler *MemberHandler) lastAnniversaries(ctx *fiber.Ctx) error {

@@ -20,6 +20,7 @@ import (
 type MockSESAPI struct {
 	ctrl     *gomock.Controller
 	recorder *MockSESAPIMockRecorder
+	isgomock struct{}
 }
 
 // MockSESAPIMockRecorder is the mock recorder for MockSESAPI.

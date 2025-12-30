@@ -21,6 +21,7 @@ import (
 type MockSNSAPI struct {
 	ctrl     *gomock.Controller
 	recorder *MockSNSAPIMockRecorder
+	isgomock struct{}
 }
 
 // MockSNSAPIMockRecorder is the mock recorder for MockSNSAPI.

@@ -22,6 +22,7 @@ import (
 type MockDynamoDBAPI struct {
 	ctrl     *gomock.Controller
 	recorder *MockDynamoDBAPIMockRecorder
+	isgomock struct{}
 }
 
 // MockDynamoDBAPIMockRecorder is the mock recorder for MockDynamoDBAPI.
@@ -145,6 +146,7 @@ func (mr *MockDynamoDBAPIMockRecorder) UpdateItem(ctx, params any, optFns ...any
 type MockKeyAttribute struct {
 	ctrl     *gomock.Controller
 	recorder *MockKeyAttributeMockRecorder
+	isgomock struct{}
 }
 
 // MockKeyAttributeMockRecorder is the mock recorder for MockKeyAttribute.

@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"github.com/bearbin/go-age"
 	"time"
+
+	"github.com/bearbin/go-age"
 )
 
 // Person type

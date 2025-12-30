@@ -35,17 +35,18 @@ type GetMemberResponse struct {
 // GetPersonResponse for HTTP get person response
 // swagger:model GetPersonResponse
 type GetPersonResponse struct {
-	FirstName     string              `json:"firstName,omitempty"`
-	LastName      string              `json:"lastName,omitempty"`
-	FullName      string              `json:"fullName,omitempty"`
-	Gender        string              `json:"gender,omitempty"`
-	Age           int                 `json:"age,omitempty"`
-	BirthDate     time.Time           `json:"birthDate,omitempty"`
-	MarriageDate  *time.Time          `json:"marriageDate,omitempty"`
-	SpousesName   string              `json:"spousesName,omitempty"`
-	MaritalStatus string              `json:"maritalStatus,omitempty"`
-	Contact       *GetContactResponse `json:"contact,omitempty"`
-	Address       *GetAddressResponse `json:"address,omitempty"`
+	FirstName        string              `json:"firstName,omitempty"`
+	LastName         string              `json:"lastName,omitempty"`
+	FullName         string              `json:"fullName,omitempty"`
+	Gender           string              `json:"gender,omitempty"`
+	Age              int                 `json:"age,omitempty"`
+	BirthDate        time.Time           `json:"birthDate,omitempty"`
+	MarriageDate     *time.Time          `json:"marriageDate,omitempty"`
+	SpousesName      string              `json:"spousesName,omitempty"`
+	MaritalStatus    string              `json:"maritalStatus,omitempty"`
+	ChildrenQuantity int                 `json:"childrenQuantity,omitempty"`
+	Contact          *GetContactResponse `json:"contact,omitempty"`
+	Address          *GetAddressResponse `json:"address,omitempty"`
 }
 
 // GetContactResponse for HTTP get contact response

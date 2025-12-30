@@ -52,9 +52,13 @@ type GetPersonResponse struct {
 // GetContactResponse for HTTP get contact response
 // swagger:model GetContactResponse
 type GetContactResponse struct {
-	Cellphone string `json:"cellphone,omitempty"`
-	Phone     string `json:"phone,omitempty"`
-	Email     string `json:"email,omitempty"`
+	CellPhoneArea      int    `json:"cellPhoneArea,omitempty"`
+	CellPhone          int    `json:"cellPhone,omitempty"`
+	PhoneArea          int    `json:"phoneArea,omitempty"`
+	Phone              int    `json:"phone,omitempty"`
+	CellPhoneFormatted string `json:"cellPhoneFormatted,omitempty"`
+	PhoneFormatted     string `json:"phoneFormatted,omitempty"`
+	Email              string `json:"email,omitempty"`
 }
 
 // GetAddressResponse for HTTP get address response
@@ -66,6 +70,7 @@ type GetAddressResponse struct {
 	Address  string `json:"address,omitempty"`
 	District string `json:"district,omitempty"`
 	Number   int    `json:"number,omitempty"`
+	MoreInfo string `json:"moreInfo,omitempty"`
 	Full     string `json:"full,omitempty"`
 }
 

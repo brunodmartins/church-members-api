@@ -36,9 +36,13 @@ func buildContactResponse(contact *domain.Contact) *GetContactResponse {
 		return nil
 	}
 	return &GetContactResponse{
-		Cellphone: contact.GetFormattedCellPhone(),
-		Phone:     contact.GetFormattedPhone(),
-		Email:     contact.Email,
+		CellPhoneArea:      contact.CellPhoneArea,
+		CellPhone:          contact.CellPhone,
+		PhoneArea:          contact.PhoneArea,
+		Phone:              contact.Phone,
+		CellPhoneFormatted: contact.GetFormattedCellPhone(),
+		PhoneFormatted:     contact.GetFormattedPhone(),
+		Email:              contact.Email,
 	}
 }
 
@@ -53,6 +57,7 @@ func buildAddressResponse(address *domain.Address) *GetAddressResponse {
 		Address:  address.Address,
 		District: address.District,
 		Number:   address.Number,
+		MoreInfo: address.MoreInfo,
 		Full:     address.String(),
 	}
 }

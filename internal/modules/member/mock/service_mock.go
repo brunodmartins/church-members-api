@@ -24,6 +24,7 @@ import (
 type MockService struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceMockRecorder
+	isgomock struct{}
 }
 
 // MockServiceMockRecorder is the mock recorder for MockService.
@@ -103,18 +104,18 @@ func (mr *MockServiceMockRecorder) RetireMembership(ctx, id, reason, date any) *
 }
 
 // SaveMember mocks base method.
-func (m *MockService) SaveMember(ctx context.Context, member *domain.Member) (string, error) {
+func (m *MockService) SaveMember(ctx context.Context, arg1 *domain.Member) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveMember", ctx, member)
+	ret := m.ctrl.Call(m, "SaveMember", ctx, arg1)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // SaveMember indicates an expected call of SaveMember.
-func (mr *MockServiceMockRecorder) SaveMember(ctx, member any) *gomock.Call {
+func (mr *MockServiceMockRecorder) SaveMember(ctx, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveMember", reflect.TypeOf((*MockService)(nil).SaveMember), ctx, member)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveMember", reflect.TypeOf((*MockService)(nil).SaveMember), ctx, arg1)
 }
 
 // SearchMembers mocks base method.
@@ -149,6 +150,20 @@ func (m *MockService) UpdateAddress(ctx context.Context, memberID string, addres
 func (mr *MockServiceMockRecorder) UpdateAddress(ctx, memberID, address any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAddress", reflect.TypeOf((*MockService)(nil).UpdateAddress), ctx, memberID, address)
+}
+
+// UpdateBaptism mocks base method.
+func (m *MockService) UpdateBaptism(ctx context.Context, memberID string, religion domain.Religion) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateBaptism", ctx, memberID, religion)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateBaptism indicates an expected call of UpdateBaptism.
+func (mr *MockServiceMockRecorder) UpdateBaptism(ctx, memberID, religion any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateBaptism", reflect.TypeOf((*MockService)(nil).UpdateBaptism), ctx, memberID, religion)
 }
 
 // UpdateContact mocks base method.

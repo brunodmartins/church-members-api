@@ -3,6 +3,9 @@ package member
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -12,8 +15,6 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/google/uuid"
-	"strings"
-	"time"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
@@ -25,6 +26,7 @@ type Repository interface {
 	UpdateContact(ctx context.Context, member *domain.Member) error
 	UpdateAddress(ctx context.Context, member *domain.Member) error
 	UpdatePerson(ctx context.Context, member *domain.Member) error
+	UpdateReligion(ctx context.Context, member *domain.Member) error
 }
 
 type dynamoRepository struct {
@@ -205,6 +207,34 @@ func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Me
 		ExpressionAttributeNames: map[string]string{
 			"#name": "name",
 		},
+		ExpressionAttributeValues: attributes,
+		ReturnValues:              "UPDATED_NEW",
+		UpdateExpression:          aws.String(updateQuery),
+	})
+	return err
+}
+
+func (repo dynamoRepository) UpdateReligion(ctx context.Context, member *domain.Member) error {
+	updateQuery := repo.wrapper.BuildUpdateQuery("baptismPlace", "baptized", "catholicBaptized", "baptismDate")
+	attributes := map[string]types.AttributeValue{
+		":baptismPlace":     toStringAttributeValue(member.Religion.BaptismPlace),
+		":baptized":         &types.AttributeValueMemberBOOL{Value: member.Religion.Baptized},
+		":catholicBaptized": &types.AttributeValueMemberBOOL{Value: member.Religion.CatholicBaptized},
+		":baptismDate":      &types.AttributeValueMemberNULL{Value: true},
+	}
+	if member.Religion.BaptismDate != nil {
+		attributes[":baptismDate"] = toStringAttributeValue(member.Religion.BaptismDate.Format(time.RFC3339))
+	}
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{
+				Value: member.ID,
+			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: member.ChurchID,
+			},
+		},
+		TableName:                 aws.String(repo.memberTable),
 		ExpressionAttributeValues: attributes,
 		ReturnValues:              "UPDATED_NEW",
 		UpdateExpression:          aws.String(updateQuery),

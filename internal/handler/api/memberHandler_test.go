@@ -256,6 +256,46 @@ func TestUpdatePerson(t *testing.T) {
 	})
 }
 
+func TestUpdateBaptism(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+	id := domain.NewID()
+	const url = "/members/%s/baptism"
+	baptismDate, _ := time.Parse(time.DateOnly, time.Now().Format(time.DateOnly))
+	expected := domain.Religion{
+		BaptismPlace:     "Central Church",
+		Baptized:         true,
+		CatholicBaptized: false,
+		BaptismDate:      &baptismDate,
+	}
+	bodyRequest := dto.UpdateBaptismRequest{
+		BaptismPlace:     expected.BaptismPlace,
+		Baptized:         expected.Baptized,
+		CatholicBaptized: expected.CatholicBaptized,
+		BaptismDate:      &dto.Date{Time: *expected.BaptismDate},
+	}
+	body, _ := json.Marshal(bodyRequest)
+	t.Run("Success - 200", func(t *testing.T) {
+		service.EXPECT().UpdateBaptism(gomock.Any(), id, gomock.Eq(expected)).Return(nil)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - 400 - ID", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 400 - Bad JSON", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, id), badJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 500", func(t *testing.T) {
+		service.EXPECT().UpdateBaptism(gomock.Any(), id, gomock.Eq(expected)).Return(genericError)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
 func TestLastAnniversaries(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

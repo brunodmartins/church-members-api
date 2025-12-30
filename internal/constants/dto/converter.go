@@ -11,6 +11,7 @@ func NewGetMemberResponse(member *domain.Member) *GetMemberResponse {
 	result.Active = member.Active
 	result.Classification = member.Classification().String()
 	result.Person = buildPersonResponse(member.Person)
+	result.Baptism = buildBaptismResponse(member.Religion)
 	return result
 }
 
@@ -59,5 +60,16 @@ func buildAddressResponse(address *domain.Address) *GetAddressResponse {
 		Number:   address.Number,
 		MoreInfo: address.MoreInfo,
 		Full:     address.String(),
+	}
+}
+
+func buildBaptismResponse(religion *domain.Religion) *GetBaptismResponse {
+	return &GetBaptismResponse{
+		BaptismPlace:      religion.BaptismPlace,
+		AcceptedJesus:     religion.AcceptedJesus,
+		Baptized:          religion.Baptized,
+		CatholicBaptized:  religion.CatholicBaptized,
+		AcceptedJesusDate: religion.AcceptedJesusDate,
+		BaptismDate:       religion.BaptismDate,
 	}
 }

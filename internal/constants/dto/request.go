@@ -157,6 +157,24 @@ func (dto CreateReligionRequest) ToReligion() *domain.Religion {
 	}
 }
 
+// UpdateBaptismRequest for HTTP calls to update baptism info
+// swagger:model UpdateBaptismRequest
+type UpdateBaptismRequest struct {
+	BaptismPlace     string `json:"baptismPlace"`
+	Baptized         bool   `json:"baptized"`
+	CatholicBaptized bool   `json:"catholicBaptized"`
+	BaptismDate      *Date  `json:"baptismDate"`
+}
+
+func (request UpdateBaptismRequest) ToReligion() domain.Religion {
+	return domain.Religion{
+		BaptismPlace:     request.BaptismPlace,
+		Baptized:         request.Baptized,
+		CatholicBaptized: request.CatholicBaptized,
+		BaptismDate:      ToTime(request.BaptismDate),
+	}
+}
+
 // CreateUserRequest for HTTP calls to post user
 // swagger:model CreateUserRequest
 type CreateUserRequest struct {

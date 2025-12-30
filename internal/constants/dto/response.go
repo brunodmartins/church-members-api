@@ -26,10 +26,11 @@ type CreateMemberResponse struct {
 // GetMemberResponse for HTTP get member responses
 // swagger:model GetMemberResponse
 type GetMemberResponse struct {
-	ID             string             `json:"id"`
-	Active         bool               `json:"active"`
-	Classification string             `json:"classification"`
-	Person         *GetPersonResponse `json:"person"`
+	ID             string              `json:"id"`
+	Active         bool                `json:"active"`
+	Classification string              `json:"classification"`
+	Person         *GetPersonResponse  `json:"person"`
+	Baptism        *GetBaptismResponse `json:"baptism,omitempty"`
 }
 
 // GetPersonResponse for HTTP get person response
@@ -72,6 +73,16 @@ type GetAddressResponse struct {
 	Number   int    `json:"number,omitempty"`
 	MoreInfo string `json:"moreInfo,omitempty"`
 	Full     string `json:"full,omitempty"`
+}
+
+// GetBaptismResponse struct
+type GetBaptismResponse struct {
+	BaptismPlace      string     `json:"baptismPlace"`
+	AcceptedJesus     bool       `json:"acceptedJesus"`
+	Baptized          bool       `json:"baptized"`
+	CatholicBaptized  bool       `json:"catholicBaptized"`
+	AcceptedJesusDate *time.Time `json:"acceptedJesusDate"`
+	BaptismDate       *time.Time `json:"baptismDate"`
 }
 
 // GetTokenResponse for HTTP get token responses

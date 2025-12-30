@@ -33,5 +33,6 @@ func buildMember(id string) *domain.Member {
 				Number:   9,
 			},
 		},
+		Religion: &domain.Religion{},
 	}
 }

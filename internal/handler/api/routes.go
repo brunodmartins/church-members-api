@@ -290,6 +290,46 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Put("/members/:id/person", handler.updatePerson)
+
+	// swagger:operation PUT /members/{id}/baptism updateBaptism
+	//
+	// Update member - Baptism
+	//
+	// Update the baptism info for the given member
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The member id
+	//   required: true
+	// - name: member
+	//   in: body
+	//   description: The baptism info to be updated
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/UpdateBaptismRequest"
+	// responses:
+	//   '200':
+	//     description: Baptism updated
+	//   '404':
+	//     description: Member not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Put("/members/:id/baptism", handler.updateBaptism)
 }
 
 func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {

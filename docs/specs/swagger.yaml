@@ -29,47 +29,47 @@ definitions:
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     AnniversariesResponse:
-      description: AnniversariesResponse for HTTP anniversaries responses
-      properties:
-        birthday:
-          items:
-            $ref: '#/definitions/MemberAnniversaryResponse'
-          type: array
-          x-go-name: BirthdayAnniversaries
-        marriage:
-          items:
-            $ref: '#/definitions/MemberAnniversaryResponse'
-          type: array
-          x-go-name: MarriageAnniversaries
-      type: object
-      x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+        description: AnniversariesResponse for HTTP anniversaries responses
+        properties:
+            birthday:
+                items:
+                    $ref: '#/definitions/MemberAnniversaryResponse'
+                type: array
+                x-go-name: BirthdayAnniversaries
+            marriage:
+                items:
+                    $ref: '#/definitions/MemberAnniversaryResponse'
+                type: array
+                x-go-name: MarriageAnniversaries
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     ChurchStatisticsResponse:
-      description: ChurchStatisticsResponse for HTTP church statistic response
-      properties:
-        age_distribution:
-          items:
-            format: int64
-            type: integer
-          type: array
-          x-go-name: AgeDistribution
-        total_members:
-          format: int64
-          type: integer
-          x-go-name: TotalMembers
-        total_members_by_classification:
-          additionalProperties:
-            format: int64
-            type: integer
-          type: object
-          x-go-name: TotalMembersByClassification
-        total_members_by_gender:
-          additionalProperties:
-            format: int64
-            type: integer
-          type: object
-          x-go-name: TotalMembersByGender
-      type: object
-      x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+        description: ChurchStatisticsResponse for HTTP church statistic response
+        properties:
+            age_distribution:
+                items:
+                    format: int64
+                    type: integer
+                type: array
+                x-go-name: AgeDistribution
+            total_members:
+                format: int64
+                type: integer
+                x-go-name: TotalMembers
+            total_members_by_classification:
+                additionalProperties:
+                    format: int64
+                    type: integer
+                type: object
+                x-go-name: TotalMembersByClassification
+            total_members_by_gender:
+                additionalProperties:
+                    format: int64
+                    type: integer
+                type: object
+                x-go-name: TotalMembersByGender
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     ContactRequest:
         description: ContactRequest for HTTP calls to post a person
         properties:
@@ -274,6 +274,9 @@ definitions:
             full:
                 type: string
                 x-go-name: Full
+            moreInfo:
+                type: string
+                x-go-name: MoreInfo
             number:
                 format: int64
                 type: integer
@@ -286,35 +289,76 @@ definitions:
                 x-go-name: ZipCode
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GetBaptismResponse:
+        description: GetBaptismResponse struct
+        properties:
+            acceptedJesus:
+                type: boolean
+                x-go-name: AcceptedJesus
+            acceptedJesusDate:
+                format: date-time
+                type: string
+                x-go-name: AcceptedJesusDate
+            baptismDate:
+                format: date-time
+                type: string
+                x-go-name: BaptismDate
+            baptismPlace:
+                type: string
+                x-go-name: BaptismPlace
+            baptized:
+                type: boolean
+                x-go-name: Baptized
+            catholicBaptized:
+                type: boolean
+                x-go-name: CatholicBaptized
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetChurchResponse:
-      description: GetChurchResponse for HTTP church responses
-      properties:
-        abbreviation:
-          type: string
-          x-go-name: Abbreviation
-        id:
-          type: string
-          x-go-name: ID
-        logo:
-          type: string
-          x-go-name: Logo
-        name:
-          type: string
-          x-go-name: Name
+        description: GetChurchResponse for HTTP church responses
+        properties:
+            abbreviation:
+                type: string
+                x-go-name: Abbreviation
+            id:
+                type: string
+                x-go-name: ID
+            logo:
+                type: string
+                x-go-name: Logo
+            name:
+                type: string
+                x-go-name: Name
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetContactResponse:
         description: GetContactResponse for HTTP get contact response
         properties:
-            cellphone:
+            cellPhone:
+                format: int64
+                type: integer
+                x-go-name: CellPhone
+            cellPhoneArea:
+                format: int64
+                type: integer
+                x-go-name: CellPhoneArea
+            cellPhoneFormatted:
                 type: string
-                x-go-name: Cellphone
+                x-go-name: CellPhoneFormatted
             email:
                 type: string
                 x-go-name: Email
             phone:
-                type: string
+                format: int64
+                type: integer
                 x-go-name: Phone
+            phoneArea:
+                format: int64
+                type: integer
+                x-go-name: PhoneArea
+            phoneFormatted:
+                type: string
+                x-go-name: PhoneFormatted
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetMemberResponse:
@@ -323,6 +367,8 @@ definitions:
             active:
                 type: boolean
                 x-go-name: Active
+            baptism:
+                $ref: '#/definitions/GetBaptismResponse'
             classification:
                 type: string
                 x-go-name: Classification
@@ -346,6 +392,10 @@ definitions:
                 format: date-time
                 type: string
                 x-go-name: BirthDate
+            childrenQuantity:
+                format: int64
+                type: integer
+                x-go-name: ChildrenQuantity
             contact:
                 $ref: '#/definitions/GetContactResponse'
             firstName:
@@ -375,33 +425,33 @@ definitions:
     GetTokenResponse:
         description: GetTokenResponse for HTTP get token responses
         properties:
-          church_id:
-            type: string
-            x-go-name: ChurchID
+            church_id:
+                type: string
+                x-go-name: ChurchID
             token:
                 type: string
                 x-go-name: Token
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     MemberAnniversaryResponse:
-      description: MemberAnniversaryResponse for HTTP member anniversary responses
-      properties:
-        date:
-          type: string
-          x-go-name: Date
-        name:
-          type: string
-          x-go-name: Name
-      type: object
-      x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+        description: MemberAnniversaryResponse for HTTP member anniversary responses
+        properties:
+            date:
+                type: string
+                x-go-name: Date
+            name:
+                type: string
+                x-go-name: Name
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     MessageResponse:
-      description: MessageResponse for HTTP success responses
-      properties:
-        message:
-          type: string
-          x-go-name: Message
-      type: object
-      x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+        description: MessageResponse for HTTP success responses
+        properties:
+            message:
+                type: string
+                x-go-name: Message
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     NotificationPreferences:
         properties:
             send_daily_sms:
@@ -422,6 +472,24 @@ definitions:
             reason:
                 type: string
                 x-go-name: Reason
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    UpdateBaptismRequest:
+        description: UpdateBaptismRequest for HTTP calls to update baptism info
+        properties:
+            baptismDate:
+                type: string
+                x-go-name: BaptismDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
+            baptismPlace:
+                type: string
+                x-go-name: BaptismPlace
+            baptized:
+                type: boolean
+                x-go-name: Baptized
+            catholicBaptized:
+                type: boolean
+                x-go-name: CatholicBaptized
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     UpdatePersonRequest:
@@ -459,66 +527,66 @@ info:
     title: church-members-api
     version: 1.0.0
 paths:
-  /churches/{id}:
-    get:
-      description: Returns the church information
-      operationId: getChurch
-      parameters:
-        - description: The church id
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: The church information
-          schema:
-            $ref: '#/definitions/GetChurchResponse'
-        "400":
-          description: Invalid ID
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        "404":
-          description: Church not found
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      security:
-        - token: [ ]
-      summary: Get church
-  /churches/{id}/statistics:
-    get:
-      description: Returns the church statistics information
-      operationId: getStatistics
-      parameters:
-        - description: The church id
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: The church statistics information
-          schema:
-            $ref: '#/definitions/ChurchStatisticsResponse'
-        "400":
-          description: Invalid request
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      security:
-        - token: [ ]
-      summary: Get statistics
+    /churches/{id}:
+        get:
+            description: Returns the church information
+            operationId: getChurch
+            parameters:
+                - description: The church id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The church information
+                    schema:
+                        $ref: '#/definitions/GetChurchResponse'
+                "400":
+                    description: Invalid ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Church not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Get church
+    /churches/{id}/statistics:
+        get:
+            description: Returns the church statistics information
+            operationId: getStatistics
+            parameters:
+                - description: The church id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The church statistics information
+                    schema:
+                        $ref: '#/definitions/ChurchStatisticsResponse'
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Get statistics
     /members:
         get:
             description: Search member
@@ -678,6 +746,42 @@ paths:
             security:
                 - token: []
             summary: Update member - Address
+    /members/{id}/baptism:
+        put:
+            description: Update the baptism info for the given member
+            operationId: updateBaptism
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+                - description: The baptism info to be updated
+                  in: body
+                  name: member
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UpdateBaptismRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Baptism updated
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Update member - Baptism
     /members/{id}/contact:
         put:
             description: Update the contact for the given member
@@ -750,24 +854,24 @@ paths:
             security:
                 - token: []
             summary: Update member - Person
-  /members/anniversaries:
-    get:
-      description: Returns the birthday and marriage anniversaries for the current week
-      operationId: getAnniversaries
-      produces:
-        - application/json
-      responses:
-        "200":
-          description: The anniversaries information
-          schema:
-            $ref: '#/definitions/AnniversariesResponse'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-      security:
-        - token: [ ]
-      summary: Get anniversaries
+    /members/anniversaries:
+        get:
+            description: Returns the birthday and marriage anniversaries for the current week
+            operationId: getAnniversaries
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The anniversaries information
+                    schema:
+                        $ref: '#/definitions/AnniversariesResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Get anniversaries
     /reports/{reportType}:
         get:
             description: Returns a report file url
@@ -903,16 +1007,16 @@ paths:
             security:
                 - token: []
             summary: Create a user
-  /users/confirm:
+    /users/confirm:
         get:
             description: Confirms the email for a given user
             operationId: ConfirmUserEmail
             parameters:
-              - description: The access token to be confirmed
+                - description: The access token to be confirmed
                   in: query
-                name: accessToken
+                  name: accessToken
                   required: true
-                type: string
+                  type: string
             produces:
                 - application/json
             responses:

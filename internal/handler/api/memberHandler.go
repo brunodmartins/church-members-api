@@ -163,6 +163,25 @@ func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
 }
 
+func (handler *MemberHandler) updateBaptism(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if !domain.IsValidID(id) {
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
+	}
+	baptismRequest := new(dto.UpdateBaptismRequest)
+	if err := json.Unmarshal(ctx.Body(), &baptismRequest); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	if err := ValidateStruct(baptismRequest); err != nil {
+		return handler.badRequest(ctx, err)
+	}
+	err := handler.service.UpdateBaptism(ctx.UserContext(), id, baptismRequest.ToReligion())
+	if err != nil {
+		return err
+	}
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
+}
+
 func (handler *MemberHandler) lastAnniversaries(ctx *fiber.Ctx) error {
 	birthDayAnniversaries, err := handler.service.GetLastBirthAnniversaries(ctx.UserContext())
 	if err != nil {

@@ -22,14 +22,14 @@ func TestChurchService_List(t *testing.T) {
 	service := NewService(nil, repo)
 
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().List().Return([]*domain.Church{buildChurch("")}, nil)
+		repo.EXPECT().List(gomock.Any()).Return([]*domain.Church{buildChurch("")}, nil)
 		result, err := service.List(nil)
 		assert.Nil(t, err)
 		assert.Len(t, result, 1)
 	})
 
 	t.Run("Fail", func(t *testing.T) {
-		repo.EXPECT().List().Return(nil, genericError)
+		repo.EXPECT().List(gomock.Any()).Return(nil, genericError)
 		_, err := service.List(nil)
 		assert.NotNil(t, err)
 	})
@@ -44,14 +44,14 @@ func TestChurchService_GetChurch(t *testing.T) {
 	var church = buildChurch(id)
 	var ctx = context.WithValue(context.TODO(), "church", church)
 	t.Run("Success", func(t *testing.T) {
-		repo.EXPECT().GetByID(id).Return(church, nil)
+		repo.EXPECT().GetByID(gomock.Any(), id).Return(church, nil)
 		result, err := service.GetChurch(ctx, id)
 		assert.Nil(t, err)
 		assert.Equal(t, id, result.ID)
 	})
 
 	t.Run("Fail", func(t *testing.T) {
-		repo.EXPECT().GetByID(id).Return(nil, genericError)
+		repo.EXPECT().GetByID(gomock.Any(), id).Return(nil, genericError)
 		_, err := service.GetChurch(ctx, id)
 		assert.NotNil(t, err)
 	})
@@ -70,7 +70,7 @@ func TestChurchService_GetChurchByAbbreviation(t *testing.T) {
 		expected.Abbreviation = abbreviation
 		churches := []*domain.Church{expected}
 
-		repo.EXPECT().List().Return(churches, nil)
+		repo.EXPECT().List(gomock.Any()).Return(churches, nil)
 
 		result, err := service.GetChurchByAbbreviation(nil, abbreviation)
 		assert.NoError(t, err)
@@ -78,7 +78,7 @@ func TestChurchService_GetChurchByAbbreviation(t *testing.T) {
 	})
 
 	t.Run("Error - Repository Error", func(t *testing.T) {
-		repo.EXPECT().List().Return(nil, errors.New("database error"))
+		repo.EXPECT().List(gomock.Any()).Return(nil, errors.New("database error"))
 
 		result, err := service.GetChurchByAbbreviation(nil, abbreviation)
 		assert.Error(t, err)
@@ -90,7 +90,7 @@ func TestChurchService_GetChurchByAbbreviation(t *testing.T) {
 		expected.Abbreviation = abbreviation
 		churches := []*domain.Church{expected}
 
-		repo.EXPECT().List().Return(churches, nil)
+		repo.EXPECT().List(gomock.Any()).Return(churches, nil)
 
 		result, err := service.GetChurchByAbbreviation(nil, "OTHER")
 		assert.Error(t, err)

@@ -21,6 +21,7 @@ import (
 type MockStorage struct {
 	ctrl     *gomock.Controller
 	recorder *MockStorageMockRecorder
+	isgomock struct{}
 }
 
 // MockStorageMockRecorder is the mock recorder for MockStorage.
@@ -56,15 +57,15 @@ func (mr *MockStorageMockRecorder) GetURL(ctx, name any) *gomock.Call {
 }
 
 // Store mocks base method.
-func (m *MockStorage) Store(ctx context.Context, calendar *calendar.Calendar) error {
+func (m *MockStorage) Store(ctx context.Context, arg1 *calendar.Calendar) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Store", ctx, calendar)
+	ret := m.ctrl.Call(m, "Store", ctx, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Store indicates an expected call of Store.
-func (mr *MockStorageMockRecorder) Store(ctx, calendar any) *gomock.Call {
+func (mr *MockStorageMockRecorder) Store(ctx, arg1 any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockStorage)(nil).Store), ctx, calendar)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Store", reflect.TypeOf((*MockStorage)(nil).Store), ctx, arg1)
 }

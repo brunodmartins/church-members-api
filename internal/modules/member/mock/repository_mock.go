@@ -22,6 +22,7 @@ import (
 type MockRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockRepositoryMockRecorder
+	isgomock struct{}
 }
 
 // MockRepositoryMockRecorder is the mock recorder for MockRepository.
@@ -139,4 +140,18 @@ func (m *MockRepository) UpdatePerson(ctx context.Context, member *domain.Member
 func (mr *MockRepositoryMockRecorder) UpdatePerson(ctx, member any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdatePerson", reflect.TypeOf((*MockRepository)(nil).UpdatePerson), ctx, member)
+}
+
+// UpdateReligion mocks base method.
+func (m *MockRepository) UpdateReligion(ctx context.Context, member *domain.Member) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateReligion", ctx, member)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateReligion indicates an expected call of UpdateReligion.
+func (mr *MockRepositoryMockRecorder) UpdateReligion(ctx, member any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateReligion", reflect.TypeOf((*MockRepository)(nil).UpdateReligion), ctx, member)
 }

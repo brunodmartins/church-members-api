@@ -10,7 +10,7 @@
 package mock_church
 
 import (
-	"context"
+	context "context"
 	reflect "reflect"
 
 	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -21,6 +21,7 @@ import (
 type MockRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockRepositoryMockRecorder
+	isgomock struct{}
 }
 
 // MockRepositoryMockRecorder is the mock recorder for MockRepository.
@@ -43,29 +44,29 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 // GetByID mocks base method.
 func (m *MockRepository) GetByID(ctx context.Context, ID string) (*domain.Church, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", ID)
+	ret := m.ctrl.Call(m, "GetByID", ctx, ID)
 	ret0, _ := ret[0].(*domain.Church)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetByID indicates an expected call of GetByID.
-func (mr *MockRepositoryMockRecorder) GetByID(ID any) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) GetByID(ctx, ID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockRepository)(nil).GetByID), ID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockRepository)(nil).GetByID), ctx, ID)
 }
 
 // List mocks base method.
-func (m *MockRepository) List(context.Context) ([]*domain.Church, error) {
+func (m *MockRepository) List(ctx context.Context) ([]*domain.Church, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List")
+	ret := m.ctrl.Call(m, "List", ctx)
 	ret0, _ := ret[0].([]*domain.Church)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // List indicates an expected call of List.
-func (mr *MockRepositoryMockRecorder) List() *gomock.Call {
+func (mr *MockRepositoryMockRecorder) List(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRepository)(nil).List))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockRepository)(nil).List), ctx)
 }

@@ -22,6 +22,7 @@ import (
 type Mocks3API struct {
 	ctrl     *gomock.Controller
 	recorder *Mocks3APIMockRecorder
+	isgomock struct{}
 }
 
 // Mocks3APIMockRecorder is the mock recorder for Mocks3API.
@@ -65,6 +66,7 @@ func (mr *Mocks3APIMockRecorder) PutObject(ctx, params any, optFns ...any) *gomo
 type Mocks3SignedAPI struct {
 	ctrl     *gomock.Controller
 	recorder *Mocks3SignedAPIMockRecorder
+	isgomock struct{}
 }
 
 // Mocks3SignedAPIMockRecorder is the mock recorder for Mocks3SignedAPI.
@@ -108,6 +110,7 @@ func (mr *Mocks3SignedAPIMockRecorder) PresignGetObject(ctx, params any, optFns 
 type MockS3APIWrapper struct {
 	ctrl     *gomock.Controller
 	recorder *MockS3APIWrapperMockRecorder
+	isgomock struct{}
 }
 
 // MockS3APIWrapperMockRecorder is the mock recorder for MockS3APIWrapper.

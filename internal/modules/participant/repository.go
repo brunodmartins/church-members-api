@@ -17,7 +17,7 @@ import (
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
 type Repository interface {
 	Insert(ctx context.Context, p *domain.Participant) error
-	GetByID(ctx context.Context, id string) (*domain.Participant, error)
+	FindByID(ctx context.Context, id string) (*domain.Participant, error)
 	Update(ctx context.Context, p *domain.Participant) error
 	Delete(ctx context.Context, id string) error
 	FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Participant, error)
@@ -42,7 +42,7 @@ func (repo dynamoRepository) Insert(ctx context.Context, participant *domain.Par
 	return repo.wrapper.SaveItem(ctx, dto.NewParticipantItem(participant))
 }
 
-func (repo dynamoRepository) GetByID(ctx context.Context, id string) (*domain.Participant, error) {
+func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.Participant, error) {
 	record := &dto.ParticipantItem{}
 	err := repo.wrapper.GetItem(repo.buildKey(ctx, id), record)
 	if err != nil {

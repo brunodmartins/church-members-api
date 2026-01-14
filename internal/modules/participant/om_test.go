@@ -1,4 +1,4 @@
-package participant
+package participant_test
 
 import (
 	"context"

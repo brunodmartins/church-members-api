@@ -1,4 +1,4 @@
-package participant
+package participant_test
 
 import (
 	"context"
@@ -6,10 +6,12 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
+	"github.com/brunodmartins/church-members-api/internal/modules/participant"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
@@ -24,7 +26,7 @@ func TestDynamoRepository_CRUD(t *testing.T) {
 
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
 	const table = "participants"
-	repo := NewRepository(dynamoMock, table)
+	repo := participant.NewRepository(dynamoMock, table)
 
 	// Insert
 	t.Run("Insert Success", func(t *testing.T) {
@@ -42,7 +44,7 @@ func TestDynamoRepository_CRUD(t *testing.T) {
 	})
 
 	// GetByID
-	t.Run("GetByID Success", func(t *testing.T) {
+	t.Run("FindByID Success", func(t *testing.T) {
 		id := uuid.NewString()
 		p := buildParticipant(id)
 		p.ChurchID = "c1"
@@ -51,21 +53,21 @@ func TestDynamoRepository_CRUD(t *testing.T) {
 		itemMap, _ := attributevalue.MarshalMap(item)
 
 		ctx := BuildContext()
-		key := repo.(*dynamoRepository).buildKey(ctx, id)
+		key := buildKey(ctx, id)
 		wrapper.MockGetItem(t, dynamoMock, table, key, itemMap, nil)
 
-		got, err := repo.GetByID(ctx, id)
+		got, err := repo.FindByID(ctx, id)
 		assert.NoError(t, err)
 		assert.Equal(t, id, got.ID)
 		assert.Equal(t, "Bob", got.Name)
 	})
 
-	t.Run("GetByID NotFound", func(t *testing.T) {
+	t.Run("FindByID NotFound", func(t *testing.T) {
 		id := uuid.NewString()
 		ctx := BuildContext()
-		key := repo.(*dynamoRepository).buildKey(ctx, id)
+		key := buildKey(ctx, id)
 		wrapper.MockGetItem(t, dynamoMock, table, key, nil, nil)
-		_, err := repo.GetByID(ctx, id)
+		_, err := repo.FindByID(ctx, id)
 		assert.NotNil(t, err)
 		apiErr, ok := err.(apierrors.Error)
 		assert.True(t, ok)
@@ -110,15 +112,37 @@ func TestDynamoRepository_CRUD(t *testing.T) {
 		m2, _ := attributevalue.MarshalMap(i2)
 		wrapper.MockQuery(dynamoMock, []map[string]types.AttributeValue{m1, m2}, nil)
 
-		res, err := repo.FindAll(BuildContext(), repo.(*dynamoRepository).wrapper.EmptySpecification())
+		res, err := repo.FindAll(BuildContext(), buildMockSpecification(t))
 		assert.NoError(t, err)
 		assert.Len(t, res, 2)
 	})
 
 	t.Run("FindAll Error", func(t *testing.T) {
 		wrapper.MockQuery(dynamoMock, nil, genericError)
-		res, err := repo.FindAll(BuildContext(), repo.(*dynamoRepository).wrapper.EmptySpecification())
+		res, err := repo.FindAll(BuildContext(), buildMockSpecification(t))
 		assert.NotNil(t, err)
 		assert.Nil(t, res)
 	})
+}
+
+func buildMockSpecification(t *testing.T) wrapper.QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		assert.NotNil(t, builderExpression)
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression,
+		}
+	}
+}
+
+func buildKey(ctx context.Context, id string) wrapper.CompositeKey {
+	return wrapper.CompositeKey{
+		PartitionKey: wrapper.Key{
+			Id:    "church_id",
+			Value: domain.GetChurchID(ctx),
+		},
+		SortKey: wrapper.Key{
+			Id:    "id",
+			Value: id,
+		},
+	}
 }

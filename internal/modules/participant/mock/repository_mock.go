@@ -71,19 +71,19 @@ func (mr *MockRepositoryMockRecorder) FindAll(ctx, specification any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockRepository)(nil).FindAll), ctx, specification)
 }
 
-// GetByID mocks base method.
-func (m *MockRepository) GetByID(ctx context.Context, id string) (*domain.Participant, error) {
+// FindByID mocks base method.
+func (m *MockRepository) FindByID(ctx context.Context, id string) (*domain.Participant, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByID", ctx, id)
+	ret := m.ctrl.Call(m, "FindByID", ctx, id)
 	ret0, _ := ret[0].(*domain.Participant)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetByID indicates an expected call of GetByID.
-func (mr *MockRepositoryMockRecorder) GetByID(ctx, id any) *gomock.Call {
+// FindByID indicates an expected call of FindByID.
+func (mr *MockRepositoryMockRecorder) FindByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockRepository)(nil).GetByID), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindByID", reflect.TypeOf((*MockRepository)(nil).FindByID), ctx, id)
 }
 
 // Insert mocks base method.

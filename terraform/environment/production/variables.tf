@@ -23,6 +23,10 @@ variable "church_table_name" {
   type = string
 }
 
+variable "participant_table_name" {
+  type = string
+}
+
 variable "role_name" {
   type = string
 }

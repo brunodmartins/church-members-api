@@ -9,6 +9,9 @@ aws ecr get-login-password --region $region | docker login --username AWS --pass
 image=$account_id.dkr.ecr.$region.amazonaws.com/church-members-api-container:$image_tag
 
 if test -z "$(docker images -q $image)"; then
-  docker build -t $image .
+  docker buildx build \
+  --platform linux/amd64 \
+  --load \
+  -t $image .
 fi
 docker push $image

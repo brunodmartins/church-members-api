@@ -4,6 +4,7 @@ module "dynamodb_tables" {
   member_table_name = var.member_table_name
   user_table_name = var.user_table_name
   church_table_name = var.church_table_name
+  participant_table_name = var.participant_table_name
 }
 
 module "s3_bucket" {

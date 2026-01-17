@@ -5,6 +5,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/handler/api"
 	"github.com/brunodmartins/church-members-api/internal/modules/church"
 	member2 "github.com/brunodmartins/church-members-api/internal/modules/member"
+	participant2 "github.com/brunodmartins/church-members-api/internal/modules/participant"
 	report2 "github.com/brunodmartins/church-members-api/internal/modules/report"
 	file2 "github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
@@ -22,9 +23,14 @@ var churchService church.Service
 var reportGenerator report2.Service
 
 var memberRepository member2.Repository
+var participantRepository participant2.Repository
 
 func ProvideMemberHandler() *api.MemberHandler {
 	return api.NewMemberHandler(ProvideMemberService())
+}
+
+func ProvideParticipantHandler() *api.ParticipantHandler {
+	return api.NewParticipantHandler(ProvideParticipantService())
 }
 
 func ProvideReportHandler() *api.ReportHandler {
@@ -58,6 +64,10 @@ func ProvideMemberService() member2.Service {
 		memberService = member2.NewMemberService(provideMemberRepository())
 	}
 	return memberService
+}
+
+func ProvideParticipantService() participant2.Service {
+	return participant2.NewService(participant2.NewRepository(provideDynamoDB(), viper.GetString("tables.participant")))
 }
 
 func ProvideChurchService() church.Service {

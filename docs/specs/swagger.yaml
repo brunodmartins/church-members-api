@@ -129,6 +129,27 @@ definitions:
                 x-go-name: ID
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreateParticipantRequest:
+        description: CreateParticipantRequest for HTTP calls
+        properties:
+            birthDate:
+                type: string
+                x-go-name: BirthDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
+            cellPhone:
+                type: string
+                x-go-name: CellPhone
+            filiation:
+                type: string
+                x-go-name: Filiation
+            name:
+                type: string
+                x-go-name: Name
+            observation:
+                type: string
+                x-go-name: Observation
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     CreatePersonRequest:
         description: CreatePersonRequest for HTTP calls to post a person
         properties:
@@ -377,6 +398,30 @@ definitions:
                 x-go-name: ID
             person:
                 $ref: '#/definitions/GetPersonResponse'
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GetParticipantResponse:
+        description: GetParticipantResponse for HTTP responses
+        properties:
+            birthDate:
+                type: string
+                x-go-name: BirthDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
+            cellPhone:
+                type: string
+                x-go-name: CellPhone
+            filiation:
+                type: string
+                x-go-name: Filiation
+            id:
+                type: string
+                x-go-name: ID
+            name:
+                type: string
+                x-go-name: Name
+            observation:
+                type: string
+                x-go-name: Observation
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetPersonResponse:
@@ -872,6 +917,132 @@ paths:
             security:
                 - token: []
             summary: Get anniversaries
+    /participants:
+        get:
+            description: Search participant
+            operationId: searchParticipant
+            parameters:
+                - description: The participant name
+                  in: query
+                  name: name
+                  type: string
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Participants found
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+        post:
+            description: Register the receiving participant
+            operationId: postParticipant
+            parameters:
+                - description: The participant to be registered
+                  in: body
+                  name: participant
+                  required: true
+                  schema:
+                    $ref: '#/definitions/CreateParticipantRequest'
+            produces:
+                - application/json
+            responses:
+                "201":
+                    description: Participant registered
+                    schema:
+                        $ref: '#/definitions/CreateMemberResponse'
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Create participant
+    /participants/{id}:
+        delete:
+            description: Delete participant
+            operationId: deleteParticipant
+            parameters:
+                - description: The participant id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Participant deleted
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+        get:
+            description: Returns the participant information
+            operationId: getParticipant
+            parameters:
+                - description: The participant id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The participant information
+                    schema:
+                        $ref: '#/definitions/GetParticipantResponse'
+                "400":
+                    description: Invalid ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Participant not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Get participant
+        put:
+            description: Update participant
+            operationId: updateParticipant
+            parameters:
+                - description: The participant id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+                - description: The participant to be updated
+                  in: body
+                  name: participant
+                  required: true
+                  schema:
+                    $ref: '#/definitions/CreateParticipantRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Participant updated
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Participant not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
     /reports/{reportType}:
         get:
             description: Returns a report file url

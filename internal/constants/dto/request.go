@@ -3,6 +3,7 @@ package dto
 import (
 	"fmt"
 
+	"github.com/bearbin/go-age"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 )
@@ -239,6 +240,7 @@ func (r *CreateParticipantRequest) ToParticipant() *domain.Participant {
 type GetParticipantResponse struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
+	Age         int    `json:"age"`
 	BirthDate   *Date  `json:"birthDate,omitempty"`
 	CellPhone   string `json:"cellPhone,omitempty"`
 	Filiation   string `json:"filiation,omitempty"`
@@ -255,6 +257,7 @@ func NewGetParticipantResponse(p *domain.Participant) *GetParticipantResponse {
 	return &GetParticipantResponse{
 		ID:          p.ID,
 		Name:        p.Name,
+		Age:         age.Age(p.BirthDate),
 		BirthDate:   bd,
 		CellPhone:   p.CellPhone,
 		Filiation:   p.Filiation,

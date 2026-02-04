@@ -99,6 +99,7 @@ func TestCreateUpdateDeleteParticipant(t *testing.T) {
 
 	t.Run("Update Success", func(t *testing.T) {
 		p := buildParticipant(domain.NewID())
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(p.ID)).Return(buildParticipant(p.ID), nil)
 		repo.EXPECT().Update(gomock.Any(), gomock.AssignableToTypeOf(p)).Return(nil)
 		err := service.UpdateParticipant(BuildContext(), p)
 		assert.Nil(t, err)
@@ -106,6 +107,7 @@ func TestCreateUpdateDeleteParticipant(t *testing.T) {
 
 	t.Run("Update Fail", func(t *testing.T) {
 		p := buildParticipant(domain.NewID())
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(p.ID)).Return(buildParticipant(p.ID), nil)
 		repo.EXPECT().Update(gomock.Any(), gomock.AssignableToTypeOf(p)).Return(genericError)
 		err := service.UpdateParticipant(BuildContext(), p)
 		assert.NotNil(t, err)

@@ -116,19 +116,38 @@ resource "aws_dynamodb_table" "church_table" {
 resource "aws_dynamodb_table" "participant" {
   name           = var.participant_table_name
   billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "id"
+  hash_key = "church_id"
+  range_key = "id"
+
+  attribute {
+    name = "church_id"
+    type = "S"
+  }
+
   attribute {
     name = "id"
     type = "S"
   }
+
   attribute {
     name = "name"
     type = "S"
   }
 
+
   global_secondary_index {
-    name               = "name-index"
-    hash_key           = "name"
-    projection_type    = "ALL"
+    name = "nameIndex"
+    hash_key = "church_id"
+    range_key = "name"
+    projection_type = "INCLUDE"
+    non_key_attributes = [
+      "id",
+      "church_id",
+      "birthDate",
+      "name",
+      "gender",
+      "cellPhone",
+      "filiation",
+      "observation"]
   }
 }

@@ -2,6 +2,7 @@ package participant
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -52,6 +53,8 @@ func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.P
 }
 
 func (repo dynamoRepository) Update(ctx context.Context, participant *domain.Participant) error {
+	updateQuery := repo.wrapper.BuildUpdateQuery("#name", "gender", "birthDate", "cellPhone", "filiation", "observation")
+	updateQuery = strings.Replace(updateQuery, ":#name", ":name", 1)
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"id": &types.AttributeValueMemberS{
@@ -62,6 +65,9 @@ func (repo dynamoRepository) Update(ctx context.Context, participant *domain.Par
 			},
 		},
 		TableName: aws.String(repo.table),
+		ExpressionAttributeNames: map[string]string{
+			"#name": "name",
+		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":name":   toStringAttributeValue(participant.Name),
 			":gender": toStringAttributeValue(participant.Gender),
@@ -73,7 +79,7 @@ func (repo dynamoRepository) Update(ctx context.Context, participant *domain.Par
 			":observation": toStringAttributeValue(participant.Observation),
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String(repo.wrapper.BuildUpdateQuery("name", "gender", "birthDate", "cellPhone", "filiation", "observation")),
+		UpdateExpression: aws.String(updateQuery),
 	})
 	return err
 }

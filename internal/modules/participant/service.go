@@ -39,8 +39,17 @@ func (s participantService) GetParticipant(ctx context.Context, id string) (*dom
 	return s.repo.FindByID(ctx, id)
 }
 
-func (s participantService) UpdateParticipant(ctx context.Context, participant *domain.Participant) error {
-	return s.repo.Update(ctx, participant)
+func (s participantService) UpdateParticipant(ctx context.Context, updateParticipant *domain.Participant) error {
+	p, err := s.GetParticipant(ctx, updateParticipant.ID)
+	if err != nil {
+		return err
+	}
+	p.Name = updateParticipant.Name
+	p.Filiation = updateParticipant.Filiation
+	p.BirthDate = updateParticipant.BirthDate
+	p.Observation = updateParticipant.Observation
+	p.CellPhone = updateParticipant.CellPhone
+	return s.repo.Update(ctx, p)
 }
 
 func (s participantService) DeleteParticipant(ctx context.Context, id string) error {

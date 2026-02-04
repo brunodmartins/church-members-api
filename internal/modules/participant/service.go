@@ -3,6 +3,7 @@ package participant
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -14,7 +15,7 @@ type Service interface {
 	CreateParticipant(ctx context.Context, participant *domain.Participant) (string, error)
 	GetParticipant(ctx context.Context, id string) (*domain.Participant, error)
 	UpdateParticipant(ctx context.Context, participant *domain.Participant) error
-	DeleteParticipant(ctx context.Context, id string) error
+	RetireParticipant(ctx context.Context, id string, reason string, date time.Time) error
 	SearchParticipant(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Participant, error)
 }
 
@@ -28,6 +29,8 @@ func NewService(repo Repository) Service {
 
 func (s participantService) CreateParticipant(ctx context.Context, participant *domain.Participant) (string, error) {
 	participant.ChurchID = domain.GetChurchID(ctx)
+	participant.StartedAt = time.Now()
+	participant.Active = true
 	err := s.repo.Insert(ctx, participant)
 	return participant.ID, err
 }
@@ -52,8 +55,15 @@ func (s participantService) UpdateParticipant(ctx context.Context, updatePartici
 	return s.repo.Update(ctx, p)
 }
 
-func (s participantService) DeleteParticipant(ctx context.Context, id string) error {
-	return s.repo.Delete(ctx, id)
+func (s participantService) RetireParticipant(ctx context.Context, id string, reason string, date time.Time) error {
+	p, err := s.GetParticipant(ctx, id)
+	if err != nil {
+		return err
+	}
+	p.Active = false
+	p.EndedAt = &date
+	p.EndedReason = reason
+	return s.repo.RetireParticipant(ctx, p)
 }
 
 func (s participantService) SearchParticipant(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Participant, error) {

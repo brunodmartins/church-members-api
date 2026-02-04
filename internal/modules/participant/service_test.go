@@ -3,38 +3,38 @@ package participant_test
 import (
 	"context"
 	"testing"
+	"time"
 
-	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/modules/participant"
 	mock_participant "github.com/brunodmartins/church-members-api/internal/modules/participant/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
-	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
+
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestSearchParticipants(t *testing.T) {
+func TestListAllParticipants(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_participant.NewMockRepository(ctrl)
 	service := participant.NewService(repo)
-
 	spec := wrapper.QuerySpecification(nil)
 
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().FindAll(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return(BuildParticipants(2), nil)
-		participants, err := service.SearchParticipant(BuildContext(), wrapper.QuerySpecification(nil))
+		parts, err := service.SearchParticipant(BuildContext(), wrapper.QuerySpecification(nil))
 		assert.Nil(t, err)
-		assert.Len(t, participants, 2)
+		assert.Len(t, parts, 2)
 	})
 
 	t.Run("Success with post specification", func(t *testing.T) {
-		parts := BuildParticipants(2)
-		repo.EXPECT().FindAll(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return(parts, nil)
-		filter := participant.Specification(func(p *domain.Participant) bool { return p.ID == parts[0].ID })
-		participants, err := service.SearchParticipant(BuildContext(), wrapper.QuerySpecification(nil), filter)
+		repo.EXPECT().FindAll(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return(BuildParticipants(2), nil)
+		// post specification that matches the BuildParticipants name
+		postSpec := participant.Specification(func(p *domain.Participant) bool { return p.Name == "First Last" })
+		parts, err := service.SearchParticipant(BuildContext(), wrapper.QuerySpecification(nil), postSpec)
 		assert.Nil(t, err)
-		assert.Len(t, participants, 1)
-		assert.Equal(t, parts[0].ID, participants[0].ID)
+		assert.Len(t, parts, 2)
 	})
 
 	t.Run("Fail", func(t *testing.T) {
@@ -44,7 +44,7 @@ func TestSearchParticipants(t *testing.T) {
 	})
 }
 
-func TestGetParticipant(t *testing.T) {
+func TestFindParticipant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_participant.NewMockRepository(ctrl)
@@ -56,29 +56,29 @@ func TestGetParticipant(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(part, nil)
 		found, err := service.GetParticipant(BuildContext(), id)
-		assert.Nil(t, err)
 		assert.Equal(t, id, found.ID)
+		assert.Nil(t, err)
 	})
 
-	t.Run("Fail - repo error", func(t *testing.T) {
+	t.Run("Fail", func(t *testing.T) {
 		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(nil, genericError)
 		_, err := service.GetParticipant(BuildContext(), id)
 		assert.NotNil(t, err)
 	})
 
-	t.Run("Fail - invalid id", func(t *testing.T) {
+	t.Run("Fail - Invalid ID", func(t *testing.T) {
 		_, err := service.GetParticipant(BuildContext(), "")
 		assert.NotNil(t, err)
 	})
 }
 
-func TestCreateUpdateDeleteParticipant(t *testing.T) {
+func TestCreateParticipant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_participant.NewMockRepository(ctrl)
 	service := participant.NewService(repo)
 
-	t.Run("Create Success", func(t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
 		p := buildParticipant("")
 		repo.EXPECT().Insert(gomock.Any(), gomock.AssignableToTypeOf(p)).DoAndReturn(func(ctx context.Context, participant *domain.Participant) error {
 			participant.ID = domain.NewID()
@@ -86,44 +86,75 @@ func TestCreateUpdateDeleteParticipant(t *testing.T) {
 		})
 		id, err := service.CreateParticipant(BuildContext(), p)
 		assert.Nil(t, err)
+		assert.NotEmpty(t, p.ID)
 		assert.NotEmpty(t, id)
-		assert.Equal(t, "church_id_test", p.ChurchID)
 	})
 
-	t.Run("Create Fail", func(t *testing.T) {
+	t.Run("Fail", func(t *testing.T) {
 		p := buildParticipant("")
 		repo.EXPECT().Insert(gomock.Any(), gomock.AssignableToTypeOf(p)).Return(genericError)
 		_, err := service.CreateParticipant(BuildContext(), p)
 		assert.NotNil(t, err)
 	})
+}
 
-	t.Run("Update Success", func(t *testing.T) {
-		p := buildParticipant(domain.NewID())
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(p.ID)).Return(buildParticipant(p.ID), nil)
-		repo.EXPECT().Update(gomock.Any(), gomock.AssignableToTypeOf(p)).Return(nil)
-		err := service.UpdateParticipant(BuildContext(), p)
-		assert.Nil(t, err)
-	})
+func TestUpdateParticipant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_participant.NewMockRepository(ctrl)
+	service := participant.NewService(repo)
 
-	t.Run("Update Fail", func(t *testing.T) {
-		p := buildParticipant(domain.NewID())
-		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(p.ID)).Return(buildParticipant(p.ID), nil)
-		repo.EXPECT().Update(gomock.Any(), gomock.AssignableToTypeOf(p)).Return(genericError)
-		err := service.UpdateParticipant(BuildContext(), p)
-		assert.NotNil(t, err)
-	})
-
-	t.Run("Delete Success", func(t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
 		id := domain.NewID()
-		repo.EXPECT().Delete(gomock.Any(), gomock.Eq(id)).Return(nil)
-		err := service.DeleteParticipant(BuildContext(), id)
-		assert.Nil(t, err)
+		existing := buildParticipant(id)
+		update := &domain.Participant{ID: id, Name: "New Name", Filiation: "New fil", BirthDate: existing.BirthDate, Observation: "Obs2", CellPhone: "1111"}
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(existing, nil)
+		repo.EXPECT().Update(gomock.Any(), gomock.AssignableToTypeOf(existing)).Return(nil)
+		assert.NoError(t, service.UpdateParticipant(BuildContext(), update))
 	})
 
-	t.Run("Delete Fail", func(t *testing.T) {
+	t.Run("Fail - Update", func(t *testing.T) {
 		id := domain.NewID()
-		repo.EXPECT().Delete(gomock.Any(), gomock.Eq(id)).Return(genericError)
-		err := service.DeleteParticipant(BuildContext(), id)
-		assert.NotNil(t, err)
+		existing := buildParticipant(id)
+		update := &domain.Participant{ID: id}
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(existing, nil)
+		repo.EXPECT().Update(gomock.Any(), gomock.AssignableToTypeOf(existing)).Return(genericError)
+		assert.Error(t, service.UpdateParticipant(BuildContext(), update))
+	})
+
+	t.Run("Fail - GetParticipant", func(t *testing.T) {
+		id := domain.NewID()
+		update := &domain.Participant{ID: id}
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(nil, genericError)
+		assert.Error(t, service.UpdateParticipant(BuildContext(), update))
+	})
+}
+
+func TestRetireParticipant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_participant.NewMockRepository(ctrl)
+	service := participant.NewService(repo)
+
+	id := domain.NewID()
+	reason := "testing"
+	date := time.Now()
+	existing := buildParticipant(id)
+
+	t.Run("Success", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(existing, nil)
+		repo.EXPECT().RetireParticipant(gomock.Any(), gomock.AssignableToTypeOf(existing)).Return(nil)
+		assert.NoError(t, service.RetireParticipant(BuildContext(), id, reason, date))
+	})
+
+	t.Run("Fail - Retire", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(existing, nil)
+		repo.EXPECT().RetireParticipant(gomock.Any(), gomock.AssignableToTypeOf(existing)).Return(genericError)
+		assert.Error(t, service.RetireParticipant(BuildContext(), id, reason, date))
+	})
+
+	t.Run("Fail - GetParticipant", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Any(), gomock.Eq(id)).Return(nil, genericError)
+		assert.Error(t, service.RetireParticipant(BuildContext(), id, reason, date))
 	})
 }

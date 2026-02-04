@@ -258,14 +258,18 @@ func (item *UserItem) ToUser() *domain.User {
 
 // ParticipantItem for dynamoDB struct
 type ParticipantItem struct {
-	ID          string    `dynamodbav:"id,omitempty"`
-	ChurchID    string    `dynamodbav:"church_id"`
-	Name        string    `dynamodbav:"name"`
-	BirthDate   time.Time `dynamodbav:"birthDate"`
-	Gender      string    `dynamodbav:"gender"`
-	CellPhone   string    `dynamodbav:"cellPhone"`
-	Filiation   string    `dynamodbav:"filiation"`
-	Observation string    `dynamodbav:"observation"`
+	ID          string     `dynamodbav:"id,omitempty"`
+	ChurchID    string     `dynamodbav:"church_id"`
+	Name        string     `dynamodbav:"name"`
+	BirthDate   time.Time  `dynamodbav:"birthDate"`
+	Gender      string     `dynamodbav:"gender"`
+	CellPhone   string     `dynamodbav:"cellPhone"`
+	Filiation   string     `dynamodbav:"filiation"`
+	Observation string     `dynamodbav:"observation"`
+	StartedAt   time.Time  `dynamodbav:"startedAt"`
+	EndedAt     *time.Time `dynamodbav:"endedAt,omitempty"`
+	EndedReason string     `dynamodbav:"endedReason,omitempty"`
+	Active      bool       `dynamodbav:"active,omitempty"`
 }
 
 // NewParticipantItem creates a ParticipantItem from a domain.Participant
@@ -279,6 +283,10 @@ func NewParticipantItem(participant *domain.Participant) *ParticipantItem {
 		CellPhone:   participant.CellPhone,
 		Filiation:   participant.Filiation,
 		Observation: participant.Observation,
+		StartedAt:   participant.StartedAt,
+		EndedAt:     participant.EndedAt,
+		EndedReason: participant.EndedReason,
+		Active:      participant.Active,
 	}
 }
 
@@ -293,5 +301,9 @@ func (item *ParticipantItem) ToParticipant() *domain.Participant {
 		CellPhone:   item.CellPhone,
 		Filiation:   item.Filiation,
 		Observation: item.Observation,
+		StartedAt:   item.StartedAt,
+		EndedAt:     item.EndedAt,
+		EndedReason: item.EndedReason,
+		Active:      item.Active,
 	}
 }

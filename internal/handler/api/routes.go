@@ -586,9 +586,9 @@ func (handler *ParticipantHandler) SetUpRoutes(app *fiber.App) {
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Put("/participants/:id", handler.updateParticipant)
 
-	// swagger:operation DELETE /participants/{id} deleteParticipant
+	// swagger:operation DELETE /participants/{id} retireParticipant
 	//
-	// Delete participant
+	// Retire participant
 	//
 	// ---
 	// security:
@@ -608,7 +608,7 @@ func (handler *ParticipantHandler) SetUpRoutes(app *fiber.App) {
 	//     description: Invalid request
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
-	app.Delete("/participants/:id", handler.deleteParticipant)
+	app.Delete("/participants/:id", handler.retireParticipant)
 }
 
 func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {

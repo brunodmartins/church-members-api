@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
@@ -58,6 +60,10 @@ func (h *ParticipantHandler) searchParticipant(ctx *fiber.Ctx) error {
 	if gender := ctx.Query("gender"); gender != "" {
 		queryFilters.AddFilter("gender", gender)
 	}
+	if activeParam := ctx.Query("active"); activeParam != "" {
+		active, _ := strconv.ParseBool(activeParam)
+		queryFilters.AddFilter("active", active)
+	}
 	participants, err := h.service.SearchParticipant(ctx.UserContext(), queryFilters.ToSpecification())
 	if err != nil {
 		return err
@@ -86,13 +92,24 @@ func (h *ParticipantHandler) updateParticipant(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Participant updated successfully"})
 }
 
-func (h *ParticipantHandler) deleteParticipant(ctx *fiber.Ctx) error {
+func (h *ParticipantHandler) retireParticipant(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if !domain.IsValidID(id) {
 		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
-	if err := h.service.DeleteParticipant(ctx.UserContext(), id); err != nil {
+	retireParticipantRequest := new(dto.RetireParticipantRequest)
+	if err := json.Unmarshal(ctx.Body(), &retireParticipantRequest); err != nil {
+		return badRequest(ctx, err)
+	}
+	if err := ValidateStruct(retireParticipantRequest); err != nil {
+		return badRequest(ctx, err)
+	}
+	if retireParticipantRequest.RetireDate.IsZero() {
+		retireParticipantRequest.RetireDate = dto.Date{Time: time.Now()}
+	}
+
+	if err := h.service.RetireParticipant(ctx.UserContext(), id, retireParticipantRequest.Reason, retireParticipantRequest.RetireDate.Time); err != nil {
 		return err
 	}
-	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Participant deleted successfully"})
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Participant retired successfully"})
 }

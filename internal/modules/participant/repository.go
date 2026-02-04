@@ -20,7 +20,7 @@ type Repository interface {
 	Insert(ctx context.Context, p *domain.Participant) error
 	FindByID(ctx context.Context, id string) (*domain.Participant, error)
 	Update(ctx context.Context, p *domain.Participant) error
-	Delete(ctx context.Context, id string) error
+	RetireParticipant(ctx context.Context, p *domain.Participant) error
 	FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Participant, error)
 }
 
@@ -84,13 +84,30 @@ func (repo dynamoRepository) Update(ctx context.Context, participant *domain.Par
 	return err
 }
 
-func (repo dynamoRepository) Delete(ctx context.Context, id string) error {
-	_, err := repo.api.DeleteItem(ctx, &dynamodb.DeleteItemInput{
-		TableName: aws.String(repo.table),
+func (repo dynamoRepository) RetireParticipant(ctx context.Context, participant *domain.Participant) error {
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
-			"church_id": &types.AttributeValueMemberS{Value: domain.GetChurchID(ctx)},
-			"id":        &types.AttributeValueMemberS{Value: id},
+			"id": &types.AttributeValueMemberS{
+				Value: participant.ID,
+			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: participant.ChurchID,
+			},
 		},
+		TableName: aws.String(repo.table),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":active": &types.AttributeValueMemberBOOL{
+				Value: participant.Active,
+			},
+			":endedAt": &types.AttributeValueMemberS{
+				Value: participant.EndedAt.Format(time.RFC3339),
+			},
+			":endedReason": &types.AttributeValueMemberS{
+				Value: participant.EndedReason,
+			},
+		},
+		ReturnValues:     "UPDATED_NEW",
+		UpdateExpression: aws.String(repo.wrapper.BuildUpdateQuery("active", "endedAt", "endedReason")),
 	})
 	return err
 }

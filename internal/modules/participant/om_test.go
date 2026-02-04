@@ -28,6 +28,7 @@ func buildParticipant(id string) *domain.Participant {
 		CellPhone:   "99999999",
 		Filiation:   "Filiation",
 		Observation: "Obs",
+		StartedAt:   time.Now(),
 	}
 }
 

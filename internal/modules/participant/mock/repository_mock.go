@@ -42,20 +42,6 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
-// Delete mocks base method.
-func (m *MockRepository) Delete(ctx context.Context, id string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Delete", ctx, id)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// Delete indicates an expected call of Delete.
-func (mr *MockRepositoryMockRecorder) Delete(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockRepository)(nil).Delete), ctx, id)
-}
-
 // FindAll mocks base method.
 func (m *MockRepository) FindAll(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.Participant, error) {
 	m.ctrl.T.Helper()
@@ -98,6 +84,20 @@ func (m *MockRepository) Insert(ctx context.Context, p *domain.Participant) erro
 func (mr *MockRepositoryMockRecorder) Insert(ctx, p any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockRepository)(nil).Insert), ctx, p)
+}
+
+// RetireParticipant mocks base method.
+func (m *MockRepository) RetireParticipant(ctx context.Context, p *domain.Participant) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RetireParticipant", ctx, p)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RetireParticipant indicates an expected call of RetireParticipant.
+func (mr *MockRepositoryMockRecorder) RetireParticipant(ctx, p any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetireParticipant", reflect.TypeOf((*MockRepository)(nil).RetireParticipant), ctx, p)
 }
 
 // Update mocks base method.

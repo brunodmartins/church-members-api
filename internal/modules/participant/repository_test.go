@@ -2,6 +2,7 @@ package participant_test
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"testing"
 
@@ -109,7 +110,7 @@ func TestDynamoRepository_Insert(t *testing.T) {
 	})
 }
 
-func TestDynamoRepository_UpdateAndDelete(t *testing.T) {
+func TestDynamoRepository_UpdateParticipant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
@@ -139,15 +140,85 @@ func TestDynamoRepository_UpdateAndDelete(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("Delete Success", func(t *testing.T) {
-		id := "d1"
+	t.Run("Update Fail", func(t *testing.T) {
+		p := buildParticipant("u1")
+		p.ChurchID = "c1"
+		p.Name = "Carol"
 		ctx := BuildContext()
-		dynamoMock.EXPECT().DeleteItem(gomock.Any(), gomock.Any(), gomock.Any()).DoAndReturn(func(ctx context.Context, input *dynamodb.DeleteItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error) {
-			assert.Equal(t, participantTable, *input.TableName)
-			return &dynamodb.DeleteItemOutput{}, nil
-		})
-		err := repo.Delete(ctx, id)
+
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    participantTable,
+			ID:       p.ID,
+			ChurchID: p.ChurchID,
+			Values: map[string]types.AttributeValue{
+				":name":        &types.AttributeValueMemberS{Value: p.Name},
+				":gender":      &types.AttributeValueMemberNULL{Value: true},
+				":birthDate":   &types.AttributeValueMemberS{Value: p.BirthDate.Format(time.RFC3339)},
+				":cellPhone":   &types.AttributeValueMemberS{Value: p.CellPhone},
+				":filiation":   &types.AttributeValueMemberS{Value: p.Filiation},
+				":observation": &types.AttributeValueMemberS{Value: p.Observation},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, errors.New("generic error"))
+		err := repo.Update(ctx, p)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestDynamoRepository_RetireParticipant(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	repo := participant.NewRepository(dynamoMock, participantTable)
+
+	t.Run("Update Success", func(t *testing.T) {
+		endDate := time.Now().Add(30 * 24 * time.Hour)
+		p := buildParticipant("u1")
+		p.ChurchID = "c1"
+		p.Name = "Carol"
+		p.StartedAt = time.Now()
+		p.EndedAt = &endDate
+		p.Active = false
+		ctx := BuildContext()
+
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    participantTable,
+			ID:       p.ID,
+			ChurchID: p.ChurchID,
+			Values: map[string]types.AttributeValue{
+				":active":      &types.AttributeValueMemberBOOL{Value: false},
+				":endedAt":     &types.AttributeValueMemberS{Value: p.EndedAt.Format(time.RFC3339)},
+				":endedReason": &types.AttributeValueMemberS{Value: p.EndedReason},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
+		err := repo.RetireParticipant(ctx, p)
 		assert.Nil(t, err)
+	})
+
+	t.Run("Update Fail", func(t *testing.T) {
+		endDate := time.Now().Add(30 * 24 * time.Hour)
+		p := buildParticipant("u1")
+		p.ChurchID = "c1"
+		p.Name = "Carol"
+		p.StartedAt = time.Now()
+		p.EndedAt = &endDate
+		p.Active = false
+		ctx := BuildContext()
+
+		matcher := dynamodbhelper.UpdateMatcher{
+			Table:    participantTable,
+			ID:       p.ID,
+			ChurchID: p.ChurchID,
+			Values: map[string]types.AttributeValue{
+				":active":      &types.AttributeValueMemberBOOL{Value: false},
+				":endedAt":     &types.AttributeValueMemberS{Value: p.EndedAt.Format(time.RFC3339)},
+				":endedReason": &types.AttributeValueMemberS{Value: p.EndedReason},
+			},
+		}
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, errors.New("generic error"))
+		err := repo.RetireParticipant(ctx, p)
+		assert.NotNil(t, err)
 	})
 }
 

@@ -142,6 +142,9 @@ definitions:
             filiation:
                 type: string
                 x-go-name: Filiation
+            gender:
+                type: string
+                x-go-name: Gender
             name:
                 type: string
                 x-go-name: Name
@@ -403,6 +406,10 @@ definitions:
     GetParticipantResponse:
         description: GetParticipantResponse for HTTP responses
         properties:
+            age:
+                format: int64
+                type: integer
+                x-go-name: Age
             birthDate:
                 type: string
                 x-go-name: BirthDate
@@ -509,6 +516,18 @@ definitions:
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
     RetireMemberRequest:
         description: RetireMemberRequest for HTTP calls to put member status
+        properties:
+            date:
+                type: string
+                x-go-name: RetireDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
+            reason:
+                type: string
+                x-go-name: Reason
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    RetireParticipantRequest:
+        description: RetireParticipantRequest for HTTP calls to put member status
         properties:
             date:
                 type: string
@@ -967,8 +986,8 @@ paths:
             summary: Create participant
     /participants/{id}:
         delete:
-            description: Delete participant
-            operationId: deleteParticipant
+            description: Retire participant
+            operationId: retireParticipant
             parameters:
                 - description: The participant id
                   in: path

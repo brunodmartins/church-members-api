@@ -35,6 +35,9 @@ func (spec *QueryBuilder) ToSpecification() wrapper.QuerySpecification {
 			keyCondition = keyCondition.And(expression.Key("name").BeginsWith(spec.values["name"].(string)))
 			index = nameIndex()
 		}
+		if spec.values["active"] != nil {
+			filters = append(filters, activeCondition(spec.values["active"].(bool)))
+		}
 		if len(filters) != 0 {
 			builderExpression = builderExpression.WithKeyCondition(keyCondition).WithFilter(spec.mergeFilters(filters))
 		} else {
@@ -80,4 +83,8 @@ func withChurchKey(ctx context.Context) expression.KeyConditionBuilder {
 
 func nameIndex() string {
 	return "nameIndex"
+}
+
+func activeCondition(value bool) expression.ConditionBuilder {
+	return expression.Name("active").Equal(expression.Value(value))
 }

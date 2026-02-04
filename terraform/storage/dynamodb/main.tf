@@ -148,6 +148,9 @@ resource "aws_dynamodb_table" "participant" {
       "gender",
       "cellPhone",
       "filiation",
-      "observation"]
+      "observation",
+      "active",
+      "endedAt",
+      "endedReason"]
   }
 }

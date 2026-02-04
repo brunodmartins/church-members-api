@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	mock_participant "github.com/brunodmartins/church-members-api/internal/modules/participant/mock"
@@ -131,7 +133,7 @@ func TestUpdateParticipant(t *testing.T) {
 	})
 }
 
-func TestDeleteParticipant(t *testing.T) {
+func TestRetireParticipant(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	app := newApp()
@@ -142,18 +144,31 @@ func TestDeleteParticipant(t *testing.T) {
 	id := domain.NewID()
 
 	t.Run("Success - 200", func(t *testing.T) {
-		service.EXPECT().DeleteParticipant(gomock.Any(), id).Return(nil)
-		runTest(app, buildDelete("/participants/"+id, nil)).assertStatus(t, http.StatusOK)
+		body := []byte(`{"reason": "Leaved the church"}`)
+		service.EXPECT().RetireParticipant(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Any()).Return(nil)
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Success with given date - 200", func(t *testing.T) {
+		body := []byte(`{"reason": "Leaved the church", "date": "2025-09-09"}`)
+		expectedDate, _ := time.Parse(time.DateOnly, "2025-09-09")
+		service.EXPECT().RetireParticipant(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Eq(expectedDate)).Return(nil)
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", id), body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 400 - ID", func(t *testing.T) {
-		runTest(app, buildDelete("/participants/X", nil)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 400 - Reason", func(t *testing.T) {
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", id), emptyJson)).assertStatus(t, http.StatusBadRequest)
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", id), badJson)).assertStatus(t, http.StatusBadRequest)
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
-		service.EXPECT().DeleteParticipant(gomock.Any(), id).Return(apierrors.NewApiError("Participant not found", http.StatusNotFound))
-		runTest(app, buildDelete("/participants/"+id, nil)).assertStatus(t, http.StatusNotFound)
+		body := []byte(`{"reason": "Not Found"}`)
+		service.EXPECT().RetireParticipant(gomock.Any(), id, gomock.Eq("Not Found"), gomock.Any()).Return(apierrors.NewApiError("Member not found", http.StatusNotFound))
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", id), body)).assertStatus(t, http.StatusNotFound)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		service.EXPECT().DeleteParticipant(gomock.Any(), id).Return(genericError)
-		runTest(app, buildDelete("/participants/"+id, nil)).assertStatus(t, http.StatusInternalServerError)
+		body := []byte(`{"reason": "exited"}`)
+		service.EXPECT().RetireParticipant(gomock.Any(), id, gomock.Eq("exited"), gomock.Any()).Return(genericError)
+		runTest(app, buildDelete(fmt.Sprintf("/participants/%s", id), body)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

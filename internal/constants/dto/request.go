@@ -220,6 +220,7 @@ func (request UpdatePersonRequest) ToPerson() domain.Person {
 type CreateParticipantRequest struct {
 	Name        string `json:"name" validate:"required"`
 	BirthDate   Date   `json:"birthDate"`
+	Gender      string `json:"gender" validate:"required,eq=M|eq=F"`
 	CellPhone   string `json:"cellPhone"`
 	Filiation   string `json:"filiation"`
 	Observation string `json:"observation"`
@@ -229,6 +230,7 @@ func (r *CreateParticipantRequest) ToParticipant() *domain.Participant {
 	return &domain.Participant{
 		Name:        r.Name,
 		BirthDate:   *ToTime(&r.BirthDate),
+		Gender:      r.Gender,
 		CellPhone:   r.CellPhone,
 		Filiation:   r.Filiation,
 		Observation: r.Observation,
@@ -263,4 +265,11 @@ func NewGetParticipantResponse(p *domain.Participant) *GetParticipantResponse {
 		Filiation:   p.Filiation,
 		Observation: p.Observation,
 	}
+}
+
+// RetireParticipantRequest for HTTP calls to put member status
+// swagger:model RetireParticipantRequest
+type RetireParticipantRequest struct {
+	Reason     string `json:"reason" validate:"required"`
+	RetireDate Date   `json:"date"`
 }

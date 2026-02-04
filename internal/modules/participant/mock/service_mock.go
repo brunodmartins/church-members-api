@@ -12,6 +12,7 @@ package mock_participant
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	domain "github.com/brunodmartins/church-members-api/internal/constants/domain"
 	participant "github.com/brunodmartins/church-members-api/internal/modules/participant"
@@ -58,20 +59,6 @@ func (mr *MockServiceMockRecorder) CreateParticipant(ctx, arg1 any) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateParticipant", reflect.TypeOf((*MockService)(nil).CreateParticipant), ctx, arg1)
 }
 
-// DeleteParticipant mocks base method.
-func (m *MockService) DeleteParticipant(ctx context.Context, id string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteParticipant", ctx, id)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// DeleteParticipant indicates an expected call of DeleteParticipant.
-func (mr *MockServiceMockRecorder) DeleteParticipant(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteParticipant", reflect.TypeOf((*MockService)(nil).DeleteParticipant), ctx, id)
-}
-
 // GetParticipant mocks base method.
 func (m *MockService) GetParticipant(ctx context.Context, id string) (*domain.Participant, error) {
 	m.ctrl.T.Helper()
@@ -85,6 +72,20 @@ func (m *MockService) GetParticipant(ctx context.Context, id string) (*domain.Pa
 func (mr *MockServiceMockRecorder) GetParticipant(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetParticipant", reflect.TypeOf((*MockService)(nil).GetParticipant), ctx, id)
+}
+
+// RetireParticipant mocks base method.
+func (m *MockService) RetireParticipant(ctx context.Context, id, reason string, date time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RetireParticipant", ctx, id, reason, date)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RetireParticipant indicates an expected call of RetireParticipant.
+func (mr *MockServiceMockRecorder) RetireParticipant(ctx, id, reason, date any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetireParticipant", reflect.TypeOf((*MockService)(nil).RetireParticipant), ctx, id, reason, date)
 }
 
 // SearchParticipant mocks base method.

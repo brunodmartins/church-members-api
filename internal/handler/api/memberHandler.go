@@ -29,23 +29,16 @@ func NewMemberHandler(service member.Service) *MemberHandler {
 func (handler *MemberHandler) postMember(ctx *fiber.Ctx) error {
 	memberRequestDTO := new(dto.CreateMemberRequest)
 	if err := json.Unmarshal(ctx.Body(), &memberRequestDTO); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	if err := ValidateStruct(memberRequestDTO); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	id, err := handler.service.SaveMember(ctx.UserContext(), memberRequestDTO.ToMember())
 	if err != nil {
 		return err
 	}
 	return ctx.Status(http.StatusCreated).JSON(dto.CreateMemberResponse{ID: id})
-}
-
-func (handler *MemberHandler) badRequest(ctx *fiber.Ctx, err error) error {
-	return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
-		Message: "Invalid body received",
-		Error:   err.Error(),
-	})
 }
 
 func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
@@ -92,10 +85,10 @@ func (handler *MemberHandler) retireMember(ctx *fiber.Ctx) error {
 	}
 	retireMemberRequest := new(dto.RetireMemberRequest)
 	if err := json.Unmarshal(ctx.Body(), &retireMemberRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	if err := ValidateStruct(retireMemberRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	if retireMemberRequest.RetireDate.IsZero() {
 		retireMemberRequest.RetireDate = dto.Date{Time: time.Now()}
@@ -116,7 +109,7 @@ func (handler *MemberHandler) updateContact(ctx *fiber.Ctx) error {
 	}
 	contactUpdateRequest := new(dto.ContactRequest)
 	if err := json.Unmarshal(ctx.Body(), &contactUpdateRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	err := handler.service.UpdateContact(ctx.UserContext(), id, *contactUpdateRequest.ToContact())
 	if err != nil {
@@ -132,10 +125,10 @@ func (handler *MemberHandler) updateAddress(ctx *fiber.Ctx) error {
 	}
 	address := new(dto.AddressRequest)
 	if err := json.Unmarshal(ctx.Body(), &address); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	if err := ValidateStruct(address); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	err := handler.service.UpdateAddress(ctx.UserContext(), id, *address.ToAddress())
 	if err != nil {
@@ -151,10 +144,10 @@ func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
 	}
 	personRequest := new(dto.UpdatePersonRequest)
 	if err := json.Unmarshal(ctx.Body(), &personRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	if err := ValidateStruct(personRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	err := handler.service.UpdatePerson(ctx.UserContext(), id, personRequest.ToPerson())
 	if err != nil {
@@ -170,10 +163,10 @@ func (handler *MemberHandler) updateBaptism(ctx *fiber.Ctx) error {
 	}
 	baptismRequest := new(dto.UpdateBaptismRequest)
 	if err := json.Unmarshal(ctx.Body(), &baptismRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	if err := ValidateStruct(baptismRequest); err != nil {
-		return handler.badRequest(ctx, err)
+		return badRequest(ctx, err)
 	}
 	err := handler.service.UpdateBaptism(ctx.UserContext(), id, baptismRequest.ToReligion())
 	if err != nil {

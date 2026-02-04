@@ -42,6 +42,26 @@ func (m *MockDynamoDBAPI) EXPECT() *MockDynamoDBAPIMockRecorder {
 	return m.recorder
 }
 
+// DeleteItem mocks base method.
+func (m *MockDynamoDBAPI) DeleteItem(ctx context.Context, params *dynamodb.DeleteItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, params}
+	for _, a := range optFns {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeleteItem", varargs...)
+	ret0, _ := ret[0].(*dynamodb.DeleteItemOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteItem indicates an expected call of DeleteItem.
+func (mr *MockDynamoDBAPIMockRecorder) DeleteItem(ctx, params any, optFns ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, params}, optFns...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteItem", reflect.TypeOf((*MockDynamoDBAPI)(nil).DeleteItem), varargs...)
+}
+
 // GetItem mocks base method.
 func (m *MockDynamoDBAPI) GetItem(ctx context.Context, params *dynamodb.GetItemInput, optFns ...func(*dynamodb.Options)) (*dynamodb.GetItemOutput, error) {
 	m.ctrl.T.Helper()

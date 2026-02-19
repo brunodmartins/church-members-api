@@ -3,6 +3,7 @@ package dto
 import (
 	"fmt"
 
+	"github.com/bearbin/go-age"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 )
@@ -212,4 +213,63 @@ func (request UpdatePersonRequest) ToPerson() domain.Person {
 		MaritalStatus:    request.MaritalStatus,
 		ChildrenQuantity: request.ChildrenQuantity,
 	}
+}
+
+// CreateParticipantRequest for HTTP calls
+// swagger:model CreateParticipantRequest
+type CreateParticipantRequest struct {
+	Name        string `json:"name" validate:"required"`
+	BirthDate   Date   `json:"birthDate"`
+	Gender      string `json:"gender" validate:"required,eq=M|eq=F"`
+	CellPhone   string `json:"cellPhone"`
+	Filiation   string `json:"filiation"`
+	Observation string `json:"observation"`
+}
+
+func (r *CreateParticipantRequest) ToParticipant() *domain.Participant {
+	return &domain.Participant{
+		Name:        r.Name,
+		BirthDate:   *ToTime(&r.BirthDate),
+		Gender:      r.Gender,
+		CellPhone:   r.CellPhone,
+		Filiation:   r.Filiation,
+		Observation: r.Observation,
+	}
+}
+
+// GetParticipantResponse for HTTP responses
+// swagger:model GetParticipantResponse
+type GetParticipantResponse struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Age         int    `json:"age"`
+	BirthDate   *Date  `json:"birthDate,omitempty"`
+	CellPhone   string `json:"cellPhone,omitempty"`
+	Filiation   string `json:"filiation,omitempty"`
+	Observation string `json:"observation,omitempty"`
+}
+
+func NewGetParticipantResponse(p *domain.Participant) *GetParticipantResponse {
+	if p == nil {
+		return nil
+	}
+	var bd *Date
+	d := Date{p.BirthDate}
+	bd = &d
+	return &GetParticipantResponse{
+		ID:          p.ID,
+		Name:        p.Name,
+		Age:         age.Age(p.BirthDate),
+		BirthDate:   bd,
+		CellPhone:   p.CellPhone,
+		Filiation:   p.Filiation,
+		Observation: p.Observation,
+	}
+}
+
+// RetireParticipantRequest for HTTP calls to put member status
+// swagger:model RetireParticipantRequest
+type RetireParticipantRequest struct {
+	Reason     string `json:"reason" validate:"required"`
+	RetireDate Date   `json:"date"`
 }

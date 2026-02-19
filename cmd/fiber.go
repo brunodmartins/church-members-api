@@ -33,6 +33,7 @@ func provideFiberApplication() *fiber.App {
 	authHandler := cdi.ProvideAuthHandler()
 	userHandler := cdi.ProvideUserHandler()
 	churchHandler := cdi.ProvideChurchHandler()
+    participantHandler := cdi.ProvideParticipantHandler()
 
 	app.Get("/ping", func(ctx *fiber.Ctx) error {
 		return ctx.SendString("/pong")
@@ -46,6 +47,7 @@ func provideFiberApplication() *fiber.App {
 	reportHandler.SetUpRoutes(app)
 	userHandler.SetUpRoutes(app)
 	churchHandler.SetUpRoutes(app)
+    participantHandler.SetUpRoutes(app)
 
 	return app
 }

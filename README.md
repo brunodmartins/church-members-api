@@ -59,6 +59,7 @@ The following configuration are required through **Terraform vars**
 |Terraform takes it from dynamo resource|TABLE_MEMBER|DynamoDB members table|
 |Terraform takes it from dynamo resource|TABLE_USER|DynamoDB users table|
 |Terraform takes it from dynamo resource|TABLE_CHURCH|DynamoDB churchs table|
+|Terraform takes it from dynamo resource|TABLE_PARTICIPANT|DynamoDB participants table|
 |Terraform takes it from SNS resource|REPORTS_TOPIC|The topic to notify weekly jobs through email|
 |Terraform takes it from S3 resource|STORAGE|The S3 bucket|
 

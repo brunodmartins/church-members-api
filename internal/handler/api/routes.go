@@ -462,6 +462,155 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	app.Get("/reports/:reportType", handler.getURLForReport)
 }
 
+func (handler *ParticipantHandler) SetUpRoutes(app *fiber.App) {
+	// swagger:operation POST /participants postParticipant
+	//
+	// Create participant
+	//
+	// Register the receiving participant
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: participant
+	//   in: body
+	//   description: The participant to be registered
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/CreateParticipantRequest"
+	// responses:
+	//   '201':
+	//     description: Participant registered
+	//     schema:
+	//       "$ref": "#/definitions/CreateMemberResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Post("/participants", handler.postParticipant)
+
+	// swagger:operation GET /participants searchParticipant
+	//
+	// Search participant
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: name
+	//   in: query
+	//   type: string
+	//   description: The participant name
+	//   required: false
+	// responses:
+	//   '200':
+	//     description: Participants found
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/participants", handler.searchParticipant)
+
+	// swagger:operation GET /participants/{id} getParticipant
+	//
+	// Get participant
+	//
+	// Returns the participant information
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The participant id
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: The participant information
+	//     schema:
+	//       "$ref": "#/definitions/GetParticipantResponse"
+	//   '400':
+	//     description: Invalid ID
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: Participant not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/participants/:id", handler.getParticipant)
+
+	// swagger:operation PUT /participants/{id} updateParticipant
+	//
+	// Update participant
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The participant id
+	//   required: true
+	// - name: participant
+	//   in: body
+	//   description: The participant to be updated
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/CreateParticipantRequest"
+	// responses:
+	//   '200':
+	//     description: Participant updated
+	//   '404':
+	//     description: Participant not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Put("/participants/:id", handler.updateParticipant)
+
+	// swagger:operation DELETE /participants/{id} retireParticipant
+	//
+	// Retire participant
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The participant id
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: Participant deleted
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Delete("/participants/:id", handler.retireParticipant)
+}
+
 func (handler *AuthHandler) SetUpRoutes(app *fiber.App) {
 	// swagger:operation GET /users/token getToken
 	//

@@ -1,9 +1,10 @@
 package dto
 
 import (
+	"time"
+
 	"github.com/brunodmartins/church-members-api/internal/constants"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
-	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
@@ -252,5 +253,57 @@ func (item *UserItem) ToUser() *domain.User {
 			SendWeeklyEmail: item.SendWeeklyEmail,
 		},
 		ConfirmedEmail: item.ConfirmedEmail,
+	}
+}
+
+// ParticipantItem for dynamoDB struct
+type ParticipantItem struct {
+	ID          string     `dynamodbav:"id,omitempty"`
+	ChurchID    string     `dynamodbav:"church_id"`
+	Name        string     `dynamodbav:"name"`
+	BirthDate   time.Time  `dynamodbav:"birthDate"`
+	Gender      string     `dynamodbav:"gender"`
+	CellPhone   string     `dynamodbav:"cellPhone"`
+	Filiation   string     `dynamodbav:"filiation"`
+	Observation string     `dynamodbav:"observation"`
+	StartedAt   time.Time  `dynamodbav:"startedAt"`
+	EndedAt     *time.Time `dynamodbav:"endedAt,omitempty"`
+	EndedReason string     `dynamodbav:"endedReason,omitempty"`
+	Active      bool       `dynamodbav:"active,omitempty"`
+}
+
+// NewParticipantItem creates a ParticipantItem from a domain.Participant
+func NewParticipantItem(participant *domain.Participant) *ParticipantItem {
+	return &ParticipantItem{
+		ID:          participant.ID,
+		ChurchID:    participant.ChurchID,
+		Name:        participant.Name,
+		BirthDate:   participant.BirthDate,
+		Gender:      participant.Gender,
+		CellPhone:   participant.CellPhone,
+		Filiation:   participant.Filiation,
+		Observation: participant.Observation,
+		StartedAt:   participant.StartedAt,
+		EndedAt:     participant.EndedAt,
+		EndedReason: participant.EndedReason,
+		Active:      participant.Active,
+	}
+}
+
+// ToParticipant converts a ParticipantItem into a domain.Participant
+func (item *ParticipantItem) ToParticipant() *domain.Participant {
+	return &domain.Participant{
+		ID:          item.ID,
+		ChurchID:    item.ChurchID,
+		Name:        item.Name,
+		BirthDate:   item.BirthDate,
+		Gender:      item.Gender,
+		CellPhone:   item.CellPhone,
+		Filiation:   item.Filiation,
+		Observation: item.Observation,
+		StartedAt:   item.StartedAt,
+		EndedAt:     item.EndedAt,
+		EndedReason: item.EndedReason,
+		Active:      item.Active,
 	}
 }

@@ -43,9 +43,11 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	roles, _ := handler.authService.GetRoles(ctx.UserContext(), token)
 	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{
 		Token:    token,
 		ChurchID: church.ID,
+		Roles:    roles,
 	})
 }
 

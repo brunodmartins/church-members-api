@@ -230,6 +230,7 @@ func NewUserItem(user *domain.User) *UserItem {
 		ID:              user.ID,
 		UserName:        user.UserName,
 		Email:           user.Email,
+		ChurchID:        user.ChurchID,
 		Role:            user.Role.String(),
 		Password:        string(user.Password),
 		Phone:           user.Phone,

@@ -26,7 +26,7 @@ type NotificationPreferences struct {
 	SendWeeklyEmail bool `json:"send_weekly_email"`
 }
 
-func NewUser(userName, email, password, phone string, role enum.Role, preferences NotificationPreferences) *User {
+func NewUser(userName, email, password, phone string, role enum.Role, preferences NotificationPreferences, roles ...string) *User {
 	return &User{
 		UserName:       userName,
 		Email:          email,
@@ -35,6 +35,7 @@ func NewUser(userName, email, password, phone string, role enum.Role, preference
 		Role:           role,
 		Preferences:    preferences,
 		ConfirmedEmail: false,
+		Roles:          roles,
 	}
 }
 

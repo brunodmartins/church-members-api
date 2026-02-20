@@ -3,5 +3,6 @@
   "email": "test@test.com",
   "password": "123@Ab&4",
   "role":"ADMIN",
-  "phone": "12345"
+  "phone": "12345",
+  "roles": ["viewUser", "editUser"]
 }

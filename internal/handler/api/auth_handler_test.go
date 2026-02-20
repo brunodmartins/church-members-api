@@ -35,23 +35,27 @@ func TestAuthHandler_GetToken(t *testing.T) {
 	t.Run("Success - 201", func(t *testing.T) {
 		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
+		service.EXPECT().GetRoles(gomock.Any(), gomock.Eq("token")).Return([]string{"role1", "role2"}, nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), churchID)
 		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Roles)
 		})
 
 	})
 	t.Run("Success - 201 - New login with abbreviation", func(t *testing.T) {
 		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(church.Abbreviation), gomock.Eq("")).Return(church, nil)
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
+		service.EXPECT().GetRoles(gomock.Any(), gomock.Eq("token")).Return([]string{"role1", "role2"}, nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), "")
 		request.Header.Set("x-church-abbreviation", church.Abbreviation)
 		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Roles)
 		})
 
 	})

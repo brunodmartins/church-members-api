@@ -88,8 +88,9 @@ type GetBaptismResponse struct {
 // GetTokenResponse for HTTP get token responses
 // swagger:model GetTokenResponse
 type GetTokenResponse struct {
-	Token    string `json:"token"`
-	ChurchID string `json:"church_id"`
+	Token    string   `json:"token"`
+	ChurchID string   `json:"church_id"`
+	Roles    []string `json:"roles"`
 }
 
 // AnniversariesResponse for HTTP anniversaries responses

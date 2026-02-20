@@ -24,6 +24,7 @@ type Service interface {
 	GenerateToken(church *domain.Church, username, password string) (string, error)
 	SendConfirmEmail(ctx context.Context, user *domain.User) error
 	ConfirmEmail(ctx context.Context, userName string) error
+	GetRoles(ctx context.Context, token string) ([]string, error)
 }
 
 type authService struct {
@@ -100,6 +101,15 @@ func (s *authService) IdentifyChurch(ctx context.Context, churchAbbreviation, ch
 		}
 		return s.churchService.GetChurch(ctx, churchID)
 	}
+}
+
+// GetRoles returns the user roles from a token
+func (s *authService) GetRoles(ctx context.Context, token string) ([]string, error) {
+	valid, claim := GetClaim(token)
+	if !valid {
+		return nil, apierrors.NewApiError("Invalid token", http.StatusUnauthorized)
+	}
+	return claim.Roles, nil
 }
 
 func (s *authService) buildAuthError() apierrors.Error {

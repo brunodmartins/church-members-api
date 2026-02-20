@@ -70,6 +70,21 @@ func (mr *MockServiceMockRecorder) GenerateToken(church, username, password any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockService)(nil).GenerateToken), church, username, password)
 }
 
+// GetRoles mocks base method.
+func (m *MockService) GetRoles(ctx context.Context, token string) ([]string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRoles", ctx, token)
+	ret0, _ := ret[0].([]string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRoles indicates an expected call of GetRoles.
+func (mr *MockServiceMockRecorder) GetRoles(ctx, token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoles", reflect.TypeOf((*MockService)(nil).GetRoles), ctx, token)
+}
+
 // IdentifyChurch mocks base method.
 func (m *MockService) IdentifyChurch(ctx context.Context, churchAbbreviation, churchID string) (*domain.Church, error) {
 	m.ctrl.T.Helper()

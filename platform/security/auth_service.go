@@ -119,5 +119,6 @@ func AddClaimToContext(claim *Claim, ctx context.Context) context.Context {
 		ID:       claim.ID,
 		UserName: claim.UserName,
 		Church:   claim.Church,
+		Roles:    claim.Roles,
 	})
 }

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/platform/crypto"
 )
@@ -17,6 +18,7 @@ type User struct {
 	Preferences    NotificationPreferences `json:"-"`
 	Password       []byte                  `json:"-"`
 	Church         *Church                 `json:"-"`
+	Roles          []string                `json:"roles"`
 }
 
 type NotificationPreferences struct {

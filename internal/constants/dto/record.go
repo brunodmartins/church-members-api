@@ -211,16 +211,17 @@ func (item *MemberItem) hasAddress() bool {
 }
 
 type UserItem struct {
-	ID              string `dynamodbav:"id"`
-	ChurchID        string `dynamodbav:"church_id"`
-	UserName        string `dynamodbav:"username"`
-	Email           string `dynamodbav:"email"`
-	Role            string `dynamodbav:"role"`
-	Password        string `dynamodbav:"password"`
-	Phone           string `dynamodbav:"phone"`
-	ConfirmedEmail  bool   `dynamodbav:"confirmed_email"`
-	SendDailySMS    bool   `dynamodbav:"send_daily_sms"`
-	SendWeeklyEmail bool   `dynamodbav:"send_weekly_email"`
+	ID              string   `dynamodbav:"id"`
+	ChurchID        string   `dynamodbav:"church_id"`
+	UserName        string   `dynamodbav:"username"`
+	Email           string   `dynamodbav:"email"`
+	Role            string   `dynamodbav:"role"`
+	Password        string   `dynamodbav:"password"`
+	Phone           string   `dynamodbav:"phone"`
+	ConfirmedEmail  bool     `dynamodbav:"confirmed_email"`
+	SendDailySMS    bool     `dynamodbav:"send_daily_sms"`
+	SendWeeklyEmail bool     `dynamodbav:"send_weekly_email"`
+	Roles           []string `dynamodbav:"roles,omitempty"`
 }
 
 // NewUserItem creates a UserItem from a domain.User
@@ -235,6 +236,7 @@ func NewUserItem(user *domain.User) *UserItem {
 		SendDailySMS:    user.Preferences.SendDailySMS,
 		SendWeeklyEmail: user.Preferences.SendWeeklyEmail,
 		ConfirmedEmail:  user.ConfirmedEmail,
+		Roles:           user.Roles,
 	}
 }
 
@@ -253,6 +255,7 @@ func (item *UserItem) ToUser() *domain.User {
 			SendWeeklyEmail: item.SendWeeklyEmail,
 		},
 		ConfirmedEmail: item.ConfirmedEmail,
+		Roles:          item.Roles,
 	}
 }
 

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/platform/crypto"
 )
@@ -17,6 +18,7 @@ type User struct {
 	Preferences    NotificationPreferences `json:"-"`
 	Password       []byte                  `json:"-"`
 	Church         *Church                 `json:"-"`
+	Roles          []string                `json:"roles"`
 }
 
 type NotificationPreferences struct {
@@ -24,7 +26,7 @@ type NotificationPreferences struct {
 	SendWeeklyEmail bool `json:"send_weekly_email"`
 }
 
-func NewUser(userName, email, password, phone string, role enum.Role, preferences NotificationPreferences) *User {
+func NewUser(userName, email, password, phone string, role enum.Role, preferences NotificationPreferences, roles ...string) *User {
 	return &User{
 		UserName:       userName,
 		Email:          email,
@@ -33,6 +35,7 @@ func NewUser(userName, email, password, phone string, role enum.Role, preference
 		Role:           role,
 		Preferences:    preferences,
 		ConfirmedEmail: false,
+		Roles:          roles,
 	}
 }
 

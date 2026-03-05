@@ -197,6 +197,30 @@ func Test_buildConfirmationLink(t *testing.T) {
 	assert.Equal(t, expected, buildConfirmationLink(accessToken))
 }
 
+func TestAuthService_GetRoles(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	userService := mock_user.NewMockService(ctrl)
+	churchService := mock_church.NewMockService(ctrl)
+	emailService := mock_email.NewMockService(ctrl)
+	service := NewAuthService(userService, churchService, emailService)
+
+	ctx := BuildContext()
+	viper.Set("security.token.expiration", 1)
+	jwtToken := GenerateJWTToken(buildUser("test_user", "id", "admin"))
+	roles := []string{"admin"}
+
+	t.Run("Success on GetRoles", func(t *testing.T) {
+		result, err := service.GetRoles(ctx, jwtToken)
+		assert.Nil(t, err)
+		assert.Equal(t, roles, result)
+	})
+	t.Run("Fail on GetRoles", func(t *testing.T) {
+		_, err := service.GetRoles(ctx, "")
+		assert.NotNil(t, err)
+	})
+}
+
 func BuildContext() context.Context {
 	return context.WithValue(context.TODO(), "user", &domain.User{
 		Church: &domain.Church{

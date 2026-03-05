@@ -2,10 +2,11 @@ package user
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"net/http"
 )
 
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
@@ -46,7 +47,7 @@ func (s userService) SearchUser(ctx context.Context, specification wrapper.Query
 
 func (s userService) checkUserExist(ctx context.Context, userName string) error {
 	user, err := s.repository.FindUser(ctx, userName)
-	if err != nil {
+	if err != nil && err.Error() != "Item not found" {
 		return err
 	}
 	if user != nil {

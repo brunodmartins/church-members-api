@@ -13,6 +13,7 @@ type Claim struct {
 	ID       string `json:"id"`
 	UserName string `json:"username"`
 	Church   *domain.Church
+	Roles    []string `json:"roles"`
 	jwt.RegisteredClaims
 }
 
@@ -21,6 +22,7 @@ func newClaim(user *domain.User) *Claim {
 		ID:       user.ID,
 		UserName: user.UserName,
 		Church:   user.Church,
+		Roles:    user.Roles,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: getExpirationTime(),
 			Issuer:    "church-members-api",

@@ -17,13 +17,19 @@ func NewGetMemberResponse(member *domain.Member) *GetMemberResponse {
 
 func buildPersonResponse(person *domain.Person) *GetPersonResponse {
 	return &GetPersonResponse{
-		FirstName:        person.FirstName,
-		LastName:         person.LastName,
-		FullName:         person.GetFullName(),
-		Gender:           person.Gender,
-		Age:              person.Age(),
-		BirthDate:        person.BirthDate,
-		MarriageDate:     person.MarriageDate,
+		FirstName: person.FirstName,
+		LastName:  person.LastName,
+		FullName:  person.GetFullName(),
+		Gender:    person.Gender,
+		Age:       person.Age(),
+		BirthDate: Date{person.BirthDate},
+		MarriageDate: func() *Date {
+			if person.MarriageDate == nil {
+				return nil
+			}
+			d := Date{Time: *person.MarriageDate}
+			return &d
+		}(),
 		SpousesName:      person.SpousesName,
 		MaritalStatus:    person.MaritalStatus,
 		ChildrenQuantity: person.ChildrenQuantity,
@@ -65,11 +71,23 @@ func buildAddressResponse(address *domain.Address) *GetAddressResponse {
 
 func buildBaptismResponse(religion *domain.Religion) *GetBaptismResponse {
 	return &GetBaptismResponse{
-		BaptismPlace:      religion.BaptismPlace,
-		AcceptedJesus:     religion.AcceptedJesus,
-		Baptized:          religion.Baptized,
-		CatholicBaptized:  religion.CatholicBaptized,
-		AcceptedJesusDate: religion.AcceptedJesusDate,
-		BaptismDate:       religion.BaptismDate,
+		BaptismPlace:     religion.BaptismPlace,
+		AcceptedJesus:    religion.AcceptedJesus,
+		Baptized:         religion.Baptized,
+		CatholicBaptized: religion.CatholicBaptized,
+		AcceptedJesusDate: func() *Date {
+			if religion.AcceptedJesusDate == nil {
+				return nil
+			}
+			d := Date{Time: *religion.AcceptedJesusDate}
+			return &d
+		}(),
+		BaptismDate: func() *Date {
+			if religion.BaptismDate == nil {
+				return nil
+			}
+			d := Date{Time: *religion.BaptismDate}
+			return &d
+		}(),
 	}
 }

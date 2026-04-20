@@ -1,9 +1,5 @@
 package dto
 
-import (
-	"time"
-)
-
 // ErrorResponse for HTTP error responses
 // swagger:model ErrorResponse
 type ErrorResponse struct {
@@ -41,8 +37,8 @@ type GetPersonResponse struct {
 	FullName         string              `json:"fullName,omitempty"`
 	Gender           string              `json:"gender,omitempty"`
 	Age              int                 `json:"age,omitempty"`
-	BirthDate        time.Time           `json:"birthDate,omitempty"`
-	MarriageDate     *time.Time          `json:"marriageDate,omitempty"`
+	BirthDate        Date                `json:"birthDate,omitempty"`
+	MarriageDate     *Date               `json:"marriageDate,omitempty"`
 	SpousesName      string              `json:"spousesName,omitempty"`
 	MaritalStatus    string              `json:"maritalStatus,omitempty"`
 	ChildrenQuantity int                 `json:"childrenQuantity,omitempty"`
@@ -77,12 +73,12 @@ type GetAddressResponse struct {
 
 // GetBaptismResponse struct
 type GetBaptismResponse struct {
-	BaptismPlace      string     `json:"baptismPlace"`
-	AcceptedJesus     bool       `json:"acceptedJesus"`
-	Baptized          bool       `json:"baptized"`
-	CatholicBaptized  bool       `json:"catholicBaptized"`
-	AcceptedJesusDate *time.Time `json:"acceptedJesusDate"`
-	BaptismDate       *time.Time `json:"baptismDate"`
+	BaptismPlace      string `json:"baptismPlace"`
+	AcceptedJesus     bool   `json:"acceptedJesus"`
+	Baptized          bool   `json:"baptized"`
+	CatholicBaptized  bool   `json:"catholicBaptized"`
+	AcceptedJesusDate *Date  `json:"acceptedJesusDate"`
+	BaptismDate       *Date  `json:"baptismDate"`
 }
 
 // GetTokenResponse for HTTP get token responses

@@ -87,6 +87,7 @@ type GetTokenResponse struct {
 	Token    string   `json:"token"`
 	ChurchID string   `json:"church_id"`
 	Roles    []string `json:"roles"`
+	Duration int64    `json:"duration"`
 }
 
 // AnniversariesResponse for HTTP anniversaries responses

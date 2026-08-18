@@ -1,9 +1,9 @@
 
 resource "aws_dynamodb_table" "member_v2" {
-  name = var.member_table_name
+  name         = var.member_table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key = "church_id"
-  range_key = "id"
+  hash_key     = "church_id"
+  range_key    = "id"
 
   attribute {
     name = "church_id"
@@ -31,10 +31,10 @@ resource "aws_dynamodb_table" "member_v2" {
   }
 
   global_secondary_index {
-    name = "birthDateIndex"
-    hash_key = "church_id"
-    range_key = "birthDateShort"
-    projection_type = "INCLUDE"
+    name               = "birthDateIndex"
+    hash_key           = "church_id"
+    range_key          = "birthDateShort"
+    projection_type    = "INCLUDE"
     non_key_attributes = [
       "id",
       "church_id",
@@ -44,14 +44,15 @@ resource "aws_dynamodb_table" "member_v2" {
       "lastName",
       "name",
       "gender",
-      "marriageDate"]
+      "marriageDate"
+    ]
   }
 
   global_secondary_index {
-    name = "maritalStatusIndex"
-    hash_key = "church_id"
-    range_key = "maritalStatus"
-    projection_type = "INCLUDE"
+    name               = "maritalStatusIndex"
+    hash_key           = "church_id"
+    range_key          = "maritalStatus"
+    projection_type    = "INCLUDE"
     non_key_attributes = [
       "id",
       "church_id",
@@ -63,14 +64,15 @@ resource "aws_dynamodb_table" "member_v2" {
       "spousesName",
       "gender",
       "marriageDate",
-      "marriageDateShort"]
+      "marriageDateShort"
+    ]
   }
 
   global_secondary_index {
-    name = "nameIndex"
-    hash_key = "church_id"
-    range_key = "name"
-    projection_type = "INCLUDE"
+    name               = "nameIndex"
+    hash_key           = "church_id"
+    range_key          = "name"
+    projection_type    = "INCLUDE"
     non_key_attributes = [
       "id",
       "church_id",
@@ -80,16 +82,16 @@ resource "aws_dynamodb_table" "member_v2" {
       "lastName",
       "name",
       "gender",
-      "marriageDate"]
+      "marriageDate"
+    ]
   }
-
 }
 
 resource "aws_dynamodb_table" "users_v2" {
-  name = var.user_table_name
+  name         = var.user_table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key = "church_id"
-  range_key = "username"
+  hash_key     = "church_id"
+  range_key    = "username"
 
   attribute {
     name = "church_id"
@@ -103,9 +105,9 @@ resource "aws_dynamodb_table" "users_v2" {
 }
 
 resource "aws_dynamodb_table" "church_table" {
-  name = var.church_table_name
+  name         = var.church_table_name
   billing_mode = "PAY_PER_REQUEST"
-  hash_key = "id"
+  hash_key     = "id"
 
   attribute {
     name = "id"
@@ -114,10 +116,10 @@ resource "aws_dynamodb_table" "church_table" {
 }
 
 resource "aws_dynamodb_table" "participant" {
-  name           = var.participant_table_name
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key = "church_id"
-  range_key = "id"
+  name         = var.participant_table_name
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "church_id"
+  range_key    = "id"
 
   attribute {
     name = "church_id"
@@ -134,12 +136,11 @@ resource "aws_dynamodb_table" "participant" {
     type = "S"
   }
 
-
   global_secondary_index {
-    name = "nameIndex"
-    hash_key = "church_id"
-    range_key = "name"
-    projection_type = "INCLUDE"
+    name               = "nameIndex"
+    hash_key           = "church_id"
+    range_key          = "name"
+    projection_type    = "INCLUDE"
     non_key_attributes = [
       "id",
       "church_id",
@@ -151,6 +152,7 @@ resource "aws_dynamodb_table" "participant" {
       "observation",
       "active",
       "endedAt",
-      "endedReason"]
+      "endedReason"
+    ]
   }
 }

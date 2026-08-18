@@ -22,6 +22,7 @@ func TestAuthHandler_GetToken(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	app := newApp()
+	viper.Set("security.token.expiration", 1)
 
 	service := mock_security.NewMockService(ctrl)
 	authHandler := NewAuthHandler(service)
@@ -42,10 +43,12 @@ func TestAuthHandler_GetToken(t *testing.T) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Roles)
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Duration)
 		})
 
 	})
 	t.Run("Success - 201 - New login with abbreviation", func(t *testing.T) {
+		const expectedOneHourInMilliseconds = int64(3600000)
 		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(church.Abbreviation), gomock.Eq("")).Return(church, nil)
 		service.EXPECT().GenerateToken(gomock.Eq(church), userName, password).Return("token", nil)
 		service.EXPECT().GetRoles(gomock.Any(), gomock.Eq("token")).Return([]string{"role1", "role2"}, nil)
@@ -56,6 +59,8 @@ func TestAuthHandler_GetToken(t *testing.T) {
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
 			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Roles)
+			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Duration)
+			assert.Equal(t, expectedOneHourInMilliseconds, parsedBody.(*dto.GetTokenResponse).Duration)
 		})
 
 	})

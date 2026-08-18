@@ -14,60 +14,60 @@ data "aws_ecr_image" "lambda_image" {
 
 
 module "dynamodb_tables" {
-  source = "../../storage/dynamodb"
-  member_table_name = var.member_table_name
-  user_table_name = var.user_table_name
-  church_table_name = var.church_table_name
+  source                 = "../../storage/dynamodb"
+  member_table_name      = var.member_table_name
+  user_table_name        = var.user_table_name
+  church_table_name      = var.church_table_name
   participant_table_name = var.participant_table_name
 }
 
 module "iam_roles" {
-  source = "../../security/iam"
-  bucket_arn = module.s3_bucket.bucket_arn
+  source          = "../../security/iam"
+  bucket_arn      = module.s3_bucket.bucket_arn
   dynamodb_tables = module.dynamodb_tables.tables_arn
-  role_name = var.role_name
+  role_name       = var.role_name
 }
 
 module "s3_bucket" {
-  source = "../../storage/s3"
+  source      = "../../storage/s3"
   bucket_name = var.bucket_name
 }
 
 
 module "api" {
-  source = "../../application/api"
+  source          = "../../application/api"
   lambda_api_name = var.lambda_api_name
   lambda_role_arn = module.iam_roles.lambda_role_arn
-  image_uri = "${data.aws_ecr_repository.repository.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+  image_uri       = "${data.aws_ecr_repository.repository.repository_url}@${data.aws_ecr_image.lambda_image.id}"
   env_var = {
     "SERVER" : "AWS",
     "APPLICATION" : "API"
-    "EMAIL_SENDER": var.email_sender,
+    "EMAIL_SENDER" : var.email_sender,
     "TABLE_MEMBER" : module.dynamodb_tables.member_table_name,
     "TABLE_USER" : module.dynamodb_tables.user_table_name,
-    "TABLE_CHURCH": module.dynamodb_tables.church_table_name,
+    "TABLE_CHURCH" : module.dynamodb_tables.church_table_name,
     "TABLE_PARTICIPANT" : module.dynamodb_tables.participant_table_name,
     "TOKEN_SECRET" : var.security_token_secret,
     "TOKEN_EXPIRATION" : var.security_token_expiration,
-    "STORAGE": module.s3_bucket.bucket_name,
-    "API_ENDPOINT": var.gateway_url
+    "STORAGE" : module.s3_bucket.bucket_name,
+    "API_ENDPOINT" : var.gateway_url
   }
-  gateway_name    = var.gateway_name
+  gateway_name = var.gateway_name
 }
 
 module "job" {
-  source = "../../application/job"
+  source          = "../../application/job"
   lambda_job_name = var.lambda_job_name
   lambda_role_arn = module.iam_roles.lambda_role_arn
-  image_uri = "${data.aws_ecr_repository.repository.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+  image_uri       = "${data.aws_ecr_repository.repository.repository_url}@${data.aws_ecr_image.lambda_image.id}"
   env_var = {
     "SERVER" : "AWS",
     "APPLICATION" : "JOB"
-    "EMAIL_SENDER": var.email_sender,
+    "EMAIL_SENDER" : var.email_sender,
     "TABLE_MEMBER" : module.dynamodb_tables.member_table_name,
     "TABLE_USER" : module.dynamodb_tables.user_table_name,
-    "TABLE_CHURCH": module.dynamodb_tables.church_table_name,
+    "TABLE_CHURCH" : module.dynamodb_tables.church_table_name,
     "TABLE_PARTICIPANT" : module.dynamodb_tables.participant_table_name,
-    "STORAGE": module.s3_bucket.bucket_name,
+    "STORAGE" : module.s3_bucket.bucket_name,
   }
 }

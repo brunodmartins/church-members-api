@@ -4,9 +4,11 @@ import (
 	"encoding/base64"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/brunodmartins/church-members-api/platform/security"
@@ -44,10 +46,12 @@ func (handler *AuthHandler) getToken(ctx *fiber.Ctx) error {
 		return err
 	}
 	roles, _ := handler.authService.GetRoles(ctx.UserContext(), token)
+	var tokenDurationHours = time.Duration(viper.GetInt("security.token.expiration")) * time.Hour
 	return ctx.Status(http.StatusCreated).JSON(&dto.GetTokenResponse{
 		Token:    token,
 		ChurchID: church.ID,
 		Roles:    roles,
+		Duration: tokenDurationHours.Milliseconds(),
 	})
 }
 

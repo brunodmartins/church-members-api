@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "church_members_api_policy" {
-  name = "${var.role_name}-policy"
+  name        = "${var.role_name}-policy"
   description = "This policy allow church-members-api full execution"
   policy = jsonencode({
     Version = "2012-10-17"
@@ -43,7 +43,8 @@ resource "aws_iam_policy" "church_members_api_policy" {
       {
         Effect = "Allow"
         Action = [
-          "s3:GetBucketLocation"
+          "s3:GetBucketLocation",
+          "s3:ListBucket"
         ]
         Resource = var.bucket_arn
       },
@@ -77,7 +78,7 @@ resource "aws_iam_role" "church_members_api_role" {
 }
 
 resource "aws_iam_role_policy_attachment" "attach_policy" {
-  role = aws_iam_role.church_members_api_role.name
+  role       = aws_iam_role.church_members_api_role.name
   policy_arn = aws_iam_policy.church_members_api_policy.arn
 }
 

@@ -261,6 +261,11 @@ definitions:
             role:
                 type: string
                 x-go-name: Role
+            roles:
+                items:
+                    type: string
+                type: array
+                x-go-name: Roles
             send_daily_sms:
                 type: boolean
                 x-go-name: SendDailySMS
@@ -320,13 +325,13 @@ definitions:
                 type: boolean
                 x-go-name: AcceptedJesus
             acceptedJesusDate:
-                format: date-time
                 type: string
                 x-go-name: AcceptedJesusDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
             baptismDate:
-                format: date-time
                 type: string
                 x-go-name: BaptismDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
             baptismPlace:
                 type: string
                 x-go-name: BaptismPlace
@@ -441,9 +446,9 @@ definitions:
                 type: integer
                 x-go-name: Age
             birthDate:
-                format: date-time
                 type: string
                 x-go-name: BirthDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
             childrenQuantity:
                 format: int64
                 type: integer
@@ -466,9 +471,9 @@ definitions:
                 type: string
                 x-go-name: MaritalStatus
             marriageDate:
-                format: date-time
                 type: string
                 x-go-name: MarriageDate
+                x-go-type: github.com/brunodmartins/church-members-api/internal/constants/dto.Date
             spousesName:
                 type: string
                 x-go-name: SpousesName
@@ -480,6 +485,10 @@ definitions:
             church_id:
                 type: string
                 x-go-name: ChurchID
+            duration:
+                format: int64
+                type: integer
+                x-go-name: Duration
             roles:
                 items:
                     type: string

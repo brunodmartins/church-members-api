@@ -154,7 +154,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
-		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("classification_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("adult_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return nil
 		})
@@ -167,7 +167,7 @@ func TestGenerateClassificationReport(t *testing.T) {
 		spec := member.Specification(nil)
 		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
 		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Eq(members)).Return([]byte{}, nil)
-		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("classification_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("adult_report.pdf"), gomock.Any()).DoAndReturn(func(ctx context.Context, name string, data []byte) error {
 			assert.NotNil(t, data)
 			return genericError
 		})
@@ -264,7 +264,7 @@ func TestReportService_GetReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder, storageService)
 	ctx := buildContext()
 
-	var names = []string{reportType.MEMBER, reportType.LEGAL, reportType.BIRTHDATE, reportType.CLASSIFICATION, reportType.MARRIAGE}
+	var names = []string{reportType.MEMBER, reportType.LEGAL, reportType.BIRTHDATE, reportType.CHILDREN, reportType.TEEN, reportType.YOUNG, reportType.ADULT, reportType.MARRIAGE}
 	const url = "my-url"
 
 	for _, name := range names {

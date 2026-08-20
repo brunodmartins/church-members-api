@@ -5,11 +5,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
-	"errors"
+	"sort"
+	"strings"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	"github.com/sirupsen/logrus"
-	"sort"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
@@ -120,7 +121,11 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 	if err != nil {
 		return err
 	}
-	return report.storageService.SaveFile(ctx, classificationReportName, result)
+	fileName, err := reportType.GetFileName(strings.ToLower(classification.String()))
+	if err != nil {
+		return err
+	}
+	return report.storageService.SaveFile(ctx, fileName, result)
 }
 
 func (report reportService) LegalReport(ctx context.Context) error {
@@ -148,33 +153,13 @@ func (report *reportService) getCSVColumns(ctx context.Context) []string {
 	}
 }
 
-func (report reportService) GetReport(ctx context.Context, reportType string) (string, error) {
-	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", reportType)
-	fileName, err := getFileName(reportType)
+func (srv *reportService) GetReport(ctx context.Context, report string) (string, error) {
+	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", report)
+	fileName, err := reportType.GetFileName(report)
 	if err != nil {
 		return "", err
 	}
-	return report.storageService.GetFileURL(ctx, fileName)
-}
-
-func getFileName(reportTypeName string) (string, error) {
-	result := ""
-	switch reportTypeName {
-	case reportType.LEGAL:
-		result = legalReportName
-	case reportType.MEMBER:
-		result = memberReportName
-	case reportType.CLASSIFICATION:
-		result = classificationReportName
-	case reportType.BIRTHDATE:
-		result = birthDayReportName
-	case reportType.MARRIAGE:
-		result = marriageReportName
-	}
-	if result == "" {
-		return "", errors.New("invalid report type: " + reportTypeName)
-	}
-	return result, nil
+	return srv.storageService.GetFileURL(ctx, fileName)
 }
 
 func buildCSVData(members []*domain.Member) []file.Data {

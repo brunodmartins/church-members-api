@@ -1081,7 +1081,7 @@ paths:
             description: Returns a report file url
             operationId: getURLForReport
             parameters:
-                - description: The report type [members,legal,classification,birthdate,marriage]
+                - description: The report type [members,legal,birthdate,marriage,children,teen,young,adult]
                   in: path
                   name: reportType
                   required: true

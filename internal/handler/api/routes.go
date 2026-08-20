@@ -450,7 +450,7 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	// - name: reportType
 	//   in: path
 	//   type: string
-	//   description: The report type [members,legal,classification,birthdate,marriage]
+	//   description: The report type [members,legal,birthdate,marriage,children,teen,young,adult]
 	//   required: true
 	// responses:
 	//   '307':

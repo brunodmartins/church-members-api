@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -105,14 +106,15 @@ func TestS3wrapper_HeadObject(t *testing.T) {
 			assert.Equal(t, bucket, *params.Bucket)
 			assert.Equal(t, fileName, *params.Key)
 			return &s3.HeadObjectOutput{
-				Metadata: map[string]string{
-					"Content-Type": "application/pdf",
-				},
+				LastModified:  func() *time.Time { value := time.Now(); return &value }(),
+				ContentType:   func() *string { value := "application/pdf"; return &value }(),
+				ContentLength: func() *int64 { value := int64(42); return &value }(),
 			}, nil
 		})
 		result, err := wrapper.HeadObject(ctx, fileName)
 		assert.Nil(t, err)
-		assert.Equal(t, "application/pdf", result["Content-Type"])
+		assert.Equal(t, "application/pdf", result["ContentType"])
+		assert.Equal(t, int64(42), result["Size"])
 	})
 	t.Run("Fail", func(t *testing.T) {
 		api.EXPECT().HeadObject(gomock.Eq(ctx), gomock.Any()).DoAndReturn(func(ctx context.Context,

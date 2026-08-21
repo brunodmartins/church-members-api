@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
@@ -70,7 +71,12 @@ func TestS3Storage_GetFileMetadata(t *testing.T) {
 	var churchID = domain.NewID()
 	const fileName = "members_report.pdf"
 	var key = fmt.Sprintf("%s/%s", churchID, fileName)
-	var metadata = map[string]string{"Content-Type": "application/pdf"}
+	lastModified := time.Now()
+	var metadata = map[string]interface{}{
+		"LastModified": &lastModified,
+		"ContentType":  "application/pdf",
+		"Size":         int64(42),
+	}
 
 	s3Wrapper := mock_wrapper.NewMockS3APIWrapper(ctrl)
 	storage := NewS3Storage(s3Wrapper)
@@ -80,8 +86,9 @@ func TestS3Storage_GetFileMetadata(t *testing.T) {
 		s3Wrapper.EXPECT().HeadObject(gomock.Eq(ctx), gomock.Eq(key)).Return(metadata, nil)
 		result, err := storage.GetFileMetadata(ctx, fileName)
 		assert.Nil(t, err)
-		assert.Equal(t, metadata["Content-Type"], result["Content-Type"])
-		assert.Len(t, result, 1)
+		assert.Equal(t, lastModified, *result.LastModified)
+		assert.Equal(t, "application/pdf", result.ContentType)
+		assert.Equal(t, int64(42), result.Size)
 
 	})
 	t.Run("Get file metadata returns error", func(t *testing.T) {

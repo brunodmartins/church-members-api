@@ -2,8 +2,8 @@ package report
 
 import (
 	"context"
-	"errors"
 	"testing"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
@@ -15,6 +15,7 @@ import (
 
 func TestReportService_getReportsCreationDate(t *testing.T) {
 	const lastModified = "2026-08-21T10:20:30Z"
+	parsedLastModified, _ := time.Parse(time.RFC3339, lastModified)
 
 	tests := []struct {
 		name       string
@@ -24,17 +25,12 @@ func TestReportService_getReportsCreationDate(t *testing.T) {
 	}{
 		{
 			name:     "formats last modified date",
-			metadata: storage.FileMetadata{"LastModified": lastModified},
+			metadata: storage.FileMetadata{LastModified: &parsedLastModified},
 			expected: "21/08/2026 10:20:30",
 		},
 		{
-			name:       "returns fallback when storage fails",
-			storageErr: errors.New("metadata unavailable"),
-			expected:   "Error getting last modified date",
-		},
-		{
-			name:     "returns fallback when date is malformed",
-			metadata: storage.FileMetadata{"LastModified": "invalid"},
+			name:     "returns fallback when date is missing",
+			metadata: storage.FileMetadata{},
 			expected: "Error getting last modified date",
 		},
 	}

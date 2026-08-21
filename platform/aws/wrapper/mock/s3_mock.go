@@ -151,10 +151,10 @@ func (m *MockS3APIWrapper) EXPECT() *MockS3APIWrapperMockRecorder {
 }
 
 // HeadObject mocks base method.
-func (m *MockS3APIWrapper) HeadObject(ctx context.Context, key string) (map[string]string, error) {
+func (m *MockS3APIWrapper) HeadObject(ctx context.Context, key string) (map[string]any, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "HeadObject", ctx, key)
-	ret0, _ := ret[0].(map[string]string)
+	ret0, _ := ret[0].(map[string]any)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

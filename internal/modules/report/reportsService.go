@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"sort"
 	"strings"
-	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
@@ -198,13 +197,12 @@ func (srv *reportService) getReportsCreationDate(ctx context.Context) map[report
 			result[report] = "Error getting last modified date"
 			continue
 		}
-		lastModifiedDate, err := time.Parse(time.RFC3339, metadata["LastModified"])
-		if err != nil {
-			logrus.WithField("church_id", domain.GetChurchID(ctx)).Errorf("Error parsing last modified date for report %s: %v", report, err)
+		if metadata.LastModified == nil {
+			logrus.WithField("church_id", domain.GetChurchID(ctx)).Errorf("Error parsing last modified date for report %s: missing last modified date", report)
 			result[report] = "Error getting last modified date"
 			continue
 		}
-		result[report] = lastModifiedDate.Format("02/01/2006 15:04:05")
+		result[report] = metadata.LastModified.Format("02/01/2006 15:04:05")
 	}
 
 	return result

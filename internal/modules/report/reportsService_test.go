@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
@@ -298,9 +299,10 @@ func TestReportService_ListReports(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder, storageService)
 	ctx := buildContext()
 	lastModified := "2026-08-21T10:20:30Z"
+	parsedLastModified, _ := time.Parse(time.RFC3339, lastModified)
 
 	for range reportType.ReportsTypes {
-		storageService.EXPECT().GetFileMetadata(gomock.Eq(ctx), gomock.Any()).Return(storage.FileMetadata{"LastModified": lastModified}, nil)
+		storageService.EXPECT().GetFileMetadata(gomock.Eq(ctx), gomock.Any()).Return(storage.FileMetadata{LastModified: &parsedLastModified}, nil)
 	}
 
 	result := service.ListReports(ctx)

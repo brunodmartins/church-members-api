@@ -31,7 +31,7 @@ type s3SignedAPI interface {
 type S3APIWrapper interface {
 	PutObject(ctx context.Context, key string, data []byte) error
 	PresignGetObject(ctx context.Context, key string) (string, error)
-	HeadObject(ctx context.Context, key string) (map[string]string, error)
+	HeadObject(ctx context.Context, key string) (map[string]interface{}, error)
 }
 
 type s3wrapper struct {
@@ -77,7 +77,7 @@ func (wrapper *s3wrapper) PresignGetObject(ctx context.Context, key string) (str
 	return request.URL, nil
 }
 
-func (wrapper *s3wrapper) HeadObject(ctx context.Context, key string) (map[string]string, error) {
+func (wrapper *s3wrapper) HeadObject(ctx context.Context, key string) (map[string]interface{}, error) {
 	input := &s3.HeadObjectInput{
 		Bucket: aws.String(wrapper.bucket),
 		Key:    aws.String(key),
@@ -89,10 +89,10 @@ func (wrapper *s3wrapper) HeadObject(ctx context.Context, key string) (map[strin
 		return nil, err
 	}
 
-	metadata := make(map[string]string)
-	for k, v := range response.Metadata {
-		metadata[k] = v
-	}
+	metadata := make(map[string]interface{})
+	metadata["LastModified"] = response.LastModified
+	metadata["ContentType"] = *response.ContentType
+	metadata["Size"] = *response.ContentLength
 
 	return metadata, nil
 }

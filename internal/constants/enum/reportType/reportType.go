@@ -1,9 +1,11 @@
 package reportType
 
 import (
-	"errors"
+	"fmt"
 	"slices"
 )
+
+type Type string
 
 const (
 	MEMBER    = "members"
@@ -27,13 +29,13 @@ const (
 	adultReportName    = "adult_report.pdf"
 )
 
-var validReports = []string{MEMBER, LEGAL, BIRTHDATE, MARRIAGE, CHILDREN, TEEN, YOUNG, ADULT}
+var ReportsTypes = []Type{MEMBER, LEGAL, BIRTHDATE, MARRIAGE, CHILDREN, TEEN, YOUNG, ADULT}
 
-func IsValidReport(name string) bool {
-	return slices.Contains(validReports, name)
+func IsValidReport(name Type) bool {
+	return slices.Contains(ReportsTypes, name)
 }
 
-func GetFileName(reportTypeName string) (string, error) {
+func GetFileName(reportTypeName Type) (string, error) {
 	result := ""
 	switch reportTypeName {
 	case LEGAL:
@@ -54,7 +56,7 @@ func GetFileName(reportTypeName string) (string, error) {
 		result = marriageReportName
 	}
 	if result == "" {
-		return "", errors.New("invalid report type: " + reportTypeName)
+		return "", fmt.Errorf("invalid report type: %s", reportTypeName)
 	}
 	return result, nil
 }

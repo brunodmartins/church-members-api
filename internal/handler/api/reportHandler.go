@@ -44,11 +44,11 @@ func (handler *ReportHandler) generateLegalReport(ctx *fiber.Ctx) error {
 }
 
 func (handler *ReportHandler) getURLForReport(ctx *fiber.Ctx) error {
-	reportTypeName := ctx.Params("reportType")
+	reportTypeName := reportType.Type(ctx.Params("reportType"))
 	if !reportType.IsValidReport(reportTypeName) {
 		return apierrors.NewApiError("Invalid report type", http.StatusBadRequest)
 	}
-	url, err := handler.reportGenerator.GetReport(ctx.UserContext(), reportTypeName)
+	url, err := handler.reportGenerator.GetReport(ctx.UserContext(), string(reportTypeName))
 	if err != nil {
 		return err
 	}

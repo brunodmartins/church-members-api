@@ -3,10 +3,12 @@ package report_test
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
+	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	mock_storage "github.com/brunodmartins/church-members-api/internal/services/storage/mock"
 	"go.uber.org/mock/gomock"
-	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
@@ -285,6 +287,41 @@ func TestReportService_GetReport(t *testing.T) {
 		_, err := service.GetReport(ctx, "")
 		assert.NotNil(t, err)
 	})
+}
+
+func TestReportService_ListReports(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	memberService := mock_member.NewMockService(ctrl)
+	fileBuilder := mock_file.NewMockBuilder(ctrl)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := report.NewReportService(memberService, fileBuilder, storageService)
+	ctx := buildContext()
+	lastModified := "2026-08-21T10:20:30Z"
+
+	for range reportType.ReportsTypes {
+		storageService.EXPECT().GetFileMetadata(gomock.Eq(ctx), gomock.Any()).Return(storage.FileMetadata{"LastModified": lastModified}, nil)
+	}
+
+	result := service.ListReports(ctx)
+
+	assert.Len(t, result, len(reportType.ReportsTypes))
+	expectedNames := []string{
+		"Member's report",
+		"Member's report - Legal",
+		"Anniversary List",
+		"Marriage Anniversary List",
+		"Childrens List",
+		"Teenagers List",
+		"Youngs List",
+		"Adults List",
+	}
+	for index, reportTypeName := range reportType.ReportsTypes {
+		assert.Equal(t, expectedNames[index], result[index].Name)
+		assert.Equal(t, reportTypeName, result[index].Type)
+		assert.Equal(t, "/reports/"+string(reportTypeName), result[index].URL)
+		assert.Equal(t, "21/08/2026 10:20:30", result[index].CreationDate)
+	}
 }
 
 func buildContext() context.Context {

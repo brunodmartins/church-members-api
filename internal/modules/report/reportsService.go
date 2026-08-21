@@ -5,12 +5,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/csv"
+	"fmt"
 	"sort"
 	"strings"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
@@ -27,7 +30,8 @@ type Service interface {
 	BirthdayReport(ctx context.Context) error
 	MarriageReport(ctx context.Context) error
 	ClassificationReport(ctx context.Context, classification enum.Classification) error
-	GetReport(ctx context.Context, name string) (string, error)
+	GetReport(ctx context.Context, name reportType.Type) (string, error)
+	ListReports(ctx context.Context) []Report
 }
 
 type reportService struct {
@@ -121,7 +125,7 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 	if err != nil {
 		return err
 	}
-	fileName, err := reportType.GetFileName(strings.ToLower(classification.String()))
+	fileName, err := reportType.GetFileName(reportType.Type(strings.ToLower(classification.String())))
 	if err != nil {
 		return err
 	}
@@ -153,13 +157,55 @@ func (report *reportService) getCSVColumns(ctx context.Context) []string {
 	}
 }
 
-func (srv *reportService) GetReport(ctx context.Context, report string) (string, error) {
+func (srv *reportService) GetReport(ctx context.Context, report reportType.Type) (string, error) {
 	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", report)
 	fileName, err := reportType.GetFileName(report)
 	if err != nil {
 		return "", err
 	}
 	return srv.storageService.GetFileURL(ctx, fileName)
+}
+
+func (srv *reportService) ListReports(ctx context.Context) []Report {
+	reports := make([]Report, 0, len(reportType.ReportsTypes))
+	creationDates := srv.getReportsCreationDate(ctx)
+
+	for _, report := range reportType.ReportsTypes {
+		reports = append(reports, Report{
+			Name:         i18n.GetMessage(ctx, "Reports.Title."+cases.Title(language.English).String(string(report))),
+			Type:         report,
+			URL:          fmt.Sprintf("/reports/%s", report),
+			CreationDate: creationDates[report],
+		})
+	}
+
+	return reports
+}
+
+func (srv *reportService) getReportsCreationDate(ctx context.Context) map[reportType.Type]string {
+	var result = make(map[reportType.Type]string)
+	for _, report := range reportType.ReportsTypes {
+		fileName, err := reportType.GetFileName(report)
+		if err != nil {
+			logrus.WithField("church_id", domain.GetChurchID(ctx)).Errorf("Error parsing last modified date for report %s: %v", report, err)
+			result[report] = "Error getting last modified date"
+			continue
+		}
+		metadata, err := srv.storageService.GetFileMetadata(ctx, fileName)
+		if err != nil {
+			logrus.WithField("church_id", domain.GetChurchID(ctx)).Errorf("Error parsing last modified date for report %s: %v", report, err)
+			result[report] = "Error getting last modified date"
+			continue
+		}
+		if metadata.LastModified == nil {
+			logrus.WithField("church_id", domain.GetChurchID(ctx)).Errorf("Error parsing last modified date for report %s: missing last modified date", report)
+			result[report] = "Error getting last modified date"
+			continue
+		}
+		result[report] = metadata.LastModified.Format("02/01/2006 15:04:05")
+	}
+
+	return result
 }
 
 func buildCSVData(members []*domain.Member) []file.Data {

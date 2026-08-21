@@ -3,6 +3,7 @@ package wrapper
 import (
 	"bytes"
 	"context"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/sirupsen/logrus"
@@ -15,6 +16,9 @@ type s3API interface {
 	PutObject(ctx context.Context,
 		params *s3.PutObjectInput,
 		optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error)
+	HeadObject(ctx context.Context,
+		params *s3.HeadObjectInput,
+		optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error)
 }
 
 type s3SignedAPI interface {
@@ -27,6 +31,7 @@ type s3SignedAPI interface {
 type S3APIWrapper interface {
 	PutObject(ctx context.Context, key string, data []byte) error
 	PresignGetObject(ctx context.Context, key string) (string, error)
+	HeadObject(ctx context.Context, key string) (map[string]interface{}, error)
 }
 
 type s3wrapper struct {
@@ -70,4 +75,24 @@ func (wrapper *s3wrapper) PresignGetObject(ctx context.Context, key string) (str
 		return "", err
 	}
 	return request.URL, nil
+}
+
+func (wrapper *s3wrapper) HeadObject(ctx context.Context, key string) (map[string]interface{}, error) {
+	input := &s3.HeadObjectInput{
+		Bucket: aws.String(wrapper.bucket),
+		Key:    aws.String(key),
+	}
+
+	response, err := wrapper.api.HeadObject(ctx, input)
+	if err != nil {
+		logrus.Errorf("Error heading object from S3 bucket: %v", err)
+		return nil, err
+	}
+
+	metadata := make(map[string]interface{})
+	metadata["LastModified"] = response.LastModified
+	metadata["ContentType"] = *response.ContentType
+	metadata["Size"] = *response.ContentLength
+
+	return metadata, nil
 }

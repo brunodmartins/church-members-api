@@ -3,15 +3,24 @@ package storage
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/sirupsen/logrus"
 )
 
+type FileMetadata struct {
+	LastModified *time.Time
+	ContentType  string
+	Size         int64
+}
+
 //go:generate mockgen -source=./storage.go -destination=./mock/storage_mock.go
 type Service interface {
 	SaveFile(ctx context.Context, name string, data []byte) error
 	GetFileURL(ctx context.Context, name string) (string, error)
+	GetFileMetadata(ctx context.Context, name string) (FileMetadata, error)
 }
 
 type s3Storage struct {
@@ -30,6 +39,20 @@ func (storage s3Storage) SaveFile(ctx context.Context, name string, data []byte)
 func (storage s3Storage) GetFileURL(ctx context.Context, name string) (string, error) {
 	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting url for file %s", name)
 	return storage.s3Wrapper.PresignGetObject(ctx, storage.buildKey(ctx, name))
+}
+
+func (storage s3Storage) GetFileMetadata(ctx context.Context, name string) (FileMetadata, error) {
+	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting metadata for file %s", name)
+	metadata, err := storage.s3Wrapper.HeadObject(ctx, storage.buildKey(ctx, name))
+	if err != nil {
+		return FileMetadata{}, err
+	}
+
+	return FileMetadata{
+		LastModified: metadata["LastModified"].(*time.Time),
+		ContentType:  metadata["ContentType"].(string),
+		Size:         metadata["Size"].(int64),
+	}, nil
 }
 
 func (storage s3Storage) buildKey(ctx context.Context, name string) string {

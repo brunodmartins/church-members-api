@@ -14,6 +14,8 @@ import (
 	reflect "reflect"
 
 	enum "github.com/brunodmartins/church-members-api/internal/constants/enum"
+	reportType "github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
+	report "github.com/brunodmartins/church-members-api/internal/modules/report"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -70,7 +72,7 @@ func (mr *MockServiceMockRecorder) ClassificationReport(ctx, classification any)
 }
 
 // GetReport mocks base method.
-func (m *MockService) GetReport(ctx context.Context, name string) (string, error) {
+func (m *MockService) GetReport(ctx context.Context, name reportType.Type) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReport", ctx, name)
 	ret0, _ := ret[0].(string)
@@ -96,6 +98,20 @@ func (m *MockService) LegalReport(ctx context.Context) error {
 func (mr *MockServiceMockRecorder) LegalReport(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LegalReport", reflect.TypeOf((*MockService)(nil).LegalReport), ctx)
+}
+
+// ListReports mocks base method.
+func (m *MockService) ListReports(ctx context.Context) []report.Report {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListReports", ctx)
+	ret0, _ := ret[0].([]report.Report)
+	return ret0
+}
+
+// ListReports indicates an expected call of ListReports.
+func (mr *MockServiceMockRecorder) ListReports(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListReports", reflect.TypeOf((*MockService)(nil).ListReports), ctx)
 }
 
 // MarriageReport mocks base method.

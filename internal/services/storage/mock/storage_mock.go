@@ -13,6 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
+	storage "github.com/brunodmartins/church-members-api/internal/services/storage"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -38,6 +39,21 @@ func NewMockService(ctrl *gomock.Controller) *MockService {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
+}
+
+// GetFileMetadata mocks base method.
+func (m *MockService) GetFileMetadata(ctx context.Context, name string) (storage.FileMetadata, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFileMetadata", ctx, name)
+	ret0, _ := ret[0].(storage.FileMetadata)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFileMetadata indicates an expected call of GetFileMetadata.
+func (mr *MockServiceMockRecorder) GetFileMetadata(ctx, name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFileMetadata", reflect.TypeOf((*MockService)(nil).GetFileMetadata), ctx, name)
 }
 
 // GetFileURL mocks base method.

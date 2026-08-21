@@ -42,6 +42,26 @@ func (m *Mocks3API) EXPECT() *Mocks3APIMockRecorder {
 	return m.recorder
 }
 
+// HeadObject mocks base method.
+func (m *Mocks3API) HeadObject(ctx context.Context, params *s3.HeadObjectInput, optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{ctx, params}
+	for _, a := range optFns {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "HeadObject", varargs...)
+	ret0, _ := ret[0].(*s3.HeadObjectOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HeadObject indicates an expected call of HeadObject.
+func (mr *Mocks3APIMockRecorder) HeadObject(ctx, params any, optFns ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{ctx, params}, optFns...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HeadObject", reflect.TypeOf((*Mocks3API)(nil).HeadObject), varargs...)
+}
+
 // PutObject mocks base method.
 func (m *Mocks3API) PutObject(ctx context.Context, params *s3.PutObjectInput, optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 	m.ctrl.T.Helper()
@@ -128,6 +148,21 @@ func NewMockS3APIWrapper(ctrl *gomock.Controller) *MockS3APIWrapper {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockS3APIWrapper) EXPECT() *MockS3APIWrapperMockRecorder {
 	return m.recorder
+}
+
+// HeadObject mocks base method.
+func (m *MockS3APIWrapper) HeadObject(ctx context.Context, key string) (map[string]any, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HeadObject", ctx, key)
+	ret0, _ := ret[0].(map[string]any)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HeadObject indicates an expected call of HeadObject.
+func (mr *MockS3APIWrapperMockRecorder) HeadObject(ctx, key any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HeadObject", reflect.TypeOf((*MockS3APIWrapper)(nil).HeadObject), ctx, key)
 }
 
 // PresignGetObject mocks base method.

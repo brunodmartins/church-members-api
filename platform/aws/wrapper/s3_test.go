@@ -3,12 +3,13 @@ package wrapper
 import (
 	"context"
 	"errors"
+	"testing"
+
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-	"testing"
 )
 
 func TestS3wrapper_PutObject(t *testing.T) {
@@ -82,6 +83,46 @@ func TestS3wrapper_PresignGetObject(t *testing.T) {
 			return nil, errors.New("error")
 		})
 		_, err := wrapper.PresignGetObject(ctx, fileName)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestS3wrapper_HeadObject(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	const fileName = "members_report.pdf"
+	const bucket = "my-bucket"
+
+	api := mock_wrapper.NewMocks3API(ctrl)
+	wrapper := NewS3APIWrapper(api, bucket, nil)
+	ctx := context.TODO()
+
+	t.Run("Success", func(t *testing.T) {
+		api.EXPECT().HeadObject(gomock.Eq(ctx), gomock.Any()).DoAndReturn(func(ctx context.Context,
+			params *s3.HeadObjectInput,
+			optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error) {
+			assert.Equal(t, bucket, *params.Bucket)
+			assert.Equal(t, fileName, *params.Key)
+			return &s3.HeadObjectOutput{
+				Metadata: map[string]string{
+					"Content-Type": "application/pdf",
+				},
+			}, nil
+		})
+		result, err := wrapper.HeadObject(ctx, fileName)
+		assert.Nil(t, err)
+		assert.Equal(t, "application/pdf", result["Content-Type"])
+	})
+	t.Run("Fail", func(t *testing.T) {
+		api.EXPECT().HeadObject(gomock.Eq(ctx), gomock.Any()).DoAndReturn(func(ctx context.Context,
+			params *s3.HeadObjectInput,
+			optFns ...func(*s3.Options)) (*s3.HeadObjectOutput, error) {
+			assert.Equal(t, bucket, *params.Bucket)
+			assert.Equal(t, fileName, *params.Key)
+			return nil, errors.New("error")
+		})
+		_, err := wrapper.HeadObject(ctx, fileName)
 		assert.NotNil(t, err)
 	})
 }

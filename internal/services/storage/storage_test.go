@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"testing"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-	"testing"
 )
 
 func TestS3Storage_SaveFile(t *testing.T) {
@@ -58,6 +59,35 @@ func TestS3Storage_GetFileURL(t *testing.T) {
 		ctx := BuildContext(churchID)
 		s3Wrapper.EXPECT().PresignGetObject(gomock.Eq(ctx), gomock.Eq(key)).Return("", errors.New("error"))
 		_, err := storage.GetFileURL(ctx, fileName)
+		assert.NotNil(t, err)
+	})
+}
+
+func TestS3Storage_GetFileMetadata(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	var churchID = domain.NewID()
+	const fileName = "members_report.pdf"
+	var key = fmt.Sprintf("%s/%s", churchID, fileName)
+	var metadata = map[string]string{"Content-Type": "application/pdf"}
+
+	s3Wrapper := mock_wrapper.NewMockS3APIWrapper(ctrl)
+	storage := NewS3Storage(s3Wrapper)
+
+	t.Run("Get file metadata successfully", func(t *testing.T) {
+		ctx := BuildContext(churchID)
+		s3Wrapper.EXPECT().HeadObject(gomock.Eq(ctx), gomock.Eq(key)).Return(metadata, nil)
+		result, err := storage.GetFileMetadata(ctx, fileName)
+		assert.Nil(t, err)
+		assert.Equal(t, metadata["Content-Type"], result["Content-Type"])
+		assert.Len(t, result, 1)
+
+	})
+	t.Run("Get file metadata returns error", func(t *testing.T) {
+		ctx := BuildContext(churchID)
+		s3Wrapper.EXPECT().HeadObject(gomock.Eq(ctx), gomock.Eq(key)).Return(nil, errors.New("error"))
+		_, err := storage.GetFileMetadata(ctx, fileName)
 		assert.NotNil(t, err)
 	})
 }

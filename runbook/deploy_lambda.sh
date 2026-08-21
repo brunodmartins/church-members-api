@@ -38,24 +38,6 @@ info "Resolving image digest for ${IMAGE_URI_TAG} (preferring amd64/linux)..."
 
 DIGEST=""
 
-# Prefer using docker's remote manifest inspect (requires docker and access to ECR).
-if command -v docker >/dev/null 2>&1 && command -v jq >/dev/null 2>&1; then
-    TMP_MANIFEST=$(mktemp)
-    if docker manifest inspect "${IMAGE_URI_TAG}" > "$TMP_MANIFEST" 2>/dev/null; then
-        if jq -e 'has("manifests")' "$TMP_MANIFEST" >/dev/null 2>&1; then
-            DIGEST=$(jq -r '.manifests[] | select(.platform.architecture=="amd64" and .platform.os=="linux") | .digest' "$TMP_MANIFEST" | head -n1)
-            if [ -z "$DIGEST" ] || [ "$DIGEST" = "null" ]; then
-                DIGEST=$(jq -r '.manifests[0].digest' "$TMP_MANIFEST" 2>/dev/null || true)
-            fi
-        else
-            DIGEST=$(jq -r '.config.digest // .digest' "$TMP_MANIFEST" 2>/dev/null || true)
-        fi
-    else
-        warn "docker manifest inspect failed for ${IMAGE_URI_TAG}; falling back to AWS lookup"
-    fi
-    rm -f "$TMP_MANIFEST"
-fi
-
 # Fallback to describe-images (AWS) to get the image digest (may be manifest-list digest)
 if [ -z "$DIGEST" ]; then
     DIGEST=$(aws ecr describe-images \

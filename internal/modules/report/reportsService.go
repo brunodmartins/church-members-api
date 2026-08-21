@@ -31,7 +31,7 @@ type Service interface {
 	BirthdayReport(ctx context.Context) error
 	MarriageReport(ctx context.Context) error
 	ClassificationReport(ctx context.Context, classification enum.Classification) error
-	GetReport(ctx context.Context, name string) (string, error)
+	GetReport(ctx context.Context, name reportType.Type) (string, error)
 	ListReports(ctx context.Context) []Report
 }
 
@@ -158,9 +158,9 @@ func (report *reportService) getCSVColumns(ctx context.Context) []string {
 	}
 }
 
-func (srv *reportService) GetReport(ctx context.Context, report string) (string, error) {
+func (srv *reportService) GetReport(ctx context.Context, report reportType.Type) (string, error) {
 	logrus.WithField("church_id", domain.GetChurchID(ctx)).Infof("Getting report %s", report)
-	fileName, err := reportType.GetFileName(reportType.Type(report))
+	fileName, err := reportType.GetFileName(report)
 	if err != nil {
 		return "", err
 	}

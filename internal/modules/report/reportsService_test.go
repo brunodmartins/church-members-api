@@ -266,11 +266,11 @@ func TestReportService_GetReport(t *testing.T) {
 	service := report.NewReportService(memberService, fileBuilder, storageService)
 	ctx := buildContext()
 
-	var names = []string{reportType.MEMBER, reportType.LEGAL, reportType.BIRTHDATE, reportType.CHILDREN, reportType.TEEN, reportType.YOUNG, reportType.ADULT, reportType.MARRIAGE}
+	var names = []reportType.Type{reportType.MEMBER, reportType.LEGAL, reportType.BIRTHDATE, reportType.CHILDREN, reportType.TEEN, reportType.YOUNG, reportType.ADULT, reportType.MARRIAGE}
 	const url = "my-url"
 
 	for _, name := range names {
-		t.Run("Success - "+name, func(t *testing.T) {
+		t.Run("Success - "+string(name), func(t *testing.T) {
 			storageService.EXPECT().GetFileURL(gomock.Eq(ctx), gomock.Any()).Return(url, nil)
 			result, err := service.GetReport(ctx, name)
 			assert.Nil(t, err)

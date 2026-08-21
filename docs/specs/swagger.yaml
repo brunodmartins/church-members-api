@@ -528,6 +528,23 @@ definitions:
                 x-go-name: SendWeeklyEmail
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    ReportResponse:
+        description: ReportResponse for HTTP report list responses
+        properties:
+            creationDate:
+                type: string
+                x-go-name: CreationDate
+            name:
+                type: string
+                x-go-name: Name
+            type:
+                type: string
+                x-go-name: Type
+            url:
+                type: string
+                x-go-name: URL
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     RetireMemberRequest:
         description: RetireMemberRequest for HTTP calls to put member status
         properties:
@@ -1076,6 +1093,26 @@ paths:
                         $ref: '#/definitions/ErrorResponse'
             security:
                 - token: []
+    /reports:
+        get:
+            description: Returns the available reports and their creation dates.
+            operationId: listReports
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Available reports
+                    schema:
+                        items:
+                            $ref: '#/definitions/ReportResponse'
+                        type: array
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: List reports
     /reports/{reportType}:
         get:
             description: Returns a report file url

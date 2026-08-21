@@ -333,6 +333,30 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 }
 
 func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
+	// swagger:operation GET /reports listReports
+	//
+	// List reports
+	//
+	// Returns the available reports and their creation dates.
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: Available reports
+	//     schema:
+	//       type: array
+	//       items:
+	//         "$ref": "#/definitions/ReportResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/reports", handler.listReports)
+
 	// swagger:operation POST /reports/members/birthday generateBirthDayReport
 	//
 	// Birthday report

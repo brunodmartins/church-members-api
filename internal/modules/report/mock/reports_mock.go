@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	enum "github.com/brunodmartins/church-members-api/internal/constants/enum"
+	reportType "github.com/brunodmartins/church-members-api/internal/constants/enum/reportType"
 	report "github.com/brunodmartins/church-members-api/internal/modules/report"
 	gomock "go.uber.org/mock/gomock"
 )
@@ -71,7 +72,7 @@ func (mr *MockServiceMockRecorder) ClassificationReport(ctx, classification any)
 }
 
 // GetReport mocks base method.
-func (m *MockService) GetReport(ctx context.Context, name string) (string, error) {
+func (m *MockService) GetReport(ctx context.Context, name reportType.Type) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReport", ctx, name)
 	ret0, _ := ret[0].(string)

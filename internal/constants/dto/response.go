@@ -1,5 +1,14 @@
 package dto
 
+// ReportResponse for HTTP report list responses
+// swagger:model ReportResponse
+type ReportResponse struct {
+	Name         string `json:"name"`
+	Type         string `json:"type"`
+	URL          string `json:"url"`
+	CreationDate string `json:"creationDate"`
+}
+
 // ErrorResponse for HTTP error responses
 // swagger:model ErrorResponse
 type ErrorResponse struct {

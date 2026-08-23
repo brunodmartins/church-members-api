@@ -1,10 +1,11 @@
 #!/bin/bash
 
-account_id=$1
-image_tag=$2
-region=$3
-
 cd ../
+
+account_id=$(aws account get-account-information | jq -r ".AccountId")
+image_tag=$(cat .version)
+region=$(aws configure get region)
+
 aws ecr get-login-password --region $region | docker login --username AWS --password-stdin $account_id.dkr.ecr.$region.amazonaws.com
 image=$account_id.dkr.ecr.$region.amazonaws.com/church-members-api-container:$image_tag
 

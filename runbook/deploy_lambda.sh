@@ -5,16 +5,18 @@ set -u
 set -o pipefail
 
 usage() {
-    echo "Usage: $0 <lambda_name> <image_tag>"
+    echo "Usage: $0 <lambda_name>"
     exit 1
 }
 
-if [ $# -ne 2 ]; then
+if [ $# -ne 1 ]; then
     usage
 fi
 
 LAMBDA_NAME="$1"
-IMAGE_TAG="$2"
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+REPO_ROOT=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+IMAGE_TAG=$(<"${REPO_ROOT}/.version")
 
 ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 REGION=$(aws configure get region)

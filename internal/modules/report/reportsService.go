@@ -26,11 +26,6 @@ import (
 
 //go:generate mockgen -source=./reportsService.go -destination=./mock/reports_mock.go
 type Service interface {
-	LegalReport(ctx context.Context) error
-	MemberReport(ctx context.Context) error
-	BirthdayReport(ctx context.Context) error
-	MarriageReport(ctx context.Context) error
-	ClassificationReport(ctx context.Context, classification enum.Classification) error
 	GenerateReport(ctx context.Context, report reportType.Type) error
 	GetReport(ctx context.Context, name reportType.Type) (string, error)
 	ListReports(ctx context.Context) []Report
@@ -58,7 +53,7 @@ func NewReportService(memberService member.Service, fileBuilder file.Builder, st
 	}
 }
 
-func (report reportService) BirthdayReport(ctx context.Context) error {
+func (report reportService) buildBirthdayReport(ctx context.Context) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
 	if err != nil {
 		return err
@@ -83,7 +78,7 @@ func writeData(data [][]string) []byte {
 	return byteArr.Bytes()
 }
 
-func (report reportService) MarriageReport(ctx context.Context) error {
+func (report reportService) buildMarriageReport(ctx context.Context) error {
 
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyMarriage())
 
@@ -104,7 +99,7 @@ func (report reportService) MarriageReport(ctx context.Context) error {
 	return report.storageService.SaveFile(ctx, marriageReportName, writeData(csvOut))
 }
 
-func (report reportService) MemberReport(ctx context.Context) error {
+func (report reportService) buildMemberReport(ctx context.Context) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive())
 	if err != nil {
 		return err
@@ -117,7 +112,7 @@ func (report reportService) MemberReport(ctx context.Context) error {
 	return report.storageService.SaveFile(ctx, memberReportName, result)
 }
 
-func (report reportService) ClassificationReport(ctx context.Context, classification enum.Classification) error {
+func (report reportService) buildClassificationReport(ctx context.Context, classification enum.Classification) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyByClassification(classification))
 	if err != nil {
 		return err
@@ -134,7 +129,7 @@ func (report reportService) ClassificationReport(ctx context.Context, classifica
 	return report.storageService.SaveFile(ctx, fileName, result)
 }
 
-func (report reportService) LegalReport(ctx context.Context) error {
+func (report reportService) buildLegalReport(ctx context.Context) error {
 	members, err := report.memberService.SearchMembers(ctx, member.OnlyActive(), member.OnlyLegalMembers())
 	if err != nil {
 		return err
@@ -214,21 +209,21 @@ func (srv *reportService) getReportsCreationDate(ctx context.Context) map[report
 func (srv *reportService) GenerateReport(ctx context.Context, report reportType.Type) error {
 	switch report {
 	case reportType.BIRTHDATE:
-		return srv.BirthdayReport(ctx)
+		return srv.buildBirthdayReport(ctx)
 	case reportType.MARRIAGE:
-		return srv.MarriageReport(ctx)
+		return srv.buildMarriageReport(ctx)
 	case reportType.MEMBER:
-		return srv.MemberReport(ctx)
+		return srv.buildMemberReport(ctx)
 	case reportType.LEGAL:
-		return srv.LegalReport(ctx)
+		return srv.buildLegalReport(ctx)
 	case reportType.CHILDREN:
-		return srv.ClassificationReport(ctx, classification.CHILDREN)
+		return srv.buildClassificationReport(ctx, classification.CHILDREN)
 	case reportType.TEEN:
-		return srv.ClassificationReport(ctx, classification.TEEN)
+		return srv.buildClassificationReport(ctx, classification.TEEN)
 	case reportType.YOUNG:
-		return srv.ClassificationReport(ctx, classification.YOUNG)
+		return srv.buildClassificationReport(ctx, classification.YOUNG)
 	case reportType.ADULT:
-		return srv.ClassificationReport(ctx, classification.ADULT)
+		return srv.buildClassificationReport(ctx, classification.ADULT)
 	default:
 		return fmt.Errorf("report type %s not implemented", report)
 	}

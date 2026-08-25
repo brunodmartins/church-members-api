@@ -356,89 +356,6 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/reports", handler.listReports)
-
-	// swagger:operation POST /reports/members/birthday generateBirthDayReport
-	//
-	// Birthday report
-	//
-	// Generates a CSV birthday report
-	//
-	// ---
-	// security:
-	// - token: []
-	// produces:
-	// - application/csv
-	// responses:
-	//   '200':
-	//     description: CSV report
-	//   default:
-	//     description: unexpected error
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	app.Post("/reports/members/birthday", handler.generateBirthDayReport)
-	// swagger:operation POST /reports/members/marriage generateMarriageReport
-	//
-	// Marriage report
-	//
-	// Generates a CSV Marriage report
-	//
-	// ---
-	// security:
-	// - token: []
-	// produces:
-	// - application/csv
-	// responses:
-	//   '200':
-	//     description: CSV report
-	//   default:
-	//     description: unexpected error
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	app.Post("/reports/members/marriage", handler.generateMarriageReport)
-	// swagger:operation POST /reports/members/legal generateLegalReport
-	//
-	// Legal report
-	//
-	// Generates a PDF legal report
-	//
-	// ---
-	// security:
-	// - token: []
-	// produces:
-	// - application/pdf
-	// responses:
-	//   '200':
-	//     description: PDF report
-	//   default:
-	//     description: unexpected error
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	app.Post("/reports/members/legal", handler.generateLegalReport)
-	// swagger:operation POST /reports/members/classification/{classification} generateClassificationReport
-	//
-	// Member report
-	//
-	// Generates a PDF member report by classification
-	//
-	// ---
-	// security:
-	// - token: []
-	// produces:
-	// - application/pdf
-	// parameters:
-	// - name: classification
-	//   in: path
-	//   type: string
-	//   description: The member classification [adult, teen, young, children]
-	//   required: true
-	// responses:
-	//   '200':
-	//     description: PDF report
-	//   default:
-	//     description: unexpected error
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	app.Post("/reports/members/classification/:classification", handler.generateClassificationReport)
 	// swagger:operation POST /reports/{reportType} generateReport
 	//
 	// Generate a report
@@ -464,26 +381,6 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/reports/:reportType", handler.generateReport)
-
-	// swagger:operation POST /reports/members generateMembersReport
-	//
-	// Member report
-	//
-	// Generates a PDF member report
-	//
-	// ---
-	// security:
-	// - token: []
-	// produces:
-	// - application/pdf
-	// responses:
-	//   '200':
-	//     description: PDF report
-	//   default:
-	//     description: unexpected error
-	//     schema:
-	//       "$ref": "#/definitions/ErrorResponse"
-	app.Post("/reports/members", handler.generateMembersReport)
 
 	// swagger:operation GET /reports/{reportType} getURLForReport
 	//

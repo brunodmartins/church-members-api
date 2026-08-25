@@ -439,6 +439,32 @@ func (handler *ReportHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/reports/members/classification/:classification", handler.generateClassificationReport)
+	// swagger:operation POST /reports/{reportType} generateReport
+	//
+	// Generate a report
+	//
+	// Generates the requested report file.
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: reportType
+	//   in: path
+	//   type: string
+	//   description: The report type [members,legal,birthdate,marriage,children,teen,young,adult]
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: Report generated
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Post("/reports/:reportType", handler.generateReport)
+
 	// swagger:operation POST /reports/members generateMembersReport
 	//
 	// Member report

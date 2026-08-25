@@ -130,3 +130,10 @@ type ChurchStatisticsResponse struct {
 	TotalMembersByGender         map[string]int `json:"total_members_by_gender"`
 	TotalMembersByClassification map[string]int `json:"total_members_by_classification"`
 }
+
+// GenerateReportResponse for HTTP generate report response
+// swagger:model GenerateReportResponse
+type GenerateReportResponse struct {
+	Message string `json:"message"`
+	Type    string `json:"type"`
+}

@@ -258,6 +258,113 @@ func TestGenerateLegalReport(t *testing.T) {
 
 }
 
+func TestGenerateReport(t *testing.T) {
+	tests := []struct {
+		name   string
+		report reportType.Type
+		setup  func(*mock_member.MockService, *mock_file.MockBuilder, *mock_storage.MockService, context.Context)
+	}{
+		{
+			name:   "Birthday",
+			report: reportType.BIRTHDATE,
+			setup: func(memberService *mock_member.MockService, _ *mock_file.MockBuilder, storageService *mock_storage.MockService, ctx context.Context) {
+				memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(BuildMembers(1), nil)
+				storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("birthday_report.csv"), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name:   "Marriage",
+			report: reportType.MARRIAGE,
+			setup: func(memberService *mock_member.MockService, _ *mock_file.MockBuilder, storageService *mock_storage.MockService, ctx context.Context) {
+				memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(BuildMembers(1), nil)
+				storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("marriage_report.csv"), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name:   "Member",
+			report: reportType.MEMBER,
+			setup: func(memberService *mock_member.MockService, fileBuilder *mock_file.MockBuilder, storageService *mock_storage.MockService, ctx context.Context) {
+				members := BuildMembers(0)
+				memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(wrapper.QuerySpecification(nil))).Return(members, nil)
+				fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
+				storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("members_report.pdf"), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name:   "Legal",
+			report: reportType.LEGAL,
+			setup: func(memberService *mock_member.MockService, fileBuilder *mock_file.MockBuilder, storageService *mock_storage.MockService, ctx context.Context) {
+				querySpec := wrapper.QuerySpecification(nil)
+				spec := member.Specification(nil)
+				memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+				memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(0), nil)
+				fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return([]byte{}, nil)
+				storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq("legal_report.pdf"), gomock.Any()).Return(nil)
+			},
+		},
+		{
+			name:   "Children",
+			report: reportType.CHILDREN,
+			setup:  classificationReportSetup("children_report.pdf"),
+		},
+		{
+			name:   "Teen",
+			report: reportType.TEEN,
+			setup:  classificationReportSetup("teen_report.pdf"),
+		},
+		{
+			name:   "Young",
+			report: reportType.YOUNG,
+			setup:  classificationReportSetup("young_report.pdf"),
+		},
+		{
+			name:   "Adult",
+			report: reportType.ADULT,
+			setup:  classificationReportSetup("adult_report.pdf"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			memberService := mock_member.NewMockService(ctrl)
+			fileBuilder := mock_file.NewMockBuilder(ctrl)
+			storageService := mock_storage.NewMockService(ctrl)
+			ctx := buildContext()
+			test.setup(memberService, fileBuilder, storageService, ctx)
+
+			service := report.NewReportService(memberService, fileBuilder, storageService)
+			err := service.GenerateReport(ctx, test.report)
+
+			assert.Nil(t, err)
+		})
+	}
+
+	t.Run("Unsupported report", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		service := report.NewReportService(
+			mock_member.NewMockService(ctrl),
+			mock_file.NewMockBuilder(ctrl),
+			mock_storage.NewMockService(ctrl),
+		)
+
+		err := service.GenerateReport(buildContext(), reportType.Type("unsupported"))
+
+		assert.EqualError(t, err, "report type unsupported not implemented")
+	})
+}
+
+func classificationReportSetup(fileName string) func(*mock_member.MockService, *mock_file.MockBuilder, *mock_storage.MockService, context.Context) {
+	return func(memberService *mock_member.MockService, fileBuilder *mock_file.MockBuilder, storageService *mock_storage.MockService, ctx context.Context) {
+		members := BuildMembers(0)
+		querySpec := wrapper.QuerySpecification(nil)
+		spec := member.Specification(nil)
+		memberService.EXPECT().SearchMembers(gomock.Any(), gomock.AssignableToTypeOf(querySpec), gomock.AssignableToTypeOf(spec)).Return(members, nil)
+		fileBuilder.EXPECT().BuildFile(gomock.Any(), gomock.Any(), gomock.Any(), members).Return([]byte{}, nil)
+		storageService.EXPECT().SaveFile(gomock.Eq(ctx), gomock.Eq(fileName), gomock.Any()).Return(nil)
+	}
+}
+
 func TestReportService_GetReport(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

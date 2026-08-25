@@ -101,11 +101,11 @@ func TestMemberReport(t *testing.T) {
 	reportHandler.SetUpRoutes(app)
 
 	t.Run("Success - 200", func(t *testing.T) {
-		reports.EXPECT().MemberReport(gomock.Any()).Return(nil)
+		reports.EXPECT().GenerateReport(gomock.Any(), gomock.Eq(reportType.Type(reportType.MEMBER))).Return(nil)
 		runTest(app, buildPost("/reports/members", nil)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 500", func(t *testing.T) {
-		reports.EXPECT().MemberReport(gomock.Any()).Return(genericError)
+		reports.EXPECT().GenerateReport(gomock.Any(), gomock.Eq(reportType.Type(reportType.MEMBER))).Return(genericError)
 		runTest(app, buildPost("/reports/members", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }
@@ -163,5 +163,26 @@ func TestReportHandler_getURLForReport(t *testing.T) {
 	t.Run("Success - 500", func(t *testing.T) {
 		reports.EXPECT().GetReport(gomock.Any(), gomock.Eq(reportType.Type(reportType.MEMBER))).Return("", genericError)
 		runTest(app, buildGet("/reports/members")).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestReportHandler_generateReport(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+	reports := mock_report.NewMockService(ctrl)
+	reportHandler := NewReportHandler(reports)
+	reportHandler.SetUpRoutes(app)
+
+	t.Run("Success - 200", func(t *testing.T) {
+		reports.EXPECT().GenerateReport(gomock.Any(), gomock.Eq(reportType.Type(reportType.MEMBER))).Return(nil)
+		runTest(app, buildPost("/reports/members", nil)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - 400", func(t *testing.T) {
+		runTest(app, buildPost("/reports/invalid", nil)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 500", func(t *testing.T) {
+		reports.EXPECT().GenerateReport(gomock.Any(), gomock.Eq(reportType.Type(reportType.MEMBER))).Return(genericError)
+		runTest(app, buildPost("/reports/members", nil)).assertStatus(t, http.StatusInternalServerError)
 	})
 }

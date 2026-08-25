@@ -71,6 +71,20 @@ func (mr *MockServiceMockRecorder) ClassificationReport(ctx, classification any)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClassificationReport", reflect.TypeOf((*MockService)(nil).ClassificationReport), ctx, classification)
 }
 
+// GenerateReport mocks base method.
+func (m *MockService) GenerateReport(ctx context.Context, arg1 reportType.Type) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateReport", ctx, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// GenerateReport indicates an expected call of GenerateReport.
+func (mr *MockServiceMockRecorder) GenerateReport(ctx, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateReport", reflect.TypeOf((*MockService)(nil).GenerateReport), ctx, arg1)
+}
+
 // GetReport mocks base method.
 func (m *MockService) GetReport(ctx context.Context, name reportType.Type) (string, error) {
 	m.ctrl.T.Helper()

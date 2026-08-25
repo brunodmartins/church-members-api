@@ -16,6 +16,7 @@ import (
 	"golang.org/x/text/language"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
@@ -30,6 +31,7 @@ type Service interface {
 	BirthdayReport(ctx context.Context) error
 	MarriageReport(ctx context.Context) error
 	ClassificationReport(ctx context.Context, classification enum.Classification) error
+	GenerateReport(ctx context.Context, report reportType.Type) error
 	GetReport(ctx context.Context, name reportType.Type) (string, error)
 	ListReports(ctx context.Context) []Report
 }
@@ -206,6 +208,30 @@ func (srv *reportService) getReportsCreationDate(ctx context.Context) map[report
 	}
 
 	return result
+}
+
+// GenerateReport implements [Service].
+func (srv *reportService) GenerateReport(ctx context.Context, report reportType.Type) error {
+	switch report {
+	case reportType.BIRTHDATE:
+		return srv.BirthdayReport(ctx)
+	case reportType.MARRIAGE:
+		return srv.MarriageReport(ctx)
+	case reportType.MEMBER:
+		return srv.MemberReport(ctx)
+	case reportType.LEGAL:
+		return srv.LegalReport(ctx)
+	case reportType.CHILDREN:
+		return srv.ClassificationReport(ctx, classification.CHILDREN)
+	case reportType.TEEN:
+		return srv.ClassificationReport(ctx, classification.TEEN)
+	case reportType.YOUNG:
+		return srv.ClassificationReport(ctx, classification.YOUNG)
+	case reportType.ADULT:
+		return srv.ClassificationReport(ctx, classification.ADULT)
+	default:
+		return fmt.Errorf("report type %s not implemented", report)
+	}
 }
 
 func buildCSVData(members []*domain.Member) []file.Data {

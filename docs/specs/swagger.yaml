@@ -288,6 +288,17 @@ definitions:
                 x-go-name: Message
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GenerateReportResponse:
+        description: GenerateReportResponse for HTTP generate report response
+        properties:
+            message:
+                type: string
+                x-go-name: Message
+            type:
+                type: string
+                x-go-name: Type
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     GetAddressResponse:
         description: GetAddressResponse for HTTP get address response
         properties:
@@ -1135,92 +1146,27 @@ paths:
             security:
                 - token: []
             summary: Get a report file
-    /reports/members:
         post:
-            description: Generates a PDF member report
-            operationId: generateMembersReport
-            produces:
-                - application/pdf
-            responses:
-                "200":
-                    description: PDF report
-                default:
-                    description: unexpected error
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-            security:
-                - token: []
-            summary: Member report
-    /reports/members/birthday:
-        post:
-            description: Generates a CSV birthday report
-            operationId: generateBirthDayReport
-            produces:
-                - application/csv
-            responses:
-                "200":
-                    description: CSV report
-                default:
-                    description: unexpected error
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-            security:
-                - token: []
-            summary: Birthday report
-    /reports/members/classification/{classification}:
-        post:
-            description: Generates a PDF member report by classification
-            operationId: generateClassificationReport
+            description: Generates the requested report file.
+            operationId: generateReport
             parameters:
-                - description: The member classification [adult, teen, young, children]
+                - description: The report type [members,legal,birthdate,marriage,children,teen,young,adult]
                   in: path
-                  name: classification
+                  name: reportType
                   required: true
                   type: string
             produces:
-                - application/pdf
+                - application/json
             responses:
                 "200":
-                    description: PDF report
+                    description: Report generated
                 default:
                     description: unexpected error
                     schema:
                         $ref: '#/definitions/ErrorResponse'
             security:
                 - token: []
-            summary: Member report
-    /reports/members/legal:
-        post:
-            description: Generates a PDF legal report
-            operationId: generateLegalReport
-            produces:
-                - application/pdf
-            responses:
-                "200":
-                    description: PDF report
-                default:
-                    description: unexpected error
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-            security:
-                - token: []
-            summary: Legal report
-    /reports/members/marriage:
-        post:
-            description: Generates a CSV Marriage report
-            operationId: generateMarriageReport
-            produces:
-                - application/csv
-            responses:
-                "200":
-                    description: CSV report
-                default:
-                    description: unexpected error
-                    schema:
-                        $ref: '#/definitions/ErrorResponse'
-            security:
-                - token: []
-            summary: Marriage report
+            summary: Generate a report
     /users:
         post:
             description: Register the receiving user

@@ -10,7 +10,10 @@ import (
 const languageHeader = "Accept-language"
 
 var I18NMiddleware = func(ctx *fiber.Ctx) error {
-	localize := i18n.GetLocalize(language.MustParse(ctx.Get(languageHeader, "en")))
+	localize := i18n.GetLocalize(language.English)
+	if languages, _, err := language.ParseAcceptLanguage(ctx.Get(languageHeader, "en")); err == nil && len(languages) > 0 {
+		localize = i18n.GetLocalize(languages[0])
+	}
 	ctx.SetUserContext(context.WithValue(ctx.UserContext(), "i18n", localize))
 	return ctx.Next()
 }

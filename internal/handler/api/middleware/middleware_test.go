@@ -110,6 +110,12 @@ func TestI18NMiddleware(t *testing.T) {
 		resp, _ := app.Test(req, -1)
 		assert.Equal(t, http.StatusOK, resp.StatusCode)
 	})
+	t.Run("With Accept-Language Header - 200", func(t *testing.T) {
+		req := buildRequest()
+		req.Header.Set(languageHeader, "en-US,en;q=0.9")
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
 }
 
 func buildToken(roles ...string) string {

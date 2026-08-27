@@ -11,7 +11,8 @@ var genericError = errors.New("generic error")
 func buildMember(id string) *domain.Member {
 	now := time.Now()
 	return &domain.Member{
-		ID: id,
+		ID:          id,
+		Observation: "Needs follow-up",
 		Person: &domain.Person{
 			FirstName:    "First Name",
 			LastName:     "Last Name",

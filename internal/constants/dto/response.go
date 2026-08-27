@@ -34,6 +34,7 @@ type GetMemberResponse struct {
 	ID             string              `json:"id"`
 	Active         bool                `json:"active"`
 	Classification string              `json:"classification"`
+	Observation    string              `json:"observation,omitempty"`
 	Person         *GetPersonResponse  `json:"person"`
 	Baptism        *GetBaptismResponse `json:"baptism,omitempty"`
 }

@@ -17,6 +17,7 @@ type Member struct {
 	AttendsSundayWorship   bool       `json:"attendsSundayWorship"`
 	AttendsSundaySchool    bool       `json:"attendsSundaySchool"`
 	AttendsObservation     string     `json:"attendsObservation,omitempty"`
+	Observation            string     `json:"observation,omitempty"`
 	Person                 *Person    `json:"person"`
 	Religion               *Religion  `json:"religion"`
 	Active                 bool       `json:"active,omitempty"`

@@ -19,6 +19,7 @@ type MemberItem struct {
 	AttendsSundayWorship   bool       `dynamodbav:"attendsSundayWorship"`
 	AttendsSundaySchool    bool       `dynamodbav:"attendsSundaySchool"`
 	AttendsObservation     string     `dynamodbav:"attendsObservation,omitempty"`
+	Observation            string     `dynamodbav:"observation,omitempty"`
 	Name                   string     `dynamodbav:"name"`
 	FirstName              string     `dynamodbav:"firstName"`
 	LastName               string     `dynamodbav:"lastName"`
@@ -75,6 +76,7 @@ func NewMemberItem(member *domain.Member) *MemberItem {
 		AttendsSundayWorship:   member.AttendsSundayWorship,
 		AttendsSundaySchool:    member.AttendsSundaySchool,
 		AttendsObservation:     member.AttendsObservation,
+		Observation:            member.Observation,
 		Name:                   member.Person.GetFullName(),
 		FirstName:              member.Person.FirstName,
 		LastName:               member.Person.LastName,
@@ -139,6 +141,7 @@ func (item *MemberItem) ToMember() *domain.Member {
 		AttendsSundayWorship:   item.AttendsSundayWorship,
 		AttendsSundaySchool:    item.AttendsSundaySchool,
 		AttendsObservation:     item.AttendsObservation,
+		Observation:            item.Observation,
 		MembershipStartDate:    item.MembershipStartDate,
 		MembershipEndDate:      item.MembershipEndDate,
 		MembershipEndReason:    item.MembershipEndReason,

@@ -27,21 +27,48 @@ func GetMessage(ctx context.Context, key string, value ...any) string {
 	}), value...)
 }
 
-func loadBundle(language language.Tag) *i18n.Bundle {
-	bundle := i18n.NewBundle(language)
+func loadBundle(tag language.Tag) *i18n.Bundle {
+	for _, candidate := range languageCandidates(tag) {
+		bundle := i18n.NewBundle(candidate)
+		bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+		path := fmt.Sprintf("languages/%s.toml", candidate.String())
+		logrus.Infof("Loading bundle for language %s from %s", candidate, path)
+		if _, err := bundle.LoadMessageFileFS(LocaleFS, path); err == nil {
+			logrus.Infof("Bundle for language %s loaded from %s", tag, path)
+			return bundle
+		} else {
+			logrus.Warnf("Unable to load bundle for language %s from %s: %v", candidate, path, err)
+		}
+	}
+
+	logrus.Warnf("No bundle found for language %s; using English bundle", tag)
+	bundle := i18n.NewBundle(language.English)
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	logrus.Infof("Loading bundle for language %s", language)
-	_, _ = bundle.LoadMessageFileFS(LocaleFS, fmt.Sprintf("languages/%s.toml", language.String()))
-	logrus.Infof("Bundle %s loaded", language)
 	return bundle
 }
 
-// GetLocalize returns an i18n.Localize based on a language tag
-func GetLocalize(language language.Tag) *i18n.Localizer {
-	if bundles[language.String()] != nil {
-		return bundles[language.String()]
+func languageCandidates(tag language.Tag) []language.Tag {
+	candidates := []language.Tag{tag}
+	for parent := tag.Parent(); parent != language.Und && parent != tag; parent = parent.Parent() {
+		candidates = append(candidates, parent)
 	}
-	result := i18n.NewLocalizer(loadBundle(language))
-	bundles[language.String()] = result
+	if tag != language.English {
+		candidates = append(candidates, language.English)
+	}
+	return candidates
+}
+
+// GetLocalize returns an i18n.Localize based on a language tag
+func GetLocalize(tag language.Tag) *i18n.Localizer {
+	if bundles[tag.String()] != nil {
+		return bundles[tag.String()]
+	}
+	languages := languageCandidates(tag)
+	languageStrings := make([]string, len(languages))
+	for index, candidate := range languages {
+		languageStrings[index] = candidate.String()
+	}
+	result := i18n.NewLocalizer(loadBundle(tag), languageStrings...)
+	bundles[tag.String()] = result
 	return result
 }

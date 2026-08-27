@@ -32,6 +32,7 @@ func TestGetMember(t *testing.T) {
 		runTest(app, buildGet("/members/"+id)).assert(t, http.StatusOK, new(dto.GetMemberResponse), func(parsedBody interface{}) {
 			member := parsedBody.(*dto.GetMemberResponse)
 			assert.Equal(t, id, member.ID)
+			assert.Equal(t, "Needs follow-up", member.Observation)
 		})
 	})
 	t.Run("Fail - 404", func(t *testing.T) {

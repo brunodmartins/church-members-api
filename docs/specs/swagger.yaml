@@ -115,6 +115,9 @@ definitions:
             oldChurch:
                 type: string
                 x-go-name: OldChurch
+            observation:
+                type: string
+                x-go-name: Observation
             person:
                 $ref: '#/definitions/CreatePersonRequest'
             religion:
@@ -415,6 +418,9 @@ definitions:
             id:
                 type: string
                 x-go-name: ID
+            observation:
+                type: string
+                x-go-name: Observation
             person:
                 $ref: '#/definitions/GetPersonResponse'
         type: object

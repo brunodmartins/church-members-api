@@ -24,6 +24,7 @@ type CreateMemberRequest struct {
 	AttendsSundayWorship   *bool                 `json:"attendsSundayWorship" validate:"required"`
 	AttendsSundaySchool    *bool                 `json:"attendsSundaySchool" validate:"required"`
 	AttendsObservation     string                `json:"attendsObservation"`
+	Observation            string                `json:"observation"`
 	Person                 CreatePersonRequest   `json:"person" validate:"required"`
 	Religion               CreateReligionRequest `json:"religion" validate:"required"`
 }
@@ -36,6 +37,7 @@ func (dto CreateMemberRequest) ToMember() *domain.Member {
 		AttendsSundayWorship:   *dto.AttendsSundayWorship,
 		AttendsSundaySchool:    *dto.AttendsSundaySchool,
 		AttendsObservation:     dto.AttendsObservation,
+		Observation:            dto.Observation,
 		Person:                 dto.Person.ToPerson(),
 		Religion:               dto.Religion.ToReligion(),
 	}

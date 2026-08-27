@@ -10,6 +10,7 @@ func NewGetMemberResponse(member *domain.Member) *GetMemberResponse {
 	result.ID = member.ID
 	result.Active = member.Active
 	result.Classification = member.Classification().String()
+	result.Observation = member.Observation
 	result.Person = buildPersonResponse(member.Person)
 	result.Baptism = buildBaptismResponse(member.Religion)
 	return result

@@ -218,6 +218,12 @@ func (request UpdatePersonRequest) ToPerson() domain.Person {
 	}
 }
 
+// UpdateObservationRequest for HTTP calls to update member observation
+// swagger:model UpdateObservationRequest
+type UpdateObservationRequest struct {
+	Observation string `json:"observation"`
+}
+
 // CreateParticipantRequest for HTTP calls
 // swagger:model CreateParticipantRequest
 type CreateParticipantRequest struct {

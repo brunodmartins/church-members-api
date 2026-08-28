@@ -26,6 +26,7 @@ type Repository interface {
 	UpdateContact(ctx context.Context, member *domain.Member) error
 	UpdateAddress(ctx context.Context, member *domain.Member) error
 	UpdatePerson(ctx context.Context, member *domain.Member) error
+	UpdateObservation(ctx context.Context, member *domain.Member) error
 	UpdateReligion(ctx context.Context, member *domain.Member) error
 }
 
@@ -176,7 +177,7 @@ func (repo dynamoRepository) UpdateAddress(ctx context.Context, member *domain.M
 
 func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Member) error {
 	updateQuery := repo.wrapper.BuildUpdateQuery("#name", "firstName", "lastName", "birthDate", "birthDateShort",
-		"marriageDate", "marriageDateShort", "spousesName", "maritalStatus", "childrensQuantity")
+		"marriageDate", "marriageDateShort", "spousesName", "maritalStatus", "childrensQuantity", "observation")
 	updateQuery = strings.Replace(updateQuery, ":#name", ":name", 1)
 	attributes := map[string]types.AttributeValue{
 		":name":              toStringAttributeValue(member.Person.GetFullName()),
@@ -189,6 +190,7 @@ func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Me
 		":spousesName":       toStringAttributeValue(member.Person.SpousesName),
 		":maritalStatus":     toStringAttributeValue(member.Person.MaritalStatus),
 		":childrensQuantity": toNumberAttributeValue(member.Person.ChildrenQuantity),
+		":observation":       toStringAttributeValue(member.Observation),
 	}
 	if member.Person.MarriageDate != nil {
 		attributes[":marriageDate"] = toStringAttributeValue(member.Person.MarriageDate.Format(time.RFC3339))
@@ -207,6 +209,24 @@ func (repo dynamoRepository) UpdatePerson(ctx context.Context, member *domain.Me
 		ExpressionAttributeNames: map[string]string{
 			"#name": "name",
 		},
+		ExpressionAttributeValues: attributes,
+		ReturnValues:              "UPDATED_NEW",
+		UpdateExpression:          aws.String(updateQuery),
+	})
+	return err
+}
+
+func (repo dynamoRepository) UpdateObservation(ctx context.Context, member *domain.Member) error {
+	updateQuery := repo.wrapper.BuildUpdateQuery("observation")
+	attributes := map[string]types.AttributeValue{
+		":observation": toStringAttributeValue(member.Observation),
+	}
+	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{Value: member.ID},
+			"church_id": &types.AttributeValueMemberS{Value: member.ChurchID},
+		},
+		TableName:                 aws.String(repo.memberTable),
 		ExpressionAttributeValues: attributes,
 		ReturnValues:              "UPDATED_NEW",
 		UpdateExpression:          aws.String(updateQuery),

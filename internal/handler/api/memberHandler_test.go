@@ -257,6 +257,35 @@ func TestUpdatePerson(t *testing.T) {
 	})
 }
 
+func TestUpdateObservation(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+	id := domain.NewID()
+	const url = "/members/%s/observation"
+	request := dto.UpdateObservationRequest{Observation: "Needs follow-up"}
+	body, _ := json.Marshal(request)
+
+	t.Run("Success - 200", func(t *testing.T) {
+		service.EXPECT().UpdateObservation(gomock.Any(), id, gomock.Eq(request.Observation)).Return(nil)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - 400 - ID", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, "X"), emptyJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 400 - Bad JSON", func(t *testing.T) {
+		runTest(app, buildPut(fmt.Sprintf(url, id), badJson)).assertStatus(t, http.StatusBadRequest)
+	})
+	t.Run("Fail - 500", func(t *testing.T) {
+		service.EXPECT().UpdateObservation(gomock.Any(), id, gomock.Eq(request.Observation)).Return(genericError)
+		runTest(app, buildPut(fmt.Sprintf(url, id), body)).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
 func TestUpdateBaptism(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

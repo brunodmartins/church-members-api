@@ -221,6 +221,32 @@ func TestMemberService_UpdatePerson(t *testing.T) {
 	})
 }
 
+func TestMemberService_UpdateObservation(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	ctx := context.TODO()
+	defer ctrl.Finish()
+	repo := mock_member.NewMockRepository(ctrl)
+	service := member.NewMemberService(repo)
+	id := domain.NewID()
+	churchMember := buildMember(id)
+	observation := "Needs follow-up"
+
+	t.Run("Successfully update the member observation", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateObservation(gomock.Eq(ctx), memberObservationMatcher{observation: observation}).Return(nil)
+		assert.NoError(t, service.UpdateObservation(ctx, id, observation))
+	})
+	t.Run("Fails to update the member observation due to update error", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(churchMember, nil)
+		repo.EXPECT().UpdateObservation(gomock.Eq(ctx), memberObservationMatcher{observation: observation}).Return(genericError)
+		assert.Error(t, service.UpdateObservation(ctx, id, observation))
+	})
+	t.Run("Fails to update the member observation due to find error", func(t *testing.T) {
+		repo.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(nil, genericError)
+		assert.Error(t, service.UpdateObservation(ctx, id, observation))
+	})
+}
+
 func TestMemberService_GetLastBirthAnniversaries(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	ctx := context.TODO()
@@ -357,4 +383,16 @@ func (expected memberPersonMatcher) Matches(received any) bool {
 
 func (expected memberPersonMatcher) String() string {
 	return fmt.Sprintf("Expetected %v", expected.person)
+}
+
+type memberObservationMatcher struct {
+	observation string
+}
+
+func (expected memberObservationMatcher) Matches(received any) bool {
+	return received.(*domain.Member).Observation == expected.observation
+}
+
+func (expected memberObservationMatcher) String() string {
+	return fmt.Sprintf("Expected observation %s", expected.observation)
 }

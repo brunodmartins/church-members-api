@@ -128,6 +128,20 @@ func (mr *MockRepositoryMockRecorder) UpdateContact(ctx, member any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateContact", reflect.TypeOf((*MockRepository)(nil).UpdateContact), ctx, member)
 }
 
+// UpdateObservation mocks base method.
+func (m *MockRepository) UpdateObservation(ctx context.Context, member *domain.Member) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateObservation", ctx, member)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateObservation indicates an expected call of UpdateObservation.
+func (mr *MockRepositoryMockRecorder) UpdateObservation(ctx, member any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateObservation", reflect.TypeOf((*MockRepository)(nil).UpdateObservation), ctx, member)
+}
+
 // UpdatePerson mocks base method.
 func (m *MockRepository) UpdatePerson(ctx context.Context, member *domain.Member) error {
 	m.ctrl.T.Helper()

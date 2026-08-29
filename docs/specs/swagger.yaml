@@ -112,12 +112,12 @@ definitions:
             attendsSundayWorship:
                 type: boolean
                 x-go-name: AttendsSundayWorship
-            oldChurch:
-                type: string
-                x-go-name: OldChurch
             observation:
                 type: string
                 x-go-name: Observation
+            oldChurch:
+                type: string
+                x-go-name: OldChurch
             person:
                 $ref: '#/definitions/CreatePersonRequest'
             religion:
@@ -261,6 +261,8 @@ definitions:
             phone:
                 type: string
                 x-go-name: Phone
+            preferences:
+                $ref: '#/definitions/NotificationPreferences'
             role:
                 type: string
                 x-go-name: Role
@@ -269,12 +271,6 @@ definitions:
                     type: string
                 type: array
                 x-go-name: Roles
-            send_daily_sms:
-                type: boolean
-                x-go-name: SendDailySMS
-            send_weekly_email:
-                type: boolean
-                x-go-name: SendWeeklyEmail
             username:
                 type: string
                 x-go-name: UserName
@@ -604,6 +600,14 @@ definitions:
                 x-go-name: CatholicBaptized
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    UpdateObservationRequest:
+        description: UpdateObservationRequest for HTTP calls to update member observation
+        properties:
+            observation:
+                type: string
+                x-go-name: Observation
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     UpdatePersonRequest:
         description: UpdatePersonRequest for HTTP calls to put a person
         properties:
@@ -930,6 +934,42 @@ paths:
             security:
                 - token: []
             summary: Update member - Contact
+    /members/{id}/observation:
+        put:
+            description: Update the member observation for the given member
+            operationId: updateObservation
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+                - description: The observation to be updated
+                  in: body
+                  name: member
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UpdateObservationRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Observation updated
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Update member - Observation
     /members/{id}/person:
         put:
             description: Update the person for the given member

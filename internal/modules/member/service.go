@@ -21,6 +21,7 @@ type Service interface {
 	UpdateContact(ctx context.Context, memberID string, contact domain.Contact) error
 	UpdateAddress(ctx context.Context, memberID string, address domain.Address) error
 	UpdatePerson(ctx context.Context, memberID string, person domain.Person) error
+	UpdateObservation(ctx context.Context, memberID string, observation string) error
 	UpdateBaptism(ctx context.Context, memberID string, religion domain.Religion) error
 	GetLastBirthAnniversaries(ctx context.Context) ([]*domain.Member, error)
 	GetLastMarriageAnniversaries(ctx context.Context) ([]*domain.Member, error)
@@ -105,6 +106,15 @@ func (s *memberService) UpdatePerson(ctx context.Context, id string, person doma
 	member.Person.ChildrenQuantity = person.ChildrenQuantity
 
 	return s.repo.UpdatePerson(ctx, member)
+}
+
+func (s *memberService) UpdateObservation(ctx context.Context, id string, observation string) error {
+	member, err := s.GetMember(ctx, id)
+	if err != nil {
+		return err
+	}
+	member.Observation = observation
+	return s.repo.UpdateObservation(ctx, member)
 }
 
 func (s *memberService) UpdateBaptism(ctx context.Context, id string, religion domain.Religion) error {

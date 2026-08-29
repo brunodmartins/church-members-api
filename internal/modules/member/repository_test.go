@@ -293,6 +293,7 @@ func TestDynamoRepository_UpdatePerson(t *testing.T) {
 	t.Run("Success - Changing all fields", func(t *testing.T) {
 		id := domain.NewID()
 		churchMember := buildMember(id)
+		churchMember.Observation = "Needs follow-up"
 		matcher := dynamodbhelper.UpdateMatcher{
 			Table:    memberTable,
 			ID:       churchMember.ID,
@@ -308,6 +309,7 @@ func TestDynamoRepository_UpdatePerson(t *testing.T) {
 				":spousesName":       &types.AttributeValueMemberS{Value: churchMember.Person.SpousesName},
 				":maritalStatus":     &types.AttributeValueMemberS{Value: churchMember.Person.MaritalStatus},
 				":childrensQuantity": &types.AttributeValueMemberN{Value: fmt.Sprintf("%d", churchMember.Person.ChildrenQuantity)},
+				":observation":       &types.AttributeValueMemberS{Value: churchMember.Observation},
 			},
 		}
 		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)
@@ -336,6 +338,7 @@ func TestDynamoRepository_UpdatePerson(t *testing.T) {
 				":spousesName":       &types.AttributeValueMemberNULL{Value: true},
 				":maritalStatus":     &types.AttributeValueMemberS{Value: churchMember.Person.MaritalStatus},
 				":childrensQuantity": &types.AttributeValueMemberNULL{Value: true},
+				":observation":       &types.AttributeValueMemberNULL{Value: true},
 			},
 		}
 		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)

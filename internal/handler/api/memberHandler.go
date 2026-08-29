@@ -156,6 +156,25 @@ func (handler *MemberHandler) updatePerson(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
 }
 
+func (handler *MemberHandler) updateObservation(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if !domain.IsValidID(id) {
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
+	}
+	observationRequest := new(dto.UpdateObservationRequest)
+	if err := json.Unmarshal(ctx.Body(), &observationRequest); err != nil {
+		return badRequest(ctx, err)
+	}
+	if err := ValidateStruct(observationRequest); err != nil {
+		return badRequest(ctx, err)
+	}
+	err := handler.service.UpdateObservation(ctx.UserContext(), id, observationRequest.Observation)
+	if err != nil {
+		return err
+	}
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "Member updated successfully"})
+}
+
 func (handler *MemberHandler) updateBaptism(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 	if !domain.IsValidID(id) {

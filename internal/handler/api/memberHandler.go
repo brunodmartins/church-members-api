@@ -2,8 +2,10 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
@@ -52,6 +54,39 @@ func (handler *MemberHandler) getMember(ctx *fiber.Ctx) error {
 	} else {
 		return ctx.Status(http.StatusOK).JSON(dto.NewGetMemberResponse(churchMember))
 	}
+}
+
+func (handler *MemberHandler) getMemberPDF(ctx *fiber.Ctx) error {
+	id := ctx.Params("id")
+	if !domain.IsValidID(id) {
+		return apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
+	}
+
+	memberRecord, err := handler.service.GetMember(ctx.UserContext(), id)
+	if err != nil {
+		return err
+	}
+
+	pdfBytes, err := handler.service.GenerateMemberPDF(ctx.UserContext(), memberRecord)
+	if err != nil {
+		return err
+	}
+
+	filename := sanitizeMemberPDFName(memberRecord)
+	ctx.Response().Header.Set("Content-Type", "application/pdf")
+	ctx.Response().Header.Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
+	return ctx.Status(http.StatusOK).Send(pdfBytes)
+}
+
+func sanitizeMemberPDFName(memberRecord *domain.Member) string {
+	if memberRecord == nil || memberRecord.Person == nil {
+		return "member.pdf"
+	}
+	name := strings.TrimSpace(memberRecord.Person.GetFullName())
+	if name == "" {
+		return "member.pdf"
+	}
+	return fmt.Sprintf("%s.pdf", name)
 }
 
 func (handler *MemberHandler) searchMember(ctx *fiber.Ctx) error {

@@ -134,6 +134,7 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/members/:id", handler.getMember)
+	app.Get("/members/:id/pdf", handler.getMemberPDF)
 	// swagger:operation DELETE /members/{id} retireMember
 	//
 	// Retire Member

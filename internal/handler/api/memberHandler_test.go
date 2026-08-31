@@ -115,14 +115,17 @@ func TestRetireMember(t *testing.T) {
 	id := domain.NewID()
 
 	t.Run("Success - 200", func(t *testing.T) {
-		body := []byte(`{"reason": "Leaved the church"}`)
-		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Any()).Return(nil)
-		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusOK)
+		body := []byte(`{"reason": "Left the church"}`)
+		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Left the church"), gomock.Any()).Return(nil)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assert(t, http.StatusOK, new(dto.MessageResponse), func(parsedBody interface{}) {
+			response := parsedBody.(*dto.MessageResponse)
+			assert.Equal(t, "Member deleted", response.Message)
+		})
 	})
 	t.Run("Success with given date - 200", func(t *testing.T) {
-		body := []byte(`{"reason": "Leaved the church", "date": "2025-09-09"}`)
+		body := []byte(`{"reason": "Left the church", "date": "2025-09-09"}`)
 		expectedDate, _ := time.Parse(time.DateOnly, "2025-09-09")
-		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Eq(expectedDate)).Return(nil)
+		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Left the church"), gomock.Eq(expectedDate)).Return(nil)
 		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusOK)
 	})
 	t.Run("Fail - 400 - ID", func(t *testing.T) {

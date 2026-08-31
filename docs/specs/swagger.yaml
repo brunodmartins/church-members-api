@@ -779,7 +779,9 @@ paths:
                 - application/json
             responses:
                 "200":
-                    description: Status change successfully
+                    description: Member deleted
+                    schema:
+                        $ref: '#/definitions/MessageResponse'
                 "400":
                     description: Invalid request
                     schema:

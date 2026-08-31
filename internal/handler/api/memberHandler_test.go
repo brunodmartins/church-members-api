@@ -117,7 +117,10 @@ func TestRetireMember(t *testing.T) {
 	t.Run("Success - 200", func(t *testing.T) {
 		body := []byte(`{"reason": "Leaved the church"}`)
 		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Leaved the church"), gomock.Any()).Return(nil)
-		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertStatus(t, http.StatusOK)
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assert(t, http.StatusOK, new(dto.MessageResponse), func(parsedBody interface{}) {
+			response := parsedBody.(*dto.MessageResponse)
+			assert.Equal(t, "Member deleted", response.Message)
+		})
 	})
 	t.Run("Success with given date - 200", func(t *testing.T) {
 		body := []byte(`{"reason": "Leaved the church", "date": "2025-09-09"}`)

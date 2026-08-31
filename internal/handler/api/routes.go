@@ -159,7 +159,9 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     "$ref": "#/definitions/RetireMemberRequest"
 	// responses:
 	//   '200':
-	//     description: Status change successfully
+	//     description: Member deleted
+	//     schema:
+	//       "$ref": "#/definitions/MessageResponse"
 	//   '400':
 	//     description: Invalid request
 	//     schema:

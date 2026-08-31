@@ -30,6 +30,12 @@ func TestAuthMiddleware(t *testing.T) {
 	app.Post("/test/x", func(ctx *fiber.Ctx) error {
 		return nil
 	})
+	app.Get("/reports", func(ctx *fiber.Ctx) error {
+		return nil
+	})
+	app.Post("/reports/:reportType", func(ctx *fiber.Ctx) error {
+		return nil
+	})
 	t.Run("Success - User with viewTest role  - 200", func(t *testing.T) {
 		req := buildRequest()
 		req.Header.Set(authHeader, buildToken("viewTest"))
@@ -51,6 +57,30 @@ func TestAuthMiddleware(t *testing.T) {
 	t.Run("Fail - User with editTest role  - 403", func(t *testing.T) {
 		req := httptest.NewRequest("POST", "/test/x", nil)
 		req.Header.Set(authHeader, buildToken("viewTest"))
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+	t.Run("Success - User with viewReport role on /reports - 200", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "http://example.com/reports", nil)
+		req.Header.Set(authHeader, buildToken("viewReport"))
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+	t.Run("Fail - User without viewReport role on /reports - 403", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "http://example.com/reports", nil)
+		req.Header.Set(authHeader, buildToken("viewUser"))
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
+	})
+	t.Run("Success - User with editReport role on /reports/:reportType - 200", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/reports/members", nil)
+		req.Header.Set(authHeader, buildToken("editReport"))
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
+	t.Run("Fail - User with viewReport role on /reports/:reportType - 403", func(t *testing.T) {
+		req := httptest.NewRequest("POST", "/reports/members", nil)
+		req.Header.Set(authHeader, buildToken("viewReport"))
 		resp, _ := app.Test(req, -1)
 		assert.Equal(t, http.StatusForbidden, resp.StatusCode)
 	})

@@ -70,4 +70,3 @@ func (mr *MockBuilderMockRecorder) BuildSingleMemberFile(ctx, title, church, mem
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildSingleMemberFile", reflect.TypeOf((*MockBuilder)(nil).BuildSingleMemberFile), ctx, title, church, member)
 }
-

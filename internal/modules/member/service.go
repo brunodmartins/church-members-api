@@ -62,9 +62,6 @@ func (s *memberService) GenerateMemberPDF(ctx context.Context, member *domain.Me
 		return nil, apierrors.NewApiError("Member not found", http.StatusNotFound)
 	}
 	church := domain.GetChurch(ctx)
-	if church == nil {
-		church = &domain.Church{Name: "Church Members"}
-	}
 	pdfBuilder := file.NewPDFBuilder()
 	return pdfBuilder.BuildSingleMemberFile(ctx, "Member profile", church, member)
 }

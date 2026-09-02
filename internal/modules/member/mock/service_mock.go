@@ -44,6 +44,21 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// GenerateMemberPDF mocks base method.
+func (m *MockService) GenerateMemberPDF(ctx context.Context, arg1 *domain.Member) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateMemberPDF", ctx, arg1)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateMemberPDF indicates an expected call of GenerateMemberPDF.
+func (mr *MockServiceMockRecorder) GenerateMemberPDF(ctx, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateMemberPDF", reflect.TypeOf((*MockService)(nil).GenerateMemberPDF), ctx, arg1)
+}
+
 // GetLastBirthAnniversaries mocks base method.
 func (m *MockService) GetLastBirthAnniversaries(ctx context.Context) ([]*domain.Member, error) {
 	m.ctrl.T.Helper()
@@ -87,21 +102,6 @@ func (m *MockService) GetMember(ctx context.Context, id string) (*domain.Member,
 func (mr *MockServiceMockRecorder) GetMember(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMember", reflect.TypeOf((*MockService)(nil).GetMember), ctx, id)
-}
-
-// GenerateMemberPDF mocks base method.
-func (m *MockService) GenerateMemberPDF(ctx context.Context, member *domain.Member) ([]byte, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateMemberPDF", ctx, member)
-	ret0, _ := ret[0].([]byte)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GenerateMemberPDF indicates an expected call of GenerateMemberPDF.
-func (mr *MockServiceMockRecorder) GenerateMemberPDF(ctx, member any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateMemberPDF", reflect.TypeOf((*MockService)(nil).GenerateMemberPDF), ctx, member)
 }
 
 // RetireMembership mocks base method.

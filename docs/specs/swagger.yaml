@@ -970,6 +970,38 @@ paths:
             security:
                 - token: []
             summary: Update member - Observation
+    /members/{id}/pdf:
+        get:
+            description: Generates a printable PDF profile for the member.
+            operationId: getMemberPDF
+            parameters:
+                - description: The member id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+            produces:
+                - application/pdf
+            responses:
+                "200":
+                    description: The member profile PDF
+                    schema:
+                        type: file
+                "400":
+                    description: Invalid ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Member not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Download member PDF
     /members/{id}/person:
         put:
             description: Update the person for the given member

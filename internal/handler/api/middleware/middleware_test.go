@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -116,6 +117,13 @@ func TestErrorMiddleware(t *testing.T) {
 		req := buildRequest()
 		resp, _ := app.Test(req, -1)
 		assert.Equal(t, http.StatusInternalServerError, resp.StatusCode)
+	})
+	t.Run("Treat route not found", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/route-that-does-not-exist", nil)
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusNotFound, resp.StatusCode)
+		body, _ := io.ReadAll(resp.Body)
+		assert.Contains(t, string(body), "Route not found")
 	})
 }
 

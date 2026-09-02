@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -17,10 +18,21 @@ var ApiErrorMiddleWare = func(ctx *fiber.Ctx, err error) error {
 		return ctx.Status(apiError.StatusCode()).JSON(dto.ErrorResponse{
 			Message: apiError.Error(),
 		})
-	} else {
-		logrus.WithError(err).Error("Unexpected Internal Server error")
-		return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{
-			Message: fmt.Sprint("Unexpected Internal Server error"),
+	}
+
+	var fiberError *fiber.Error
+	if errors.As(err, &fiberError) {
+		message := fiberError.Message
+		if fiberError.Code == http.StatusNotFound {
+			message = "Route not found"
+		}
+		return ctx.Status(fiberError.Code).JSON(dto.ErrorResponse{
+			Message: message,
 		})
 	}
+
+	logrus.WithError(err).Error("Unexpected Internal Server error")
+	return ctx.Status(http.StatusInternalServerError).JSON(dto.ErrorResponse{
+		Message: fmt.Sprint("Unexpected Internal Server error"),
+	})
 }

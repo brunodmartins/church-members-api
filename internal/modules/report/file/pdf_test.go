@@ -2,6 +2,8 @@ package file_test
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"testing"
 	"unicode/utf8"
 
@@ -15,4 +17,20 @@ func TestBuildFile(t *testing.T) {
 	assert.False(t, utf8.Valid(out))
 	assert.NotNil(t, out)
 	assert.Nil(t, err)
+}
+
+func TestBuildSingleMemberFile(t *testing.T) {
+	pdfBuilder := file.NewPDFBuilder()
+	member := BuildMembers(1)[0]
+	out, err := pdfBuilder.BuildSingleMemberFile(context.Background(), "Member Profile", buildChurch(), member)
+	assert.False(t, utf8.Valid(out))
+	assert.NotNil(t, out)
+	assert.Nil(t, err)
+	assert.Greater(t, len(out), 100)
+
+	path := filepath.Join(os.TempDir(), "member-profile-review.pdf")
+	err = os.WriteFile(path, out, 0o600)
+	assert.NoError(t, err)
+	assert.FileExists(t, path)
+		// keep a local path for manual review; remove the file after test if you prefer cleanup
 }

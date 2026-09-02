@@ -6,6 +6,9 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/brunodmartins/church-members-api/platform/i18n"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -20,6 +23,7 @@ var fontFS embed.FS
 //go:generate mockgen -source=./pdf.go -destination=./mock/pdf_mock.go
 type Builder interface {
 	BuildFile(ctx context.Context, title string, church *domain.Church, members []*domain.Member) ([]byte, error)
+	BuildSingleMemberFile(ctx context.Context, title string, church *domain.Church, member *domain.Member) ([]byte, error)
 }
 
 type pdfBuilder struct {
@@ -70,6 +74,10 @@ func (pdfBuilder *pdfBuilder) setValue(value string, builder *gopdf.GoPdf) {
 }
 
 func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.Member, builder *gopdf.GoPdf) {
+	if data == nil || data.Person == nil {
+		return
+	}
+
 	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Name"), builder)
 	pdfBuilder.setValue(data.Person.GetFullName(), builder)
 	builder.Br(15)
@@ -78,7 +86,11 @@ func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.
 	pdfBuilder.setValue(i18n.GetMessage(ctx, "Domain.Classification."+classification.String()), builder)
 	builder.Br(15)
 	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.Address"), builder)
-	pdfBuilder.setValue(data.Person.Address.String(), builder)
+	if data.Person.Address != nil {
+		pdfBuilder.setValue(data.Person.Address.String(), builder)
+	} else {
+		pdfBuilder.setValue("", builder)
+	}
 	builder.Br(15)
 
 	pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.BirthDate"), builder)
@@ -117,7 +129,7 @@ func (pdfBuilder *pdfBuilder) buildRowSection(ctx context.Context, data *domain.
 		pdfBuilder.setValue("", builder)
 	}
 
-	if !data.Active {
+	if !data.Active && data.MembershipEndDate != nil {
 		builder.Br(15)
 		pdfBuilder.setField(i18n.GetMessage(ctx, "Domain.MembershipEndDate"), builder)
 		pdfBuilder.setValue(data.MembershipEndDate.Format("02/01/2006"), builder)
@@ -175,4 +187,276 @@ func (pdfBuilder *pdfBuilder) BuildFile(ctx context.Context, title string, churc
 	pdf.AddPage()
 	pdfBuilder.buildSummarySection(ctx, data, pdf)
 	return pdfBuilder.toBytes(pdf), nil
+}
+
+func (pdfBuilder *pdfBuilder) BuildSingleMemberFile(ctx context.Context, title string, church *domain.Church, member *domain.Member) ([]byte, error) {
+	if member == nil {
+		return nil, fmt.Errorf("member is required")
+	}
+
+	pdf := &gopdf.GoPdf{}
+	pdf.Start(gopdf.Config{PageSize: *gopdf.PageSizeA4})
+	if err := pdfBuilder.setFont(pdf); err != nil {
+		return nil, err
+	}
+	pdf.AddPage()
+	pdf.SetMargins(15, 15, 15, 15)
+
+	leftX := 35.0
+	rightX := 295.0
+	firstLineY := 55.0
+	currentY := firstLineY
+	writeSection := func(sectionTitle string) {
+		pdf.SetFont("arial", "", 11)
+		pdf.SetX(30)
+		pdf.SetY(currentY)
+		pdf.Cell(nil, sectionTitle)
+		pdf.SetLineWidth(0.5)
+		pdf.Line(30, currentY+10, 560, currentY+10)
+		currentY += 20
+	}
+	writeField := func(x float64, y float64, labelKey string, value string) {
+		if value == "" {
+			value = "-"
+		}
+		pdf.SetFont("arial", "", 9)
+		pdf.SetX(x)
+		pdf.SetY(y)
+		pdf.Cell(nil, i18n.GetMessage(ctx, labelKey)+":")
+		pdf.SetX(x + 100)
+		pdf.Cell(nil, value)
+	}
+	writeMultilineField := func(x float64, y float64, labelKey string, value string) error {
+		const lineHeight = 12.0
+		const maxLines = 8
+
+		if value == "" {
+			value = "-"
+		}
+		pdf.SetFont("arial", "", 9)
+		pdf.SetX(x)
+		pdf.SetY(y)
+		pdf.Cell(nil, i18n.GetMessage(ctx, labelKey)+":")
+		pdf.SetX(x + 100)
+
+		lineCount := 0
+		for _, paragraph := range strings.Split(value, "\n") {
+			lines, err := pdf.SplitTextWithWordWrap(paragraph, 425)
+			if err != nil {
+				return err
+			}
+			if len(lines) == 0 {
+				lines = []string{""}
+			}
+			for _, line := range lines {
+				if lineCount == maxLines {
+					return nil
+				}
+				pdf.Cell(&gopdf.Rect{W: 425, H: lineHeight}, line)
+				pdf.Br(lineHeight)
+				pdf.SetX(x + 100)
+				lineCount++
+			}
+		}
+		return nil
+	}
+
+	if church != nil && church.Name != "" {
+		pdf.SetX(30)
+		pdf.SetY(20)
+		pdf.SetFont("arial", "", 16)
+		pdf.Cell(nil, church.Name)
+	}
+	pdf.SetX(30)
+	pdf.SetY(35)
+	pdf.SetFont("arial", "", 18)
+	pdf.Cell(nil, title)
+
+	currentY = 68.0
+	writeField(leftX, currentY, "Domain.Classification", i18n.GetMessage(ctx, "Domain.Classification."+member.Classification().String()))
+	currentY += 24
+
+	writeSection(i18n.GetMessage(ctx, "PDF.Section.PersonalData"))
+	writeField(leftX, currentY, "Domain.Name", member.Person.GetFullName())
+	writeField(rightX, currentY, "Domain.Gender", member.Person.Gender)
+	currentY += 16
+	writeField(leftX, currentY, "Domain.BirthDate", member.Person.BirthDate.Format("02/01/2006"))
+	writeField(rightX, currentY, "Domain.Age", fmt.Sprintf("%d", member.Person.Age()))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.MaritalStatus", member.Person.MaritalStatus)
+	writeField(rightX, currentY, "Domain.MarriageDate", safeDate(member.Person.MarriageDate))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.Spouse", member.Person.SpousesName)
+	writeField(rightX, currentY, "Domain.Profession", member.Person.Profession)
+	currentY += 16
+	writeField(leftX, currentY, "Domain.FathersName", member.Person.FathersName)
+	writeField(rightX, currentY, "Domain.MothersName", member.Person.MothersName)
+	currentY += 16
+	writeField(leftX, currentY, "Domain.PlaceOfBirth", member.Person.PlaceOfBirth)
+	writeField(rightX, currentY, "Domain.Children", fmt.Sprintf("%d", member.Person.ChildrenQuantity))
+	currentY += 28
+
+	writeSection(i18n.GetMessage(ctx, "PDF.Section.ContactAndAddress"))
+	writeField(leftX, currentY, "Domain.Phone", safePhone(member.Person.Contact, true))
+	writeField(rightX, currentY, "Domain.CellPhone", safePhone(member.Person.Contact, false))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.Email", safeEmail(member.Person.Contact))
+	writeField(rightX, currentY, "Domain.ZipCode", safeAddressField(member.Person.Address, "ZipCode"))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.State", safeAddressField(member.Person.Address, "State"))
+	writeField(rightX, currentY, "Domain.City", safeAddressField(member.Person.Address, "City"))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.Address", safeAddressField(member.Person.Address, "Address"))
+	writeField(rightX, currentY, "Domain.District", safeAddressField(member.Person.Address, "District"))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.Number", safeAddressNumber(member.Person.Address))
+	writeField(rightX, currentY, "Domain.MoreInfo", safeAddressField(member.Person.Address, "MoreInfo"))
+	currentY += 28
+
+	writeSection(i18n.GetMessage(ctx, "PDF.Section.ChurchAndReligion"))
+	writeField(leftX, currentY, "Domain.BaptismPlace", safeReligionField(member.Religion, "BaptismPlace"))
+	writeField(rightX, currentY, "Domain.Baptized", safeReligionBool(member.Religion, "Baptized"))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.AcceptedJesus", safeReligionBool(member.Religion, "AcceptedJesus"))
+	writeField(rightX, currentY, "Domain.CatholicBaptized", safeReligionBool(member.Religion, "CatholicBaptized"))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.BaptismDate", safeReligionDate(member.Religion, "BaptismDate"))
+	writeField(rightX, currentY, "Domain.KnowsTithe", safeReligionBool(member.Religion, "KnowsTithe"))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.AgreesTithe", safeReligionBool(member.Religion, "AgreesTithe"))
+	writeField(rightX, currentY, "Domain.Tithe", safeReligionBool(member.Religion, "Tithe"))
+	currentY += 28
+
+	writeSection(i18n.GetMessage(ctx, "PDF.Section.Membership"))
+	writeField(leftX, currentY, "Domain.MembershipStartDate", member.MembershipStartDate.Format("02/01/2006"))
+	writeField(rightX, currentY, "Domain.MembershipEndDate", safeDate(member.MembershipEndDate))
+	currentY += 16
+	writeField(leftX, currentY, "Domain.MembershipEndReason", member.MembershipEndReason)
+	writeField(rightX, currentY, "Domain.ChurchID", member.ChurchID)
+	currentY += 16
+	if err := writeMultilineField(leftX, currentY, "Domain.Observation", member.Observation); err != nil {
+		return nil, err
+	}
+
+	return pdfBuilder.toBytes(pdf), nil
+}
+
+func safeDate(value *time.Time) string {
+	if value == nil {
+		return "-"
+	}
+	return value.Format("02/01/2006")
+}
+
+func safeObservation(value string) string {
+	if value == "" {
+		return "-"
+	}
+	return value
+}
+
+func safePhone(contact *domain.Contact, isPhone bool) string {
+	if contact == nil {
+		return "-"
+	}
+	if isPhone {
+		return contact.GetFormattedPhone()
+	}
+	return contact.GetFormattedCellPhone()
+}
+
+func safeEmail(contact *domain.Contact) string {
+	if contact == nil {
+		return "-"
+	}
+	return contact.Email
+}
+
+func safeAddressField(address *domain.Address, field string) string {
+	if address == nil {
+		return "-"
+	}
+	switch field {
+	case "ZipCode":
+		return address.ZipCode
+	case "State":
+		return address.State
+	case "City":
+		return address.City
+	case "Address":
+		return address.Address
+	case "District":
+		return address.District
+	case "MoreInfo":
+		return address.MoreInfo
+	default:
+		return "-"
+	}
+}
+
+func safeAddressNumber(address *domain.Address) string {
+	if address == nil {
+		return "-"
+	}
+	if address.Number == 0 {
+		return "-"
+	}
+	return fmt.Sprintf("%d", address.Number)
+}
+
+func safeReligionField(religion *domain.Religion, field string) string {
+	if religion == nil {
+		return "-"
+	}
+	switch field {
+	case "BaptismPlace":
+		return religion.BaptismPlace
+	case "FathersReligion":
+		return religion.FathersReligion
+	default:
+		return "-"
+	}
+}
+
+func safeReligionBool(religion *domain.Religion, field string) string {
+	if religion == nil {
+		return "-"
+	}
+	switch field {
+	case "Baptized":
+		return boolToText(religion.Baptized)
+	case "AcceptedJesus":
+		return boolToText(religion.AcceptedJesus)
+	case "CatholicBaptized":
+		return boolToText(religion.CatholicBaptized)
+	case "KnowsTithe":
+		return boolToText(religion.KnowsTithe)
+	case "AgreesTithe":
+		return boolToText(religion.AgreesTithe)
+	case "Tithe":
+		return boolToText(religion.Tithe)
+	default:
+		return "-"
+	}
+}
+
+func safeReligionDate(religion *domain.Religion, field string) string {
+	if religion == nil {
+		return "-"
+	}
+	switch field {
+	case "BaptismDate":
+		return safeDate(religion.BaptismDate)
+	case "AcceptedJesusDate":
+		return safeDate(religion.AcceptedJesusDate)
+	default:
+		return "-"
+	}
+}
+
+func boolToText(value bool) string {
+	if value {
+		return "Yes"
+	}
+	return "No"
 }

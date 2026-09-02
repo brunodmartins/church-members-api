@@ -28,8 +28,9 @@ func buildInactiveMember(id string) *domain.Member {
 func buildMember(id string) *domain.Member {
 	now := time.Now()
 	return &domain.Member{
-		ID:     id,
-		Active: true,
+		ID:          id,
+		Active:      true,
+		Observation: "First observation line\nSecond observation line\nThird observation line",
 		Person: &domain.Person{
 			FirstName:    "First Name",
 			LastName:     "Last Name",

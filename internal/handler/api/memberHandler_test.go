@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -47,6 +48,50 @@ func TestGetMember(t *testing.T) {
 		id := domain.NewID()
 		service.EXPECT().GetMember(gomock.Any(), id).Return(nil, genericError)
 		runTest(app, buildGet("/members/"+id)).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestGetMemberPDF(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_member.NewMockService(ctrl)
+	memberHandler := NewMemberHandler(service)
+	memberHandler.SetUpRoutes(app)
+
+	t.Run("Success - 200", func(t *testing.T) {
+		id := domain.NewID()
+		member := buildMember(id)
+		service.EXPECT().GetMember(gomock.Any(), id).Return(member, nil)
+		service.EXPECT().GenerateMemberPDF(gomock.Any(), member).Return(bytes.Repeat([]byte("A"), 200), nil)
+
+		response := runTest(app, buildGet("/members/"+id+"/pdf"))
+		assert.Equal(t, http.StatusOK, response.status)
+		assert.Contains(t, response.header.Get("Content-Type"), "application/pdf")
+		assert.Contains(t, response.header.Get("Content-Disposition"), "First Name Last Name.pdf")
+		assert.NotEmpty(t, response.body)
+		assert.Greater(t, len(response.body), 100)
+	})
+
+	t.Run("Fail - 400", func(t *testing.T) {
+		runTest(app, buildGet("/members/a/pdf")).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - 404", func(t *testing.T) {
+		id := domain.NewID()
+		member := buildMember(id)
+		service.EXPECT().GetMember(gomock.Any(), id).Return(member, nil)
+		service.EXPECT().GenerateMemberPDF(gomock.Any(), member).Return(nil, apierrors.NewApiError("Member not found", http.StatusNotFound))
+		runTest(app, buildGet("/members/"+id+"/pdf")).assertStatus(t, http.StatusNotFound)
+	})
+
+	t.Run("Fail - 500", func(t *testing.T) {
+		id := domain.NewID()
+		member := buildMember(id)
+		service.EXPECT().GetMember(gomock.Any(), id).Return(member, nil)
+		service.EXPECT().GenerateMemberPDF(gomock.Any(), member).Return(nil, genericError)
+		runTest(app, buildGet("/members/"+id+"/pdf")).assertStatus(t, http.StatusInternalServerError)
 	})
 }
 

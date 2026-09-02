@@ -6,6 +6,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 
@@ -16,6 +17,7 @@ import (
 type Service interface {
 	SearchMembers(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error)
 	GetMember(ctx context.Context, id string) (*domain.Member, error)
+	GenerateMemberPDF(ctx context.Context, member *domain.Member) ([]byte, error)
 	SaveMember(ctx context.Context, member *domain.Member) (string, error)
 	RetireMembership(ctx context.Context, id string, reason string, date time.Time) error
 	UpdateContact(ctx context.Context, memberID string, contact domain.Contact) error
@@ -53,6 +55,15 @@ func (s *memberService) GetMember(ctx context.Context, id string) (*domain.Membe
 		return nil, apierrors.NewApiError("Invalid ID", http.StatusBadRequest)
 	}
 	return s.repo.FindByID(ctx, id)
+}
+
+func (s *memberService) GenerateMemberPDF(ctx context.Context, member *domain.Member) ([]byte, error) {
+	if member == nil {
+		return nil, apierrors.NewApiError("Member not found", http.StatusNotFound)
+	}
+	church := domain.GetChurch(ctx)
+	pdfBuilder := file.NewPDFBuilder()
+	return pdfBuilder.BuildSingleMemberFile(ctx, "Member profile", church, member)
 }
 
 func (s *memberService) SaveMember(ctx context.Context, member *domain.Member) (string, error) {

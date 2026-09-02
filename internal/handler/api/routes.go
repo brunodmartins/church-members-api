@@ -134,6 +134,41 @@ func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/members/:id", handler.getMember)
+	// swagger:operation GET /members/{id}/pdf getMemberPDF
+	//
+	// Download member PDF
+	//
+	// Generates a printable PDF profile for the member.
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/pdf
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The member id
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: The member profile PDF
+	//     schema:
+	//       type: file
+	//   '400':
+	//     description: Invalid ID
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: Member not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/members/:id/pdf", handler.getMemberPDF)
 	// swagger:operation DELETE /members/{id} retireMember
 	//
 	// Retire Member

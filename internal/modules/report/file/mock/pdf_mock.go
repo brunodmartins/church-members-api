@@ -55,3 +55,18 @@ func (mr *MockBuilderMockRecorder) BuildFile(ctx, title, church, members any) *g
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildFile", reflect.TypeOf((*MockBuilder)(nil).BuildFile), ctx, title, church, members)
 }
+
+// BuildSingleMemberFile mocks base method.
+func (m *MockBuilder) BuildSingleMemberFile(ctx context.Context, title string, church *domain.Church, member *domain.Member) ([]byte, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "BuildSingleMemberFile", ctx, title, church, member)
+	ret0, _ := ret[0].([]byte)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// BuildSingleMemberFile indicates an expected call of BuildSingleMemberFile.
+func (mr *MockBuilderMockRecorder) BuildSingleMemberFile(ctx, title, church, member any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "BuildSingleMemberFile", reflect.TypeOf((*MockBuilder)(nil).BuildSingleMemberFile), ctx, title, church, member)
+}

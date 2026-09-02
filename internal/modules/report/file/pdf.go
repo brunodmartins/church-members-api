@@ -6,6 +6,7 @@ import (
 	"context"
 	"embed"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/brunodmartins/church-members-api/platform/i18n"
@@ -225,6 +226,40 @@ func (pdfBuilder *pdfBuilder) BuildSingleMemberFile(ctx context.Context, title s
 		pdf.SetX(x + 100)
 		pdf.Cell(nil, value)
 	}
+	writeMultilineField := func(x float64, y float64, labelKey string, value string) error {
+		const lineHeight = 12.0
+		const maxLines = 8
+
+		if value == "" {
+			value = "-"
+		}
+		pdf.SetFont("arial", "", 9)
+		pdf.SetX(x)
+		pdf.SetY(y)
+		pdf.Cell(nil, i18n.GetMessage(ctx, labelKey)+":")
+		pdf.SetX(x + 100)
+
+		lineCount := 0
+		for _, paragraph := range strings.Split(value, "\n") {
+			lines, err := pdf.SplitTextWithWordWrap(paragraph, 425)
+			if err != nil {
+				return err
+			}
+			if len(lines) == 0 {
+				lines = []string{""}
+			}
+			for _, line := range lines {
+				if lineCount == maxLines {
+					return nil
+				}
+				pdf.Cell(&gopdf.Rect{W: 425, H: lineHeight}, line)
+				pdf.Br(lineHeight)
+				pdf.SetX(x + 100)
+				lineCount++
+			}
+		}
+		return nil
+	}
 
 	if church != nil && church.Name != "" {
 		pdf.SetX(30)
@@ -239,7 +274,6 @@ func (pdfBuilder *pdfBuilder) BuildSingleMemberFile(ctx context.Context, title s
 
 	currentY = 68.0
 	writeField(leftX, currentY, "Domain.Classification", i18n.GetMessage(ctx, "Domain.Classification."+member.Classification().String()))
-	writeField(rightX, currentY, "Domain.Observation", member.Observation)
 	currentY += 24
 
 	writeSection(i18n.GetMessage(ctx, "PDF.Section.PersonalData"))
@@ -300,7 +334,9 @@ func (pdfBuilder *pdfBuilder) BuildSingleMemberFile(ctx context.Context, title s
 	writeField(leftX, currentY, "Domain.MembershipEndReason", member.MembershipEndReason)
 	writeField(rightX, currentY, "Domain.ChurchID", member.ChurchID)
 	currentY += 16
-	writeField(leftX, currentY, "Domain.Observation", member.Observation)
+	if err := writeMultilineField(leftX, currentY, "Domain.Observation", member.Observation); err != nil {
+		return nil, err
+	}
 
 	return pdfBuilder.toBytes(pdf), nil
 }

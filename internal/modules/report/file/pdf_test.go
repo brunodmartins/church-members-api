@@ -21,7 +21,8 @@ func TestBuildFile(t *testing.T) {
 
 func TestBuildSingleMemberFile(t *testing.T) {
 	pdfBuilder := file.NewPDFBuilder()
-	out, err := pdfBuilder.BuildSingleMemberFile(context.Background(), "Member Profile", buildChurch(), BuildMembers(1)[0])
+	member := BuildMembers(1)[0]
+	out, err := pdfBuilder.BuildSingleMemberFile(context.Background(), "Member Profile", buildChurch(), member)
 	assert.False(t, utf8.Valid(out))
 	assert.NotNil(t, out)
 	assert.Nil(t, err)

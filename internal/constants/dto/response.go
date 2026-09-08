@@ -138,3 +138,29 @@ type GenerateReportResponse struct {
 	Message string `json:"message"`
 	Type    string `json:"type"`
 }
+
+// SearchUsersResponse for HTTP search users responses
+// swagger:model SearchUsersResponse
+type SearchUsersResponse struct {
+	Users []GetUserResponse `json:"users"`
+}
+
+// GetUserResponse for HTTP get user responses
+// swagger:model GetUserResponse
+type GetUserResponse struct {
+	ID             string                          `json:"id"`
+	UserName       string                          `json:"username"`
+	Email          string                          `json:"email"`
+	ConfirmedEmail bool                            `json:"confirmed_email"`
+	Role           string                          `json:"role"`
+	Phone          string                          `json:"phone"`
+	Roles          []string                        `json:"roles"`
+	Preferences    NotificationPreferencesResponse `json:"preferences"`
+}
+
+// NotificationPreferencesResponse for HTTP notification preferences responses
+// swagger:model NotificationPreferencesResponse
+type NotificationPreferencesResponse struct {
+	SendDailySMS    bool `json:"send_daily_sms"`
+	SendWeeklyEmail bool `json:"send_weekly_email"`
+}

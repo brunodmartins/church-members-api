@@ -512,6 +512,36 @@ definitions:
                 x-go-name: Token
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    GetUserResponse:
+        description: GetUserResponse for HTTP get user responses
+        properties:
+            confirmed_email:
+                type: boolean
+                x-go-name: ConfirmedEmail
+            email:
+                type: string
+                x-go-name: Email
+            id:
+                type: string
+                x-go-name: ID
+            phone:
+                type: string
+                x-go-name: Phone
+            preferences:
+                $ref: '#/definitions/NotificationPreferencesResponse'
+            role:
+                type: string
+                x-go-name: Role
+            roles:
+                items:
+                    type: string
+                type: array
+                x-go-name: Roles
+            username:
+                type: string
+                x-go-name: UserName
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     MemberAnniversaryResponse:
         description: MemberAnniversaryResponse for HTTP member anniversary responses
         properties:
@@ -541,6 +571,17 @@ definitions:
                 x-go-name: SendWeeklyEmail
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/domain
+    NotificationPreferencesResponse:
+        description: NotificationPreferencesResponse for HTTP notification preferences responses
+        properties:
+            send_daily_sms:
+                type: boolean
+                x-go-name: SendDailySMS
+            send_weekly_email:
+                type: boolean
+                x-go-name: SendWeeklyEmail
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     ReportResponse:
         description: ReportResponse for HTTP report list responses
         properties:
@@ -580,6 +621,16 @@ definitions:
             reason:
                 type: string
                 x-go-name: Reason
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    SearchUsersResponse:
+        description: SearchUsersResponse for HTTP search users responses
+        properties:
+            users:
+                items:
+                    $ref: '#/definitions/GetUserResponse'
+                type: array
+                x-go-name: Users
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     UpdateBaptismRequest:
@@ -1248,6 +1299,27 @@ paths:
                 - token: []
             summary: Generate a report
     /users:
+        get:
+            description: Returns a list of users matching the search criteria
+            operationId: searchUsers
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: A list of users
+                    schema:
+                        $ref: '#/definitions/SearchUsersResponse'
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Search users
         post:
             description: Register the receiving user
             operationId: postUser

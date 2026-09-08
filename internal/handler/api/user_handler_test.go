@@ -1,11 +1,13 @@
 package api
 
 import (
-	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
-	"go.uber.org/mock/gomock"
 	"net/http"
 	"testing"
+
+	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
+	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
+	"go.uber.org/mock/gomock"
 )
 
 func TestUserHandler_PostUser(t *testing.T) {
@@ -41,4 +43,43 @@ func TestUserHandler_PostUser(t *testing.T) {
 		body := getMock("create_user_invalid_password.json")
 		runTest(app, buildPost("/users", body)).assertStatus(t, http.StatusBadRequest)
 	})
+}
+
+func TestSearchUsers(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_user.NewMockService(ctrl)
+	NewUserHandler(service).SetUpRoutes(app)
+
+	t.Run("Success", func(t *testing.T) {
+		service.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(buildUsers(), nil)
+		runTest(app, buildGet("/users")).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - Service error - 500", func(t *testing.T) {
+		service.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(nil, genericError)
+		runTest(app, buildGet("/users")).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func buildUsers() []*domain.User {
+	return []*domain.User{
+		{
+			ID:             "user_id_1",
+			Email:          "user1@example.com",
+			Role:           role.ADMIN,
+			ConfirmedEmail: true,
+			Phone:          "12345678",
+			Roles:          []string{"viewMember", "viewReports"},
+		},
+		{
+			ID:             "user_id_2",
+			Email:          "user2@example.com",
+			Role:           role.USER,
+			ConfirmedEmail: false,
+			Phone:          "12345678",
+			Roles:          []string{"viewMember", "viewReports"},
+		},
+	}
 }

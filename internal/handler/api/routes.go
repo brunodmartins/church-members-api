@@ -717,6 +717,32 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Post("/users", handler.PostUser)
+
+	// swagger:operation GET /users searchUsers
+	//
+	// Search users
+	//
+	// Returns a list of users matching the search criteria
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// responses:
+	//   '200':
+	//     description: A list of users
+	//     schema:
+	//       "$ref": "#/definitions/SearchUsersResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Get("/users", handler.SearchUsers)
 }
 
 func (h *ChurchHandler) SetUpRoutes(app *fiber.App) {

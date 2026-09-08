@@ -16,6 +16,22 @@ func NewGetMemberResponse(member *domain.Member) *GetMemberResponse {
 	return result
 }
 
+func NewGetUserResponse(user *domain.User) GetUserResponse {
+	return GetUserResponse{
+		ID:             user.ID,
+		UserName:       user.UserName,
+		Email:          user.Email,
+		ConfirmedEmail: user.ConfirmedEmail,
+		Role:           user.Role.String(),
+		Phone:          user.Phone,
+		Roles:          user.Roles,
+		Preferences: NotificationPreferencesResponse{
+			SendDailySMS:    user.Preferences.SendDailySMS,
+			SendWeeklyEmail: user.Preferences.SendWeeklyEmail,
+		},
+	}
+}
+
 func buildPersonResponse(person *domain.Person) *GetPersonResponse {
 	return &GetPersonResponse{
 		FirstName: person.FirstName,

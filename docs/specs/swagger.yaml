@@ -1346,6 +1346,38 @@ paths:
             security:
                 - token: []
             summary: Create a user
+    /users/{id}:
+        get:
+            description: Returns the user information for the specified ID
+            operationId: getUserByID
+            parameters:
+                - description: The user name
+                  in: path
+                  name: name
+                  required: true
+                  type: string
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: The user information
+                    schema:
+                        $ref: '#/definitions/GetUserResponse'
+                "400":
+                    description: Invalid ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: User not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Get user by ID
     /users/confirm:
         get:
             description: Confirms the email for a given user

@@ -2,6 +2,9 @@ package user
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -11,7 +14,6 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/google/uuid"
-	"net/http"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
@@ -42,21 +44,20 @@ func (repo dynamoRepository) FindByID(ctx context.Context, id string) (*domain.U
 	if err != nil {
 		return nil, err
 	}
-	return repo.mapUserResponse(resp, err)
+	if len(resp.Items) == 0 {
+		return nil, apierrors.NewApiError(fmt.Sprintf("User with ID %s not found", id), http.StatusNotFound)
+	} else {
+		return repo.mapUserResponse(resp.Items[0], err)
+	}
 }
 
-func (repo dynamoRepository) mapUserResponse(resp *dynamodb.QueryOutput, err error) (*domain.User, error) {
-	if len(resp.Items) != 0 {
-		for _, item := range resp.Items {
-			record := &dto.UserItem{}
-			err = attributevalue.UnmarshalMap(item, record)
-			if err != nil {
-				return nil, err
-			}
-			return record.ToUser(), nil
-		}
+func (repo dynamoRepository) mapUserResponse(item map[string]types.AttributeValue, err error) (*domain.User, error) {
+	record := &dto.UserItem{}
+	err = attributevalue.UnmarshalMap(item, record)
+	if err != nil {
+		return nil, err
 	}
-	return nil, apierrors.NewApiError("Item not found", http.StatusNotFound)
+	return record.ToUser(), nil
 }
 
 func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*domain.User, error) {
@@ -64,7 +65,10 @@ func (repo dynamoRepository) FindUser(ctx context.Context, username string) (*do
 	if err != nil {
 		return nil, err
 	}
-	return repo.mapUserResponse(resp, err)
+	if len(resp.Items) == 0 {
+		return nil, apierrors.NewApiError(fmt.Sprintf("User with username %s not found", username), http.StatusNotFound)
+	}
+	return repo.mapUserResponse(resp.Items[0], err)
 }
 
 func (repo dynamoRepository) SaveUser(ctx context.Context, user *domain.User) error {

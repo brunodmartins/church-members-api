@@ -45,3 +45,12 @@ func (handler *UserHandler) SearchUsers(ctx *fiber.Ctx) error {
 		Users: result,
 	})
 }
+
+func (handler *UserHandler) GetUserByName(ctx *fiber.Ctx) error {
+	name := ctx.Params("name")
+	user, err := handler.service.FindUser(ctx.UserContext(), name)
+	if err != nil {
+		return err
+	}
+	return ctx.Status(http.StatusOK).JSON(dto.NewGetUserResponse(user))
+}

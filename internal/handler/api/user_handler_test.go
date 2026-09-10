@@ -7,6 +7,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"go.uber.org/mock/gomock"
 )
 
@@ -60,6 +61,28 @@ func TestSearchUsers(t *testing.T) {
 	t.Run("Fail - Service error - 500", func(t *testing.T) {
 		service.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(nil, genericError)
 		runTest(app, buildGet("/users")).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestGetUserByName(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_user.NewMockService(ctrl)
+	NewUserHandler(service).SetUpRoutes(app)
+
+	t.Run("Success", func(t *testing.T) {
+		service.EXPECT().FindUser(gomock.Any(), "user1").Return(buildUsers()[0], nil)
+		runTest(app, buildGet("/users/user1")).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - Service error - 500", func(t *testing.T) {
+		service.EXPECT().FindUser(gomock.Any(), "user1").Return(nil, genericError)
+		runTest(app, buildGet("/users/user1")).assertStatus(t, http.StatusInternalServerError)
+	})
+	t.Run("Fail - User not found - 404", func(t *testing.T) {
+		service.EXPECT().FindUser(gomock.Any(), "user1").Return(nil, apierrors.NewApiError("User not found", 404))
+		runTest(app, buildGet("/users/user1")).assertStatus(t, http.StatusNotFound)
 	})
 }
 

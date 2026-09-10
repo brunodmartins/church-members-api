@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -19,6 +20,14 @@ func WithEmailNotifications() wrapper.QuerySpecification {
 	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
 		return wrapper.ExpressionBuilder{
 			Builder: builderExpression.WithKeyCondition(withChurchId(ctx)).WithFilter(expression.Name("send_weekly_email").Equal(expression.Value(true))),
+		}
+	}
+}
+
+func AllUsers() wrapper.QuerySpecification {
+	return func(ctx context.Context, builderExpression expression.Builder) wrapper.ExpressionBuilder {
+		return wrapper.ExpressionBuilder{
+			Builder: builderExpression.WithKeyCondition(withChurchId(ctx)),
 		}
 	}
 }

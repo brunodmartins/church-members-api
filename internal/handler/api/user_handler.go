@@ -2,10 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
 	"github.com/gofiber/fiber/v2"
-	"net/http"
 )
 
 type UserHandler struct {
@@ -29,4 +30,27 @@ func (handler *UserHandler) PostUser(ctx *fiber.Ctx) error {
 		return err
 	}
 	return ctx.SendStatus(http.StatusCreated)
+}
+
+func (handler *UserHandler) SearchUsers(ctx *fiber.Ctx) error {
+	users, err := handler.service.SearchUser(ctx.UserContext(), user.AllUsers())
+	if err != nil {
+		return err
+	}
+	result := make([]dto.GetUserResponse, len(users))
+	for i, user := range users {
+		result[i] = dto.NewGetUserResponse(user)
+	}
+	return ctx.Status(http.StatusOK).JSON(dto.SearchUsersResponse{
+		Users: result,
+	})
+}
+
+func (handler *UserHandler) GetUserByName(ctx *fiber.Ctx) error {
+	name := ctx.Params("name")
+	user, err := handler.service.FindUser(ctx.UserContext(), name)
+	if err != nil {
+		return err
+	}
+	return ctx.Status(http.StatusOK).JSON(dto.NewGetUserResponse(user))
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/enum"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"github.com/brunodmartins/church-members-api/platform/crypto"
 )
 
@@ -19,6 +20,11 @@ type User struct {
 	Password       []byte                  `json:"-"`
 	Church         *Church                 `json:"-"`
 	Roles          []string                `json:"roles"`
+}
+
+// IsAdmin checks if the user has an admin role.
+func (u *User) IsAdmin() bool {
+	return u.Role == role.ADMIN
 }
 
 type NotificationPreferences struct {
@@ -50,8 +56,15 @@ func GetChurch(ctx context.Context) *Church {
 	if church := ctx.Value("church"); church != nil {
 		return church.(*Church)
 	}
+	if user := GetUser(ctx); user != nil {
+		return user.Church
+	}
+	return nil
+}
+
+func GetUser(ctx context.Context) *User {
 	if user := ctx.Value("user"); user != nil {
-		return user.(*User).Church
+		return user.(*User)
 	}
 	return nil
 }

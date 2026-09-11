@@ -2,11 +2,14 @@ package user
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
@@ -91,6 +94,14 @@ func TestService_UpdateUser(t *testing.T) {
 	t.Run("Given a valid username, when performing an update on the database, then return error ", func(t *testing.T) {
 		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(user)).Return(genericError)
 		assert.Error(t, service.UpdateUser(ctx, user))
+	})
+	t.Run("Given a common user, when performing an update on the database, then return error with forbiden", func(t *testing.T) {
+		commonUser := buildUser("id", "common")
+		commonUser.Role = role.USER
+		ctx := context.WithValue(context.TODO(), "user", commonUser)
+		err := service.UpdateUser(ctx, user)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
 	})
 }
 

@@ -22,6 +22,9 @@ type userService struct {
 }
 
 func (s userService) UpdateUser(ctx context.Context, user *domain.User) error {
+	if !domain.GetUser(ctx).IsAdmin() {
+		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
+	}
 	return s.repository.UpdateUser(ctx, user)
 }
 

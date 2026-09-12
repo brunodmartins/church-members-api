@@ -95,13 +95,37 @@ func TestService_UpdateUser(t *testing.T) {
 		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(user)).Return(genericError)
 		assert.Error(t, service.UpdateUser(ctx, user))
 	})
-	t.Run("Given a common user, when performing an update on the database, then return error with forbiden", func(t *testing.T) {
-		commonUser := buildUser("id", "common")
-		commonUser.Role = role.USER
-		ctx := context.WithValue(context.TODO(), "user", commonUser)
-		err := service.UpdateUser(ctx, user)
+	t.Run("Given a common user, when performing an update on the database changing its role, then return error with forbiden", func(t *testing.T) {
+		currentUser := buildUser("id", "common")
+		currentUser.Role = role.USER
+		updatedUser := buildUser("id", "common")
+		updatedUser.Role = role.USER
+		updatedUser.Roles = []string{"new-roles"}
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			UserName: updatedUser.UserName,
+			Role:     updatedUser.Role,
+			Roles:    updatedUser.Roles,
+		})
+		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(updatedUser.UserName)).Return(currentUser, nil)
+		err := service.UpdateUser(ctx, updatedUser)
 		assert.Error(t, err)
 		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given a common user, when performing an update on the database changing its confirmation mail, then return allow", func(t *testing.T) {
+		currentUser := buildUser("id", "common")
+		currentUser.Role = role.USER
+		currentUser.ConfirmedEmail = false
+		updatedUser := buildUser("id", "common")
+		updatedUser.Role = role.USER
+		updatedUser.ConfirmedEmail = true
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			UserName: updatedUser.UserName,
+			Role:     updatedUser.Role,
+			Roles:    updatedUser.Roles,
+		})
+		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(updatedUser.UserName)).Return(currentUser, nil)
+		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(updatedUser)).Return(nil)
+		assert.NoError(t, service.UpdateUser(ctx, updatedUser))
 	})
 }
 

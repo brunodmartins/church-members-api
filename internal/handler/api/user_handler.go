@@ -54,3 +54,21 @@ func (handler *UserHandler) GetUserByName(ctx *fiber.Ctx) error {
 	}
 	return ctx.Status(http.StatusOK).JSON(dto.NewGetUserResponse(user))
 }
+
+func (handler *UserHandler) UpdateUser(ctx *fiber.Ctx) error {
+	name := ctx.Params("name")
+	requestBody := new(dto.UpdateUserRequest)
+	_ = json.Unmarshal(ctx.Body(), &requestBody)
+	if err := ValidateStruct(requestBody); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(dto.ErrorResponse{
+			Message: "Invalid body received",
+			Error:   err.Error(),
+		})
+	}
+	user := requestBody.ToUser()
+	user.UserName = name
+	if err := handler.service.UpdateUser(ctx.UserContext(), user); err != nil {
+		return err
+	}
+	return ctx.SendStatus(http.StatusOK)
+}

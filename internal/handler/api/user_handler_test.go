@@ -1,10 +1,12 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
@@ -86,10 +88,51 @@ func TestGetUserByName(t *testing.T) {
 	})
 }
 
+func TestUpdateUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_user.NewMockService(ctrl)
+	NewUserHandler(service).SetUpRoutes(app)
+
+	t.Run("Success", func(t *testing.T) {
+		updatedUser := buildUsers()[0]
+		service.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(updatedUser)).Return(nil)
+		updateDTO := buildUpdateUserRequest(updatedUser)
+		jsonRequest, _ := json.Marshal(updateDTO)
+		runTest(app, buildPut("/users/"+updatedUser.UserName, jsonRequest)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - Service error - 500", func(t *testing.T) {
+		updatedUser := buildUsers()[0]
+		service.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(updatedUser)).Return(genericError)
+		updateDTO := buildUpdateUserRequest(updatedUser)
+		jsonRequest, _ := json.Marshal(updateDTO)
+		runTest(app, buildPut("/users/"+updatedUser.UserName, jsonRequest)).assertStatus(t, http.StatusInternalServerError)
+	})
+	t.Run("Fail - User not found - 404", func(t *testing.T) {
+		updatedUser := buildUsers()[0]
+		service.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(updatedUser)).Return(apierrors.NewApiError("User not found", 404))
+		updateDTO := buildUpdateUserRequest(updatedUser)
+		jsonRequest, _ := json.Marshal(updateDTO)
+		runTest(app, buildPut("/users/"+updatedUser.UserName, jsonRequest)).assertStatus(t, http.StatusNotFound)
+	})
+}
+
+func buildUpdateUserRequest(user *domain.User) *dto.UpdateUserRequest {
+	return &dto.UpdateUserRequest{
+		Email:          user.Email,
+		Role:           user.Role.String(),
+		ConfirmedEmail: user.ConfirmedEmail,
+		Phone:          user.Phone,
+		Roles:          user.Roles,
+	}
+}
+
 func buildUsers() []*domain.User {
 	return []*domain.User{
 		{
-			ID:             "user_id_1",
+			UserName:       "user_id_1",
 			Email:          "user1@example.com",
 			Role:           role.ADMIN,
 			ConfirmedEmail: true,
@@ -97,7 +140,7 @@ func buildUsers() []*domain.User {
 			Roles:          []string{"viewMember", "viewReports"},
 		},
 		{
-			ID:             "user_id_2",
+			UserName:       "user_id_2",
 			Email:          "user2@example.com",
 			Role:           role.USER,
 			ConfirmedEmail: false,

@@ -282,3 +282,25 @@ type RetireParticipantRequest struct {
 	Reason     string `json:"reason" validate:"required"`
 	RetireDate Date   `json:"date"`
 }
+
+// UpdateUserRequest for HTTP calls to update user information
+// swagger:model UpdateUserRequest
+type UpdateUserRequest struct {
+	Email                          string   `json:"email" validate:"required,email"`
+	ConfirmedEmail                 bool     `json:"confirmedEmail"`
+	Role                           string   `json:"role" validate:"eq=ADMIN|eq=USER"`
+	Phone                          string   `json:"phone"`
+	Roles                          []string `json:"roles"`
+	domain.NotificationPreferences `json:"preferences"`
+}
+
+func (r *UpdateUserRequest) ToUser() *domain.User {
+	return &domain.User{
+		Email:          r.Email,
+		ConfirmedEmail: r.ConfirmedEmail,
+		Role:           role.From(r.Role),
+		Phone:          r.Phone,
+		Roles:          r.Roles,
+		Preferences:    r.NotificationPreferences,
+	}
+}

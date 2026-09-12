@@ -779,6 +779,50 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/users/:name", handler.GetUserByName)
+
+	// swagger:operation PUT /users/{name} updateUser
+	//
+	// Update user
+	//
+	// Updates the information of the specified user
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: name
+	//   in: path
+	//   type: string
+	//   description: The user name
+	//   required: true
+	// - name: user
+	//   in: body
+	//   description: The updated user information
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/UpdateUserRequest"
+	// responses:
+	//   '200':
+	//     description: User updated successfully
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '403':
+	//     description: Forbidden
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: User not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Put("/users/:name", handler.UpdateUser)
 }
 
 func (h *ChurchHandler) SetUpRoutes(app *fiber.App) {

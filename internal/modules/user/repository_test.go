@@ -2,13 +2,14 @@ package user
 
 import (
 	"context"
+	"net/http"
+	"testing"
+
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/brunodmartins/church-members-api/test/dynamodbhelper"
-	"net/http"
-	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -108,7 +109,13 @@ func TestDynamoRepository_UpdateUser(t *testing.T) {
 			ID:       user.UserName,
 			ChurchID: user.ChurchID,
 			Values: map[string]types.AttributeValue{
-				":confirmed_email": &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
+				":confirmed_email":   &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
+				":email":             &types.AttributeValueMemberS{Value: user.Email},
+				":role":              &types.AttributeValueMemberS{Value: user.Role.String()},
+				":phone":             &types.AttributeValueMemberS{Value: user.Phone},
+				":send_daily_sms":    &types.AttributeValueMemberBOOL{Value: user.Preferences.SendDailySMS},
+				":send_weekly_email": &types.AttributeValueMemberBOOL{Value: user.Preferences.SendWeeklyEmail},
+				":roles":             &types.AttributeValueMemberSS{Value: user.Roles},
 			},
 		}
 		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), matcher).Return(nil, nil)

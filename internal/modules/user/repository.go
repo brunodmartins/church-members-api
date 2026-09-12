@@ -107,10 +107,16 @@ func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) 
 		},
 		TableName: aws.String(repo.table),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":confirmed_email": &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
+			":email":             &types.AttributeValueMemberS{Value: user.Email},
+			":confirmed_email":   &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
+			":role":              &types.AttributeValueMemberS{Value: user.Role.String()},
+			":phone":             &types.AttributeValueMemberS{Value: user.Phone},
+			":send_daily_sms":    &types.AttributeValueMemberBOOL{Value: user.Preferences.SendDailySMS},
+			":send_weekly_email": &types.AttributeValueMemberBOOL{Value: user.Preferences.SendWeeklyEmail},
+			":roles":             &types.AttributeValueMemberSS{Value: user.Roles},
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String(repo.BuildUpdateQuery("confirmed_email")),
+		UpdateExpression: aws.String(repo.BuildUpdateQuery("email", "confirmed_email", "role", "phone", "send_daily_sms", "send_weekly_email", "roles")),
 	})
 	return err
 }

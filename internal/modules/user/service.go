@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"net/http"
+	"slices"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -23,7 +24,10 @@ type userService struct {
 
 func (s userService) UpdateUser(ctx context.Context, user *domain.User) error {
 	if !domain.GetUser(ctx).IsAdmin() {
-		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
+		current, _ := s.repository.FindUser(ctx, user.UserName)
+		if current.Role != user.Role || !slices.Equal(current.Roles, user.Roles) {
+			return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
+		}
 	}
 	return s.repository.UpdateUser(ctx, user)
 }

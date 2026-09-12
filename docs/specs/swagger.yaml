@@ -688,6 +688,30 @@ definitions:
                 x-go-name: SpousesName
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    UpdateUserRequest:
+        description: UpdateUserRequest for HTTP calls to update user information
+        properties:
+            confirmedEmail:
+                type: boolean
+                x-go-name: ConfirmedEmail
+            email:
+                type: string
+                x-go-name: Email
+            phone:
+                type: string
+                x-go-name: Phone
+            preferences:
+                $ref: '#/definitions/NotificationPreferences'
+            role:
+                type: string
+                x-go-name: Role
+            roles:
+                items:
+                    type: string
+                type: array
+                x-go-name: Roles
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
 host: localhost:8080
 info:
     description: This API manages the members of a church.
@@ -1378,6 +1402,46 @@ paths:
             security:
                 - token: []
             summary: Get user by ID
+    /users/{name}:
+        put:
+            description: Updates the information of the specified user
+            operationId: updateUser
+            parameters:
+                - description: The user name
+                  in: path
+                  name: name
+                  required: true
+                  type: string
+                - description: The updated user information
+                  in: body
+                  name: user
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UpdateUserRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: User updated successfully
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "403":
+                    description: Forbidden
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: User not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Update user
     /users/confirm:
         get:
             description: Confirms the email for a given user

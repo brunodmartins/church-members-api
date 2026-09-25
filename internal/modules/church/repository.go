@@ -73,20 +73,13 @@ func (d dynamoRepository) Update(ctx context.Context, church *domain.Church) err
 		},
 		TableName: aws.String(d.table),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
-			":church_name": toStringAttributeValue(church.Name),
-			":language":    toStringAttributeValue(church.Language),
-			":email":       toStringAttributeValue(church.Email),
-			":logo":        toStringAttributeValue(church.Logo),
+			":church_name": &types.AttributeValueMemberS{Value: church.Name},
+			":language":    &types.AttributeValueMemberS{Value: church.Language},
+			":email":       &types.AttributeValueMemberS{Value: church.Email},
+			":logo":        &types.AttributeValueMemberS{Value: church.Logo},
 		},
 		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String(updateQuery),
 	})
 	return err
-}
-
-func toStringAttributeValue(value string) types.AttributeValue {
-	if value == "" {
-		return &types.AttributeValueMemberNULL{Value: true}
-	}
-	return &types.AttributeValueMemberS{Value: value}
 }

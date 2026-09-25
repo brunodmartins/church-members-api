@@ -123,6 +123,16 @@ func TestUpdateChurch(t *testing.T) {
 		jsonRequest, _ := json.Marshal(request)
 		runTest(app, buildPut("/churches/"+id, jsonRequest)).assertStatus(t, http.StatusNotFound)
 	})
+
+	t.Run("Fail - 403", func(t *testing.T) {
+		id := domain.NewID()
+		request := &dto.UpdateChurchRequest{Name: "updated church", Language: "en-us"}
+		expected := request.ToChurch()
+		expected.ID = id
+		service.EXPECT().UpdateChurch(gomock.Any(), gomock.Eq(expected)).Return(apierrors.NewApiError("User does not have required role", http.StatusForbidden))
+		jsonRequest, _ := json.Marshal(request)
+		runTest(app, buildPut("/churches/"+id, jsonRequest)).assertStatus(t, http.StatusForbidden)
+	})
 }
 
 func buildStatistics() *domain.ChurchStatistics {

@@ -196,4 +196,16 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 		repo.EXPECT().GetByID(gomock.Eq(ctx), id).Return(nil, genericError)
 		assert.Error(t, service.UpdateChurch(ctx, &domain.Church{ID: id}))
 	})
+
+	t.Run("Forbidden for admin from other church", func(t *testing.T) {
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			Role: role.ADMIN,
+			Church: &domain.Church{
+				ID: "other-church",
+			},
+		})
+		err := service.UpdateChurch(ctx, &domain.Church{ID: id})
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
+	})
 }

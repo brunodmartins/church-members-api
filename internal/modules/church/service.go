@@ -90,11 +90,11 @@ func (s churchService) UpdateChurch(ctx context.Context, updatedChurch *domain.C
 	if currentUser == nil || currentUser.Role != role.ADMIN {
 		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
 	}
-	if domain.GetChurchID(ctx) != updatedChurch.ID {
+	if currentUser.Church != nil && currentUser.Church.ID != "" && currentUser.Church.ID != updatedChurch.ID {
 		return apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
 	}
 
-	currentChurch, err := s.GetChurch(ctx, updatedChurch.ID)
+	currentChurch, err := s.repo.GetByID(ctx, updatedChurch.ID)
 	if err != nil {
 		return err
 	}

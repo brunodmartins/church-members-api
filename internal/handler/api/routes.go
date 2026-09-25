@@ -893,4 +893,49 @@ func (h *ChurchHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Get("/churches/:id", h.getChurchByID)
+
+	// swagger:operation PUT /churches/{id} updateChurch
+	//
+	// Update church
+	//
+	// Updates the church information except the abbreviation
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The church id
+	//   required: true
+	// - name: body
+	//   in: body
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/UpdateChurchRequest"
+	// responses:
+	//   '200':
+	//     description: Church updated successfully
+	//     schema:
+	//       "$ref": "#/definitions/MessageResponse"
+	//   '400':
+	//     description: Invalid body or ID
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '403':
+	//     description: User does not have required role
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: Church not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Put("/churches/:id", h.updateChurch)
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/sirupsen/logrus"
@@ -17,6 +18,7 @@ type Service interface {
 	GetChurch(ctx context.Context, id string) (*domain.Church, error)
 	GetChurchByAbbreviation(ctx context.Context, abbreviation string) (*domain.Church, error)
 	GetStatistics(ctx context.Context, id string) (*domain.ChurchStatistics, error)
+	UpdateChurch(ctx context.Context, church *domain.Church) error
 }
 
 type churchService struct {
@@ -81,4 +83,23 @@ func (s churchService) GetStatistics(ctx context.Context, id string) (*domain.Ch
 	}
 
 	return result, nil
+}
+
+func (s churchService) UpdateChurch(ctx context.Context, updatedChurch *domain.Church) error {
+	currentUser := domain.GetUser(ctx)
+	if currentUser == nil || currentUser.Role != role.ADMIN {
+		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
+	}
+
+	currentChurch, err := s.GetChurch(ctx, updatedChurch.ID)
+	if err != nil {
+		return err
+	}
+
+	currentChurch.Name = updatedChurch.Name
+	currentChurch.Language = updatedChurch.Language
+	currentChurch.Email = updatedChurch.Email
+	currentChurch.Logo = updatedChurch.Logo
+
+	return s.repo.Update(ctx, currentChurch)
 }

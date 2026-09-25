@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"testing"
 
@@ -67,6 +68,60 @@ func TestGetStatistics(t *testing.T) {
 		id := domain.NewID()
 		service.EXPECT().GetStatistics(gomock.Any(), id).Return(nil, genericError)
 		runTest(app, buildGet("/churches/"+id+"/statistics")).assertStatus(t, http.StatusInternalServerError)
+	})
+}
+
+func TestUpdateChurch(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_church.NewMockService(ctrl)
+	handler := NewChurchHandler(service)
+	handler.SetUpRoutes(app)
+
+	t.Run("Success - 200", func(t *testing.T) {
+		id := domain.NewID()
+		request := &dto.UpdateChurchRequest{
+			Name:     "updated church",
+			Language: "en-us",
+			Email:    "church@example.com",
+			Logo:     "https://example.com/logo.png",
+		}
+		expected := request.ToChurch()
+		expected.ID = id
+		service.EXPECT().UpdateChurch(gomock.Any(), gomock.Eq(expected)).Return(nil)
+		jsonRequest, _ := json.Marshal(request)
+		runTest(app, buildPut("/churches/"+id, jsonRequest)).assert(t, http.StatusOK, new(dto.MessageResponse), func(parsedBody interface{}) {
+			response := parsedBody.(*dto.MessageResponse)
+			assert.Equal(t, "Church updated successfully", response.Message)
+		})
+	})
+
+	t.Run("Fail - invalid ID - 400", func(t *testing.T) {
+		jsonRequest, _ := json.Marshal(&dto.UpdateChurchRequest{Name: "updated church", Language: "en-us"})
+		runTest(app, buildPut("/churches/invalid-id", jsonRequest)).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - invalid body - 400", func(t *testing.T) {
+		id := domain.NewID()
+		jsonRequest, _ := json.Marshal(&dto.UpdateChurchRequest{Language: "en-us"})
+		runTest(app, buildPut("/churches/"+id, jsonRequest)).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - malformed JSON - 400", func(t *testing.T) {
+		id := domain.NewID()
+		runTest(app, buildPut("/churches/"+id, badJson)).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - 404", func(t *testing.T) {
+		id := domain.NewID()
+		request := &dto.UpdateChurchRequest{Name: "updated church", Language: "en-us"}
+		expected := request.ToChurch()
+		expected.ID = id
+		service.EXPECT().UpdateChurch(gomock.Any(), gomock.Eq(expected)).Return(apierrors.NewApiError("Church not found", http.StatusNotFound))
+		jsonRequest, _ := json.Marshal(request)
+		runTest(app, buildPut("/churches/"+id, jsonRequest)).assertStatus(t, http.StatusNotFound)
 	})
 }
 

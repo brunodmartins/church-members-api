@@ -304,3 +304,21 @@ func (r *UpdateUserRequest) ToUser() *domain.User {
 		Preferences:    r.NotificationPreferences,
 	}
 }
+
+// UpdateChurchRequest for HTTP calls to update church information
+// swagger:model UpdateChurchRequest
+type UpdateChurchRequest struct {
+	Name     string `json:"name" validate:"required"`
+	Language string `json:"language" validate:"required"`
+	Email    string `json:"email" validate:"omitempty,email"`
+	Logo     string `json:"logo"`
+}
+
+func (r *UpdateChurchRequest) ToChurch() *domain.Church {
+	return &domain.Church{
+		Name:     r.Name,
+		Language: r.Language,
+		Email:    r.Email,
+		Logo:     r.Logo,
+	}
+}

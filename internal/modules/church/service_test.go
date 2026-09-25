@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
+	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
@@ -142,5 +143,57 @@ func TestChurchService_GetStatistics(t *testing.T) {
 		assert.Len(t, stats.AgeDistribution, 2)
 		assert.Equal(t, 1, stats.TotalMembersByGender["M"])
 		assert.Equal(t, 1, stats.TotalMembersByGender["F"])
+	})
+}
+
+func TestChurchService_UpdateChurch(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repo := mock_church.NewMockRepository(ctrl)
+	service := NewService(nil, repo)
+	const id = "xxx"
+
+	t.Run("Success", func(t *testing.T) {
+		currentChurch := buildChurch(id)
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			Role: role.ADMIN,
+			Church: &domain.Church{
+				ID: id,
+			},
+		})
+		update := &domain.Church{ID: id, Name: "updated church", Language: "en-us", Email: "church@example.com", Logo: "logo.png"}
+		repo.EXPECT().GetByID(gomock.Eq(ctx), id).Return(currentChurch, nil)
+		repo.EXPECT().Update(gomock.Eq(ctx), gomock.Eq(&domain.Church{
+			ID:           id,
+			Name:         update.Name,
+			Abbreviation: currentChurch.Abbreviation,
+			Language:     update.Language,
+			Email:        update.Email,
+			Logo:         update.Logo,
+		})).Return(nil)
+		assert.NoError(t, service.UpdateChurch(ctx, update))
+	})
+
+	t.Run("Forbidden for non-admin", func(t *testing.T) {
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			Role: role.USER,
+			Church: &domain.Church{
+				ID: id,
+			},
+		})
+		err := service.UpdateChurch(ctx, &domain.Church{ID: id})
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
+	})
+
+	t.Run("Get church error", func(t *testing.T) {
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			Role: role.ADMIN,
+			Church: &domain.Church{
+				ID: id,
+			},
+		})
+		repo.EXPECT().GetByID(gomock.Eq(ctx), id).Return(nil, genericError)
+		assert.Error(t, service.UpdateChurch(ctx, &domain.Church{ID: id}))
 	})
 }

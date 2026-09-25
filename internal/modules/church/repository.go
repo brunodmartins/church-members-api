@@ -2,8 +2,12 @@ package church
 
 import (
 	"context"
+	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 )
@@ -12,15 +16,20 @@ import (
 type Repository interface {
 	GetByID(ctx context.Context, ID string) (*domain.Church, error)
 	List(ctx context.Context) ([]*domain.Church, error)
+	Update(ctx context.Context, church *domain.Church) error
 }
 
 type dynamoRepository struct {
+	api wrapper.DynamoDBAPI
 	*wrapper.DynamoDBWrapper
+	table string
 }
 
 func NewRepository(api wrapper.DynamoDBAPI, table string) Repository {
 	return &dynamoRepository{
-		wrapper.NewDynamoDBWrapper(api, table),
+		api:             api,
+		DynamoDBWrapper: wrapper.NewDynamoDBWrapper(api, table),
+		table:           table,
 	}
 }
 
@@ -51,4 +60,33 @@ func (d dynamoRepository) List(ctx context.Context) ([]*domain.Church, error) {
 		}
 	}
 	return result, nil
+}
+
+func (d dynamoRepository) Update(ctx context.Context, church *domain.Church) error {
+	updateQuery := d.BuildUpdateQuery("name", "language", "email", "logo")
+	updateQuery = strings.Replace(updateQuery, ":name", ":church_name", 1)
+	_, err := d.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
+		Key: map[string]types.AttributeValue{
+			"id": &types.AttributeValueMemberS{
+				Value: church.ID,
+			},
+		},
+		TableName: aws.String(d.table),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":church_name": toStringAttributeValue(church.Name),
+			":language":    toStringAttributeValue(church.Language),
+			":email":       toStringAttributeValue(church.Email),
+			":logo":        toStringAttributeValue(church.Logo),
+		},
+		ReturnValues:     "UPDATED_NEW",
+		UpdateExpression: aws.String(updateQuery),
+	})
+	return err
+}
+
+func toStringAttributeValue(value string) types.AttributeValue {
+	if value == "" {
+		return &types.AttributeValueMemberNULL{Value: true}
+	}
+	return &types.AttributeValueMemberS{Value: value}
 }

@@ -712,6 +712,26 @@ definitions:
                 x-go-name: Roles
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    UpdateChurchRequest:
+        description: UpdateChurchRequest for HTTP calls to update church information
+        properties:
+            email:
+                type: string
+                x-go-name: Email
+            language:
+                type: string
+                x-go-name: Language
+            logo:
+                type: string
+                x-go-name: Logo
+            name:
+                type: string
+                x-go-name: Name
+        required:
+            - name
+            - language
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
 host: localhost:8080
 info:
     description: This API manages the members of a church.
@@ -750,6 +770,46 @@ paths:
             security:
                 - token: []
             summary: Get church
+        put:
+            description: Updates the church information except the abbreviation
+            operationId: updateChurch
+            parameters:
+                - description: The church id
+                  in: path
+                  name: id
+                  required: true
+                  type: string
+                - in: body
+                  name: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/UpdateChurchRequest'
+            produces:
+                - application/json
+            responses:
+                "200":
+                    description: Church updated successfully
+                    schema:
+                        $ref: '#/definitions/MessageResponse'
+                "400":
+                    description: Invalid body or ID
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "403":
+                    description: User does not have required role
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                "404":
+                    description: Church not found
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+                default:
+                    description: unexpected error
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Update church
     /churches/{id}/statistics:
         get:
             description: Returns the church statistics information

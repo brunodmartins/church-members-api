@@ -2,6 +2,8 @@ package church
 
 import (
 	"context"
+	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -10,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 )
 
 //go:generate mockgen -source=./repository.go -destination=./mock/repository_mock.go
@@ -71,7 +74,8 @@ func (d dynamoRepository) Update(ctx context.Context, church *domain.Church) err
 				Value: church.ID,
 			},
 		},
-		TableName: aws.String(d.table),
+		TableName:           aws.String(d.table),
+		ConditionExpression: aws.String("attribute_exists(id)"),
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":church_name": &types.AttributeValueMemberS{Value: church.Name},
 			":language":    &types.AttributeValueMemberS{Value: church.Language},
@@ -81,5 +85,9 @@ func (d dynamoRepository) Update(ctx context.Context, church *domain.Church) err
 		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String(updateQuery),
 	})
+	var conditionalErr *types.ConditionalCheckFailedException
+	if errors.As(err, &conditionalErr) {
+		return apierrors.NewApiError("Church not found", http.StatusNotFound)
+	}
 	return err
 }

@@ -197,6 +197,20 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 		assert.Error(t, service.UpdateChurch(ctx, &domain.Church{ID: id}))
 	})
 
+	t.Run("Update error", func(t *testing.T) {
+		currentChurch := buildChurch(id)
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			Role: role.ADMIN,
+			Church: &domain.Church{
+				ID: id,
+			},
+		})
+		update := &domain.Church{ID: id, Name: "updated church", Language: "en-us", Email: "church@example.com", Logo: "logo.png"}
+		repo.EXPECT().GetByID(gomock.Eq(ctx), id).Return(currentChurch, nil)
+		repo.EXPECT().Update(gomock.Eq(ctx), gomock.Any()).Return(genericError)
+		assert.Error(t, service.UpdateChurch(ctx, update))
+	})
+
 	t.Run("Forbidden for admin from other church", func(t *testing.T) {
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
 			Role: role.ADMIN,

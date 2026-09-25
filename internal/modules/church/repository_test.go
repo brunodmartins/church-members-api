@@ -84,6 +84,7 @@ func TestDynamoRepository_Update(t *testing.T) {
 			func(_ context.Context, input *dynamodb.UpdateItemInput, _ ...func(*dynamodb.Options)) (*dynamodb.UpdateItemOutput, error) {
 				assert.Equal(t, table, *input.TableName)
 				assert.Equal(t, church.ID, input.Key["id"].(*types.AttributeValueMemberS).Value)
+				assert.Equal(t, "attribute_exists(id)", *input.ConditionExpression)
 				assert.Equal(t, church.Name, input.ExpressionAttributeValues[":church_name"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, church.Language, input.ExpressionAttributeValues[":language"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, church.Email, input.ExpressionAttributeValues[":email"].(*types.AttributeValueMemberS).Value)
@@ -98,6 +99,12 @@ func TestDynamoRepository_Update(t *testing.T) {
 	t.Run("Fail", func(t *testing.T) {
 		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
 		assert.Error(t, repo.Update(ctx, buildChurch(uuid.NewString())))
+	})
+
+	t.Run("Not found", func(t *testing.T) {
+		dynamoMock.EXPECT().UpdateItem(gomock.Eq(ctx), gomock.Any()).Return(nil, &types.ConditionalCheckFailedException{})
+		err := repo.Update(ctx, buildChurch(uuid.NewString()))
+		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
 	})
 }
 

@@ -222,4 +222,13 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
 	})
+
+	t.Run("Forbidden for admin without church context", func(t *testing.T) {
+		ctx := context.WithValue(context.TODO(), "user", &domain.User{
+			Role: role.ADMIN,
+		})
+		err := service.UpdateChurch(ctx, &domain.Church{ID: id})
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
+	})
 }

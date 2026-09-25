@@ -90,7 +90,10 @@ func (s churchService) UpdateChurch(ctx context.Context, updatedChurch *domain.C
 	if currentUser == nil || currentUser.Role != role.ADMIN {
 		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
 	}
-	if currentUser.Church != nil && currentUser.Church.ID != "" && currentUser.Church.ID != updatedChurch.ID {
+	if currentUser.Church == nil || currentUser.Church.ID == "" {
+		return apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
+	}
+	if currentUser.Church.ID != updatedChurch.ID {
 		return apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
 	}
 

@@ -100,3 +100,17 @@ func (mr *MockServiceMockRecorder) List(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockService)(nil).List), ctx)
 }
+
+// UpdateChurch mocks base method.
+func (m *MockService) UpdateChurch(ctx context.Context, church *domain.Church) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateChurch", ctx, church)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateChurch indicates an expected call of UpdateChurch.
+func (mr *MockServiceMockRecorder) UpdateChurch(ctx, church any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateChurch", reflect.TypeOf((*MockService)(nil).UpdateChurch), ctx, church)
+}

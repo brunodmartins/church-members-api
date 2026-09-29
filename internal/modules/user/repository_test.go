@@ -97,7 +97,7 @@ func TestDynamoRepository_UpdateUser(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
-	ctx := context.TODO()
+	ctx := buildContext()
 	repo := NewRepository(dynamoMock, tableUser)
 
 	t.Run("Success - Changing all fields", func(t *testing.T) {
@@ -107,7 +107,11 @@ func TestDynamoRepository_UpdateUser(t *testing.T) {
 			Table:    tableUser,
 			Key:      "username",
 			ID:       user.UserName,
-			ChurchID: user.ChurchID,
+			ChurchID: domain.GetChurchID(ctx),
+			Names: map[string]string{
+				"#role":  "role",
+				"#roles": "roles",
+			},
 			Values: map[string]types.AttributeValue{
 				":confirmed_email":   &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
 				":email":             &types.AttributeValueMemberS{Value: user.Email},

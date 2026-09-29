@@ -2,11 +2,12 @@ package dynamodbhelper
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"github.com/gofiber/fiber/v2/log"
-	"reflect"
-	"strings"
 )
 
 type UpdateMatcher struct {
@@ -14,6 +15,7 @@ type UpdateMatcher struct {
 	Key      string
 	ID       string
 	ChurchID string
+	Names    map[string]string
 	Values   map[string]types.AttributeValue
 }
 
@@ -32,6 +34,9 @@ func (expected UpdateMatcher) Matches(r any) bool {
 		return false
 	}
 	if received.UpdateExpression == nil {
+		return false
+	}
+	if expected.Names != nil && !reflect.DeepEqual(received.ExpressionAttributeNames, expected.Names) {
 		return false
 	}
 	updateQuery := *received.UpdateExpression

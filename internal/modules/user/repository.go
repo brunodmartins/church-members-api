@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
@@ -96,16 +97,23 @@ func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapp
 }
 
 func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) error {
+	updateQuery := repo.BuildUpdateQuery("email", "confirmed_email", "#role", "phone", "send_daily_sms", "send_weekly_email", "#roles")
+	updateQuery = strings.Replace(updateQuery, ":#role", ":role", 1)
+	updateQuery = strings.Replace(updateQuery, ":#roles", ":roles", 1)
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
 			"username": &types.AttributeValueMemberS{
 				Value: user.UserName,
 			},
 			"church_id": &types.AttributeValueMemberS{
-				Value: user.ChurchID,
+				Value: domain.GetChurchID(ctx),
 			},
 		},
 		TableName: aws.String(repo.table),
+		ExpressionAttributeNames: map[string]string{
+			"#role":  "role",
+			"#roles": "roles",
+		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":email":             &types.AttributeValueMemberS{Value: user.Email},
 			":confirmed_email":   &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
@@ -116,7 +124,7 @@ func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) 
 			":roles":             &types.AttributeValueMemberSS{Value: user.Roles},
 		},
 		ReturnValues:     "UPDATED_NEW",
-		UpdateExpression: aws.String(repo.BuildUpdateQuery("email", "confirmed_email", "role", "phone", "send_daily_sms", "send_weekly_email", "roles")),
+		UpdateExpression: aws.String(updateQuery),
 	})
 	return err
 }

@@ -41,9 +41,7 @@ func (handler *UserHandler) SearchUsers(ctx *fiber.Ctx) error {
 	for i, user := range users {
 		result[i] = dto.NewGetUserResponse(user)
 	}
-	return ctx.Status(http.StatusOK).JSON(dto.SearchUsersResponse{
-		Users: result,
-	})
+	return ctx.Status(http.StatusOK).JSON(result)
 }
 
 func (handler *UserHandler) GetUserByName(ctx *fiber.Ctx) error {
@@ -70,5 +68,5 @@ func (handler *UserHandler) UpdateUser(ctx *fiber.Ctx) error {
 	if err := handler.service.UpdateUser(ctx.UserContext(), user); err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusOK)
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "User updated successfully"})
 }

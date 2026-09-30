@@ -10,7 +10,6 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	mock_participant "github.com/brunodmartins/church-members-api/internal/modules/participant/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -35,11 +34,9 @@ func TestGetParticipant(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetParticipant(gomock.Any(), id).Return(buildParticipant(id), nil)
-		runTest(app, buildGet("/participants/"+id)).assert(t, http.StatusOK, new(dto.GetParticipantResponse), func(parsedBody interface{}) {
-			p := parsedBody.(*dto.GetParticipantResponse)
-			assert.Equal(t, id, p.ID)
-		})
+		p := buildParticipant(id)
+		service.EXPECT().GetParticipant(gomock.Any(), id).Return(p, nil)
+		runTest(app, buildGet("/participants/"+id)).assertJSON(t, http.StatusOK, dto.NewGetParticipantResponse(p))
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
@@ -69,10 +66,7 @@ func TestPostParticipant(t *testing.T) {
 		id := domain.NewID()
 		body := getMock("create_participant.json")
 		service.EXPECT().CreateParticipant(gomock.Any(), gomock.AssignableToTypeOf(&domain.Participant{})).Return(id, nil)
-		runTest(app, buildPost("/participants", body)).assert(t, http.StatusCreated, new(dto.CreateMemberResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*dto.CreateMemberResponse)
-			assert.Equal(t, id, response.ID)
-		})
+		runTest(app, buildPost("/participants", body)).assertJSON(t, http.StatusCreated, dto.CreateMemberResponse{ID: id})
 	})
 	t.Run("Fail - 400", func(t *testing.T) {
 		runTest(app, buildPost("/participants", emptyJson)).assertStatus(t, http.StatusBadRequest)

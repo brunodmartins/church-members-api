@@ -9,7 +9,6 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
-	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
 
@@ -24,11 +23,15 @@ func TestGetChurch(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetChurch(gomock.Any(), id).Return(buildChurch(id), nil)
-		runTest(app, buildGet("/churches/"+id)).assert(t, http.StatusOK, new(dto.GetChurchResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*dto.GetChurchResponse)
-			assert.Equal(t, id, response.ID)
-		})
+		church := buildChurch(id)
+		service.EXPECT().GetChurch(gomock.Any(), id).Return(church, nil)
+		expected := dto.GetChurchResponse{
+			ID:           church.ID,
+			Name:         church.Name,
+			Abbreviation: church.Abbreviation,
+			Logo:         church.Logo,
+		}
+		runTest(app, buildGet("/churches/"+id)).assertJSON(t, http.StatusOK, expected)
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
@@ -53,11 +56,15 @@ func TestGetStatistics(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetStatistics(gomock.Any(), id).Return(buildStatistics(), nil)
-		runTest(app, buildGet("/churches/"+id+"/statistics")).assert(t, http.StatusOK, new(dto.ChurchStatisticsResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*dto.ChurchStatisticsResponse)
-			assert.Equal(t, 10, response.TotalMembers)
-		})
+		stats := buildStatistics()
+		service.EXPECT().GetStatistics(gomock.Any(), id).Return(stats, nil)
+		expected := dto.ChurchStatisticsResponse{
+			TotalMembers:                 stats.TotalMembers,
+			AgeDistribution:              stats.AgeDistribution,
+			TotalMembersByGender:         stats.TotalMembersByGender,
+			TotalMembersByClassification: stats.TotalMembersByClassification,
+		}
+		runTest(app, buildGet("/churches/"+id+"/statistics")).assertJSON(t, http.StatusOK, expected)
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
@@ -92,10 +99,7 @@ func TestUpdateChurch(t *testing.T) {
 		expected.ID = id
 		service.EXPECT().UpdateChurch(gomock.Any(), gomock.Eq(expected)).Return(nil)
 		jsonRequest, _ := json.Marshal(request)
-		runTest(app, buildPut("/churches/"+id, jsonRequest)).assert(t, http.StatusOK, new(dto.MessageResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*dto.MessageResponse)
-			assert.Equal(t, "Church updated successfully", response.Message)
-		})
+		runTest(app, buildPut("/churches/"+id, jsonRequest)).assertJSON(t, http.StatusOK, dto.MessageResponse{Message: "Church updated successfully"})
 	})
 
 	t.Run("Fail - invalid ID - 400", func(t *testing.T) {

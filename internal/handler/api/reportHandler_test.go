@@ -28,13 +28,13 @@ func TestReportHandler_ListReports(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		reports.EXPECT().ListReports(gomock.Any()).Return(expected)
-		runTest(app, buildGet("/reports")).assert(t, http.StatusOK, new([]dto.ReportResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*[]dto.ReportResponse)
-			assert.Equal(t, "Member's report", (*response)[0].Name)
-			assert.Equal(t, "members", (*response)[0].Type)
-			assert.Equal(t, "/reports/members", (*response)[0].URL)
-			assert.Equal(t, "21/08/2026 10:20:30", (*response)[0].CreationDate)
-		})
+		expectedResponse := []dto.ReportResponse{{
+			Name:         "Member's report",
+			Type:         "members",
+			URL:          "/reports/members",
+			CreationDate: "21/08/2026 10:20:30",
+		}}
+		runTest(app, buildGet("/reports")).assertJSON(t, http.StatusOK, expectedResponse)
 	})
 }
 func TestReportHandler_getURLForReport(t *testing.T) {

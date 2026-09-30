@@ -29,12 +29,9 @@ func TestGetMember(t *testing.T) {
 
 	t.Run("Success - 200", func(t *testing.T) {
 		id := domain.NewID()
-		service.EXPECT().GetMember(gomock.Any(), id).Return(buildMember(id), nil)
-		runTest(app, buildGet("/members/"+id)).assert(t, http.StatusOK, new(dto.GetMemberResponse), func(parsedBody interface{}) {
-			member := parsedBody.(*dto.GetMemberResponse)
-			assert.Equal(t, id, member.ID)
-			assert.Equal(t, "Needs follow-up", member.Observation)
-		})
+		churchMember := buildMember(id)
+		service.EXPECT().GetMember(gomock.Any(), id).Return(churchMember, nil)
+		runTest(app, buildGet("/members/"+id)).assertJSON(t, http.StatusOK, dto.NewGetMemberResponse(churchMember))
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
@@ -108,10 +105,7 @@ func TestPostMember(t *testing.T) {
 		id := domain.NewID()
 		body := getMock("create_member.json")
 		service.EXPECT().SaveMember(gomock.Any(), gomock.AssignableToTypeOf(&domain.Member{})).Return(id, nil)
-		runTest(app, buildPost("/members", body)).assert(t, http.StatusCreated, new(dto.CreateMemberResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*dto.CreateMemberResponse)
-			assert.Equal(t, id, response.ID)
-		})
+		runTest(app, buildPost("/members", body)).assertJSON(t, http.StatusCreated, dto.CreateMemberResponse{ID: id})
 	})
 	t.Run("Fail - 404", func(t *testing.T) {
 		id := domain.NewID()
@@ -162,10 +156,7 @@ func TestRetireMember(t *testing.T) {
 	t.Run("Success - 200", func(t *testing.T) {
 		body := []byte(`{"reason": "Left the church"}`)
 		service.EXPECT().RetireMembership(gomock.Any(), id, gomock.Eq("Left the church"), gomock.Any()).Return(nil)
-		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assert(t, http.StatusOK, new(dto.MessageResponse), func(parsedBody interface{}) {
-			response := parsedBody.(*dto.MessageResponse)
-			assert.Equal(t, "Member deleted", response.Message)
-		})
+		runTest(app, buildDelete(fmt.Sprintf("/members/%s", id), body)).assertJSON(t, http.StatusOK, dto.MessageResponse{Message: "Member deleted"})
 	})
 	t.Run("Success with given date - 200", func(t *testing.T) {
 		body := []byte(`{"reason": "Left the church", "date": "2025-09-09"}`)

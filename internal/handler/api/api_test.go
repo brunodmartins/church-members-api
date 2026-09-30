@@ -40,6 +40,17 @@ func (result httpResult) assert(t *testing.T, expected int, dto interface{}, ass
 	}
 }
 
+// assertJSON asserts the HTTP status and that the response body is JSON-equivalent to the marshaled expectedBody,
+// guaranteeing full compliance of the API response shape (fields, names and structure).
+func (result httpResult) assertJSON(t *testing.T, expected int, expectedBody interface{}) {
+	assert.Equal(t, expected, result.status, string(result.body))
+	expectedJSON, err := json.Marshal(expectedBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.JSONEq(t, string(expectedJSON), string(result.body))
+}
+
 func newApp() *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: middleware.ApiErrorMiddleWare,

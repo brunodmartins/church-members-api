@@ -8,13 +8,13 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
 	"github.com/brunodmartins/church-members-api/platform/security"
 	mock_security "github.com/brunodmartins/church-members-api/platform/security/mock"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
 
@@ -39,13 +39,13 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		service.EXPECT().GetRoles(gomock.Any(), gomock.Eq("token")).Return([]string{"role1", "role2"}, nil)
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), churchID)
-		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Roles)
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Duration)
-		})
-
+		expected := dto.GetTokenResponse{
+			Token:    "token",
+			ChurchID: churchID,
+			Roles:    []string{"role1", "role2"},
+			Duration: (1 * time.Hour).Milliseconds(),
+		}
+		runTest(app, request).assertJSON(t, http.StatusCreated, expected)
 	})
 	t.Run("Success - 201 - New login with abbreviation", func(t *testing.T) {
 		const expectedOneHourInMilliseconds = int64(3600000)
@@ -55,14 +55,13 @@ func TestAuthHandler_GetToken(t *testing.T) {
 		request := buildGet("/users/token")
 		buildAuthorizationHeader(request, "Basic "+encodeValue(buildHeaderValue(userName, password)), "")
 		request.Header.Set("x-church-abbreviation", church.Abbreviation)
-		runTest(app, request).assert(t, http.StatusCreated, &dto.GetTokenResponse{}, func(parsedBody interface{}) {
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Token)
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).ChurchID)
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Roles)
-			assert.NotEmpty(t, parsedBody.(*dto.GetTokenResponse).Duration)
-			assert.Equal(t, expectedOneHourInMilliseconds, parsedBody.(*dto.GetTokenResponse).Duration)
-		})
-
+		expected := dto.GetTokenResponse{
+			Token:    "token",
+			ChurchID: churchID,
+			Roles:    []string{"role1", "role2"},
+			Duration: expectedOneHourInMilliseconds,
+		}
+		runTest(app, request).assertJSON(t, http.StatusCreated, expected)
 	})
 	t.Run("Fail - Error on service - 500", func(t *testing.T) {
 		service.EXPECT().IdentifyChurch(gomock.Any(), gomock.Eq(""), gomock.Eq(churchID)).Return(church, nil)

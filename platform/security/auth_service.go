@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
 	"github.com/sirupsen/logrus"
@@ -131,6 +130,5 @@ func AddClaimToContext(claim *Claim, ctx context.Context) context.Context {
 		UserName: claim.UserName,
 		Church:   claim.Church,
 		Roles:    claim.Roles,
-		Role:     role.From(claim.Role),
 	})
 }

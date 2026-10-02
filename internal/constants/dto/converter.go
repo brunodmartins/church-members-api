@@ -22,7 +22,6 @@ func NewGetUserResponse(user *domain.User) GetUserResponse {
 		UserName:       user.UserName,
 		Email:          user.Email,
 		ConfirmedEmail: user.ConfirmedEmail,
-		Role:           user.Role.String(),
 		Phone:          user.Phone,
 		Roles:          user.Roles,
 		Preferences: NotificationPreferencesResponse{

@@ -25,7 +25,7 @@ type userService struct {
 func (s userService) UpdateUser(ctx context.Context, user *domain.User) error {
 	if !domain.GetUser(ctx).IsAdmin() {
 		current, _ := s.repository.FindUser(ctx, user.UserName)
-		if current.Role != user.Role || !slices.Equal(current.Roles, user.Roles) {
+		if !slices.Equal(current.Roles, user.Roles) {
 			return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
 		}
 	}

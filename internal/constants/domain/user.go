@@ -2,9 +2,8 @@ package domain
 
 import (
 	"context"
+	"slices"
 
-	"github.com/brunodmartins/church-members-api/internal/constants/enum"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"github.com/brunodmartins/church-members-api/platform/crypto"
 )
 
@@ -14,7 +13,6 @@ type User struct {
 	UserName       string                  `json:"username"`
 	Email          string                  `json:"email"`
 	ConfirmedEmail bool                    `json:"confirmed_email"`
-	Role           enum.Role               `json:"role"`
 	Phone          string                  `json:"phone"`
 	Preferences    NotificationPreferences `json:"-"`
 	Password       []byte                  `json:"-"`
@@ -24,7 +22,7 @@ type User struct {
 
 // IsAdmin checks if the user has an admin role.
 func (u *User) IsAdmin() bool {
-	return u.Role == role.ADMIN
+	return slices.Contains(u.Roles, "admin")
 }
 
 type NotificationPreferences struct {
@@ -32,13 +30,12 @@ type NotificationPreferences struct {
 	SendWeeklyEmail bool `json:"send_weekly_email"`
 }
 
-func NewUser(userName, email, password, phone string, role enum.Role, preferences NotificationPreferences, roles ...string) *User {
+func NewUser(userName, email, password, phone string, preferences NotificationPreferences, roles ...string) *User {
 	return &User{
 		UserName:       userName,
 		Email:          email,
 		Phone:          phone,
 		Password:       crypto.EncryptPassword(password),
-		Role:           role,
 		Preferences:    preferences,
 		ConfirmedEmail: false,
 		Roles:          roles,

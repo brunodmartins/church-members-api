@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/sirupsen/logrus"
@@ -87,7 +86,7 @@ func (s churchService) GetStatistics(ctx context.Context, id string) (*domain.Ch
 
 func (s churchService) UpdateChurch(ctx context.Context, updatedChurch *domain.Church) error {
 	currentUser := domain.GetUser(ctx)
-	if currentUser == nil || currentUser.Role != role.ADMIN {
+	if currentUser == nil || !currentUser.IsAdmin() {
 		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
 	}
 	if currentUser.Church == nil || currentUser.Church.ID == "" {

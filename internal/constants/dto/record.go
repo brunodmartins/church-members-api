@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 )
@@ -218,7 +217,6 @@ type UserItem struct {
 	ChurchID        string   `dynamodbav:"church_id"`
 	UserName        string   `dynamodbav:"username"`
 	Email           string   `dynamodbav:"email"`
-	Role            string   `dynamodbav:"role"`
 	Password        string   `dynamodbav:"password"`
 	Phone           string   `dynamodbav:"phone"`
 	ConfirmedEmail  bool     `dynamodbav:"confirmed_email"`
@@ -234,7 +232,6 @@ func NewUserItem(user *domain.User) *UserItem {
 		UserName:        user.UserName,
 		Email:           user.Email,
 		ChurchID:        user.ChurchID,
-		Role:            user.Role.String(),
 		Password:        string(user.Password),
 		Phone:           user.Phone,
 		SendDailySMS:    user.Preferences.SendDailySMS,
@@ -251,7 +248,6 @@ func (item *UserItem) ToUser() *domain.User {
 		ChurchID: item.ChurchID,
 		UserName: item.UserName,
 		Email:    item.Email,
-		Role:     role.From(item.Role),
 		Password: []byte(item.Password),
 		Phone:    item.Phone,
 		Preferences: domain.NotificationPreferences{

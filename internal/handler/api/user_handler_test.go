@@ -7,7 +7,6 @@ import (
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/constants/dto"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"go.uber.org/mock/gomock"
@@ -122,7 +121,6 @@ func TestUpdateUser(t *testing.T) {
 func buildUpdateUserRequest(user *domain.User) *dto.UpdateUserRequest {
 	return &dto.UpdateUserRequest{
 		Email:          user.Email,
-		Role:           user.Role.String(),
 		ConfirmedEmail: user.ConfirmedEmail,
 		Phone:          user.Phone,
 		Roles:          user.Roles,
@@ -134,7 +132,6 @@ func buildUsers() []*domain.User {
 		{
 			UserName:       "user_id_1",
 			Email:          "user1@example.com",
-			Role:           role.ADMIN,
 			ConfirmedEmail: true,
 			Phone:          "12345678",
 			Roles:          []string{"viewMember", "viewReports"},
@@ -142,7 +139,6 @@ func buildUsers() []*domain.User {
 		{
 			UserName:       "user_id_2",
 			Email:          "user2@example.com",
-			Role:           role.USER,
 			ConfirmedEmail: false,
 			Phone:          "12345678",
 			Roles:          []string{"viewMember", "viewReports"},

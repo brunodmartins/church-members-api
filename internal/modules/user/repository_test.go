@@ -109,13 +109,11 @@ func TestDynamoRepository_UpdateUser(t *testing.T) {
 			ID:       user.UserName,
 			ChurchID: domain.GetChurchID(ctx),
 			Names: map[string]string{
-				"#role":  "role",
 				"#roles": "roles",
 			},
 			Values: map[string]types.AttributeValue{
 				":confirmed_email":   &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
 				":email":             &types.AttributeValueMemberS{Value: user.Email},
-				":role":              &types.AttributeValueMemberS{Value: user.Role.String()},
 				":phone":             &types.AttributeValueMemberS{Value: user.Phone},
 				":send_daily_sms":    &types.AttributeValueMemberBOOL{Value: user.Preferences.SendDailySMS},
 				":send_weekly_email": &types.AttributeValueMemberBOOL{Value: user.Preferences.SendWeeklyEmail},

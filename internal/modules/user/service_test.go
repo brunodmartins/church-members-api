@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
@@ -85,25 +84,24 @@ func TestService_UpdateUser(t *testing.T) {
 	defer ctrl.Finish()
 	repository := mock_user.NewMockRepository(ctrl)
 	service := NewService(repository)
-	user := buildUser("id", "")
-	ctx := BuildContext()
-	t.Run("Given a valid user, when performing an update on the database, then return no error", func(t *testing.T) {
+	t.Run("Given a admin user, when performing an update on the database, then return no error", func(t *testing.T) {
+		user := buildUser("test-user", "", "admin")
+		ctx := context.WithValue(context.TODO(), "user", user)
 		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(user)).Return(nil)
 		assert.NoError(t, service.UpdateUser(ctx, user))
 	})
-	t.Run("Given a valid username, when performing an update on the database, then return error ", func(t *testing.T) {
+	t.Run("Given a admin user, when performing an update on the database, then return error ", func(t *testing.T) {
+		user := buildUser("test-user", "", "admin")
+		ctx := context.WithValue(context.TODO(), "user", user)
 		repository.EXPECT().UpdateUser(gomock.Eq(ctx), gomock.Eq(user)).Return(genericError)
 		assert.Error(t, service.UpdateUser(ctx, user))
 	})
 	t.Run("Given a common user, when performing an update on the database changing its role, then return error with forbiden", func(t *testing.T) {
 		currentUser := buildUser("id", "common")
-		currentUser.Role = role.USER
 		updatedUser := buildUser("id", "common")
-		updatedUser.Role = role.USER
 		updatedUser.Roles = []string{"new-roles"}
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
 			UserName: updatedUser.UserName,
-			Role:     updatedUser.Role,
 			Roles:    updatedUser.Roles,
 		})
 		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(updatedUser.UserName)).Return(currentUser, nil)
@@ -113,14 +111,11 @@ func TestService_UpdateUser(t *testing.T) {
 	})
 	t.Run("Given a common user, when performing an update on the database changing its confirmation mail, then return allow", func(t *testing.T) {
 		currentUser := buildUser("id", "common")
-		currentUser.Role = role.USER
 		currentUser.ConfirmedEmail = false
 		updatedUser := buildUser("id", "common")
-		updatedUser.Role = role.USER
 		updatedUser.ConfirmedEmail = true
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
 			UserName: updatedUser.UserName,
-			Role:     updatedUser.Role,
 			Roles:    updatedUser.Roles,
 		})
 		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(updatedUser.UserName)).Return(currentUser, nil)

@@ -11,7 +11,6 @@ import (
 	mock_email "github.com/brunodmartins/church-members-api/internal/services/email/mock"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	"github.com/brunodmartins/church-members-api/platform/crypto"
@@ -81,11 +80,11 @@ func TestAuthService_IsValidToken(t *testing.T) {
 func TestAddClaimToContext(t *testing.T) {
 	viper.Set("security.token.expiration", 1)
 	ctx := context.Background()
-	_, claim := GetClaim(GenerateJWTToken(&domain.User{UserName: "test_user", ID: "id", Role: role.ADMIN}))
+	_, claim := GetClaim(GenerateJWTToken(&domain.User{UserName: "test_user", ID: "id", Roles: []string{"admin"}}))
 	assert.Nil(t, ctx.Value("user"))
 	ctx = AddClaimToContext(claim, ctx)
 	assert.NotNil(t, ctx.Value("user"))
-	assert.Equal(t, role.ADMIN, domain.GetUser(ctx).Role)
+	assert.Equal(t, []string{"admin"}, domain.GetUser(ctx).Roles)
 }
 
 func TestService_SendConfirmationEmail(t *testing.T) {

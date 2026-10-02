@@ -5,7 +5,6 @@ import (
 
 	"github.com/bearbin/go-age"
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 )
 
 // RetireMemberRequest for HTTP calls to put member status
@@ -191,7 +190,7 @@ type CreateUserRequest struct {
 }
 
 func (r CreateUserRequest) ToUser() *domain.User {
-	return domain.NewUser(r.UserName, r.Email, r.Password, r.Phone, role.From(r.Role), r.NotificationPreferences, r.Roles...)
+	return domain.NewUser(r.UserName, r.Email, r.Password, r.Phone, r.NotificationPreferences, r.Roles...)
 }
 
 // UpdatePersonRequest for HTTP calls to put a person
@@ -288,7 +287,6 @@ type RetireParticipantRequest struct {
 type UpdateUserRequest struct {
 	Email                          string   `json:"email" validate:"required,email"`
 	ConfirmedEmail                 bool     `json:"confirmedEmail"`
-	Role                           string   `json:"role" validate:"eq=ADMIN|eq=USER"`
 	Phone                          string   `json:"phone"`
 	Roles                          []string `json:"roles"`
 	domain.NotificationPreferences `json:"preferences"`
@@ -298,7 +296,6 @@ func (r *UpdateUserRequest) ToUser() *domain.User {
 	return &domain.User{
 		Email:          r.Email,
 		ConfirmedEmail: r.ConfirmedEmail,
-		Role:           role.From(r.Role),
 		Phone:          r.Phone,
 		Roles:          r.Roles,
 		Preferences:    r.NotificationPreferences,

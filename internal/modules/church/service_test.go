@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
@@ -156,7 +155,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 	t.Run("Success", func(t *testing.T) {
 		currentChurch := buildChurch(id)
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
-			Role: role.ADMIN,
+			Roles: []string{"admin"},
 			Church: &domain.Church{
 				ID: id,
 			},
@@ -176,7 +175,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 
 	t.Run("Forbidden for non-admin", func(t *testing.T) {
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
-			Role: role.USER,
+			Roles: []string{"user"},
 			Church: &domain.Church{
 				ID: id,
 			},
@@ -188,7 +187,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 
 	t.Run("Get church error", func(t *testing.T) {
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
-			Role: role.ADMIN,
+			Roles: []string{"admin"},
 			Church: &domain.Church{
 				ID: id,
 			},
@@ -200,7 +199,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 	t.Run("Update error", func(t *testing.T) {
 		currentChurch := buildChurch(id)
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
-			Role: role.ADMIN,
+			Roles: []string{"admin"},
 			Church: &domain.Church{
 				ID: id,
 			},
@@ -213,7 +212,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 
 	t.Run("Forbidden for admin from other church", func(t *testing.T) {
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
-			Role: role.ADMIN,
+			Roles: []string{"admin"},
 			Church: &domain.Church{
 				ID: "other-church",
 			},
@@ -225,7 +224,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 
 	t.Run("Forbidden for admin without church context", func(t *testing.T) {
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
-			Role: role.ADMIN,
+			Roles: []string{"admin"},
 		})
 		err := service.UpdateChurch(ctx, &domain.Church{ID: id})
 		assert.Error(t, err)

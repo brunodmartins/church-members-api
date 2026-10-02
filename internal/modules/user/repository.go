@@ -97,8 +97,7 @@ func (repo dynamoRepository) SearchUser(ctx context.Context, specification wrapp
 }
 
 func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) error {
-	updateQuery := repo.BuildUpdateQuery("email", "confirmed_email", "#role", "phone", "send_daily_sms", "send_weekly_email", "#roles")
-	updateQuery = strings.Replace(updateQuery, ":#role", ":role", 1)
+	updateQuery := repo.BuildUpdateQuery("email", "confirmed_email", "phone", "send_daily_sms", "send_weekly_email", "#roles")
 	updateQuery = strings.Replace(updateQuery, ":#roles", ":roles", 1)
 	_, err := repo.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
@@ -111,13 +110,11 @@ func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) 
 		},
 		TableName: aws.String(repo.table),
 		ExpressionAttributeNames: map[string]string{
-			"#role":  "role",
 			"#roles": "roles",
 		},
 		ExpressionAttributeValues: map[string]types.AttributeValue{
 			":email":             &types.AttributeValueMemberS{Value: user.Email},
 			":confirmed_email":   &types.AttributeValueMemberBOOL{Value: user.ConfirmedEmail},
-			":role":              &types.AttributeValueMemberS{Value: user.Role.String()},
 			":phone":             &types.AttributeValueMemberS{Value: user.Phone},
 			":send_daily_sms":    &types.AttributeValueMemberBOOL{Value: user.Preferences.SendDailySMS},
 			":send_weekly_email": &types.AttributeValueMemberBOOL{Value: user.Preferences.SendWeeklyEmail},

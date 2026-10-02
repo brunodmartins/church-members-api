@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/spf13/viper"
@@ -25,19 +24,11 @@ func newClaim(user *domain.User) *Claim {
 		UserName: user.UserName,
 		Church:   user.Church,
 		Roles:    user.Roles,
-		Role:     roleToString(user.Role),
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: getExpirationTime(),
 			Issuer:    "church-members-api",
 		},
 	}
-}
-
-func roleToString(userRole enum.Role) string {
-	if userRole < 0 || int(userRole) > 1 {
-		return ""
-	}
-	return userRole.String()
 }
 
 func getExpirationTime() *jwt.NumericDate {

@@ -2,8 +2,8 @@ package user
 
 import (
 	"errors"
+
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
-	"github.com/brunodmartins/church-members-api/internal/constants/enum/role"
 )
 
 const (
@@ -14,13 +14,13 @@ const (
 
 var genericError = errors.New("error")
 
-func buildUser(id string, password string) *domain.User {
+func buildUser(id string, password string, roles ...string) *domain.User {
 	return &domain.User{
 		ID:             id,
 		UserName:       userName,
 		Email:          "",
 		Password:       []byte(password),
-		Role:           role.USER,
 		ConfirmedEmail: false,
+		Roles:          roles,
 	}
 }

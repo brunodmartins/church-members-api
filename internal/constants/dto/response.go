@@ -152,7 +152,6 @@ type GetUserResponse struct {
 	UserName       string                          `json:"username"`
 	Email          string                          `json:"email"`
 	ConfirmedEmail bool                            `json:"confirmed_email"`
-	Role           string                          `json:"role"`
 	Phone          string                          `json:"phone"`
 	Roles          []string                        `json:"roles"`
 	Preferences    NotificationPreferencesResponse `json:"preferences"`

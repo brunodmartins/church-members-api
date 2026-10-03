@@ -1,7 +1,7 @@
 # church-members-api ⛪️
 
 ![Go](https://github.com/brunodmartins/church-members-api/workflows/Go/badge.svg)
-[![codecov](https://codecov.io/gh/brunodmartins/church-members-api/branch/master/graph/badge.svg)](https://codecov.io/gh/brunodmartins/church-members-api)  [![Go Report Card](https://goreportcard.com/badge/github.com/brunodmartins/church-members-api?style=flat-square)](https://goreportcard.com/report/github.com/brunodmartins/church-members-api)
+[![codecov](https://codecov.io/gh/brunodmartins/church-members-api/branch/main/graph/badge.svg)](https://codecov.io/gh/brunodmartins/church-members-api)  [![Go Report Card](https://goreportcard.com/badge/github.com/brunodmartins/church-members-api?style=flat-square)](https://goreportcard.com/report/github.com/brunodmartins/church-members-api)
 ![Deploy](https://github.com/brunodmartins/church-members-api/workflows/Docker%20Image%20CI/badge.svg)
 
 A simple application to manage a church's members.

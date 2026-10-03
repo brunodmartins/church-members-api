@@ -182,7 +182,6 @@ func (request UpdateBaptismRequest) ToReligion() domain.Religion {
 type CreateUserRequest struct {
 	UserName                       string   `json:"username" validate:"required,min=3,max=32"`
 	Email                          string   `json:"email" validate:"required,email,min=3,max=60"`
-	Role                           string   `json:"role" validate:"required,eq=ADMIN|eq=USER"`
 	Password                       string   `json:"password" validate:"required,password"`
 	Phone                          string   `json:"phone" validate:"required"`
 	Roles                          []string `json:"roles" validate:"required"`

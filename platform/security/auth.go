@@ -14,7 +14,6 @@ type Claim struct {
 	UserName string `json:"username"`
 	Church   *domain.Church
 	Roles    []string `json:"roles"`
-	Role     string   `json:"role"`
 	jwt.RegisteredClaims
 }
 

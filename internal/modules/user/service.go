@@ -54,7 +54,7 @@ func (s userService) SearchUser(ctx context.Context, specification wrapper.Query
 
 func (s userService) checkUserExist(ctx context.Context, userName string) error {
 	user, err := s.repository.FindUser(ctx, userName)
-	if err != nil && err.Error() != "Item not found" {
+	if err != nil && !apierrors.IsNotFound(err) {
 		return err
 	}
 	if user != nil {

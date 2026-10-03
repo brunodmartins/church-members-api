@@ -263,9 +263,6 @@ definitions:
                 x-go-name: Phone
             preferences:
                 $ref: '#/definitions/NotificationPreferences'
-            role:
-                type: string
-                x-go-name: Role
             roles:
                 items:
                     type: string
@@ -529,9 +526,6 @@ definitions:
                 x-go-name: Phone
             preferences:
                 $ref: '#/definitions/NotificationPreferencesResponse'
-            role:
-                type: string
-                x-go-name: Role
             roles:
                 items:
                     type: string
@@ -651,6 +645,23 @@ definitions:
                 x-go-name: CatholicBaptized
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    UpdateChurchRequest:
+        description: UpdateChurchRequest for HTTP calls to update church information
+        properties:
+            email:
+                type: string
+                x-go-name: Email
+            language:
+                type: string
+                x-go-name: Language
+            logo:
+                type: string
+                x-go-name: Logo
+            name:
+                type: string
+                x-go-name: Name
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     UpdateObservationRequest:
         description: UpdateObservationRequest for HTTP calls to update member observation
         properties:
@@ -702,34 +713,11 @@ definitions:
                 x-go-name: Phone
             preferences:
                 $ref: '#/definitions/NotificationPreferences'
-            role:
-                type: string
-                x-go-name: Role
             roles:
                 items:
                     type: string
                 type: array
                 x-go-name: Roles
-        type: object
-        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
-    UpdateChurchRequest:
-        description: UpdateChurchRequest for HTTP calls to update church information
-        properties:
-            email:
-                type: string
-                x-go-name: Email
-            language:
-                type: string
-                x-go-name: Language
-            logo:
-                type: string
-                x-go-name: Logo
-            name:
-                type: string
-                x-go-name: Name
-        required:
-            - name
-            - language
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
 host: localhost:8080

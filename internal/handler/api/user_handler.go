@@ -29,7 +29,7 @@ func (handler *UserHandler) PostUser(ctx *fiber.Ctx) error {
 	if err := handler.service.SaveUser(ctx.UserContext(), requestBody.ToUser()); err != nil {
 		return err
 	}
-	return ctx.SendStatus(http.StatusCreated)
+	return ctx.Status(http.StatusCreated).JSON(dto.MessageResponse{Message: "User created successfully"})
 }
 
 func (handler *UserHandler) SearchUsers(ctx *fiber.Ctx) error {

@@ -20,12 +20,12 @@ func TestService_SaveUser(t *testing.T) {
 	service := NewService(repository)
 	user := buildUser("id", "")
 	t.Run("Given a valid user, when save it, then store on the database successfully", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
+		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, apierrors.NewApiError("Item not found", http.StatusNotFound))
 		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(nil)
 		assert.NoError(t, service.SaveUser(BuildContext(), user))
 	})
 	t.Run("Given a valid user, when save it, then store on the database fails", func(t *testing.T) {
-		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, nil)
+		repository.EXPECT().FindUser(gomock.Any(), gomock.Eq(user.UserName)).Return(nil, apierrors.NewApiError("Item not found", http.StatusNotFound))
 		repository.EXPECT().SaveUser(gomock.Any(), gomock.Eq(user)).Return(genericError)
 		assert.Error(t, service.SaveUser(BuildContext(), user))
 	})

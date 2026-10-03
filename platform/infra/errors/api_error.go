@@ -32,3 +32,11 @@ func (error *Error) AddField(key string, value interface{}) {
 func (error Error) GetField(key string) interface{} {
 	return error.customFields[key]
 }
+
+func IsNotFound(err error) bool {
+	apiErr, ok := err.(Error)
+	if !ok {
+		return false
+	}
+	return apiErr.statusCode == 404
+}

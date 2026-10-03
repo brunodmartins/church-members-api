@@ -1,0 +1,17 @@
+.git/
+.github/
+.vscode/
+.idea/
+.run/
+volume/
+terraform/
+docs/
+playbook/
+runbook/
+test/
+**/*_test.go
+*.md
+.gitignore
+docker-compose.yml
+makefile
+LICENSE

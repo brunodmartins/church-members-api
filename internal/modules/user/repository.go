@@ -24,6 +24,7 @@ type Repository interface {
 	SaveUser(ctx context.Context, user *domain.User) error
 	SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
+	DeleteUser(ctx context.Context, user *domain.User) error
 }
 
 type dynamoRepository struct {
@@ -122,6 +123,21 @@ func (repo dynamoRepository) UpdateUser(ctx context.Context, user *domain.User) 
 		},
 		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String(updateQuery),
+	})
+	return err
+}
+
+func (repo dynamoRepository) DeleteUser(ctx context.Context, user *domain.User) error {
+	_, err := repo.api.DeleteItem(ctx, &dynamodb.DeleteItemInput{
+		Key: map[string]types.AttributeValue{
+			"username": &types.AttributeValueMemberS{
+				Value: user.UserName,
+			},
+			"church_id": &types.AttributeValueMemberS{
+				Value: domain.GetChurchID(ctx),
+			},
+		},
+		TableName: aws.String(repo.table),
 	})
 	return err
 }

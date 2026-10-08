@@ -158,6 +158,34 @@ func TestDynamoRepository_FindByID(t *testing.T) {
 	})
 }
 
+func TestDynamoRepository_DeleteUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	dynamoMock := mock_wrapper.NewMockDynamoDBAPI(ctrl)
+	repo := NewRepository(dynamoMock, tableUser)
+	ctx := BuildContext()
+	user := buildUser(domain.NewID(), "123")
+
+	t.Run("Success", func(t *testing.T) {
+
+		dynamoMock.EXPECT().DeleteItem(gomock.Eq(ctx), gomock.Any()).DoAndReturn(func(_ context.Context, params *dynamodb.DeleteItemInput, _ ...func(*dynamodb.Options)) (*dynamodb.DeleteItemOutput, error) {
+			assert.Equal(t, tableUser, *params.TableName)
+			assert.NotEmpty(t, params.Key)
+			assert.Equal(t, &types.AttributeValueMemberS{Value: domain.GetChurchID(ctx)}, params.Key["church_id"])
+			assert.Equal(t, &types.AttributeValueMemberS{Value: user.UserName}, params.Key["username"])
+			return nil, nil
+		})
+		err := repo.DeleteUser(ctx, user)
+		assert.NoError(t, err)
+	})
+
+	t.Run("Fail - Error on DynamoDB", func(t *testing.T) {
+		dynamoMock.EXPECT().DeleteItem(gomock.Eq(ctx), gomock.Any()).Return(nil, genericError)
+		err := repo.DeleteUser(ctx, user)
+		assert.Error(t, err)
+	})
+}
+
 func buildItems(length int) []map[string]types.AttributeValue {
 	var items []map[string]types.AttributeValue
 	for i := 0; i < length; i++ {

@@ -823,6 +823,44 @@ func (handler *UserHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Put("/users/:name", handler.UpdateUser)
+
+	// swagger:operation DELETE /users/{name} deleteUser
+	//
+	// Delete user
+	//
+	// Deletes the specified user
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: name
+	//   in: path
+	//   type: string
+	//   description: The user name
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: User deleted successfully
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '403':
+	//     description: Forbidden
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: User not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Delete("/users/:name", handler.DeleteUser)
 }
 
 func (h *ChurchHandler) SetUpRoutes(app *fiber.App) {

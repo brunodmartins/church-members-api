@@ -124,6 +124,58 @@ func TestService_UpdateUser(t *testing.T) {
 	})
 }
 
+func TestService_Delete(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	repository := mock_user.NewMockRepository(ctrl)
+	service := NewService(repository)
+	t.Run("Given a non admin user logged, when try to delete a user, then should fail with lack of permissions", func(t *testing.T) {
+		nonAdminUser := buildUser("non-admin-user", "", "common")
+		ctx := context.WithValue(context.TODO(), "user", nonAdminUser)
+		err := service.DeleteUser(ctx, "target-user")
+		repository.EXPECT().DeleteUser(gomock.Eq(ctx), gomock.Any()).Return(nil).Times(0)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given an admin user logged, when try to delete a user, and it is itself, then should fail with lack of permissions", func(t *testing.T) {
+		adminUser := buildAdminUser()
+		ctx := context.WithValue(context.TODO(), "user", adminUser)
+		err := service.DeleteUser(ctx, adminUser.UserName)
+		repository.EXPECT().DeleteUser(gomock.Eq(ctx), gomock.Any()).Return(nil).Times(0)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given an admin user logged, when try to delete a non-existent user, then should fail with not found", func(t *testing.T) {
+		adminUser := buildAdminUser()
+		ctx := context.WithValue(context.TODO(), "user", adminUser)
+		nonExistentUser := "non-existent-user"
+		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(nonExistentUser)).Return(nil, apierrors.NewApiError("user not found", http.StatusNotFound))
+		err := service.DeleteUser(ctx, nonExistentUser)
+		repository.EXPECT().DeleteUser(gomock.Eq(ctx), gomock.Any()).Return(nil).Times(0)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusNotFound, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given an admin user logged, when try to delete a real user, then should fail with database generic error", func(t *testing.T) {
+		adminUser := buildAdminUser()
+		ctx := context.WithValue(context.TODO(), "user", adminUser)
+		realUser := buildUser("real-user", "", "common")
+		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(realUser.UserName)).Return(realUser, nil)
+		repository.EXPECT().DeleteUser(gomock.Eq(ctx), gomock.Eq(realUser)).Return(apierrors.NewApiError("database error", http.StatusInternalServerError))
+		err := service.DeleteUser(ctx, realUser.UserName)
+		assert.Error(t, err)
+		assert.Equal(t, http.StatusInternalServerError, err.(apierrors.Error).StatusCode())
+	})
+	t.Run("Given an admin user logged, when try to delete a real user, then should succeed", func(t *testing.T) {
+		adminUser := buildAdminUser()
+		ctx := context.WithValue(context.TODO(), "user", adminUser)
+		realUser := buildUser("real-user", "", "common")
+		repository.EXPECT().FindUser(gomock.Eq(ctx), gomock.Eq(realUser.UserName)).Return(realUser, nil)
+		repository.EXPECT().DeleteUser(gomock.Eq(ctx), gomock.Eq(realUser)).Return(nil)
+		err := service.DeleteUser(ctx, realUser.UserName)
+		assert.NoError(t, err)
+	})
+}
+
 func BuildContext() context.Context {
 	return context.WithValue(context.TODO(), "user", &domain.User{
 		Church: &domain.Church{

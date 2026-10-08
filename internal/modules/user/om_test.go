@@ -24,3 +24,14 @@ func buildUser(id string, password string, roles ...string) *domain.User {
 		Roles:          roles,
 	}
 }
+
+func buildAdminUser() *domain.User {
+	return &domain.User{
+		ID:             "admin-id",
+		UserName:       "admin-User",
+		Email:          "",
+		Password:       []byte("password"),
+		ConfirmedEmail: false,
+		Roles:          []string{"admin"},
+	}
+}

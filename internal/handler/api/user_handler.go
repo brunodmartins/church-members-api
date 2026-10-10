@@ -70,3 +70,11 @@ func (handler *UserHandler) UpdateUser(ctx *fiber.Ctx) error {
 	}
 	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "User updated successfully"})
 }
+
+func (handler *UserHandler) DeleteUser(ctx *fiber.Ctx) error {
+	name := ctx.Params("name")
+	if err := handler.service.DeleteUser(ctx.UserContext(), name); err != nil {
+		return err
+	}
+	return ctx.Status(http.StatusOK).JSON(dto.MessageResponse{Message: "User deleted successfully"})
+}

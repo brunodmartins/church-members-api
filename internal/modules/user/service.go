@@ -8,6 +8,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
+	"github.com/sirupsen/logrus"
 )
 
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
@@ -16,6 +17,7 @@ type Service interface {
 	FindUser(ctx context.Context, userName string) (*domain.User, error)
 	SearchUser(ctx context.Context, specification wrapper.QuerySpecification) ([]*domain.User, error)
 	UpdateUser(ctx context.Context, user *domain.User) error
+	DeleteUser(ctx context.Context, userName string) error
 }
 
 type userService struct {
@@ -30,6 +32,30 @@ func (s userService) UpdateUser(ctx context.Context, user *domain.User) error {
 		}
 	}
 	return s.repository.UpdateUser(ctx, user)
+}
+
+func (s userService) DeleteUser(ctx context.Context, userName string) error {
+	if !domain.GetUser(ctx).IsAdmin() {
+		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
+	}
+	if domain.GetUser(ctx).UserName == userName {
+		return apierrors.NewApiError("User cannot delete themselves", http.StatusForbidden)
+	}
+	user, err := s.repository.FindUser(ctx, userName)
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			return apierrors.NewApiError("User not found", http.StatusNotFound)
+		}
+		logrus.Errorf("Error finding user: %v", err)
+		return err
+	}
+	err = s.repository.DeleteUser(ctx, user)
+	if err != nil {
+		logrus.Errorf("Error deleting user: %v", err)
+		return err
+	}
+	logrus.Infof("User %s deleted successfully", userName)
+	return nil
 }
 
 func (s userService) FindUser(ctx context.Context, userName string) (*domain.User, error) {

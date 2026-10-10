@@ -118,6 +118,28 @@ func TestUpdateUser(t *testing.T) {
 	})
 }
 
+func TestDeleteUser(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	app := newApp()
+
+	service := mock_user.NewMockService(ctrl)
+	NewUserHandler(service).SetUpRoutes(app)
+
+	t.Run("Success", func(t *testing.T) {
+		service.EXPECT().DeleteUser(gomock.Any(), "user1").Return(nil)
+		runTest(app, buildDelete("/users/user1", nil)).assertStatus(t, http.StatusOK)
+	})
+	t.Run("Fail - Service error - 500", func(t *testing.T) {
+		service.EXPECT().DeleteUser(gomock.Any(), "user1").Return(genericError)
+		runTest(app, buildDelete("/users/user1", nil)).assertStatus(t, http.StatusInternalServerError)
+	})
+	t.Run("Fail - User not found - 404", func(t *testing.T) {
+		service.EXPECT().DeleteUser(gomock.Any(), "user1").Return(apierrors.NewApiError("User not found", 404))
+		runTest(app, buildDelete("/users/user1", nil)).assertStatus(t, http.StatusNotFound)
+	})
+}
+
 func buildUpdateUserRequest(user *domain.User) *dto.UpdateUserRequest {
 	return &dto.UpdateUserRequest{
 		Email:          user.Email,

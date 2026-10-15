@@ -7,6 +7,8 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/crypto"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
+	"net/url"
+	"strings"
 )
 
 type User struct {
@@ -23,8 +25,13 @@ type User struct {
 	ConfirmationToken string                  `json:"-"`
 }
 
-func (u *User) BuildConfirmationLink() string {
-	return fmt.Sprintf("%s/users/%s/confirm?church_id=%s&token=%s", viper.GetString("email.confirm.url"), u.ID, u.ChurchID, u.ConfirmationToken)
+func (u *User) BuildConfirmationLink(token string) string {
+	return fmt.Sprintf("%s/users/%s/confirm?church=%s&token=%s",
+		strings.TrimRight(viper.GetString("email.confirm.url"), "/"),
+		url.PathEscape(u.ID),
+		url.QueryEscape(u.ChurchID),
+		url.QueryEscape(token),
+	)
 }
 
 type NotificationPreferences struct {

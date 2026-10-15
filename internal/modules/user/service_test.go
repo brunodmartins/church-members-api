@@ -12,11 +12,14 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	mock_user "github.com/brunodmartins/church-members-api/internal/modules/user/mock"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
+	"github.com/brunodmartins/church-members-api/platform/security/confirmation"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 )
 
 func TestService_SaveUser(t *testing.T) {
+	viper.Set("security.token.secret", "test-confirmation-secret")
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repository := mock_user.NewMockRepository(ctrl)
@@ -51,6 +54,8 @@ func TestService_SaveUser(t *testing.T) {
 }
 
 func TestService_SendConfirmationEmail(t *testing.T) {
+	viper.Set("security.token.secret", "test-confirmation-secret")
+	viper.Set("email.confirm.url", "https://example.com")
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repository := mock_user.NewMockRepository(ctrl)
@@ -58,7 +63,12 @@ func TestService_SendConfirmationEmail(t *testing.T) {
 	service := NewService(repository, emailService)
 	user := buildUser("id", "")
 	t.Run("Given a valid user, when send the confirmation email, then send confirmation email successfully", func(t *testing.T) {
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(nil)
+		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).DoAndReturn(func(_ string, data any, _ string, _ ...string) error {
+			templateData := data.(email.ConfirmEmailTemplateDTO)
+			assert.Equal(t, user.UserName, templateData.User)
+			assert.Contains(t, templateData.Link, "https://example.com/users/id/confirm?church=church_id_test&token=")
+			return nil
+		})
 		assert.NoError(t, service.SendConfirmEmail(BuildContext(), user))
 	})
 	t.Run("Given a valid user, when send the confirmation email, then send confirmation email fails", func(t *testing.T) {
@@ -97,9 +107,10 @@ func TestUserService_ConfirmEmail(t *testing.T) {
 		ctx := BuildContext()
 		user := buildUser(id, "")
 		user.ConfirmedEmail = false
+		token := makeConfirmationToken(t, user)
 		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(user, nil)
 		repository.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(user)).Return(nil)
-		assert.Nil(t, service.ConfirmEmail(ctx, id, confirmationToken))
+		assert.Nil(t, service.ConfirmEmail(ctx, id, token))
 		assert.True(t, user.ConfirmedEmail)
 	})
 	t.Run("Given a valid user and token, when the confirm operation is call, then fails the operation due to repository error", func(t *testing.T) {
@@ -107,9 +118,10 @@ func TestUserService_ConfirmEmail(t *testing.T) {
 		ctx := BuildContext()
 		user := buildUser(id, "")
 		user.ConfirmedEmail = false
+		token := makeConfirmationToken(t, user)
 		repository.EXPECT().FindByID(gomock.Eq(ctx), gomock.Eq(id)).Return(user, nil)
 		repository.EXPECT().UpdateUser(gomock.Any(), gomock.Eq(user)).Return(errors.New("generic error"))
-		assert.Error(t, service.ConfirmEmail(ctx, id, confirmationToken))
+		assert.Error(t, service.ConfirmEmail(ctx, id, token))
 	})
 	t.Run("Given a valid user and an invalid token, when the confirm operation is call, then fails the operation due to invalid token", func(t *testing.T) {
 		id := domain.NewID()
@@ -150,4 +162,12 @@ func BuildContext() context.Context {
 			ID: "church_id_test",
 		},
 	})
+}
+
+func makeConfirmationToken(t *testing.T, user *domain.User) string {
+	t.Helper()
+	viper.Set("security.token.secret", "test-confirmation-secret")
+	token, err := confirmation.GenerateToken(user)
+	assert.NoError(t, err)
+	return token
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/brunodmartins/church-members-api/platform/i18n"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
+	"github.com/brunodmartins/church-members-api/platform/security/confirmation"
 	"net/http"
 )
 
@@ -53,7 +54,7 @@ func (s userService) ConfirmEmail(ctx context.Context, userID string, token stri
 	if user.ConfirmedEmail {
 		return apierrors.NewApiError("email is already confirmed", http.StatusUnprocessableEntity)
 	}
-	if user.ConfirmationToken != token {
+	if err := confirmation.ValidateToken(token, user); err != nil {
 		return apierrors.NewApiError("The provided token does not match for the given user", http.StatusBadRequest)
 	}
 	user.ConfirmedEmail = true
@@ -74,6 +75,10 @@ func (s userService) checkUserExist(ctx context.Context, userName string) error 
 func (s userService) SendConfirmEmail(ctx context.Context, user *domain.User) error {
 	data := email.NewConfirmEmailTemplateDTO(ctx)
 	data.User = user.UserName
-	data.Link = user.BuildConfirmationLink()
-	return s.email.SendTemplateEmail(email.ConfirmEmailTemplate, email.NewConfirmEmailTemplateDTO(ctx), i18n.GetMessage(ctx, "Emails.ConfirmEmail.Subject"), user.Email)
+	token, err := confirmation.GenerateToken(user)
+	if err != nil {
+		return err
+	}
+	data.Link = user.BuildConfirmationLink(token)
+	return s.email.SendTemplateEmail(email.ConfirmEmailTemplate, data, i18n.GetMessage(ctx, "Emails.ConfirmEmail.Subject"), user.Email)
 }

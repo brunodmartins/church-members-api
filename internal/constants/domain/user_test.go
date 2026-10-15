@@ -24,8 +24,8 @@ func TestUser_BuildConfirmationLink(t *testing.T) {
 	user.ID = NewID()
 	user.ConfirmationToken = uuid.NewString()
 	user.ChurchID = uuid.NewString()
-	expected := fmt.Sprintf("http://localhost/users/%s/confirm?church_id=%s&token=%s", user.ID, user.ChurchID, user.ConfirmationToken)
-	assert.Equal(t, expected, user.BuildConfirmationLink())
+	expected := fmt.Sprintf("http://localhost/users/%s/confirm?church=%s&token=%s", user.ID, user.ChurchID, user.ConfirmationToken)
+	assert.Equal(t, expected, user.BuildConfirmationLink(user.ConfirmationToken))
 }
 
 func TestGetChurchID(t *testing.T) {

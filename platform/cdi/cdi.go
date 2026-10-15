@@ -72,7 +72,11 @@ func ProvideParticipantService() participant2.Service {
 
 func ProvideChurchService() church.Service {
 	if churchService == nil {
-		churchService = church.NewService(ProvideMemberService(), church.NewRepository(provideDynamoDB(), viper.GetString("tables.church")))
+		churchService = church.NewService(
+			ProvideMemberService(),
+			church.NewRepository(provideDynamoDB(), viper.GetString("tables.church")),
+			ProvideStorageService(),
+		)
 	}
 	return churchService
 }

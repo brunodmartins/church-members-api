@@ -66,7 +66,7 @@ func (d dynamoRepository) List(ctx context.Context) ([]*domain.Church, error) {
 }
 
 func (d dynamoRepository) Update(ctx context.Context, church *domain.Church) error {
-	updateQuery := d.BuildUpdateQuery("name", "language", "email", "logo")
+	updateQuery := d.BuildUpdateQuery("name", "language", "email")
 	updateQuery = strings.Replace(updateQuery, ":name", ":church_name", 1)
 	_, err := d.api.UpdateItem(ctx, &dynamodb.UpdateItemInput{
 		Key: map[string]types.AttributeValue{
@@ -80,7 +80,6 @@ func (d dynamoRepository) Update(ctx context.Context, church *domain.Church) err
 			":church_name": &types.AttributeValueMemberS{Value: church.Name},
 			":language":    &types.AttributeValueMemberS{Value: church.Language},
 			":email":       &types.AttributeValueMemberS{Value: church.Email},
-			":logo":        &types.AttributeValueMemberS{Value: church.Logo},
 		},
 		ReturnValues:     "UPDATED_NEW",
 		UpdateExpression: aws.String(updateQuery),

@@ -7,9 +7,16 @@ import (
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
+	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/sirupsen/logrus"
 )
+
+const churchLogoFileExtension = ".png"
+
+func churchLogoFileName(abbreviation string) string {
+	return abbreviation + churchLogoFileExtension
+}
 
 //go:generate mockgen -source=./service.go -destination=./mock/service_mock.go
 type Service interface {
@@ -18,17 +25,20 @@ type Service interface {
 	GetChurchByAbbreviation(ctx context.Context, abbreviation string) (*domain.Church, error)
 	GetStatistics(ctx context.Context, id string) (*domain.ChurchStatistics, error)
 	UpdateChurch(ctx context.Context, church *domain.Church) error
+	UpdateChurchLogo(ctx context.Context, id string, data []byte) error
 }
 
 type churchService struct {
 	membersService member.Service
 	repo           Repository
+	storageService storage.Service
 }
 
-func NewService(memberService member.Service, repo Repository) Service {
+func NewService(memberService member.Service, repo Repository, storageService storage.Service) Service {
 	return &churchService{
 		membersService: memberService,
 		repo:           repo,
+		storageService: storageService,
 	}
 }
 
@@ -40,7 +50,16 @@ func (s churchService) GetChurch(ctx context.Context, id string) (*domain.Church
 	if domain.GetChurchID(ctx) != id {
 		return nil, apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
 	}
-	return s.repo.GetByID(ctx, id)
+	result, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	logoFileName := churchLogoFileName(result.Abbreviation)
+	result.Logo, err = s.storageService.GetFileURL(ctx, logoFileName)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func (s churchService) GetChurchByAbbreviation(ctx context.Context, abbreviation string) (*domain.Church, error) {
@@ -85,18 +104,7 @@ func (s churchService) GetStatistics(ctx context.Context, id string) (*domain.Ch
 }
 
 func (s churchService) UpdateChurch(ctx context.Context, updatedChurch *domain.Church) error {
-	currentUser := domain.GetUser(ctx)
-	if currentUser == nil || !currentUser.IsAdmin() {
-		return apierrors.NewApiError("User does not have required role", http.StatusForbidden)
-	}
-	if currentUser.Church == nil || currentUser.Church.ID == "" {
-		return apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
-	}
-	if currentUser.Church.ID != updatedChurch.ID {
-		return apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
-	}
-
-	currentChurch, err := s.repo.GetByID(ctx, updatedChurch.ID)
+	currentChurch, err := s.getChurchForUpdate(ctx, updatedChurch.ID)
 	if err != nil {
 		return err
 	}
@@ -104,7 +112,39 @@ func (s churchService) UpdateChurch(ctx context.Context, updatedChurch *domain.C
 	currentChurch.Name = updatedChurch.Name
 	currentChurch.Language = updatedChurch.Language
 	currentChurch.Email = updatedChurch.Email
-	currentChurch.Logo = updatedChurch.Logo
 
 	return s.repo.Update(ctx, currentChurch)
+}
+
+func (s churchService) UpdateChurchLogo(ctx context.Context, id string, data []byte) error {
+	currentChurch, err := s.getChurchForUpdate(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	logoFileName := churchLogoFileName(currentChurch.Abbreviation)
+	if err := s.storageService.SaveFile(ctx, logoFileName, data); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s churchService) getChurchForUpdate(ctx context.Context, id string) (*domain.Church, error) {
+	currentUser := domain.GetUser(ctx)
+	if currentUser == nil || !currentUser.IsAdmin() {
+		return nil, apierrors.NewApiError("User does not have required role", http.StatusForbidden)
+	}
+	if currentUser.Church == nil || currentUser.Church.ID == "" {
+		return nil, apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
+	}
+	if currentUser.Church.ID != id {
+		return nil, apierrors.NewApiError("Not allowed to access other churches", http.StatusForbidden)
+	}
+
+	currentChurch, err := s.repo.GetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return currentChurch, nil
 }

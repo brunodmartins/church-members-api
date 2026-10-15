@@ -1,8 +1,11 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
+	"mime/multipart"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
@@ -93,7 +96,6 @@ func TestUpdateChurch(t *testing.T) {
 			Name:     "updated church",
 			Language: "en-us",
 			Email:    "church@example.com",
-			Logo:     "https://example.com/logo.png",
 		}
 		expected := request.ToChurch()
 		expected.ID = id
@@ -137,6 +139,54 @@ func TestUpdateChurch(t *testing.T) {
 		jsonRequest, _ := json.Marshal(request)
 		runTest(app, buildPut("/churches/"+id, jsonRequest)).assertStatus(t, http.StatusForbidden)
 	})
+}
+
+func TestUpdateChurchLogo(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	service := mock_church.NewMockService(ctrl)
+	app := newApp()
+	NewChurchHandler(service).SetUpRoutes(app)
+
+	id := domain.NewID()
+	pngData := []byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'}
+	t.Run("Success - 200", func(t *testing.T) {
+		service.EXPECT().UpdateChurchLogo(gomock.Any(), id, pngData).Return(nil)
+		runTest(app, buildLogoPost("/churches/"+id+"/logo", pngData)).assertJSON(
+			t,
+			http.StatusOK,
+			dto.MessageResponse{Message: "Church logo updated successfully"},
+		)
+	})
+
+	t.Run("Fail - invalid ID - 400", func(t *testing.T) {
+		runTest(app, buildLogoPost("/churches/invalid-id/logo", pngData)).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - missing logo - 400", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "/churches/"+id+"/logo", nil)
+		req.Header.Set("Content-Type", "multipart/form-data")
+		runTest(app, req).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - non-PNG file - 400", func(t *testing.T) {
+		runTest(app, buildLogoPost("/churches/"+id+"/logo", []byte("not a PNG"))).assertStatus(t, http.StatusBadRequest)
+	})
+
+	t.Run("Fail - file is 5 MB - 400", func(t *testing.T) {
+		runTest(app, buildLogoPost("/churches/"+id+"/logo", bytes.Repeat([]byte{'a'}, maxChurchLogoSize))).assertStatus(t, http.StatusBadRequest)
+	})
+}
+
+func buildLogoPost(target string, data []byte) *http.Request {
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, _ := writer.CreateFormFile("logo", "logo.png")
+	_, _ = part.Write(data)
+	_ = writer.Close()
+
+	req := httptest.NewRequest(http.MethodPost, target, &body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req
 }
 
 func buildStatistics() *domain.ChurchStatistics {

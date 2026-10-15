@@ -54,6 +54,7 @@ func (result httpResult) assertJSON(t *testing.T, expected int, expectedBody int
 func newApp() *fiber.App {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: middleware.ApiErrorMiddleWare,
+		BodyLimit:    6 * 1024 * 1024,
 	})
 	app.Use(recover.New())
 	return app

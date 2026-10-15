@@ -9,6 +9,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/domain"
 	mock_church "github.com/brunodmartins/church-members-api/internal/modules/church/mock"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
+	mock_storage "github.com/brunodmartins/church-members-api/internal/services/storage/mock"
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -19,7 +20,7 @@ func TestChurchService_List(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_church.NewMockRepository(ctrl)
-	service := NewService(nil, repo)
+	service := NewService(nil, repo, nil)
 
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().List(gomock.Any()).Return([]*domain.Church{buildChurch("")}, nil)
@@ -39,15 +40,18 @@ func TestChurchService_GetChurch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_church.NewMockRepository(ctrl)
-	service := NewService(nil, repo)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := NewService(nil, repo, storageService)
 	const id = "xxx"
 	var church = buildChurch(id)
 	var ctx = context.WithValue(context.TODO(), "church", church)
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().GetByID(gomock.Any(), id).Return(church, nil)
+		storageService.EXPECT().GetFileURL(ctx, "tc.png").Return("https://example.com/logo.png", nil)
 		result, err := service.GetChurch(ctx, id)
 		assert.Nil(t, err)
 		assert.Equal(t, id, result.ID)
+		assert.Equal(t, "https://example.com/logo.png", result.Logo)
 	})
 
 	t.Run("Fail", func(t *testing.T) {
@@ -55,13 +59,23 @@ func TestChurchService_GetChurch(t *testing.T) {
 		_, err := service.GetChurch(ctx, id)
 		assert.NotNil(t, err)
 	})
+
+	t.Run("Signs uploaded logo URL", func(t *testing.T) {
+		churchWithLogo := buildChurch(id)
+		repo.EXPECT().GetByID(ctx, id).Return(churchWithLogo, nil)
+		storageService.EXPECT().GetFileURL(ctx, "tc.png").Return("https://example.com/signed-logo.png", nil)
+
+		result, err := service.GetChurch(ctx, id)
+		assert.NoError(t, err)
+		assert.Equal(t, "https://example.com/signed-logo.png", result.Logo)
+	})
 }
 
 func TestChurchService_GetChurchByAbbreviation(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_church.NewMockRepository(ctrl)
-	service := NewService(nil, repo)
+	service := NewService(nil, repo, nil)
 	const abbreviation = "TC"
 	const id = "xxx"
 
@@ -108,7 +122,7 @@ func TestChurchService_GetStatistics(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_church.NewMockRepository(ctrl)
 	memberService := mock_member.NewMockService(ctrl)
-	service := NewService(memberService, repo)
+	service := NewService(memberService, repo, nil)
 	const id = "xxx"
 	var church = buildChurch(id)
 	var ctx = context.WithValue(context.TODO(), "church", church)
@@ -149,11 +163,12 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_church.NewMockRepository(ctrl)
-	service := NewService(nil, repo)
+	service := NewService(nil, repo, nil)
 	const id = "xxx"
 
 	t.Run("Success", func(t *testing.T) {
 		currentChurch := buildChurch(id)
+		currentChurch.Logo = "old-logo.png"
 		ctx := context.WithValue(context.TODO(), "user", &domain.User{
 			Roles: []string{"admin"},
 			Church: &domain.Church{
@@ -168,7 +183,7 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 			Abbreviation: currentChurch.Abbreviation,
 			Language:     update.Language,
 			Email:        update.Email,
-			Logo:         update.Logo,
+			Logo:         "old-logo.png",
 		})).Return(nil)
 		assert.NoError(t, service.UpdateChurch(ctx, update))
 	})
@@ -230,4 +245,38 @@ func TestChurchService_UpdateChurch(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
 	})
+}
+
+func TestChurchService_UpdateChurchLogo(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	repo := mock_church.NewMockRepository(ctrl)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := NewService(nil, repo, storageService)
+	const id = "xxx"
+	data := []byte("png data")
+	currentChurch := buildChurch(id)
+	ctx := context.WithValue(context.TODO(), "user", &domain.User{
+		Roles:  []string{"admin"},
+		Church: &domain.Church{ID: id},
+	})
+
+	repo.EXPECT().GetByID(ctx, id).Return(currentChurch, nil)
+	storageService.EXPECT().SaveFile(ctx, "tc.png", data).Return(nil)
+
+	assert.NoError(t, service.UpdateChurchLogo(ctx, id, data))
+}
+
+func TestChurchService_UpdateChurchLogo_Forbidden(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	repo := mock_church.NewMockRepository(ctrl)
+	storageService := mock_storage.NewMockService(ctrl)
+	service := NewService(nil, repo, storageService)
+	ctx := context.WithValue(context.TODO(), "user", &domain.User{
+		Roles:  []string{"user"},
+		Church: &domain.Church{ID: "xxx"},
+	})
+
+	err := service.UpdateChurchLogo(ctx, "xxx", []byte("png data"))
+	assert.Error(t, err)
+	assert.Equal(t, http.StatusForbidden, err.(apierrors.Error).StatusCode())
 }

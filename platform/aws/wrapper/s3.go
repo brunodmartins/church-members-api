@@ -3,6 +3,7 @@ package wrapper
 import (
 	"bytes"
 	"context"
+	"net/http"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
@@ -50,9 +51,10 @@ func NewS3APIWrapper(api s3API, bucket string, s3SignedAPI s3SignedAPI) S3APIWra
 
 func (wrapper *s3wrapper) PutObject(ctx context.Context, key string, data []byte) error {
 	input := &s3.PutObjectInput{
-		Bucket: aws.String(wrapper.bucket),
-		Key:    aws.String(key),
-		Body:   bytes.NewReader(data),
+		Bucket:      aws.String(wrapper.bucket),
+		Key:         aws.String(key),
+		Body:        bytes.NewReader(data),
+		ContentType: aws.String(http.DetectContentType(data)),
 	}
 
 	_, err := wrapper.api.PutObject(ctx, input)

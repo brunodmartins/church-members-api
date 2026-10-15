@@ -2,6 +2,7 @@ package email
 
 import (
 	"errors"
+	"github.com/aws/aws-sdk-go/service/sesv2"
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
@@ -47,4 +48,18 @@ func TestEmailSender_buildEmailInput(t *testing.T) {
 	assert.Equal(t, subject, *emailInput.Content.Simple.Subject.Data)
 	assert.NotNil(t, emailInput.Content.Simple.Body)
 	assert.Equal(t, emailBody, *emailInput.Content.Simple.Body.Html.Data)
+}
+
+func TestEmailSender_ConfirmationTemplateIncludesLink(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	ses := mock_wrapper.NewMockSESAPI(ctrl)
+	service := NewEmailService(ses, "")
+	link := "https://example.com/users/user-id/confirm?church=church-id&token=jwt-token"
+
+	ses.EXPECT().SendEmail(gomock.Any()).DoAndReturn(func(input *sesv2.SendEmailInput) (*sesv2.SendEmailOutput, error) {
+		assert.Contains(t, *input.Content.Simple.Body.Html.Data, "https://example.com/users/user-id/confirm?church=church-id&amp;token=jwt-token")
+		return nil, nil
+	})
+	assert.NoError(t, service.SendTemplateEmail(ConfirmEmailTemplate, ConfirmEmailTemplateDTO{Link: link}, subject, receiver1))
 }

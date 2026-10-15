@@ -32,7 +32,7 @@ func NewEmailService(ses wrapper.SESAPI, fromEmail string) Service {
 	var templates = make(map[string]*template.Template)
 	templates[WeeklyBirthTemplate] = createTemplate(WeeklyBirthTemplate, string(loadEmailHTML("templates/weekly_birthdays_template.html")))
 	templates[TestTemplate] = createTemplate(TestTemplate, string(loadEmailHTML("templates/test.html")))
-	templates[ConfirmEmailTemplate] = createTemplate(TestTemplate, string(loadEmailHTML("templates/confirm_email_template.html")))
+	templates[ConfirmEmailTemplate] = createTemplate(ConfirmEmailTemplate, string(loadEmailHTML("templates/confirm_email_template.html")))
 	return emailService{ses: ses, fromEmail: fromEmail, templates: templates}
 }
 

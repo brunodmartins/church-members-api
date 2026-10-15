@@ -85,9 +85,17 @@ func TestDynamoRepository_Update(t *testing.T) {
 				assert.Equal(t, table, *input.TableName)
 				assert.Equal(t, church.ID, input.Key["id"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, "attribute_exists(id)", *input.ConditionExpression)
+				assert.Equal(t, map[string]string{
+					"#name":     "name",
+					"#language": "language",
+					"#email":    "email",
+				}, input.ExpressionAttributeNames)
 				assert.Equal(t, church.Name, input.ExpressionAttributeValues[":church_name"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, church.Language, input.ExpressionAttributeValues[":language"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, church.Email, input.ExpressionAttributeValues[":email"].(*types.AttributeValueMemberS).Value)
+				assert.Contains(t, *input.UpdateExpression, "#name = :church_name")
+				assert.Contains(t, *input.UpdateExpression, "#language = :language")
+				assert.Contains(t, *input.UpdateExpression, "#email = :email")
 				assert.NotContains(t, input.ExpressionAttributeValues, ":logo")
 				assert.NotContains(t, *input.UpdateExpression, "logo")
 				assert.NotContains(t, *input.UpdateExpression, "abbreviation")

@@ -32,6 +32,8 @@ func TestGetChurch(t *testing.T) {
 			ID:           church.ID,
 			Name:         church.Name,
 			Abbreviation: church.Abbreviation,
+			Language:     church.Language,
+			Email:        church.Email,
 			Logo:         church.Logo,
 		}
 		runTest(app, buildGet("/churches/"+id)).assertJSON(t, http.StatusOK, expected)

@@ -356,9 +356,15 @@ definitions:
             abbreviation:
                 type: string
                 x-go-name: Abbreviation
+            email:
+                type: string
+                x-go-name: Email
             id:
                 type: string
                 x-go-name: ID
+            language:
+                type: string
+                x-go-name: Language
             logo:
                 type: string
                 x-go-name: Logo

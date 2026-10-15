@@ -120,6 +120,8 @@ type GetChurchResponse struct {
 	ID           string `json:"id"`
 	Name         string `json:"name"`
 	Abbreviation string `json:"abbreviation"`
+	Language     string `json:"language"`
+	Email        string `json:"email"`
 	Logo         string `json:"logo"`
 }
 

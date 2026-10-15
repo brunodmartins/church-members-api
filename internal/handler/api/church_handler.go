@@ -46,6 +46,8 @@ func (h *ChurchHandler) getChurchByID(c *fiber.Ctx) error {
 		ID:           result.ID,
 		Name:         result.Name,
 		Abbreviation: result.Abbreviation,
+		Language:     result.Language,
+		Email:        result.Email,
 		Logo:         result.Logo,
 	})
 }

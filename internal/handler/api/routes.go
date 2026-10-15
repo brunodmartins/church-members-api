@@ -976,4 +976,51 @@ func (h *ChurchHandler) SetUpRoutes(app *fiber.App) {
 	//     schema:
 	//       "$ref": "#/definitions/ErrorResponse"
 	app.Put("/churches/:id", h.updateChurch)
+
+	// swagger:operation POST /churches/{id}/logo updateChurchLogo
+	//
+	// Update church logo
+	//
+	// Uploads a PNG church logo smaller than 5 MB.
+	//
+	// ---
+	// security:
+	// - token: []
+	// consumes:
+	// - multipart/form-data
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: id
+	//   in: path
+	//   type: string
+	//   description: The church id
+	//   required: true
+	// - name: logo
+	//   in: formData
+	//   type: file
+	//   description: PNG logo file smaller than 5 MB
+	//   required: true
+	// responses:
+	//   '200':
+	//     description: Church logo updated successfully
+	//     schema:
+	//       "$ref": "#/definitions/MessageResponse"
+	//   '400':
+	//     description: Invalid ID, file type, or file size
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '403':
+	//     description: User does not have required role
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   '404':
+	//     description: Church not found
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	//   default:
+	//     description: unexpected error
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Post("/churches/:id/logo", h.updateChurchLogo)
 }

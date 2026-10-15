@@ -88,7 +88,8 @@ func TestDynamoRepository_Update(t *testing.T) {
 				assert.Equal(t, church.Name, input.ExpressionAttributeValues[":church_name"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, church.Language, input.ExpressionAttributeValues[":language"].(*types.AttributeValueMemberS).Value)
 				assert.Equal(t, church.Email, input.ExpressionAttributeValues[":email"].(*types.AttributeValueMemberS).Value)
-				assert.Equal(t, church.Logo, input.ExpressionAttributeValues[":logo"].(*types.AttributeValueMemberS).Value)
+				assert.NotContains(t, input.ExpressionAttributeValues, ":logo")
+				assert.NotContains(t, *input.UpdateExpression, "logo")
 				assert.NotContains(t, *input.UpdateExpression, "abbreviation")
 				return nil, nil
 			},

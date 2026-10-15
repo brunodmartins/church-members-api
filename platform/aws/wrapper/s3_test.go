@@ -3,6 +3,7 @@ package wrapper
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 	"time"
 
@@ -31,6 +32,7 @@ func TestS3wrapper_PutObject(t *testing.T) {
 			optFns ...func(*s3.Options)) (*s3.PutObjectOutput, error) {
 			assert.Equal(t, bucket, *params.Bucket)
 			assert.Equal(t, fileName, *params.Key)
+			assert.Equal(t, http.DetectContentType(data), *params.ContentType)
 			assert.NotNil(t, params.Body)
 			return nil, nil
 		})

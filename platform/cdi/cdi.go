@@ -4,26 +4,28 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/brunodmartins/church-members-api/internal/handler/api"
 	"github.com/brunodmartins/church-members-api/internal/modules/church"
-	member2 "github.com/brunodmartins/church-members-api/internal/modules/member"
-	participant2 "github.com/brunodmartins/church-members-api/internal/modules/participant"
-	report2 "github.com/brunodmartins/church-members-api/internal/modules/report"
-	file2 "github.com/brunodmartins/church-members-api/internal/modules/report/file"
+	"github.com/brunodmartins/church-members-api/internal/modules/member"
+	"github.com/brunodmartins/church-members-api/internal/modules/participant"
+	"github.com/brunodmartins/church-members-api/internal/modules/report"
+	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
 	"github.com/brunodmartins/church-members-api/internal/services/calendar"
 	"github.com/brunodmartins/church-members-api/internal/services/email"
 	"github.com/brunodmartins/church-members-api/internal/services/notification"
+	"github.com/brunodmartins/church-members-api/internal/services/queue"
 	"github.com/brunodmartins/church-members-api/internal/services/storage"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/brunodmartins/church-members-api/platform/security"
 	"github.com/spf13/viper"
 )
 
-var memberService member2.Service
+var memberService member.Service
 var churchService church.Service
-var reportGenerator report2.Service
+var reportGenerator report.Service
 
-var memberRepository member2.Repository
-var participantRepository participant2.Repository
+var memberRepository member.Repository
+
+var queueService queue.Service
 
 func ProvideMemberHandler() *api.MemberHandler {
 	return api.NewMemberHandler(ProvideMemberService())
@@ -59,15 +61,15 @@ func ProvideUserService() user.Service {
 	)
 }
 
-func ProvideMemberService() member2.Service {
+func ProvideMemberService() member.Service {
 	if memberService == nil {
-		memberService = member2.NewMemberService(provideMemberRepository())
+		memberService = member.NewMemberService(provideMemberRepository())
 	}
 	return memberService
 }
 
-func ProvideParticipantService() participant2.Service {
-	return participant2.NewService(participant2.NewRepository(provideDynamoDB(), viper.GetString("tables.participant")))
+func ProvideParticipantService() participant.Service {
+	return participant.NewService(participant.NewRepository(provideDynamoDB(), viper.GetString("tables.participant")))
 }
 
 func ProvideChurchService() church.Service {
@@ -95,18 +97,25 @@ func ProvideStorageService() storage.Service {
 	return storage.NewS3Storage(wrapper.NewS3APIWrapper(s3API, viper.GetString("storage.name"), s3SignedAPI))
 }
 
-func provideMemberRepository() member2.Repository {
+func provideMemberRepository() member.Repository {
 	if memberRepository == nil {
-		memberRepository = member2.NewRepository(provideDynamoDB(), viper.GetString("tables.member"))
+		memberRepository = member.NewRepository(provideDynamoDB(), viper.GetString("tables.member"))
 	}
 	return memberRepository
 }
 
-func provideReportGenerator() report2.Service {
+func provideReportGenerator() report.Service {
 	if reportGenerator == nil {
-		reportGenerator = report2.NewReportService(ProvideMemberService(), file2.NewPDFBuilder(), ProvideStorageService())
+		reportGenerator = report.NewReportService(ProvideMemberService(), file.NewPDFBuilder(), ProvideStorageService())
 	}
 	return reportGenerator
+}
+
+func ProvideQueueService() queue.Service {
+	if queueService == nil {
+		queueService = queue.New(wrapper.NewSQSWrapper(provideSQS(), viper.GetString("queue.url")))
+	}
+	return queueService
 }
 
 func ProvideCalendarStorage() calendar.Storage {

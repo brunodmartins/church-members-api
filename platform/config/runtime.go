@@ -25,6 +25,7 @@ func InitConfiguration() {
 	viper.Set("security.token.expiration", os.Getenv("TOKEN_EXPIRATION"))
 	viper.Set("email.sender", os.Getenv("EMAIL_SENDER"))
 	viper.Set("storage.name", os.Getenv("STORAGE"))
+	viper.Set("queue.url", os.Getenv("QUEUE_URL"))
 	viper.Set("email.confirm.url", os.Getenv("API_ENDPOINT"))
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/constants/enum/classification"
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	mock_member "github.com/brunodmartins/church-members-api/internal/modules/member/mock"
+	"github.com/brunodmartins/church-members-api/internal/services/queue"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"go.uber.org/mock/gomock"
 
@@ -20,7 +21,9 @@ func TestListAllMembers(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 	spec := wrapper.QuerySpecification(nil)
 	t.Run("Success", func(t *testing.T) {
 		repo.EXPECT().FindAll(gomock.Any(), gomock.AssignableToTypeOf(spec)).Return(BuildMembers(2), nil)
@@ -46,7 +49,9 @@ func TestFindMember(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 
 	id := domain.NewID()
 	churchMember := buildMember(id)
@@ -71,7 +76,9 @@ func TestSaveMember(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 
 	t.Run("Success", func(t *testing.T) {
 		churchMember := buildMember("")
@@ -98,7 +105,9 @@ func TestChangeStatus(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	reason := "test"
 	date := time.Now()
@@ -124,7 +133,9 @@ func TestMemberService_UpdateContact(t *testing.T) {
 	ctx := context.TODO()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 	t.Run("Successfully update the contact information", func(t *testing.T) {
 		id := domain.NewID()
 		churchMember := buildMember(id)
@@ -160,7 +171,9 @@ func TestMemberService_UpdateAddress(t *testing.T) {
 	ctx := context.TODO()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	churchMember := buildMember(id)
 	address := domain.Address{
@@ -193,7 +206,9 @@ func TestMemberService_UpdatePerson(t *testing.T) {
 	ctx := context.TODO()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	churchMember := buildMember(id)
 	person := domain.Person{
@@ -226,7 +241,9 @@ func TestMemberService_UpdateObservation(t *testing.T) {
 	ctx := context.TODO()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	churchMember := buildMember(id)
 	observation := "Needs follow-up"
@@ -252,7 +269,9 @@ func TestMemberService_GetLastBirthAnniversaries(t *testing.T) {
 	ctx := context.TODO()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 
 	t.Run("Successfully get last birthday members", func(t *testing.T) {
 		members := BuildMembers(2)
@@ -290,7 +309,9 @@ func TestMemberService_GetLastMarriageAnniversaries(t *testing.T) {
 	ctx := context.TODO()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
-	service := member.NewMemberService(repo)
+	q := queue.NewMockService(ctrl)
+	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	service := member.NewMemberService(repo, q)
 
 	t.Run("Successfully get last marriage members", func(t *testing.T) {
 		members := BuildMembers(2)

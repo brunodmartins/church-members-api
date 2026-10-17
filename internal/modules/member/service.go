@@ -2,9 +2,13 @@ package member
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"sort"
 	"time"
+
+	"github.com/brunodmartins/church-members-api/internal/services/queue"
+	"github.com/sirupsen/logrus"
 
 	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -30,14 +34,28 @@ type Service interface {
 }
 
 type memberService struct {
-	repo Repository
+	repo  Repository
+	queue queue.Service
 }
 
-func NewMemberService(r Repository) Service {
+func NewMemberService(r Repository, q queue.Service) Service {
 	return &memberService{
-		repo: r,
+		repo:  r,
+		queue: q,
 	}
 }
+
+// publish is best-effort: the change is already persisted, so failures are only logged.
+func (s *memberService) publish(memberID string, eventType EventType) {
+	body, err := json.Marshal(Event{MemberID: memberID, EventType: eventType})
+	if err == nil {
+		err = s.queue.SendMessage(body)
+	}
+	if err != nil {
+		logrus.WithError(err).Errorf("Failed to publish %s event for member %s", eventType, memberID)
+	}
+}
+
 
 func (s *memberService) SearchMembers(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error) {
 	members, err := s.repo.FindAll(ctx, querySpecification)
@@ -71,6 +89,9 @@ func (s *memberService) SaveMember(ctx context.Context, member *domain.Member) (
 	member.ChurchID = domain.GetChurchID(ctx)
 	member.MembershipStartDate = time.Now()
 	err := s.repo.Insert(ctx, member)
+	if err == nil {
+		s.publish(member.ID, EventMemberCreated)
+	}
 	return member.ID, err
 }
 
@@ -82,7 +103,11 @@ func (s *memberService) RetireMembership(ctx context.Context, id string, reason 
 	member.Active = false
 	member.MembershipEndDate = &date
 	member.MembershipEndReason = reason
-	return s.repo.RetireMembership(ctx, member)
+	err = s.repo.RetireMembership(ctx, member)
+	if err == nil {
+		s.publish(member.ID, EventMemberRetired)
+	}
+	return err
 }
 
 func (s *memberService) UpdateContact(ctx context.Context, id string, contact domain.Contact) error {
@@ -91,7 +116,11 @@ func (s *memberService) UpdateContact(ctx context.Context, id string, contact do
 		return err
 	}
 	member.Person.Contact = &contact
-	return s.repo.UpdateContact(ctx, member)
+	if err = s.repo.UpdateContact(ctx, member); err != nil {
+		return err
+	}
+	s.publish(member.ID, EventMemberUpdated)
+	return nil
 }
 
 func (s *memberService) UpdateAddress(ctx context.Context, id string, address domain.Address) error {
@@ -100,7 +129,11 @@ func (s *memberService) UpdateAddress(ctx context.Context, id string, address do
 		return err
 	}
 	member.Person.Address = &address
-	return s.repo.UpdateAddress(ctx, member)
+	if err = s.repo.UpdateAddress(ctx, member); err != nil {
+		return err
+	}
+	s.publish(member.ID, EventMemberUpdated)
+	return nil
 }
 
 func (s *memberService) UpdatePerson(ctx context.Context, id string, person domain.Person) error {
@@ -116,7 +149,11 @@ func (s *memberService) UpdatePerson(ctx context.Context, id string, person doma
 	member.Person.MaritalStatus = person.MaritalStatus
 	member.Person.ChildrenQuantity = person.ChildrenQuantity
 
-	return s.repo.UpdatePerson(ctx, member)
+	if err = s.repo.UpdatePerson(ctx, member); err != nil {
+		return err
+	}
+	s.publish(member.ID, EventMemberUpdated)
+	return nil
 }
 
 func (s *memberService) UpdateObservation(ctx context.Context, id string, observation string) error {
@@ -125,7 +162,11 @@ func (s *memberService) UpdateObservation(ctx context.Context, id string, observ
 		return err
 	}
 	member.Observation = observation
-	return s.repo.UpdateObservation(ctx, member)
+	if err = s.repo.UpdateObservation(ctx, member); err != nil {
+		return err
+	}
+	s.publish(member.ID, EventMemberUpdated)
+	return nil
 }
 
 func (s *memberService) UpdateBaptism(ctx context.Context, id string, religion domain.Religion) error {
@@ -137,7 +178,11 @@ func (s *memberService) UpdateBaptism(ctx context.Context, id string, religion d
 	member.Religion.Baptized = religion.Baptized
 	member.Religion.CatholicBaptized = religion.CatholicBaptized
 	member.Religion.BaptismDate = religion.BaptismDate
-	return s.repo.UpdateReligion(ctx, member)
+	if err = s.repo.UpdateReligion(ctx, member); err != nil {
+		return err
+	}
+	s.publish(member.ID, EventMemberUpdated)
+	return nil
 }
 
 func (s *memberService) GetLastBirthAnniversaries(ctx context.Context) ([]*domain.Member, error) {

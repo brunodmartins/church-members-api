@@ -63,7 +63,7 @@ func ProvideUserService() user.Service {
 
 func ProvideMemberService() member.Service {
 	if memberService == nil {
-		memberService = member.NewMemberService(provideMemberRepository())
+		memberService = member.NewMemberService(provideMemberRepository(), ProvideQueueService())
 	}
 	return memberService
 }

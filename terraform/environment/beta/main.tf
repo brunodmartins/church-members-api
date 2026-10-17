@@ -33,6 +33,11 @@ module "s3_bucket" {
   bucket_name = var.bucket_name
 }
 
+module "sqs_queue" {
+  source     = "../../storage/sqs"
+  queue_name = var.queue_name
+}
+
 
 module "api" {
   source = "../../application/api"

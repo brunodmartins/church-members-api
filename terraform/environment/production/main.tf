@@ -1,5 +1,5 @@
 locals {
-  ecr_image_tag       = "latest"
+  ecr_image_tag       = trimspace(file("${path.root}/../../../.version"))
   ecr_repository_name = "church-members-api-container"
 }
 
@@ -25,12 +25,18 @@ module "iam_roles" {
   source          = "../../security/iam"
   bucket_arn      = module.s3_bucket.bucket_arn
   dynamodb_tables = module.dynamodb_tables.tables_arn
+  queue_arn       = module.sqs_queue.queue_arn
   role_name       = var.role_name
 }
 
 module "s3_bucket" {
   source      = "../../storage/s3"
   bucket_name = var.bucket_name
+}
+
+module "sqs_queue" {
+  source     = "../../infra/sqs"
+  queue_name = var.queue_name
 }
 
 
@@ -50,6 +56,7 @@ module "api" {
     "TOKEN_SECRET" : var.security_token_secret,
     "TOKEN_EXPIRATION" : var.security_token_expiration,
     "STORAGE" : module.s3_bucket.bucket_name,
+    "QUEUE_URL" : module.sqs_queue.queue_url,
     "API_ENDPOINT" : var.gateway_url
   }
   gateway_name = var.gateway_name
@@ -69,5 +76,6 @@ module "job" {
     "TABLE_CHURCH" : module.dynamodb_tables.church_table_name,
     "TABLE_PARTICIPANT" : module.dynamodb_tables.participant_table_name,
     "STORAGE" : module.s3_bucket.bucket_name,
+    "QUEUE_URL" : module.sqs_queue.queue_url,
   }
 }

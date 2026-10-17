@@ -261,13 +261,17 @@ definitions:
             phone:
                 type: string
                 x-go-name: Phone
-            preferences:
-                $ref: '#/definitions/NotificationPreferences'
             roles:
                 items:
                     type: string
                 type: array
                 x-go-name: Roles
+            send_daily_sms:
+                type: boolean
+                x-go-name: SendDailySMS
+            send_weekly_email:
+                type: boolean
+                x-go-name: SendWeeklyEmail
             username:
                 type: string
                 x-go-name: UserName
@@ -714,13 +718,17 @@ definitions:
             phone:
                 type: string
                 x-go-name: Phone
-            preferences:
-                $ref: '#/definitions/NotificationPreferences'
             roles:
                 items:
                     type: string
                 type: array
                 x-go-name: Roles
+            send_daily_sms:
+                type: boolean
+                x-go-name: SendDailySMS
+            send_weekly_email:
+                type: boolean
+                x-go-name: SendWeeklyEmail
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
 host: localhost:8080

@@ -35,6 +35,14 @@ resource "aws_iam_policy" "church_members_api_policy" {
       {
         Effect = "Allow"
         Action = [
+          "sqs:SendMessage",
+          "sqs:ReceiveMessage",
+        ]
+        Resource = var.queue_arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "SES:SendEmail",
           "SES:SendRawEmail"
         ]

@@ -35,6 +35,11 @@ variable "bucket_name" {
   type = string
 }
 
+variable "queue_name" {
+  type    = string
+  default = "church-members-queue"
+}
+
 variable "lambda_api_name" {
   type = string
 }

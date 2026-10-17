@@ -14,6 +14,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.42.4
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.97.3
 	github.com/aws/aws-sdk-go-v2/service/sns v1.34.4
+	github.com/aws/aws-sdk-go-v2/service/sqs v1.36.0
 	github.com/awslabs/aws-lambda-go-api-proxy v0.16.2
 	github.com/bearbin/go-age v0.0.0-20210220235509-f0fa00c278ce
 	github.com/go-playground/validator/v10 v10.26.0

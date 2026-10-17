@@ -2,11 +2,13 @@ package cdi
 
 import (
 	"context"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
+	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sesv2"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
@@ -53,4 +55,17 @@ func provideS3() *s3.Client {
 		})
 	}
 	return s3.NewFromConfig(cfg)
+}
+
+func provideSQS() *sqs.Client {
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		panic("unable to load SDK config, " + err.Error())
+	}
+	if viper.Get("cloud") == "LOCAL" {
+		return sqs.NewFromConfig(cfg, func(options *sqs.Options) {
+			options.BaseEndpoint = aws.String("http://127.0.0.1:4566")
+		})
+	}
+	return sqs.NewFromConfig(cfg)
 }

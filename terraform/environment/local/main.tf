@@ -11,3 +11,8 @@ module "s3_bucket" {
   source = "../../storage/s3"
   bucket_name = var.bucket_name
 }
+
+module "sqs_queue" {
+  source     = "../../storage/sqs"
+  queue_name = var.queue_name
+}

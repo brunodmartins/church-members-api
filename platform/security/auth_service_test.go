@@ -53,7 +53,7 @@ func TestAuthService_GenerateToken(t *testing.T) {
 		unconfirmedUser := buildUser("", string(crypto.EncryptPassword(password)))
 		unconfirmedUser.ConfirmedEmail = false
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(unconfirmedUser, nil)
-		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
+		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil)
 		token, err := service.GenerateToken(church, userName, password)
 		assert.Empty(t, token)
 		assert.Error(t, err)
@@ -62,7 +62,7 @@ func TestAuthService_GenerateToken(t *testing.T) {
 		unconfirmedUser := buildUser("", string(crypto.EncryptPassword(password)))
 		unconfirmedUser.ConfirmedEmail = false
 		userService.EXPECT().FindUser(gomock.Any(), gomock.Any()).Return(unconfirmedUser, nil)
-		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(genericError)
+		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(genericError)
 		token, err := service.GenerateToken(church, userName, password)
 		assert.Empty(t, token)
 		assert.Error(t, err)
@@ -96,12 +96,14 @@ func TestService_SendConfirmationEmail(t *testing.T) {
 	service := NewAuthService(userService, churchService, emailService)
 	user := buildUser("id", "")
 	t.Run("Given a valid user, when send the confirmation email, then send confirmation email successfully", func(t *testing.T) {
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(nil)
-		assert.NoError(t, service.SendConfirmEmail(BuildContext(), user))
+		ctx := BuildContext()
+		emailService.EXPECT().SendTemplateEmail(gomock.Eq(ctx), gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(nil)
+		assert.NoError(t, service.SendConfirmEmail(ctx, user))
 	})
 	t.Run("Given a valid user, when send the confirmation email, then send confirmation email fails", func(t *testing.T) {
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(genericError)
-		assert.Error(t, service.SendConfirmEmail(BuildContext(), user))
+		ctx := BuildContext()
+		emailService.EXPECT().SendTemplateEmail(gomock.Eq(ctx), gomock.Eq(email.ConfirmEmailTemplate), gomock.AssignableToTypeOf(email.ConfirmEmailTemplateDTO{}), gomock.Any(), gomock.Eq(user.Email)).Return(genericError)
+		assert.Error(t, service.SendConfirmEmail(ctx, user))
 	})
 }
 

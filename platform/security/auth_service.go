@@ -69,7 +69,7 @@ func (s *authService) SendConfirmEmail(ctx context.Context, user *domain.User) e
 	data.User = user.UserName
 	data.Link = buildConfirmationLink(GenerateJWTToken(user))
 
-	return s.email.SendTemplateEmail(email.ConfirmEmailTemplate, data, i18n.GetMessage(ctx, "Emails.ConfirmEmail.Subject"), user.Email)
+	return s.email.SendTemplateEmail(ctx, email.ConfirmEmailTemplate, data, i18n.GetMessage(ctx, "Emails.ConfirmEmail.Subject"), user.Email)
 }
 
 func buildConfirmationLink(accessToken string) string {

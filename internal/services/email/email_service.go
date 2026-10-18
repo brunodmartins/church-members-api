@@ -14,7 +14,7 @@ import (
 
 //go:generate mockgen -source=./email_service.go -destination=./mock/email_service_mock.go
 type Service interface {
-	SendTemplateEmail(template string, data any, subject string, recipients ...string) error
+	SendTemplateEmail(ctx context.Context, template string, data any, subject string, recipients ...string) error
 }
 
 //go:embed templates/*
@@ -38,7 +38,7 @@ func NewEmailService(ses wrapper.SESAPI, fromEmail string) Service {
 	return emailService{ses: ses, fromEmail: fromEmail, templates: templates}
 }
 
-func (service emailService) SendTemplateEmail(template string, data any, subject string, recipients ...string) error {
+func (service emailService) SendTemplateEmail(ctx context.Context, template string, data any, subject string, recipients ...string) error {
 	emailTemplate, found := service.templates[template]
 	if !found {
 		return fmt.Errorf("template %s not found", template)
@@ -47,7 +47,7 @@ func (service emailService) SendTemplateEmail(template string, data any, subject
 	if err != nil {
 		return err
 	}
-	_, err = service.ses.SendEmail(context.TODO(), buildEmailInput(service.fromEmail, subject, body, recipients...))
+	_, err = service.ses.SendEmail(ctx, buildEmailInput(service.fromEmail, subject, body, recipients...))
 	return err
 }
 

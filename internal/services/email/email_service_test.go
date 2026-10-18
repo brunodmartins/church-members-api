@@ -1,11 +1,13 @@
 package email
 
 import (
+	"context"
 	"errors"
+	"testing"
+
 	mock_wrapper "github.com/brunodmartins/church-members-api/platform/aws/wrapper/mock"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
-	"testing"
 )
 
 const subject = "Test Subject"
@@ -17,20 +19,21 @@ func TestEmailSender_SendEmail(t *testing.T) {
 	defer ctrl.Finish()
 	ses := mock_wrapper.NewMockSESAPI(ctrl)
 	service := NewEmailService(ses, "")
+	ctx := context.Background()
 	data := map[string]string{
 		"Title": "Test",
 		"Body":  "Body",
 	}
 	t.Run("Given a valid email template, when send it with valid data, then succeeds", func(t *testing.T) {
-		ses.EXPECT().SendEmail(gomock.Any(), gomock.Any()).Return(nil, nil)
-		assert.NoError(t, service.SendTemplateEmail(TestTemplate, data, subject, receiver1, receiver2))
+		ses.EXPECT().SendEmail(gomock.Eq(ctx), gomock.Any()).Return(nil, nil)
+		assert.NoError(t, service.SendTemplateEmail(ctx, TestTemplate, data, subject, receiver1, receiver2))
 	})
 	t.Run("Given a invalid email template, when send it with valida data, then fails", func(t *testing.T) {
-		assert.Error(t, service.SendTemplateEmail("", data, subject, receiver1, receiver2))
+		assert.Error(t, service.SendTemplateEmail(ctx, "", data, subject, receiver1, receiver2))
 	})
 	t.Run("Given a valid email template, when send it with valid data, then fails due to SES", func(t *testing.T) {
-		ses.EXPECT().SendEmail(gomock.Any(), gomock.Any()).Return(nil, errors.New("error"))
-		assert.Error(t, service.SendTemplateEmail(TestTemplate, data, subject, receiver1, receiver2))
+		ses.EXPECT().SendEmail(gomock.Eq(ctx), gomock.Any()).Return(nil, errors.New("error"))
+		assert.Error(t, service.SendTemplateEmail(ctx, TestTemplate, data, subject, receiver1, receiver2))
 	})
 }
 

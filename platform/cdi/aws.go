@@ -7,10 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/sesv2"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"github.com/spf13/viper"
 )
@@ -40,8 +39,11 @@ func provideSES() wrapper.SESAPI {
 	if viper.Get("cloud") == "LOCAL" {
 		return wrapper.NewMockSESAPI()
 	}
-	mySession := session.Must(session.NewSession())
-	return sesv2.New(mySession)
+	cfg, err := config.LoadDefaultConfig(context.TODO())
+	if err != nil {
+		panic("unable to load SDK config, " + err.Error())
+	}
+	return sesv2.NewFromConfig(cfg)
 }
 
 func provideS3() *s3.Client {

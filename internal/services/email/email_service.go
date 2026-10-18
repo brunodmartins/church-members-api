@@ -2,17 +2,19 @@ package email
 
 import (
 	"bytes"
+	"context"
 	"embed"
 	"fmt"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go/service/sesv2"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2"
+	"github.com/aws/aws-sdk-go-v2/service/sesv2/types"
 	"github.com/brunodmartins/church-members-api/platform/aws/wrapper"
 	"html/template"
 )
 
 //go:generate mockgen -source=./email_service.go -destination=./mock/email_service_mock.go
 type Service interface {
-	SendTemplateEmail(template string, data any, subject string, recipients ...string) error
+	SendTemplateEmail(ctx context.Context, template string, data any, subject string, recipients ...string) error
 }
 
 //go:embed templates/*
@@ -36,7 +38,7 @@ func NewEmailService(ses wrapper.SESAPI, fromEmail string) Service {
 	return emailService{ses: ses, fromEmail: fromEmail, templates: templates}
 }
 
-func (service emailService) SendTemplateEmail(template string, data any, subject string, recipients ...string) error {
+func (service emailService) SendTemplateEmail(ctx context.Context, template string, data any, subject string, recipients ...string) error {
 	emailTemplate, found := service.templates[template]
 	if !found {
 		return fmt.Errorf("template %s not found", template)
@@ -45,28 +47,28 @@ func (service emailService) SendTemplateEmail(template string, data any, subject
 	if err != nil {
 		return err
 	}
-	_, err = service.ses.SendEmail(buildEmailInput(service.fromEmail, subject, body, recipients...))
+	_, err = service.ses.SendEmail(ctx, buildEmailInput(service.fromEmail, subject, body, recipients...))
 	return err
 }
 
 func buildEmailInput(fromEmail string, subject string, body string, recipients ...string) *sesv2.SendEmailInput {
 	return &sesv2.SendEmailInput{
-		Content: &sesv2.EmailContent{
-			Simple: &sesv2.Message{
-				Body: &sesv2.Body{
-					Html: &sesv2.Content{
+		Content: &types.EmailContent{
+			Simple: &types.Message{
+				Body: &types.Body{
+					Html: &types.Content{
 						Charset: aws.String("ISO-8859-1"),
 						Data:    aws.String(body),
 					},
 				},
-				Subject: &sesv2.Content{
+				Subject: &types.Content{
 					Charset: aws.String("ISO-8859-1"),
 					Data:    aws.String(subject),
 				},
 			},
 		},
-		Destination: &sesv2.Destination{
-			ToAddresses: aws.StringSlice(recipients),
+		Destination: &types.Destination{
+			ToAddresses: recipients,
 		},
 		FromEmailAddress: aws.String(fromEmail),
 	}

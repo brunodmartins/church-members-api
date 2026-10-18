@@ -42,7 +42,7 @@ func (job weeklyBirthDaysJob) RunJob(ctx context.Context) error {
 		return err
 	}
 	for _, emailTO := range mapToSlice(users, getEmail) {
-		if err := job.emailService.SendTemplateEmail(email.WeeklyBirthTemplate, emailData, i18n.GetMessage(ctx, "Emails.WeeklyBirth.Title"), emailTO); err != nil {
+		if err := job.emailService.SendTemplateEmail(ctx, email.WeeklyBirthTemplate, emailData, i18n.GetMessage(ctx, "Emails.WeeklyBirth.Title"), emailTO); err != nil {
 			return err
 		}
 	}

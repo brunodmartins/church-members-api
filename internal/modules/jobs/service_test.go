@@ -65,7 +65,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		memberService.EXPECT().GetLastBirthAnniversaries(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		memberService.EXPECT().GetLastMarriageAnniversaries(gomock.Any()).Return(BuildMarriageMembers(&now), nil)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.WeeklyBirthTemplate), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
+		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Eq(email.WeeklyBirthTemplate), gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).Times(2)
 		assert.Nil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail users search", func(t *testing.T) {
@@ -78,7 +78,7 @@ func TestWeeklyBirthDaysJob_RunJob(t *testing.T) {
 		memberService.EXPECT().GetLastBirthAnniversaries(gomock.Any()).Return(BuildBirthDaysMembers(now), nil)
 		memberService.EXPECT().GetLastMarriageAnniversaries(gomock.Any()).Return(BuildMarriageMembers(&now), nil)
 		userService.EXPECT().SearchUser(gomock.Any(), gomock.Any()).Return(BuildUsers(), nil)
-		emailService.EXPECT().SendTemplateEmail(gomock.Eq(email.WeeklyBirthTemplate), gomock.Any(), gomock.Any(), gomock.Any()).Return(genericError)
+		emailService.EXPECT().SendTemplateEmail(gomock.Any(), gomock.Eq(email.WeeklyBirthTemplate), gomock.Any(), gomock.Any(), gomock.Any()).Return(genericError)
 		assert.NotNil(t, job.RunJob(buildContext()))
 	})
 	t.Run("Fail Search marriage members", func(t *testing.T) {

@@ -11,9 +11,10 @@ const (
 	WEEKLY_BIRTHDAYS JobType = iota + 1
 	DAILY_BIRTHDAYS
 	CALENDAR_BUILD
+	MEMBER_NOVELTIES
 )
 
-var jobs = []string{"WEEKLY_BIRTHDAYS", "DAILY_BIRTHDAYS", "CALENDAR_BUILD"}
+var jobs = []string{"WEEKLY_BIRTHDAYS", "DAILY_BIRTHDAYS", "CALENDAR_BUILD", "MEMBER_NOVELTIES"}
 
 func (j JobType) String() string {
 	return jobs[j-1]

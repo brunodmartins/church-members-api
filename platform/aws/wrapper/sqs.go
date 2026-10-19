@@ -18,8 +18,8 @@ type SQSAPI interface {
 
 // SQSWrapper provides a simplified interface for interacting with AWS SQS.
 type SQSWrapper interface {
-	SendMessage(messageBody []byte) error
-	ReceiveMessage(maxMessages int64) ([]*string, error)
+	SendMessage(ctx context.Context, messageBody []byte) error
+	ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error)
 }
 
 type sqsWrapper struct {
@@ -36,12 +36,12 @@ func NewSQSWrapper(client SQSAPI, queueURL string) SQSWrapper {
 }
 
 // SendMessage sends a message to the SQS queue.
-func (w *sqsWrapper) SendMessage(messageBody []byte) error {
+func (w *sqsWrapper) SendMessage(ctx context.Context, messageBody []byte) error {
 	input := &sqs.SendMessageInput{
 		QueueUrl:    aws.String(w.queueURL),
 		MessageBody: aws.String(string(messageBody)),
 	}
-	_, err := w.client.SendMessage(context.TODO(), input)
+	_, err := w.client.SendMessage(ctx, input)
 	if err != nil {
 		logrus.Errorf("Error sending message to AWS SQS %s: %v", w.queueURL, err)
 	}
@@ -49,12 +49,12 @@ func (w *sqsWrapper) SendMessage(messageBody []byte) error {
 }
 
 // ReceiveMessage retrieves messages from the SQS queue, up to the specified maximum number of messages.
-func (w *sqsWrapper) ReceiveMessage(maxMessages int64) ([]*string, error) {
+func (w *sqsWrapper) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error) {
 	input := &sqs.ReceiveMessageInput{
 		QueueUrl:            aws.String(w.queueURL),
 		MaxNumberOfMessages: int32(maxMessages),
 	}
-	output, err := w.client.ReceiveMessage(context.TODO(), input)
+	output, err := w.client.ReceiveMessage(ctx, input)
 	if err != nil {
 		logrus.Errorf("Error receiving message from AWS SQS %s: %v", w.queueURL, err)
 		return nil, err

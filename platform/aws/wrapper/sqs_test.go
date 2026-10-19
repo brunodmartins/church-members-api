@@ -21,25 +21,29 @@ func TestSQSWrapper_SendMessage(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSAPI(ctrl)
 		service := NewSQSWrapper(client, queueURL)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 
-		client.EXPECT().SendMessage(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, input *sqs.SendMessageInput, _ ...func(*sqs.Options)) (*sqs.SendMessageOutput, error) {
+		client.EXPECT().SendMessage(ctx, gomock.Any()).DoAndReturn(func(_ context.Context, input *sqs.SendMessageInput, _ ...func(*sqs.Options)) (*sqs.SendMessageOutput, error) {
 			assert.Equal(t, queueURL, *input.QueueUrl)
 			assert.Equal(t, string(messageBody), *input.MessageBody)
 			return &sqs.SendMessageOutput{}, nil
 		})
 
-		assert.NoError(t, service.SendMessage(messageBody))
+		assert.NoError(t, service.SendMessage(ctx, messageBody))
 	})
 
 	t.Run("returns send error", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSAPI(ctrl)
 		service := NewSQSWrapper(client, queueURL)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		wantErr := errors.New("send failed")
 
-		client.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil, wantErr)
+		client.EXPECT().SendMessage(ctx, gomock.Any()).Return(nil, wantErr)
 
-		assert.ErrorIs(t, service.SendMessage(messageBody), wantErr)
+		assert.ErrorIs(t, service.SendMessage(ctx, messageBody), wantErr)
 	})
 }
 
@@ -51,18 +55,20 @@ func TestSQSWrapper_ReceiveMessage(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSAPI(ctrl)
 		service := NewSQSWrapper(client, queueURL)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		output := &sqs.ReceiveMessageOutput{Messages: []types.Message{
 			{Body: aws.String("first")},
 			{Body: aws.String("second")},
 		}}
 
-		client.EXPECT().ReceiveMessage(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, input *sqs.ReceiveMessageInput, _ ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error) {
+		client.EXPECT().ReceiveMessage(ctx, gomock.Any()).DoAndReturn(func(_ context.Context, input *sqs.ReceiveMessageInput, _ ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error) {
 			assert.Equal(t, queueURL, *input.QueueUrl)
 			assert.Equal(t, int32(maxMessages), input.MaxNumberOfMessages)
 			return output, nil
 		})
 
-		messages, err := service.ReceiveMessage(maxMessages)
+		messages, err := service.ReceiveMessage(ctx, maxMessages)
 
 		assert.NoError(t, err)
 		assert.Equal(t, []*string{aws.String("first"), aws.String("second")}, messages)
@@ -72,11 +78,13 @@ func TestSQSWrapper_ReceiveMessage(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSAPI(ctrl)
 		service := NewSQSWrapper(client, queueURL)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
 		wantErr := errors.New("receive failed")
 
-		client.EXPECT().ReceiveMessage(gomock.Any(), gomock.Any()).Return(nil, wantErr)
+		client.EXPECT().ReceiveMessage(ctx, gomock.Any()).Return(nil, wantErr)
 
-		messages, err := service.ReceiveMessage(maxMessages)
+		messages, err := service.ReceiveMessage(ctx, maxMessages)
 
 		assert.Nil(t, messages)
 		assert.ErrorIs(t, err, wantErr)

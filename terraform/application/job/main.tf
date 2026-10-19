@@ -50,6 +50,12 @@ resource "aws_cloudwatch_event_rule" "daily_report" {
   schedule_expression = "cron(0 13 ? * * *)"
 }
 
+resource "aws_cloudwatch_event_rule" "daily_members_novelties" {
+  name                = "daily-members-novelties-consume"
+  description         = "Daily members novelties consumer"
+  schedule_expression = "cron(0 13 ? * * *)"
+}
+
 
 resource "aws_cloudwatch_event_target" "weekly_lambda" {
   arn   = aws_lambda_function.lambda_job.arn
@@ -69,6 +75,23 @@ resource "aws_cloudwatch_event_target" "daily_lambda" {
         "name": "DAILY_BIRTHDAYS"
     }
     DOC
+}
+
+resource "aws_cloudwatch_event_target" "daily_members_novelties_lambda" {
+  arn   = aws_lambda_function.lambda_job.arn
+  rule  = aws_cloudwatch_event_rule.daily_members_novelties.name
+  input = <<DOC
+    {
+        "name": "MEMBER_NOVELTIES"
+    }
+    DOC
+}
+
+resource "aws_lambda_permission" "cloudwatch-daily-members-novelties" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_job.arn
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_members_novelties.arn
 }
 
 resource "aws_lambda_permission" "cloudwatch-daily" {

@@ -1,6 +1,7 @@
 package queue
 
 import (
+	"context"
 	"errors"
 	"testing"
 
@@ -14,12 +15,13 @@ func TestQueue_ReceiveMessage(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSWrapper(ctrl)
 		service := New(client)
+		ctx := context.Background()
 		maxMessages := int64(5)
 		messages := []*string{stringPointer("first"), stringPointer("second")}
 
-		client.EXPECT().ReceiveMessage(maxMessages).Return(messages, nil)
+		client.EXPECT().ReceiveMessage(ctx, maxMessages).Return(messages, nil)
 
-		actual, err := service.ReceiveMessage(maxMessages)
+		actual, err := service.ReceiveMessage(ctx, maxMessages)
 
 		assert.NoError(t, err)
 		assert.Equal(t, messages, actual)
@@ -29,11 +31,12 @@ func TestQueue_ReceiveMessage(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSWrapper(ctrl)
 		service := New(client)
+		ctx := context.Background()
 		wantErr := errors.New("receive failed")
 
-		client.EXPECT().ReceiveMessage(int64(1)).Return(nil, wantErr)
+		client.EXPECT().ReceiveMessage(ctx, int64(1)).Return(nil, wantErr)
 
-		actual, err := service.ReceiveMessage(1)
+		actual, err := service.ReceiveMessage(ctx, 1)
 
 		assert.Nil(t, actual)
 		assert.ErrorIs(t, err, wantErr)
@@ -45,23 +48,25 @@ func TestQueue_SendMessage(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSWrapper(ctrl)
 		service := New(client)
+		ctx := context.Background()
 		message := []byte("member updated")
 
-		client.EXPECT().SendMessage(message).Return(nil)
+		client.EXPECT().SendMessage(ctx, message).Return(nil)
 
-		assert.NoError(t, service.SendMessage(message))
+		assert.NoError(t, service.SendMessage(ctx, message))
 	})
 
 	t.Run("returns send error", func(t *testing.T) {
 		ctrl := gomock.NewController(t)
 		client := mock_wrapper.NewMockSQSWrapper(ctrl)
 		service := New(client)
+		ctx := context.Background()
 		message := []byte("member updated")
 		wantErr := errors.New("send failed")
 
-		client.EXPECT().SendMessage(message).Return(wantErr)
+		client.EXPECT().SendMessage(ctx, message).Return(wantErr)
 
-		assert.ErrorIs(t, service.SendMessage(message), wantErr)
+		assert.ErrorIs(t, service.SendMessage(ctx, message), wantErr)
 	})
 }
 

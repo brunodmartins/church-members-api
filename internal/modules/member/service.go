@@ -46,16 +46,15 @@ func NewMemberService(r Repository, q queue.Service) Service {
 }
 
 // publish is best-effort: the change is already persisted, so failures are only logged.
-func (s *memberService) publish(memberID string, eventType EventType) {
+func (s *memberService) publish(ctx context.Context, memberID string, eventType EventType) {
 	body, err := json.Marshal(Event{MemberID: memberID, EventType: eventType})
 	if err == nil {
-		err = s.queue.SendMessage(body)
+		err = s.queue.SendMessage(ctx, body)
 	}
 	if err != nil {
 		logrus.WithError(err).Errorf("Failed to publish %s event for member %s", eventType, memberID)
 	}
 }
-
 
 func (s *memberService) SearchMembers(ctx context.Context, querySpecification wrapper.QuerySpecification, postSpecification ...Specification) ([]*domain.Member, error) {
 	members, err := s.repo.FindAll(ctx, querySpecification)
@@ -90,7 +89,7 @@ func (s *memberService) SaveMember(ctx context.Context, member *domain.Member) (
 	member.MembershipStartDate = time.Now()
 	err := s.repo.Insert(ctx, member)
 	if err == nil {
-		s.publish(member.ID, EventMemberCreated)
+		s.publish(ctx, member.ID, EventMemberCreated)
 	}
 	return member.ID, err
 }
@@ -105,7 +104,7 @@ func (s *memberService) RetireMembership(ctx context.Context, id string, reason 
 	member.MembershipEndReason = reason
 	err = s.repo.RetireMembership(ctx, member)
 	if err == nil {
-		s.publish(member.ID, EventMemberRetired)
+		s.publish(ctx, member.ID, EventMemberRetired)
 	}
 	return err
 }
@@ -119,7 +118,7 @@ func (s *memberService) UpdateContact(ctx context.Context, id string, contact do
 	if err = s.repo.UpdateContact(ctx, member); err != nil {
 		return err
 	}
-	s.publish(member.ID, EventMemberUpdated)
+	s.publish(ctx, member.ID, EventMemberUpdated)
 	return nil
 }
 
@@ -132,7 +131,7 @@ func (s *memberService) UpdateAddress(ctx context.Context, id string, address do
 	if err = s.repo.UpdateAddress(ctx, member); err != nil {
 		return err
 	}
-	s.publish(member.ID, EventMemberUpdated)
+	s.publish(ctx, member.ID, EventMemberUpdated)
 	return nil
 }
 
@@ -152,7 +151,7 @@ func (s *memberService) UpdatePerson(ctx context.Context, id string, person doma
 	if err = s.repo.UpdatePerson(ctx, member); err != nil {
 		return err
 	}
-	s.publish(member.ID, EventMemberUpdated)
+	s.publish(ctx, member.ID, EventMemberUpdated)
 	return nil
 }
 
@@ -165,7 +164,7 @@ func (s *memberService) UpdateObservation(ctx context.Context, id string, observ
 	if err = s.repo.UpdateObservation(ctx, member); err != nil {
 		return err
 	}
-	s.publish(member.ID, EventMemberUpdated)
+	s.publish(ctx, member.ID, EventMemberUpdated)
 	return nil
 }
 
@@ -181,7 +180,7 @@ func (s *memberService) UpdateBaptism(ctx context.Context, id string, religion d
 	if err = s.repo.UpdateReligion(ctx, member); err != nil {
 		return err
 	}
-	s.publish(member.ID, EventMemberUpdated)
+	s.publish(ctx, member.ID, EventMemberUpdated)
 	return nil
 }
 

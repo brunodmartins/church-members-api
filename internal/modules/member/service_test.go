@@ -22,7 +22,7 @@ func TestListAllMembers(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 	spec := wrapper.QuerySpecification(nil)
 	t.Run("Success", func(t *testing.T) {
@@ -50,7 +50,7 @@ func TestFindMember(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 
 	id := domain.NewID()
@@ -77,7 +77,7 @@ func TestSaveMember(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 
 	t.Run("Success", func(t *testing.T) {
@@ -106,7 +106,7 @@ func TestChangeStatus(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	reason := "test"
@@ -134,7 +134,7 @@ func TestMemberService_UpdateContact(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 	t.Run("Successfully update the contact information", func(t *testing.T) {
 		id := domain.NewID()
@@ -172,7 +172,7 @@ func TestMemberService_UpdateAddress(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	churchMember := buildMember(id)
@@ -207,7 +207,7 @@ func TestMemberService_UpdatePerson(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	churchMember := buildMember(id)
@@ -242,7 +242,7 @@ func TestMemberService_UpdateObservation(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 	id := domain.NewID()
 	churchMember := buildMember(id)
@@ -270,7 +270,7 @@ func TestMemberService_GetLastBirthAnniversaries(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 
 	t.Run("Successfully get last birthday members", func(t *testing.T) {
@@ -310,7 +310,7 @@ func TestMemberService_GetLastMarriageAnniversaries(t *testing.T) {
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
-	q.EXPECT().SendMessage(gomock.Any()).Return(nil).AnyTimes()
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 	service := member.NewMemberService(repo, q)
 
 	t.Run("Successfully get last marriage members", func(t *testing.T) {

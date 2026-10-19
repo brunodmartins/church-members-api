@@ -106,30 +106,30 @@ func (m *MockSQSWrapper) EXPECT() *MockSQSWrapperMockRecorder {
 }
 
 // ReceiveMessage mocks base method.
-func (m *MockSQSWrapper) ReceiveMessage(maxMessages int64) ([]*string, error) {
+func (m *MockSQSWrapper) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReceiveMessage", maxMessages)
+	ret := m.ctrl.Call(m, "ReceiveMessage", ctx, maxMessages)
 	ret0, _ := ret[0].([]*string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReceiveMessage indicates an expected call of ReceiveMessage.
-func (mr *MockSQSWrapperMockRecorder) ReceiveMessage(maxMessages any) *gomock.Call {
+func (mr *MockSQSWrapperMockRecorder) ReceiveMessage(ctx, maxMessages any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessage", reflect.TypeOf((*MockSQSWrapper)(nil).ReceiveMessage), maxMessages)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessage", reflect.TypeOf((*MockSQSWrapper)(nil).ReceiveMessage), ctx, maxMessages)
 }
 
 // SendMessage mocks base method.
-func (m *MockSQSWrapper) SendMessage(messageBody []byte) error {
+func (m *MockSQSWrapper) SendMessage(ctx context.Context, messageBody []byte) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendMessage", messageBody)
+	ret := m.ctrl.Call(m, "SendMessage", ctx, messageBody)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SendMessage indicates an expected call of SendMessage.
-func (mr *MockSQSWrapperMockRecorder) SendMessage(messageBody any) *gomock.Call {
+func (mr *MockSQSWrapperMockRecorder) SendMessage(ctx, messageBody any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockSQSWrapper)(nil).SendMessage), messageBody)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockSQSWrapper)(nil).SendMessage), ctx, messageBody)
 }

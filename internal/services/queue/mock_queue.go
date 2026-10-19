@@ -10,6 +10,7 @@
 package queue
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "go.uber.org/mock/gomock"
@@ -40,30 +41,30 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // ReceiveMessage mocks base method.
-func (m *MockService) ReceiveMessage(maxMessages int64) ([]*string, error) {
+func (m *MockService) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReceiveMessage", maxMessages)
+	ret := m.ctrl.Call(m, "ReceiveMessage", ctx, maxMessages)
 	ret0, _ := ret[0].([]*string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ReceiveMessage indicates an expected call of ReceiveMessage.
-func (mr *MockServiceMockRecorder) ReceiveMessage(maxMessages any) *gomock.Call {
+func (mr *MockServiceMockRecorder) ReceiveMessage(ctx, maxMessages any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessage", reflect.TypeOf((*MockService)(nil).ReceiveMessage), maxMessages)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessage", reflect.TypeOf((*MockService)(nil).ReceiveMessage), ctx, maxMessages)
 }
 
 // SendMessage mocks base method.
-func (m *MockService) SendMessage(messageBody []byte) error {
+func (m *MockService) SendMessage(ctx context.Context, messageBody []byte) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SendMessage", messageBody)
+	ret := m.ctrl.Call(m, "SendMessage", ctx, messageBody)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SendMessage indicates an expected call of SendMessage.
-func (mr *MockServiceMockRecorder) SendMessage(messageBody any) *gomock.Call {
+func (mr *MockServiceMockRecorder) SendMessage(ctx, messageBody any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockService)(nil).SendMessage), messageBody)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendMessage", reflect.TypeOf((*MockService)(nil).SendMessage), ctx, messageBody)
 }

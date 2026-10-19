@@ -35,7 +35,7 @@ func TestMemberNoveltiesJob_RunJob(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			queueService := queue.NewMockService(ctrl)
-			queueService.EXPECT().ReceiveMessage(ctx, int64(20)).Return(tt.messages, tt.err)
+			queueService.EXPECT().ReceiveMessage(ctx, int64(10)).Return(tt.messages, tt.err)
 
 			gotErr := NewMemberNoveltiesJob(queueService).RunJob(ctx)
 			if tt.err != nil {

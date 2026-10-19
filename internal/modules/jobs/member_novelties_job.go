@@ -20,7 +20,7 @@ func NewMemberNoveltiesJob(queue queue.Service) Job {
 }
 
 func (m *memberNoveltiesJob) RunJob(ctx context.Context) error {
-	messages, err := m.queue.ReceiveMessage(ctx, 20)
+	messages, err := m.queue.ReceiveMessage(ctx, 10)
 	if err != nil {
 		logrus.Errorf("Error processing queue messages: %v", err)
 		return err

@@ -62,6 +62,25 @@ module "api" {
   gateway_name = var.gateway_name
 }
 
+module "job" {
+  source             = "../../application/job"
+  lambda_job_name    = var.lambda_job_name
+  lambda_role_arn    = module.iam_roles.lambda_role_arn
+  reports_topic_name = "${var.lambda_job_name}-weekly-report-topic"
+  image_uri          = "${data.aws_ecr_repository.repository.repository_url}@${data.aws_ecr_image.lambda_image.id}"
+  env_var = {
+    "SERVER" : "AWS",
+    "APPLICATION" : "JOB"
+    "EMAIL_SENDER" : var.email_sender,
+    "TABLE_MEMBER" : module.dynamodb_tables.member_table_name,
+    "TABLE_USER" : module.dynamodb_tables.user_table_name,
+    "TABLE_CHURCH" : module.dynamodb_tables.church_table_name,
+    "TABLE_PARTICIPANT" : module.dynamodb_tables.participant_table_name,
+    "STORAGE" : module.s3_bucket.bucket_name,
+    "QUEUE_URL" : module.sqs_queue.queue_url,
+  }
+}
+
 output "gateway_d" {
   value = module.api.gateway_id
 }

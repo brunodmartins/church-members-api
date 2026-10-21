@@ -40,19 +40,33 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
-// ReceiveMessage mocks base method.
-func (m *MockService) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error) {
+// DeleteMessage mocks base method.
+func (m *MockService) DeleteMessage(ctx context.Context, receiptHandle string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReceiveMessage", ctx, maxMessages)
-	ret0, _ := ret[0].([]*string)
+	ret := m.ctrl.Call(m, "DeleteMessage", ctx, receiptHandle)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteMessage indicates an expected call of DeleteMessage.
+func (mr *MockServiceMockRecorder) DeleteMessage(ctx, receiptHandle any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteMessage", reflect.TypeOf((*MockService)(nil).DeleteMessage), ctx, receiptHandle)
+}
+
+// ReceiveMessages mocks base method.
+func (m *MockService) ReceiveMessages(ctx context.Context, maxMessages int64) ([]Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReceiveMessages", ctx, maxMessages)
+	ret0, _ := ret[0].([]Message)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReceiveMessage indicates an expected call of ReceiveMessage.
-func (mr *MockServiceMockRecorder) ReceiveMessage(ctx, maxMessages any) *gomock.Call {
+// ReceiveMessages indicates an expected call of ReceiveMessages.
+func (mr *MockServiceMockRecorder) ReceiveMessages(ctx, maxMessages any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessage", reflect.TypeOf((*MockService)(nil).ReceiveMessage), ctx, maxMessages)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessages", reflect.TypeOf((*MockService)(nil).ReceiveMessages), ctx, maxMessages)
 }
 
 // SendMessage mocks base method.

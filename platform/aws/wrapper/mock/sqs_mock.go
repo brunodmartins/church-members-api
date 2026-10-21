@@ -14,6 +14,7 @@ import (
 	reflect "reflect"
 
 	sqs "github.com/aws/aws-sdk-go-v2/service/sqs"
+	types "github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -39,6 +40,26 @@ func NewMockSQSAPI(ctrl *gomock.Controller) *MockSQSAPI {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockSQSAPI) EXPECT() *MockSQSAPIMockRecorder {
 	return m.recorder
+}
+
+// DeleteMessage mocks base method.
+func (m *MockSQSAPI) DeleteMessage(arg0 context.Context, arg1 *sqs.DeleteMessageInput, arg2 ...func(*sqs.Options)) (*sqs.DeleteMessageOutput, error) {
+	m.ctrl.T.Helper()
+	varargs := []any{arg0, arg1}
+	for _, a := range arg2 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "DeleteMessage", varargs...)
+	ret0, _ := ret[0].(*sqs.DeleteMessageOutput)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DeleteMessage indicates an expected call of DeleteMessage.
+func (mr *MockSQSAPIMockRecorder) DeleteMessage(arg0, arg1 any, arg2 ...any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]any{arg0, arg1}, arg2...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteMessage", reflect.TypeOf((*MockSQSAPI)(nil).DeleteMessage), varargs...)
 }
 
 // ReceiveMessage mocks base method.
@@ -105,19 +126,33 @@ func (m *MockSQSWrapper) EXPECT() *MockSQSWrapperMockRecorder {
 	return m.recorder
 }
 
-// ReceiveMessage mocks base method.
-func (m *MockSQSWrapper) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error) {
+// DeleteMessage mocks base method.
+func (m *MockSQSWrapper) DeleteMessage(ctx context.Context, receiptHandle string) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReceiveMessage", ctx, maxMessages)
-	ret0, _ := ret[0].([]*string)
+	ret := m.ctrl.Call(m, "DeleteMessage", ctx, receiptHandle)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteMessage indicates an expected call of DeleteMessage.
+func (mr *MockSQSWrapperMockRecorder) DeleteMessage(ctx, receiptHandle any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteMessage", reflect.TypeOf((*MockSQSWrapper)(nil).DeleteMessage), ctx, receiptHandle)
+}
+
+// ReceiveMessages mocks base method.
+func (m *MockSQSWrapper) ReceiveMessages(ctx context.Context, maxMessages int64) ([]types.Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReceiveMessages", ctx, maxMessages)
+	ret0, _ := ret[0].([]types.Message)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ReceiveMessage indicates an expected call of ReceiveMessage.
-func (mr *MockSQSWrapperMockRecorder) ReceiveMessage(ctx, maxMessages any) *gomock.Call {
+// ReceiveMessages indicates an expected call of ReceiveMessages.
+func (mr *MockSQSWrapperMockRecorder) ReceiveMessages(ctx, maxMessages any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessage", reflect.TypeOf((*MockSQSWrapper)(nil).ReceiveMessage), ctx, maxMessages)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReceiveMessages", reflect.TypeOf((*MockSQSWrapper)(nil).ReceiveMessages), ctx, maxMessages)
 }
 
 // SendMessage mocks base method.

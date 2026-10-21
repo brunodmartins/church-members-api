@@ -30,7 +30,7 @@ func (wrapper *churchWrapperJob) RunJob(ctx context.Context) error {
 		return err
 	}
 	for _, church := range churches {
-		err := wrapper.job.RunJob(wrapper.buildContext(ctx, church))
+		err := wrapper.job.RunJob(buildChurchContext(ctx, church))
 		if err != nil {
 			logrus.WithField("church_id", church.ID).Error("Job failed.", err)
 		} else {
@@ -41,7 +41,7 @@ func (wrapper *churchWrapperJob) RunJob(ctx context.Context) error {
 	return nil
 }
 
-func (wrapper *churchWrapperJob) buildContext(ctx context.Context, church *domain.Church) context.Context {
+func buildChurchContext(ctx context.Context, church *domain.Church) context.Context {
 	ctx = context.WithValue(ctx, "church", church)
 	return context.WithValue(ctx, "i18n", i18n.GetLocalize(language.MustParse(church.Language)))
 }

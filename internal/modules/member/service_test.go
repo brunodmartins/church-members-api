@@ -2,6 +2,7 @@ package member_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"testing"
 	"time"
@@ -101,6 +102,31 @@ func TestSaveMember(t *testing.T) {
 	})
 }
 
+func TestSaveMember_PublishesChurchScopedEvent(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	repo := mock_member.NewMockRepository(ctrl)
+	q := queue.NewMockService(ctrl)
+	service := member.NewMemberService(repo, q)
+	memberToSave := buildMember("")
+
+	repo.EXPECT().Insert(gomock.Any(), memberToSave).DoAndReturn(func(_ context.Context, savedMember *domain.Member) error {
+		savedMember.ID = "member-id"
+		return nil
+	})
+	q.EXPECT().SendMessage(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, body []byte) error {
+		var event member.Event
+		assert.NoError(t, json.Unmarshal(body, &event))
+		assert.Equal(t, "church_id_test", event.ChurchID)
+		assert.Equal(t, "member-id", event.MemberID)
+		assert.Equal(t, member.EventMemberCreated, event.EventType)
+		return nil
+	})
+
+	_, err := service.SaveMember(BuildContext(), memberToSave)
+
+	assert.NoError(t, err)
+}
+
 func TestChangeStatus(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -130,7 +156,7 @@ func TestChangeStatus(t *testing.T) {
 
 func TestMemberService_UpdateContact(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	ctx := context.TODO()
+	ctx := BuildContext()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
@@ -168,7 +194,7 @@ func TestMemberService_UpdateContact(t *testing.T) {
 
 func TestMemberService_UpdateAddress(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	ctx := context.TODO()
+	ctx := BuildContext()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
@@ -203,7 +229,7 @@ func TestMemberService_UpdateAddress(t *testing.T) {
 
 func TestMemberService_UpdatePerson(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	ctx := context.TODO()
+	ctx := BuildContext()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
@@ -238,7 +264,7 @@ func TestMemberService_UpdatePerson(t *testing.T) {
 
 func TestMemberService_UpdateObservation(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	ctx := context.TODO()
+	ctx := BuildContext()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
@@ -266,7 +292,7 @@ func TestMemberService_UpdateObservation(t *testing.T) {
 
 func TestMemberService_GetLastBirthAnniversaries(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	ctx := context.TODO()
+	ctx := BuildContext()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)
@@ -306,7 +332,7 @@ func TestMemberService_GetLastBirthAnniversaries(t *testing.T) {
 
 func TestMemberService_GetLastMarriageAnniversaries(t *testing.T) {
 	ctrl := gomock.NewController(t)
-	ctx := context.TODO()
+	ctx := BuildContext()
 	defer ctrl.Finish()
 	repo := mock_member.NewMockRepository(ctrl)
 	q := queue.NewMockService(ctrl)

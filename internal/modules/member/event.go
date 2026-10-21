@@ -9,6 +9,7 @@ const (
 )
 
 type Event struct {
+	ChurchID  string    `json:"churchId"`
 	MemberID  string    `json:"memberId"`
 	EventType EventType `json:"eventType"`
 }

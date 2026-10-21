@@ -47,7 +47,7 @@ func TestSQSWrapper_SendMessage(t *testing.T) {
 	})
 }
 
-func TestSQSWrapper_ReceiveMessage(t *testing.T) {
+func TestSQSWrapper_ReceiveMessages(t *testing.T) {
 	const queueURL = "https://sqs.us-east-1.amazonaws.com/123456789012/members"
 	maxMessages := int64(3)
 
@@ -58,8 +58,8 @@ func TestSQSWrapper_ReceiveMessage(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		output := &sqs.ReceiveMessageOutput{Messages: []types.Message{
-			{Body: aws.String("first")},
-			{Body: aws.String("second")},
+			{Body: aws.String("first"), ReceiptHandle: aws.String("first-receipt")},
+			{Body: aws.String("second"), ReceiptHandle: aws.String("second-receipt")},
 		}}
 
 		client.EXPECT().ReceiveMessage(ctx, gomock.Any()).DoAndReturn(func(_ context.Context, input *sqs.ReceiveMessageInput, _ ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error) {
@@ -68,10 +68,10 @@ func TestSQSWrapper_ReceiveMessage(t *testing.T) {
 			return output, nil
 		})
 
-		messages, err := service.ReceiveMessage(ctx, maxMessages)
+		messages, err := service.ReceiveMessages(ctx, maxMessages)
 
 		assert.NoError(t, err)
-		assert.Equal(t, []*string{aws.String("first"), aws.String("second")}, messages)
+		assert.Equal(t, output.Messages, messages)
 	})
 
 	t.Run("returns receive error", func(t *testing.T) {
@@ -84,9 +84,25 @@ func TestSQSWrapper_ReceiveMessage(t *testing.T) {
 
 		client.EXPECT().ReceiveMessage(ctx, gomock.Any()).Return(nil, wantErr)
 
-		messages, err := service.ReceiveMessage(ctx, maxMessages)
+		messages, err := service.ReceiveMessages(ctx, maxMessages)
 
 		assert.Nil(t, messages)
 		assert.ErrorIs(t, err, wantErr)
 	})
+}
+
+func TestSQSWrapper_DeleteMessage(t *testing.T) {
+	const queueURL = "https://sqs.us-east-1.amazonaws.com/123456789012/members"
+	ctrl := gomock.NewController(t)
+	client := mock_wrapper.NewMockSQSAPI(ctrl)
+	service := NewSQSWrapper(client, queueURL)
+	ctx := context.Background()
+
+	client.EXPECT().DeleteMessage(ctx, gomock.Any()).DoAndReturn(func(_ context.Context, input *sqs.DeleteMessageInput, _ ...func(*sqs.Options)) (*sqs.DeleteMessageOutput, error) {
+		assert.Equal(t, queueURL, aws.ToString(input.QueueUrl))
+		assert.Equal(t, "receipt-handle", aws.ToString(input.ReceiptHandle))
+		return &sqs.DeleteMessageOutput{}, nil
+	})
+
+	assert.NoError(t, service.DeleteMessage(ctx, "receipt-handle"))
 }

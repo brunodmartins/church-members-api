@@ -3,6 +3,7 @@ package jobs
 import (
 	"context"
 	"encoding/json"
+	"errors"
 
 	"github.com/brunodmartins/church-members-api/internal/modules/member"
 	"github.com/brunodmartins/church-members-api/internal/services/queue"
@@ -20,19 +21,31 @@ func NewMemberNoveltiesJob(queue queue.Service) Job {
 }
 
 func (m *memberNoveltiesJob) RunJob(ctx context.Context) error {
-	messages, err := m.queue.ReceiveMessage(ctx, 10)
+	messages, err := m.queue.ReceiveMessages(ctx, 10)
 	if err != nil {
 		logrus.Errorf("Error processing queue messages: %v", err)
 		return err
 	}
+
+	var processingErrors []error
 	for _, message := range messages {
 		var event member.Event
-		err := json.Unmarshal([]byte(*message), &event)
-		if err != nil {
+		if err := json.Unmarshal([]byte(message.Body), &event); err != nil {
 			logrus.Errorf("Error unmarshalling message: %v", err)
 			continue
 		}
 		logrus.Infof("Processed event: %+v", event)
+		if err := m.deleteMessage(ctx, message); err != nil {
+			processingErrors = append(processingErrors, err)
+		}
+	}
+	return errors.Join(processingErrors...)
+}
+
+func (m *memberNoveltiesJob) deleteMessage(ctx context.Context, message queue.Message) error {
+	if err := m.queue.DeleteMessage(ctx, message.ReceiptHandle); err != nil {
+		logrus.WithError(err).Error("Error deleting queue message")
+		return err
 	}
 	return nil
 }

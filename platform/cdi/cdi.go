@@ -39,6 +39,10 @@ func ProvideReportHandler() *api.ReportHandler {
 	return api.NewReportHandler(provideReportGenerator())
 }
 
+func ProvideReportService() report.Service {
+	return provideReportGenerator()
+}
+
 func ProvideAuthHandler() *api.AuthHandler {
 	return api.NewAuthHandler(provideAuthService())
 }

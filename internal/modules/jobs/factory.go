@@ -17,7 +17,7 @@ func BuildJob(jobType JobType) Job {
 		job := NewCalendarJob(cdi.ProvideCalendarStorage(), memberService)
 		return newChurchWrapperJob(churchService, job)
 	case MEMBER_NOVELTIES:
-		job := NewMemberNoveltiesJob(cdi.ProvideQueueService())
+		job := NewMemberNoveltiesJob(cdi.ProvideQueueService(), cdi.ProvideReportService())
 		return newChurchWrapperJob(churchService, job)
 	}
 

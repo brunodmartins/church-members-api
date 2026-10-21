@@ -13,3 +13,8 @@ variable "image_uri" {
 variable "env_var" {
   type = map(string)
 }
+
+variable "reports_topic_name" {
+  type    = string
+  default = "weekly-report-topic"
+}

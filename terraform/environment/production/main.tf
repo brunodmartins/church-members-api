@@ -79,3 +79,9 @@ module "job" {
     "QUEUE_URL" : module.sqs_queue.queue_url,
   }
 }
+
+module "job_schedule" {
+  source          = "../../application/job_schedule"
+  lambda_job_arn  = module.job.lambda_job_arn
+  lambda_job_name = module.job.lambda_job_name
+}

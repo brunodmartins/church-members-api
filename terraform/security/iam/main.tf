@@ -37,6 +37,7 @@ resource "aws_iam_policy" "church_members_api_policy" {
         Action = [
           "sqs:SendMessage",
           "sqs:ReceiveMessage",
+          "sqs:Deletemessage"
         ]
         Resource = var.queue_arn
       },

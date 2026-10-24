@@ -47,7 +47,11 @@ func NewMemberService(r Repository, q queue.Service) Service {
 
 // publish is best-effort: the change is already persisted, so failures are only logged.
 func (s *memberService) publish(ctx context.Context, memberID string, eventType EventType) {
-	body, err := json.Marshal(Event{MemberID: memberID, EventType: eventType})
+	body, err := json.Marshal(Event{
+		ChurchID:  domain.GetChurchID(ctx),
+		MemberID:  memberID,
+		EventType: eventType,
+	})
 	if err == nil {
 		err = s.queue.SendMessage(ctx, body)
 	}

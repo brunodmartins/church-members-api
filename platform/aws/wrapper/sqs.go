@@ -5,6 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
+	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,12 +15,14 @@ import (
 type SQSAPI interface {
 	SendMessage(context.Context, *sqs.SendMessageInput, ...func(*sqs.Options)) (*sqs.SendMessageOutput, error)
 	ReceiveMessage(context.Context, *sqs.ReceiveMessageInput, ...func(*sqs.Options)) (*sqs.ReceiveMessageOutput, error)
+	DeleteMessage(context.Context, *sqs.DeleteMessageInput, ...func(*sqs.Options)) (*sqs.DeleteMessageOutput, error)
 }
 
 // SQSWrapper provides a simplified interface for interacting with AWS SQS.
 type SQSWrapper interface {
 	SendMessage(ctx context.Context, messageBody []byte) error
-	ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error)
+	ReceiveMessages(ctx context.Context, maxMessages int64) ([]types.Message, error)
+	DeleteMessage(ctx context.Context, receiptHandle string) error
 }
 
 type sqsWrapper struct {
@@ -48,8 +51,8 @@ func (w *sqsWrapper) SendMessage(ctx context.Context, messageBody []byte) error 
 	return err
 }
 
-// ReceiveMessage retrieves messages from the SQS queue, up to the specified maximum number of messages.
-func (w *sqsWrapper) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*string, error) {
+// ReceiveMessages retrieves messages from the SQS queue, up to the specified maximum number of messages.
+func (w *sqsWrapper) ReceiveMessages(ctx context.Context, maxMessages int64) ([]types.Message, error) {
 	input := &sqs.ReceiveMessageInput{
 		QueueUrl:            aws.String(w.queueURL),
 		MaxNumberOfMessages: int32(maxMessages),
@@ -60,9 +63,17 @@ func (w *sqsWrapper) ReceiveMessage(ctx context.Context, maxMessages int64) ([]*
 		return nil, err
 	}
 	logrus.Infof("Received %d messages from AWS SQS %s", len(output.Messages), w.queueURL)
-	messages := make([]*string, len(output.Messages))
-	for i, msg := range output.Messages {
-		messages[i] = msg.Body
+	return output.Messages, nil
+}
+
+// DeleteMessage removes a successfully processed message from the SQS queue.
+func (w *sqsWrapper) DeleteMessage(ctx context.Context, receiptHandle string) error {
+	_, err := w.client.DeleteMessage(ctx, &sqs.DeleteMessageInput{
+		QueueUrl:      aws.String(w.queueURL),
+		ReceiptHandle: aws.String(receiptHandle),
+	})
+	if err != nil {
+		logrus.Errorf("Error deleting message from AWS SQS %s: %v", w.queueURL, err)
 	}
-	return messages, nil
+	return err
 }

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"slices"
 	"strings"
 
 	apierrors "github.com/brunodmartins/church-members-api/platform/infra/errors"
@@ -70,6 +71,10 @@ func authorizeRoute(claim *security.Claim, route, method string) bool {
 
 	if claim == nil || len(claim.Roles) == 0 {
 		return false
+	}
+
+	if slices.Contains(claim.Roles, "admin") {
+		return true
 	}
 
 	for _, need := range requiredRoles {

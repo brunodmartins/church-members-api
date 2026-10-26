@@ -14,6 +14,10 @@ output "participant_table_name" {
   value = aws_dynamodb_table.participant.name
 }
 
+output "student_table_name" {
+  value = aws_dynamodb_table.student.name
+}
+
 output "tables_arn" {
   value = [
     aws_dynamodb_table.member_v2.arn,
@@ -23,6 +27,7 @@ output "tables_arn" {
     aws_dynamodb_table.users_v2.arn,
     aws_dynamodb_table.church_table.arn,
     aws_dynamodb_table.participant.arn,
-    "${aws_dynamodb_table.participant.arn}/index/nameIndex"
+    "${aws_dynamodb_table.participant.arn}/index/nameIndex",
+    aws_dynamodb_table.student.arn
   ]
 }

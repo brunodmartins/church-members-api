@@ -15,6 +15,9 @@ variable "participant_table_name" {
   type = string
 }
 
+variable "student_table_name" {
+  type = string
+}
 
 variable "bucket_name" {
   type = string

@@ -156,6 +156,23 @@ definitions:
                 x-go-name: Observation
         type: object
         x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
+    CreateStudentRequest:
+        description: CreateStudentRequest is the request for creating a student.
+        properties:
+            gender:
+                type: string
+                x-go-name: Gender
+            memberId:
+                type: string
+                x-go-name: MemberID
+            name:
+                type: string
+                x-go-name: Name
+            participantId:
+                type: string
+                x-go-name: ParticipantID
+        type: object
+        x-go-package: github.com/brunodmartins/church-members-api/internal/constants/dto
     CreatePersonRequest:
         description: CreatePersonRequest for HTTP calls to post a person
         properties:
@@ -936,6 +953,30 @@ paths:
             security:
                 - token: []
             summary: Create member
+    /students:
+        post:
+            description: Registers a new student or derives one from an existing member or participant.
+            operationId: postStudent
+            parameters:
+                - in: body
+                  name: student
+                  required: true
+                  schema:
+                    $ref: '#/definitions/CreateStudentRequest'
+            produces:
+                - application/json
+            responses:
+                "201":
+                    description: Student registered
+                    schema:
+                        $ref: '#/definitions/CreateMemberResponse'
+                "400":
+                    description: Invalid request
+                    schema:
+                        $ref: '#/definitions/ErrorResponse'
+            security:
+                - token: []
+            summary: Create student
     /members/{id}:
         delete:
             description: Retire a member from the church

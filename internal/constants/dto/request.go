@@ -28,6 +28,29 @@ type CreateMemberRequest struct {
 	Religion               CreateReligionRequest `json:"religion" validate:"required"`
 }
 
+// CreateStudentRequest is the request for creating a student.
+// swagger:model CreateStudentRequest
+type CreateStudentRequest struct {
+	Name          string `json:"name" validate:"required_without_all=MemberID ParticipantID"`
+	Gender        string `json:"gender" validate:"required_without_all=MemberID ParticipantID"`
+	MemberID      string `json:"memberId" validate:"omitempty,uuid4,excluded_with=ParticipantID"`
+	ParticipantID string `json:"participantId" validate:"omitempty,uuid4,excluded_with=MemberID"`
+}
+
+func (request CreateStudentRequest) ToStudent() *domain.Student {
+	student := &domain.Student{
+		Name:   request.Name,
+		Gender: request.Gender,
+	}
+	if request.MemberID != "" {
+		student.Member = &domain.Member{ID: request.MemberID}
+	}
+	if request.ParticipantID != "" {
+		student.Participant = &domain.Participant{ID: request.ParticipantID}
+	}
+	return student
+}
+
 func (dto CreateMemberRequest) ToMember() *domain.Member {
 	return &domain.Member{
 		OldChurch:              dto.OldChurch,

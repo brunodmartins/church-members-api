@@ -212,6 +212,50 @@ func (item *MemberItem) hasAddress() bool {
 	return false
 }
 
+// StudentItem is the DynamoDB representation of a student.
+type StudentItem struct {
+	ID          string           `dynamodbav:"id"`
+	ChurchID    string           `dynamodbav:"church_id"`
+	Name        string           `dynamodbav:"name"`
+	Gender      string           `dynamodbav:"gender"`
+	Member      *MemberItem      `dynamodbav:"member,omitempty"`
+	Participant *ParticipantItem `dynamodbav:"participant,omitempty"`
+}
+
+// NewStudentItem creates a StudentItem from a domain.Student.
+func NewStudentItem(student *domain.Student) *StudentItem {
+	item := &StudentItem{
+		ID:       student.ID,
+		ChurchID: student.ChurchID,
+		Name:     student.Name,
+		Gender:   student.Gender,
+	}
+	if student.Member != nil {
+		item.Member = NewMemberItem(student.Member)
+	}
+	if student.Participant != nil {
+		item.Participant = NewParticipantItem(student.Participant)
+	}
+	return item
+}
+
+// ToStudent converts a StudentItem into a domain.Student.
+func (item *StudentItem) ToStudent() *domain.Student {
+	student := &domain.Student{
+		ID:       item.ID,
+		ChurchID: item.ChurchID,
+		Name:     item.Name,
+		Gender:   item.Gender,
+	}
+	if item.Member != nil {
+		student.Member = item.Member.ToMember()
+	}
+	if item.Participant != nil {
+		student.Participant = item.Participant.ToParticipant()
+	}
+	return student
+}
+
 type UserItem struct {
 	ID              string   `dynamodbav:"id"`
 	ChurchID        string   `dynamodbav:"church_id"`

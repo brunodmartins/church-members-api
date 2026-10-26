@@ -26,6 +26,10 @@ variable "participant_table_name" {
   type = string
 }
 
+variable "student_table_name" {
+  type = string
+}
+
 variable "role_name" {
   type = string
 }

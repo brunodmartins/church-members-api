@@ -37,6 +37,12 @@ func TestAuthMiddleware(t *testing.T) {
 	app.Post("/reports/:reportType", func(ctx *fiber.Ctx) error {
 		return nil
 	})
+	t.Run("Success - User with admin role  - 200", func(t *testing.T) {
+		req := buildRequest()
+		req.Header.Set(authHeader, buildToken("admin"))
+		resp, _ := app.Test(req, -1)
+		assert.Equal(t, http.StatusOK, resp.StatusCode)
+	})
 	t.Run("Success - User with viewTest role  - 200", func(t *testing.T) {
 		req := buildRequest()
 		req.Header.Set(authHeader, buildToken("viewTest"))

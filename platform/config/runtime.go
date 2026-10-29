@@ -20,6 +20,7 @@ func InitConfiguration() {
 	viper.Set("tables.user", os.Getenv("TABLE_USER"))
 	viper.Set("tables.church", os.Getenv("TABLE_CHURCH"))
 	viper.Set("tables.participant", os.Getenv("TABLE_PARTICIPANT"))
+	viper.Set("tables.student", os.Getenv("TABLE_STUDENT"))
 	viper.Set("reports.topic", os.Getenv("REPORTS_TOPIC"))
 	viper.Set("security.token.secret", os.Getenv("TOKEN_SECRET"))
 	viper.Set("security.token.expiration", os.Getenv("TOKEN_EXPIRATION"))

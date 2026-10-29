@@ -17,6 +17,7 @@ var routesWithAuthorization = map[string][]string{
 	"/reports":      {"viewReport", "editReport"},
 	"/churches":     {"viewChurch", "editChurch"},
 	"/participants": {"viewParticipant", "editParticipant"},
+	"/students":     {"viewStudent", "editStudent"},
 	"/users":        {"viewUser", "editUser"},
 	"/test":         {"viewTest", "editTest"},
 }

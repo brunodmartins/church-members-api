@@ -10,6 +10,36 @@ type Routable interface {
 	SetUpRoutes(app *fiber.App)
 }
 
+func (handler *StudentHandler) SetUpRoutes(app *fiber.App) {
+	// swagger:operation POST /students postStudent
+	//
+	// Create student
+	//
+	// Registers a new student or derives one from an existing member or participant.
+	//
+	// ---
+	// security:
+	// - token: []
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: student
+	//   in: body
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/CreateStudentRequest"
+	// responses:
+	//   '201':
+	//     description: Student registered
+	//     schema:
+	//       "$ref": "#/definitions/CreateMemberResponse"
+	//   '400':
+	//     description: Invalid request
+	//     schema:
+	//       "$ref": "#/definitions/ErrorResponse"
+	app.Post("/students", handler.postStudent)
+}
+
 func (handler *MemberHandler) SetUpRoutes(app *fiber.App) {
 	// swagger:operation POST /members postMember
 	//

@@ -19,6 +19,7 @@ module "dynamodb_tables" {
   user_table_name        = var.user_table_name
   church_table_name      = var.church_table_name
   participant_table_name = var.participant_table_name
+  student_table_name     = var.student_table_name
 }
 
 module "iam_roles" {
@@ -53,6 +54,7 @@ module "api" {
     "TABLE_USER" : module.dynamodb_tables.user_table_name,
     "TABLE_CHURCH" : module.dynamodb_tables.church_table_name,
     "TABLE_PARTICIPANT" : module.dynamodb_tables.participant_table_name,
+    "TABLE_STUDENT" : module.dynamodb_tables.student_table_name,
     "TOKEN_SECRET" : var.security_token_secret,
     "TOKEN_EXPIRATION" : var.security_token_expiration,
     "STORAGE" : module.s3_bucket.bucket_name,
@@ -75,6 +77,7 @@ module "job" {
     "TABLE_USER" : module.dynamodb_tables.user_table_name,
     "TABLE_CHURCH" : module.dynamodb_tables.church_table_name,
     "TABLE_PARTICIPANT" : module.dynamodb_tables.participant_table_name,
+    "TABLE_STUDENT" : module.dynamodb_tables.student_table_name,
     "STORAGE" : module.s3_bucket.bucket_name,
     "QUEUE_URL" : module.sqs_queue.queue_url,
   }

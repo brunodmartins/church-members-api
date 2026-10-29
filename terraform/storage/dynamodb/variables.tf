@@ -13,3 +13,7 @@ variable "church_table_name" {
 variable "participant_table_name" {
   type = string
 }
+
+variable "student_table_name" {
+  type = string
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/brunodmartins/church-members-api/internal/modules/participant"
 	"github.com/brunodmartins/church-members-api/internal/modules/report"
 	"github.com/brunodmartins/church-members-api/internal/modules/report/file"
+	"github.com/brunodmartins/church-members-api/internal/modules/student"
 	"github.com/brunodmartins/church-members-api/internal/modules/user"
 	"github.com/brunodmartins/church-members-api/internal/services/calendar"
 	"github.com/brunodmartins/church-members-api/internal/services/email"
@@ -33,6 +34,10 @@ func ProvideMemberHandler() *api.MemberHandler {
 
 func ProvideParticipantHandler() *api.ParticipantHandler {
 	return api.NewParticipantHandler(ProvideParticipantService())
+}
+
+func ProvideStudentHandler() *api.StudentHandler {
+	return api.NewStudentHandler(ProvideStudentService())
 }
 
 func ProvideReportHandler() *api.ReportHandler {
@@ -74,6 +79,14 @@ func ProvideMemberService() member.Service {
 
 func ProvideParticipantService() participant.Service {
 	return participant.NewService(participant.NewRepository(provideDynamoDB(), viper.GetString("tables.participant")))
+}
+
+func ProvideStudentService() student.Service {
+	return student.NewService(
+		student.NewRepository(provideDynamoDB(), viper.GetString("tables.student")),
+		ProvideMemberService(),
+		ProvideParticipantService(),
+	)
 }
 
 func ProvideChurchService() church.Service {

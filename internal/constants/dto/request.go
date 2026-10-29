@@ -32,7 +32,7 @@ type CreateMemberRequest struct {
 // swagger:model CreateStudentRequest
 type CreateStudentRequest struct {
 	Name          string `json:"name" validate:"required_without_all=MemberID ParticipantID"`
-	Gender        string `json:"gender" validate:"required_without_all=MemberID ParticipantID"`
+	Gender        string `json:"gender" validate:"required_without_all=MemberID ParticipantID,omitempty,eq=M|eq=F"`
 	MemberID      string `json:"memberId" validate:"omitempty,uuid4,excluded_with=ParticipantID"`
 	ParticipantID string `json:"participantId" validate:"omitempty,uuid4,excluded_with=MemberID"`
 }

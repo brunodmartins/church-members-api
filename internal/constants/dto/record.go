@@ -214,12 +214,12 @@ func (item *MemberItem) hasAddress() bool {
 
 // StudentItem is the DynamoDB representation of a student.
 type StudentItem struct {
-	ID          string           `dynamodbav:"id"`
-	ChurchID    string           `dynamodbav:"church_id"`
-	Name        string           `dynamodbav:"name"`
-	Gender      string           `dynamodbav:"gender"`
-	Member      *MemberItem      `dynamodbav:"member,omitempty"`
-	Participant *ParticipantItem `dynamodbav:"participant,omitempty"`
+	ID            string `dynamodbav:"id"`
+	ChurchID      string `dynamodbav:"church_id"`
+	Name          string `dynamodbav:"name"`
+	Gender        string `dynamodbav:"gender"`
+	MemberID      string `dynamodbav:"member_id,omitempty"`
+	ParticipantID string `dynamodbav:"participant_id,omitempty"`
 }
 
 // NewStudentItem creates a StudentItem from a domain.Student.
@@ -231,10 +231,10 @@ func NewStudentItem(student *domain.Student) *StudentItem {
 		Gender:   student.Gender,
 	}
 	if student.Member != nil {
-		item.Member = NewMemberItem(student.Member)
+		item.MemberID = student.Member.ID
 	}
 	if student.Participant != nil {
-		item.Participant = NewParticipantItem(student.Participant)
+		item.ParticipantID = student.Participant.ID
 	}
 	return item
 }
@@ -247,11 +247,11 @@ func (item *StudentItem) ToStudent() *domain.Student {
 		Name:     item.Name,
 		Gender:   item.Gender,
 	}
-	if item.Member != nil {
-		student.Member = item.Member.ToMember()
+	if item.MemberID != "" {
+		student.Member = &domain.Member{ID: item.MemberID}
 	}
-	if item.Participant != nil {
-		student.Participant = item.Participant.ToParticipant()
+	if item.ParticipantID != "" {
+		student.Participant = &domain.Participant{ID: item.ParticipantID}
 	}
 	return student
 }
